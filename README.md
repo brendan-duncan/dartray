@@ -2,7 +2,7 @@
 
 ##Overview
 
-DartRay is a free, open-source physically based renderer, providing a miriad
+DartRay is a free, open-source physically based renderer, providing a variety
 of rendering algorithms, lighting and material models.
 
 DartRay port of the PBRT renderer (www.pbrt.org).
