@@ -18,8 +18,8 @@ language, even one as great as Dart. Dart, being a web-centric language, does
 have some limitations that make scalability more difficult. 
 
 Dart supports multiple threads using a mechanism called isolates. An isolate
-is more anagolous to multi-processing than multi-threading. Each isolate 
-(thread) has its own memory space, and cannot share any memory with any other
+is more analogous to multi-processing than multi-threading. Each isolate 
+has its own memory space, and cannot share any memory with any other
 isolate. Communication between isolates is done through messaging, where the
 data packet of the messages is copied as it's transfered to the other isolate.
 What this means is that each isolate needs to load its own full copy of the 
@@ -33,7 +33,7 @@ web applications wil have access to WebGL, but this diversity will make a
 uniform GPGPU acceleration impossible for both environments.
 
 There are of course many other limitions. But on the positive side, Dart is
-a great environment for experimentation and learing about rendering techniques.
+a great environment for experimentation and learning about rendering techniques.
 It provides a reasonably fast and flexible, cross-platform environment for
 experimentation and learning. And, most importantly, it's fun. These are the 
 goals of DartRay.
