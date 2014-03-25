@@ -1,0 +1,133 @@
+/****************************************************************************
+ *  Copyright (C) 2014 by Brendan Duncan.                                   *
+ *                                                                          *
+ *  This file is part of DartRay.                                           *
+ *                                                                          *
+ *  Licensed under the Apache License, Version 2.0 (the "License");         *
+ *  you may not use this file except in compliance with the License.        *
+ *  You may obtain a copy of the License at                                 *
+ *                                                                          *
+ *  http://www.apache.org/licenses/LICENSE-2.0                              *
+ *                                                                          *
+ *  Unless required by applicable law or agreed to in writing, software     *
+ *  distributed under the License is distributed on an "AS IS" BASIS,       *
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.*
+ *  See the License for the specific language governing permissions and     *
+ *  limitations under the License.                                          *
+ *                                                                          *
+ *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
+ *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
+ ****************************************************************************/
+part of samplers;
+
+class StratifiedSampler extends Sampler {
+  StratifiedSampler(int xstart, int xend, int ystart, int yend,
+                    int xs, int ys, this.jitterSamples,
+                    double sopen, double sclose) :
+    super(xstart, xend, ystart, yend, xs * ys, sopen, sclose) {
+    xPos = xPixelStart;
+    yPos = yPixelStart;
+    xPixelSamples = xs;
+    yPixelSamples = ys;
+    imageSamples = new Float32List(2 * xPixelSamples * yPixelSamples);
+    lensSamples = new Float32List(2 * xPixelSamples * yPixelSamples);
+    timeSamples = new Float32List(xPixelSamples * yPixelSamples);
+  }
+
+  static StratifiedSampler Create(ParamSet params, Film film, Camera camera) {
+    bool jitter = params.findOneBool("jitter", true);
+    // Initialize common sampler parameters
+    List<int> extents = [0, 0, 0, 0];
+    film.getSampleExtent(extents);
+
+    int xsamp = params.findOneInt("xsamples", 2);
+    int ysamp = params.findOneInt("ysamples", 2);
+
+    return new StratifiedSampler(extents[0], extents[1], extents[2],
+                                 extents[3], xsamp, ysamp, jitter,
+                                 camera.shutterOpen, camera.shutterClose);
+  }
+
+  int roundSize(int size) {
+    return size;
+  }
+
+  Sampler getSubSampler(int num, int count) {
+    List<int> range = [0, 0, 0, 0];
+    computeSubWindow(num, count, range);
+    if (range[0] == range[1] || range[2] == range[3]) {
+      return null;
+    }
+    return new StratifiedSampler(range[0], range[1], range[2], range[3],
+                                 xPixelSamples, yPixelSamples, jitterSamples,
+                                 shutterOpen, shutterClose);
+  }
+
+  int getMoreSamples(List<Sample> samples, RNG rng) {
+    if (yPos == yPixelEnd) {
+      return 0;
+    }
+    int nSamples = xPixelSamples * yPixelSamples;
+    // Generate stratified camera samples for _(xPos, yPos)_
+
+    // Generate initial stratified samples into _sampleBuf_ memory
+    int nb = 2 * nSamples;
+
+    StratifiedSample2D(imageSamples, xPixelSamples, yPixelSamples, rng,
+                       jitterSamples);
+
+    StratifiedSample2D(lensSamples, xPixelSamples, yPixelSamples, rng,
+                       jitterSamples);
+
+    StratifiedSample1D(timeSamples, xPixelSamples * yPixelSamples, rng,
+                       jitterSamples);
+
+    // Shift stratified image samples to pixel coordinates
+    for (int o = 0; o < 2 * xPixelSamples * yPixelSamples; o += 2) {
+      imageSamples[o] += xPos;
+      imageSamples[o + 1] += yPos;
+    }
+
+    // Decorrelate sample dimensions
+    Shuffle(lensSamples, 0, xPixelSamples * yPixelSamples, 2, rng);
+    Shuffle(timeSamples, 0, xPixelSamples * yPixelSamples, 1, rng);
+
+    // Initialize stratified _samples_ with sample values
+    for (int i = 0; i < nSamples; ++i) {
+      samples[i].imageX = imageSamples[2 * i];
+      samples[i].imageY = imageSamples[2 * i + 1];
+      samples[i].lensU = lensSamples[2 * i];
+      samples[i].lensV = lensSamples[2 * i + 1];
+      samples[i].time = Lerp(timeSamples[i], shutterOpen, shutterClose);
+      // Generate stratified samples for integrators
+      for (int j = 0; j < samples[i].n1D.length; ++j) {
+        LatinHypercube(samples[i].oneD[j], samples[i].n1D[j], 1, rng);
+      }
+
+      for (int j = 0; j < samples[i].n2D.length; ++j) {
+        LatinHypercube(samples[i].twoD[j], samples[i].n2D[j], 2, rng);
+      }
+    }
+
+    // Advance to next pixel for stratified sampling
+    if (++xPos == xPixelEnd) {
+      xPos = xPixelStart;
+      ++yPos;
+    }
+
+    return nSamples;
+  }
+
+  int maximumSampleCount() {
+    return xPixelSamples * yPixelSamples;
+  }
+
+  int xPixelSamples;
+  int yPixelSamples;
+  bool jitterSamples;
+  int xPos;
+  int yPos;
+  Float32List imageSamples;
+  Float32List lensSamples;
+  Float32List timeSamples;
+}
