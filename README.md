@@ -10,7 +10,7 @@ DartRay port of the PBRT renderer (www.pbrt.org).
 DartRay provides a test-bed for various rendering algorithms. 
 The primary (and perhaps only) objective of DartRay is experimentation and 
 learning. While it is perfectly capable of producing incredible images, it has 
-a lot of things going against it to be remotely thought of as anything close to 
+a lot of things going against it to be thought of as anything remotely close to 
 production worthy. 
 
 For one, a production renderer should not be written in an interpreted 
