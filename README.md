@@ -15,7 +15,7 @@ production worthy.
 
 For one, a production renderer should not be written in an interpreted 
 language, even one as great as Dart. Dart, being a web-centric language, does
-have some limitations that keep make scalability more difficult. 
+have some limitations that make scalability more difficult. 
 
 Dart supports multiple threads using a mechanism called isolates. An isolate
 is more anagolous to multi-processing than multi-threading. Each isolate 
