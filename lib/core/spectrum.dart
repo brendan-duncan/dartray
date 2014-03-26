@@ -94,6 +94,9 @@ abstract class Spectrum {
     }
   }
 
+  /**
+   * Returns true if any channel has a NaN.
+   */
   bool hasNaNs() {
     for (int i = 0, nSamples = c.length; i < nSamples; ++i) {
       if (c[i].isNaN) {
@@ -103,9 +106,24 @@ abstract class Spectrum {
     return false;
   }
 
+  /**
+   * Returns true if all the channels are 0.0.
+   */
   bool isBlack() {
     for (int i = 0, n = c.length; i < n; ++i) {
       if (c[i] != 0.0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Returns true if all the channels have the given value [v].
+   */
+  bool isValue(double v) {
+    for (int i = 0, n = c.length; i < n; ++i) {
+      if (c[i] != v) {
         return false;
       }
     }

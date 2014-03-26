@@ -21,8 +21,8 @@ WorldBegin
     Material "matte" "color Kd" [.5 .5 .5]
     Translate 0 1 0
 
-    #Shape "trianglemesh" 
-    Shape "loopsubdiv" "integer nlevels" [2]
+    Shape "trianglemesh" 
+    #Shape "loopsubdiv" "integer nlevels" [2]
       "integer indices" [
           0 1 2
           0 2 3
@@ -48,7 +48,8 @@ WorldBegin
   AttributeEnd
 
   AttributeBegin
-    Material "matte" "color Kd" [.8 .8 .8]
+    #Material "matte" "color Kd" [.8 .8 .8]
+    Material "uber" "color Kd" [0 0 1] "color opacity" [.5 .5 .5] "color Kr" [0 0 1] "color Kt" [0 0 0.5]
     Shape "trianglemesh" 
         "point P" [ -100 0 -100   100 0 -100   100 0 100   -100 0 100 ]
         "float uv" [ 0 0 1 0 1 1 0 1 ]

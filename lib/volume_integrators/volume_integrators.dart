@@ -20,8 +20,6 @@
  ****************************************************************************/
 library volume_integrators;
 
-import 'dart:math' as Math;
-import 'dart:typed_data';
 import '../core/core.dart';
 
 part 'emission_integrator.dart';

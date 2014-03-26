@@ -38,8 +38,9 @@ class UberMaterial extends Material {
 
   BSDF getBSDF(DifferentialGeometry dgGeom, DifferentialGeometry dgShading) {
     // Allocate _BSDF_, possibly doing bump mapping with _bumpMap_
-    DifferentialGeometry dgs = new DifferentialGeometry();
+    DifferentialGeometry dgs;
     if (bumpMap != null) {
+      dgs = new DifferentialGeometry();
       Material.Bump(bumpMap, dgGeom, dgShading, dgs);
     } else {
       dgs = dgShading;
@@ -48,7 +49,7 @@ class UberMaterial extends Material {
     BSDF bsdf = new BSDF(dgs, dgGeom.nn);
 
     Spectrum op = opacity.evaluate(dgs).clamp();
-    if (op != new Spectrum(1.0)) {
+    if (!op.isValue(1.0)) {
       BxDF tr = new SpecularTransmission(-op + new Spectrum(1.0), 1.0, 1.0);
       bsdf.add(tr);
     }

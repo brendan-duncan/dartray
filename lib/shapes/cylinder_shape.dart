@@ -41,7 +41,7 @@ class CylinderShape extends Shape {
 
   BBox objectBound() {
     Point p1 = new Point(-radius, -radius, zmin);
-    Point p2 = new Point( radius,  radius, zmax);
+    Point p2 = new Point(radius,  radius, zmax);
     return new BBox(p1, p2);
   }
 
@@ -68,7 +68,6 @@ class CylinderShape extends Shape {
     }
     double t0 = _t0[0];
     double t1 = _t1[0];
-
 
     // Compute intersection distance along ray
     if (t0 > ray.maxDistance || t1 < ray.minDistance) {

@@ -78,15 +78,15 @@ class SamplerRenderer extends Renderer {
         // Issue warning if unexpected radiance value returned
         if (Ls[i].hasNaNs()) {
           LogWarning('Not-a-number radiance value returned '
-                'for image sample.  Setting to black.');
+                'for image sample. Setting to black.');
           Ls[i] = new Spectrum(0.0);
         } else if (Ls[i].y < -1e-5) {
           LogWarning('Negative luminance value, ${Ls[i].y}, returned'
-                'for image sample.  Setting to black.');
+                'for image sample. Setting to black.');
           Ls[i] = new Spectrum(0.0);
         } else if (Ls[i].y.isInfinite) {
           LogWarning('Infinite luminance value returned'
-                'for image sample.  Setting to black.');
+                'for image sample. Setting to black.');
           Ls[i] = new Spectrum(0.0);
         }
       }
