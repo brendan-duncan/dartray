@@ -22,10 +22,10 @@ part of core;
 
 class BSSRDF {
   final double eta;
-  final RGBColor sigma_a;
-  final RGBColor sigma_prime_s;
+  final Spectrum sigma_a;
+  final Spectrum sigma_prime_s;
 
-  BSSRDF(RGBColor sigma_a, RGBColor sigma_prime_s, this.eta) :
-    this.sigma_a = new RGBColor.from(sigma_a),
-    this.sigma_prime_s = new RGBColor.from(sigma_prime_s);
+  BSSRDF(Spectrum sigma_a, Spectrum sigma_prime_s, this.eta) :
+    this.sigma_a = new Spectrum.from(sigma_a),
+    this.sigma_prime_s = new Spectrum.from(sigma_prime_s);
 }

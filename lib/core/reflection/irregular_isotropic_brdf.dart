@@ -21,30 +21,30 @@
 part of core;
 
 class IrregIsotropicBRDFSample {
-  IrregIsotropicBRDFSample(Point pp, RGBColor vv) :
+  IrregIsotropicBRDFSample(Point pp, Spectrum vv) :
     p = new Point.from(pp),
-    v = new RGBColor.from(vv);
+    v = new Spectrum.from(vv);
 
   Point p;
-  RGBColor v;
+  Spectrum v;
 }
 
 class IrregularIsotropicBRDF extends BxDF {
   IrregularIsotropicBRDF(this.isoBRDFData) :
     super(BSDF_REFLECTION | BSDF_GLOSSY);
 
-  RGBColor f(Vector wo, Vector wi) {
+  Spectrum f(Vector wo, Vector wi) {
     Point m = _BRDFRemap(wo, wi);
     double lastMaxDist2 = 0.001;
     while (true) {
-      RGBColor v = new RGBColor(0.0);
+      Spectrum v = new Spectrum(0.0);
       double sumWeights = 0.0;
       int nFound = 0;
 
       void proc(Point p, IrregIsotropicBRDFSample sample, double d2,
                 double maxDist2) {
         double weight = Math.exp(-100.0 * d2);
-        v += sample.v.scaled(weight);
+        v += sample.v * weight;
         sumWeights += weight;
         ++nFound;
       }

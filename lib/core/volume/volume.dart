@@ -98,18 +98,22 @@ double PhaseSchlick(Vector w, Vector wp, double g) {
 }
 
 
-bool GetVolumeScatteringProperties(String name, RGBColor sigma_a,
-                                   RGBColor sigma_prime_s) {
+bool GetVolumeScatteringProperties(String name, Spectrum sigma_a,
+                                   Spectrum sigma_prime_s) {
   if (!MEASURED_SS.containsKey(name)) {
     return false;
   }
-  sigma_a.copyList(MEASURED_SS[name][1]);
-  sigma_prime_s.copyList(MEASURED_SS[name][0]);
+  sigma_a.setRGB(MEASURED_SS[name][1][0],
+                 MEASURED_SS[name][1][1],
+                 MEASURED_SS[name][2][2]);
+  sigma_prime_s.setRGB(MEASURED_SS[name][0][0],
+                       MEASURED_SS[name][0][1],
+                       MEASURED_SS[name][0][2]);
   return true;
 }
 
-void SubsurfaceFromDiffuse(RGBColor Kd, double meanPathLength, double eta,
-                           RGBColor sigma_a, RGBColor sigma_prime_s) {
+void SubsurfaceFromDiffuse(Spectrum Kd, double meanPathLength, double eta,
+                           Spectrum sigma_a, Spectrum sigma_prime_s) {
   double A = (1.0 + Fdr(eta)) / (1.0 - Fdr(eta));
   List<double> rgb = [Kd.c[0], Kd.c[1], Kd.c[2]];
 
@@ -124,8 +128,9 @@ void SubsurfaceFromDiffuse(RGBColor Kd, double meanPathLength, double eta,
     sigma_a_rgb[i] = sigma_prime_t - sigma_prime_s_rgb[i];
   }
 
-  sigma_a.copyList(sigma_a_rgb);
-  sigma_prime_s.copyList(sigma_prime_s_rgb);
+  sigma_a.setRGB(sigma_a_rgb[0], sigma_a_rgb[1], sigma_a_rgb[2]);
+  sigma_prime_s.setRGB(sigma_prime_s_rgb[0], sigma_prime_s_rgb[1],
+                       sigma_prime_s_rgb[2]);
 }
 
 // name: [sigma_prime_s][sigma_a]

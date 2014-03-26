@@ -21,29 +21,29 @@
 part of core;
 
 class SpecularReflection extends BxDF {
-  SpecularReflection(RGBColor r, Fresnel f) :
+  SpecularReflection(Spectrum r, Fresnel f) :
     super(BSDF_REFLECTION | BSDF_SPECULAR),
-    R = new RGBColor.from(r),
+    R = new Spectrum.from(r),
     fresnel = f;
 
-  RGBColor f(Vector wo, Vector wi) {
-    return new RGBColor(0.0);
+  Spectrum f(Vector wo, Vector wi) {
+    return new Spectrum(0.0);
   }
 
-  RGBColor sample_f(Vector wo, Vector wi, double u1, double u2,
+  Spectrum sample_f(Vector wo, Vector wi, double u1, double u2,
                        List<double> pdf) {
     // Compute perfect specular reflection direction
     wi.x = -wo.x;
     wi.y = -wo.y;
     wi.z = wo.z;
     pdf[0] = 1.0;
-    return (fresnel.evaluate(Vector.CosTheta(wo)) * R).invScale(Vector.AbsCosTheta(wi));
+    return (fresnel.evaluate(Vector.CosTheta(wo)) * R) / Vector.AbsCosTheta(wi);
   }
 
   double pdf(Vector wo, Vector wi) {
     return 0.0;
   }
 
-  RGBColor R;
+  Spectrum R;
   Fresnel fresnel;
 }

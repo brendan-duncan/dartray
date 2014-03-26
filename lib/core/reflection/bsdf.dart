@@ -53,7 +53,7 @@ class BSDF {
     nBxDFs = 0;
   }
 
-  RGBColor sample_f(Vector woW, Vector wiW, BSDFSample bsdfSample,
+  Spectrum sample_f(Vector woW, Vector wiW, BSDFSample bsdfSample,
                       List<double> pdf, [int flags = BSDF_ALL,
                       List<int> sampledType]) {
     // Choose which _BxDF_ to sample
@@ -83,13 +83,13 @@ class BSDF {
     Vector wi = new Vector();
     pdf[0] = 0.0;
 
-    RGBColor f = bxdf.sample_f(wo, wi, bsdfSample.uDir[0],
+    Spectrum f = bxdf.sample_f(wo, wi, bsdfSample.uDir[0],
                                bsdfSample.uDir[1], pdf);
     if (pdf[0] == 0.0) {
       if (sampledType != null) {
         sampledType[0] = 0;
       }
-      return new RGBColor(0.0);
+      return new Spectrum(0.0);
     }
 
     if (sampledType != null) {
@@ -113,7 +113,7 @@ class BSDF {
 
     // Compute value of BSDF for sampled direction
     if ((bxdf.type & BSDF_SPECULAR) == 0) {
-      f = new RGBColor(0.0);
+      f = new Spectrum(0.0);
       if (Vector.Dot(wiW, ng) * Vector.Dot(woW, ng) > 0) {
         flags = flags & ~BSDF_TRANSMISSION;
       } else { // ignore BRDFs
@@ -173,7 +173,7 @@ class BSDF {
                   sn.z * v.x + tn.z * v.y + nn.z * v.z);
   }
 
-  RGBColor f(Vector woW, Vector wiW, [int flags = BSDF_ALL]) {
+  Spectrum f(Vector woW, Vector wiW, [int flags = BSDF_ALL]) {
     Vector wi = worldToLocal(wiW);
     Vector wo = worldToLocal(woW);
 
@@ -183,7 +183,7 @@ class BSDF {
       flags = flags & ~BSDF_REFLECTION;
     }
 
-    RGBColor f = new RGBColor(0.0);
+    Spectrum f = new Spectrum(0.0);
 
     for (int i = 0; i < nBxDFs; ++i) {
       if (bxdfs[i].matchesFlags(flags)) {
@@ -194,7 +194,7 @@ class BSDF {
     return f;
   }
 
-  RGBColor rho(RNG rng, [int flags = BSDF_ALL, int sqrtSamples = 6]) {
+  Spectrum rho(RNG rng, [int flags = BSDF_ALL, int sqrtSamples = 6]) {
     int nSamples = sqrtSamples * sqrtSamples;
 
     List<double> s1 = new List<double>(2 * nSamples);
@@ -203,7 +203,7 @@ class BSDF {
     List<double> s2 = new List<double>(2 * nSamples);
     StratifiedSample2D(s2, sqrtSamples, sqrtSamples, rng);
 
-    RGBColor ret = new RGBColor(0.0);
+    Spectrum ret = new Spectrum(0.0);
     for (int i = 0; i < nBxDFs; ++i) {
       if (bxdfs[i].matchesFlags(flags)) {
         ret += bxdfs[i].rho2(nSamples, s1, s2);
@@ -213,14 +213,14 @@ class BSDF {
     return ret;
   }
 
-  RGBColor rho2(Vector wo, RNG rng, [int flags = BSDF_ALL,
+  Spectrum rho2(Vector wo, RNG rng, [int flags = BSDF_ALL,
                 int sqrtSamples = 6]) {
     int nSamples = sqrtSamples * sqrtSamples;
     List<double> s1 = new List<double>(2 * nSamples);
 
     StratifiedSample2D(s1, sqrtSamples, sqrtSamples, rng);
 
-    RGBColor ret = new RGBColor(0.0);
+    Spectrum ret = new Spectrum(0.0);
     for (int i = 0; i < nBxDFs; ++i) {
       if (bxdfs[i].matchesFlags(flags)) {
         ret += bxdfs[i].rho(wo, nSamples, s1);

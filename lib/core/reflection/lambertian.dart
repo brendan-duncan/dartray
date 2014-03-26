@@ -28,21 +28,21 @@ part of core;
  * approximation to many real-world surfaces such as matte paint.
  */
 class Lambertian extends BxDF {
-  Lambertian(RGBColor reflectance) :
+  Lambertian(Spectrum reflectance) :
     super(BSDF_REFLECTION | BSDF_DIFFUSE),
-    R = new RGBColor.from(reflectance);
+    R = new Spectrum.from(reflectance);
 
-  RGBColor f(Vector wo, Vector wi) {
-    return R.scaled(INV_PI);
+  Spectrum f(Vector wo, Vector wi) {
+    return R * INV_PI;
   }
 
-  RGBColor rho(Vector , int, List<double> samples) {
+  Spectrum rho(Vector , int, List<double> samples) {
     return R;
   }
 
-  RGBColor rho2(int, List<double> samples1, List<double> samples2) {
+  Spectrum rho2(int, List<double> samples1, List<double> samples2) {
     return R;
   }
 
-  RGBColor R;
+  Spectrum R;
 }

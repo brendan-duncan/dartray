@@ -21,7 +21,7 @@
 part of core;
 
 class FresnelNoOp extends Fresnel {
-  RGBColor evaluate(double) {
-    return new RGBColor(1.0);
+  Spectrum evaluate(double) {
+    return new Spectrum(1.0);
   }
 }

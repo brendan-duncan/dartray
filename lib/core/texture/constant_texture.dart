@@ -24,7 +24,7 @@ class ConstantTexture<T> extends Texture {
   ConstantTexture(this.value);
 
   static ConstantTexture CreateSpectrum(Transform tex2world, TextureParams tp) {
-    return new ConstantTexture(tp.findSpectrum("value", new RGBColor(1.0)));
+    return new ConstantTexture(tp.findSpectrum("value", new Spectrum(1.0)));
   }
 
   static ConstantTexture CreateFloat(Transform tex2world, TextureParams tp) {

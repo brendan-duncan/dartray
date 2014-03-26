@@ -29,22 +29,22 @@ class BRDFToBTDF extends BxDF {
     return new Vector(w.x, w.y, -w.z);
   }
 
-  RGBColor f(Vector wo, Vector wi) {
+  Spectrum f(Vector wo, Vector wi) {
     return brdf.f(wo, otherHemisphere(wi));
   }
 
-  RGBColor sample_f(Vector wo, Vector wi, double u1, double u2,
+  Spectrum sample_f(Vector wo, Vector wi, double u1, double u2,
                        List<double> pdf) {
-    RGBColor f = brdf.sample_f(wo, wi, u1, u2, pdf);
+    Spectrum f = brdf.sample_f(wo, wi, u1, u2, pdf);
     wi.copy(otherHemisphere(wi));
     return f;
   }
 
-  RGBColor rho(Vector w, int nSamples, List<double> samples) {
+  Spectrum rho(Vector w, int nSamples, List<double> samples) {
     return brdf.rho(otherHemisphere(w), nSamples, samples);
   }
 
-  RGBColor rho2(int nSamples, List<double> samples1,
+  Spectrum rho2(int nSamples, List<double> samples1,
                    List<double> samples2) {
     return brdf.rho2(nSamples, samples1, samples2);
   }

@@ -21,42 +21,42 @@
 part of core;
 
 abstract class DensityRegion extends VolumeRegion {
-  DensityRegion(RGBColor sa, RGBColor ss, double gg,
-                RGBColor emit, Transform volumeToWorld) :
-    sig_a = new RGBColor.from(sa),
-    sig_s = new RGBColor.from(ss),
-    le = new RGBColor.from(emit),
+  DensityRegion(Spectrum sa, Spectrum ss, double gg,
+                Spectrum emit, Transform volumeToWorld) :
+    sig_a = new Spectrum.from(sa),
+    sig_s = new Spectrum.from(ss),
+    le = new Spectrum.from(emit),
     g = gg,
     worldToVolume = Transform.Inverse(volumeToWorld);
 
   double density(Point Pobj);
 
-  RGBColor sigma_a(Point p, Vector v, double d) {
-    return sig_a.scaled(density(worldToVolume.transformPoint(p)));
+  Spectrum sigma_a(Point p, Vector v, double d) {
+    return sig_a * density(worldToVolume.transformPoint(p));
   }
 
-  RGBColor sigma_s(Point p, Vector v, double d) {
-    return sig_s.scaled(density(worldToVolume.transformPoint(p)));
+  Spectrum sigma_s(Point p, Vector v, double d) {
+    return sig_s * density(worldToVolume.transformPoint(p));
   }
 
-  RGBColor sigma_t(Point p, Vector v, double d) {
-    return (sig_a + sig_s).scale(density(worldToVolume.transformPoint(p)));
+  Spectrum sigma_t(Point p, Vector v, double d) {
+    return (sig_a + sig_s) * (density(worldToVolume.transformPoint(p)));
   }
 
-  RGBColor Lve(Point p, Vector v, double d) {
-    return le.scaled(density(worldToVolume.transformPoint(p)));
+  Spectrum Lve(Point p, Vector v, double d) {
+    return le * density(worldToVolume.transformPoint(p));
   }
 
   double p(Point p, Vector w, Vector wp, double d) {
     return PhaseHG(w, wp, g);
   }
 
-  RGBColor tau(Ray r, [double stepSize = 1.0, double u = 0.5]) {
+  Spectrum tau(Ray r, [double stepSize = 1.0, double u = 0.5]) {
     List<double> t0 = [0.0];
     List<double> t1 = [0.0];
     double length = r.direction.length();
     if (length == 0.0) {
-      return new RGBColor(0.0);
+      return new Spectrum(0.0);
     }
 
     Ray rn = new Ray(r.origin, r.direction / length,
@@ -64,23 +64,23 @@ abstract class DensityRegion extends VolumeRegion {
                      r.maxDistance * length,
                      r.time);
     if (!intersectP(rn, t0, t1)) {
-      return new RGBColor(0.0);
+      return new Spectrum(0.0);
     }
 
-    RGBColor tau = new RGBColor(0.0);
+    Spectrum tau = new Spectrum(0.0);
     t0[0] += u * stepSize;
     while (t0[0] < t1[0]) {
       tau += sigma_t(rn.pointAt(t0[0]), -rn.direction, r.time);
       t0[0] += stepSize;
     }
 
-    return tau.scaled(stepSize);
+    return tau * stepSize;
   }
 
 
-  RGBColor sig_a;
-  RGBColor sig_s;
-  RGBColor le;
+  Spectrum sig_a;
+  Spectrum sig_s;
+  Spectrum le;
   double g;
   Transform worldToVolume;
 }

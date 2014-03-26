@@ -98,12 +98,12 @@ class CheckerboardTexture extends Texture {
                  _dtdy = [0.0];
 
     mapping.map(dg, _s, _t, _dsdx, _dtdx, _dsdy, _dtdy);
-    double s = _s[0],
-           t = _t[0],
-           dsdx = _dsdx[0],
-           dsdy = _dsdy[0],
-           dtdx = _dtdx[0],
-           dtdy = _dtdy[0];
+    double s = _s[0];
+    double t = _t[0];
+    double dsdx = _dsdx[0];
+    double dsdy = _dsdy[0];
+    double dtdx = _dtdx[0];
+    double dtdy = _dtdy[0];
 
     if (aaMethod == AA_NONE) {
       // Point sample _Checkerboard2DTexture_

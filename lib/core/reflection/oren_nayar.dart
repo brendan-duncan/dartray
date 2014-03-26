@@ -21,16 +21,16 @@
 part of core;
 
 class OrenNayar extends BxDF {
-  OrenNayar(RGBColor reflectance, double sig) :
+  OrenNayar(Spectrum reflectance, double sig) :
     super(BSDF_REFLECTION | BSDF_DIFFUSE),
-    R = new RGBColor.from(reflectance) {
+    R = new Spectrum.from(reflectance) {
     double sigma = Radians(sig);
     double sigma2 = sigma * sigma;
     A = 1.0 - (sigma2 / (2.0 * (sigma2 + 0.33)));
     B = 0.45 * sigma2 / (sigma2 + 0.09);
   }
 
-  RGBColor f(Vector wo, Vector wi) {
+  Spectrum f(Vector wo, Vector wi) {
     double sinthetai = Vector.SinTheta(wi);
     double sinthetao = Vector.SinTheta(wo);
     // Compute cosine term of Oren-Nayar model
@@ -54,9 +54,10 @@ class OrenNayar extends BxDF {
       tanbeta = sinthetao / Vector.AbsCosTheta(wo);
     }
 
-    return R.scaled(INV_PI * (A + B * maxcos * sinalpha * tanbeta));
+    return R * (INV_PI * (A + B * maxcos * sinalpha * tanbeta));
   }
 
-  RGBColor R;
-  double A, B;
+  Spectrum R;
+  double A;
+  double B;
 }

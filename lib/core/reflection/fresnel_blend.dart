@@ -21,37 +21,37 @@
 part of core;
 
 class FresnelBlend extends BxDF {
-  FresnelBlend(RGBColor d, RGBColor s, this.distribution) :
+  FresnelBlend(Spectrum d, Spectrum s, this.distribution) :
     super(BSDF_REFLECTION | BSDF_GLOSSY),
-    Rd = new RGBColor.from(d),
-    Rs = new RGBColor.from(s);
+    Rd = new Spectrum.from(d),
+    Rs = new Spectrum.from(s);
 
-  RGBColor f(Vector wo, Vector wi) {
-    RGBColor diffuse = Rd.scaled((28.0 / (23.0 * Math.PI))) *
-            (new RGBColor(1.0) - Rs).scale(
-            (1.0 - Math.pow(1.0 - 0.5 * Vector.AbsCosTheta(wi), 5)) *
-            (1.0 - Math.pow(1.0 - 0.5 * Vector.AbsCosTheta(wo), 5)));
+  Spectrum f(Vector wo, Vector wi) {
+    Spectrum diffuse = Rd * ((28.0 / (23.0 * Math.PI))) *
+            (new Spectrum(1.0) - Rs) *
+            ((1.0 - Math.pow(1.0 - 0.5 * Vector.AbsCosTheta(wi), 5)) *
+             (1.0 - Math.pow(1.0 - 0.5 * Vector.AbsCosTheta(wo), 5)));
 
     Vector wh = wi + wo;
     if (wh.x == 0.0 && wh.y == 0.0 && wh.z == 0.0) {
-      return new RGBColor(0.0);
+      return new Spectrum(0.0);
     }
 
     wh = Vector.Normalize(wh);
 
-    RGBColor specular = new RGBColor(distribution.d(wh)) /
+    Spectrum specular = new Spectrum(distribution.d(wh)) /
         schlickFresnel(Vector.Dot(wi, wh)) * (4.0 * Vector.AbsDot(wi, wh) *
             Math.max(Vector.AbsCosTheta(wi), Vector.AbsCosTheta(wo)));
 
     return diffuse + specular;
   }
 
-  RGBColor schlickFresnel(double costheta) {
-    RGBColor one = new RGBColor(1.0);
-    return Rs + (one - Rs).scale(Math.pow(1.0 - costheta, 5.0));
+  Spectrum schlickFresnel(double costheta) {
+    Spectrum one = new Spectrum(1.0);
+    return Rs + (one - Rs) * (Math.pow(1.0 - costheta, 5.0));
   }
 
-  RGBColor sample_f(Vector wi, Vector wo, double u1, double u2,
+  Spectrum sample_f(Vector wi, Vector wo, double u1, double u2,
                     List<double> outPdf) {
     if (u1 < 0.5) {
       u1 = 2.0 * u1;
@@ -64,7 +64,7 @@ class FresnelBlend extends BxDF {
       u1 = 2.0 * (u1 - 0.5);
       outPdf[0] = distribution.sample_f(wo, wi, u1, u2);
       if (!Vector.SameHemisphere(wo, wi)) {
-        return new RGBColor(0.0);
+        return new Spectrum(0.0);
       }
     }
 
@@ -81,7 +81,7 @@ class FresnelBlend extends BxDF {
     return 0.5 * (Vector.AbsCosTheta(wi) * INV_PI + distribution.pdf(wo, wi));
   }
 
-  RGBColor Rd;
-  RGBColor Rs;
+  Spectrum Rd;
+  Spectrum Rs;
   MicrofacetDistribution distribution;
 }

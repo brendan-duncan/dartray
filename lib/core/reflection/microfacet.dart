@@ -24,22 +24,22 @@ class Microfacet extends BxDF {
   Microfacet(this.R, this.fresnel, this.distribution) :
     super(0);
 
-  RGBColor f(Vector wo, Vector wi) {
+  Spectrum f(Vector wo, Vector wi) {
     double cosThetaO = Vector.AbsCosTheta(wo);
     double cosThetaI = Vector.AbsCosTheta(wi);
     if (cosThetaI == 0.0 || cosThetaO == 0.0) {
-      return new RGBColor(0.0);
+      return new Spectrum(0.0);
     }
 
     Vector wh = wi + wo;
     if (wh.x == 0.0 && wh.y == 0.0 && wh.z == 0.0) {
-      return new RGBColor(0.0);
+      return new Spectrum(0.0);
     }
 
     wh = Vector.Normalize(wh);
 
     double cosThetaH = Vector.Dot(wi, wh);
-    RGBColor F = fresnel.evaluate(cosThetaH);
+    Spectrum F = fresnel.evaluate(cosThetaH);
 
     return R * (distribution.d(wh) * g(wo, wi, wh)) *
            F / (4.0 * cosThetaI * cosThetaO);
@@ -54,11 +54,11 @@ class Microfacet extends BxDF {
                         (2.0 * NdotWh * NdotWi / WOdotWh)));
   }
 
-  RGBColor sample_f(Vector wo, Vector wi, double u1, double u2,
+  Spectrum sample_f(Vector wo, Vector wi, double u1, double u2,
                        List<double> pdf) {
     pdf[0] = distribution.sample_f(wo, wi, u1, u2);
     if (!Vector.SameHemisphere(wo, wi)) {
-      return new RGBColor(0.0);
+      return new Spectrum(0.0);
     }
     return f(wo, wi);
   }
@@ -70,7 +70,7 @@ class Microfacet extends BxDF {
     return distribution.pdf(wo, wi);
   }
 
-  RGBColor R;
+  Spectrum R;
   MicrofacetDistribution distribution;
   Fresnel fresnel;
 }

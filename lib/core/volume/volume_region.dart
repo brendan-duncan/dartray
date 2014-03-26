@@ -25,17 +25,17 @@ abstract class VolumeRegion {
 
   bool intersectP(Ray ray, List<double> t0, List<double> t1);
 
-  RGBColor sigma_a(Point p, Vector w, double time);
+  Spectrum sigma_a(Point p, Vector w, double time);
 
-  RGBColor sigma_s(Point p, Vector w, double time);
+  Spectrum sigma_s(Point p, Vector w, double time);
 
-  RGBColor Lve(Point p, Vector w, double time);
+  Spectrum Lve(Point p, Vector w, double time);
 
   double p(Point p, Vector w, Vector wp, double time);
 
-  RGBColor sigma_t(Point p, Vector wo, double time) {
+  Spectrum sigma_t(Point p, Vector wo, double time) {
     return sigma_a(p, wo, time) + sigma_s(p, wo, time);
   }
 
-  RGBColor tau(Ray ray, [double step = 1.0, double offset = 0.5]);
+  Spectrum tau(Ray ray, [double step = 1.0, double offset = 0.5]);
 }

@@ -30,9 +30,9 @@ abstract class BxDF {
     return (type & flags) == type;
   }
 
-  RGBColor f(Vector wo, Vector wi);
+  Spectrum f(Vector wo, Vector wi);
 
-  RGBColor sample_f(Vector wo, Vector out_wi,
+  Spectrum sample_f(Vector wo, Vector out_wi,
                     double u1, double u2, List<double> out_pdf) {
     // Cosine-sample the hemisphere, flipping the direction if necessary
     out_wi.copy(CosineSampleHemisphere(u1, u2));
@@ -45,23 +45,23 @@ abstract class BxDF {
     return f(wo, out_wi);
   }
 
-  RGBColor rho(Vector w, int nSamples, List<double> samples) {
-    RGBColor r = new RGBColor(0.0);
+  Spectrum rho(Vector w, int nSamples, List<double> samples) {
+    Spectrum r = new Spectrum(0.0);
     for (int i = 0; i < nSamples; ++i) {
       // Estimate one term of $\rho_\roman{hd}$
       Vector wi = new Vector();
       List<double> pdf = [0.0];
-      RGBColor f = sample_f(w, wi, samples[2 * i], samples[2 * i + 1], pdf);
+      Spectrum f = sample_f(w, wi, samples[2 * i], samples[2 * i + 1], pdf);
       if (pdf[0] > 0.0) {
-        r += f.scaled(Vector.AbsCosTheta(wi) / pdf[0]);
+        r += f * (Vector.AbsCosTheta(wi) / pdf[0]);
       }
     }
     return r / nSamples;
   }
 
-  RGBColor rho2(int nSamples, List<double> samples1,
+  Spectrum rho2(int nSamples, List<double> samples1,
                    List<double> samples2) {
-    RGBColor r = new RGBColor(0.0);
+    Spectrum r = new Spectrum(0.0);
     for (int i = 0; i < nSamples; ++i) {
       Vector wi = new Vector();
       Vector wo = UniformSampleHemisphere(samples1[2 * i], samples1[2 * i + 1]);
@@ -69,10 +69,10 @@ abstract class BxDF {
       double pdf_o = INV_TWOPI;
       List<double> pdf_i = [0.0];
 
-      RGBColor f = sample_f(wo, wi, samples2[2 * i], samples2[2 * i + 1],
-                               pdf_i);
+      Spectrum f = sample_f(wo, wi, samples2[2 * i], samples2[2 * i + 1],
+                            pdf_i);
       if (pdf_i[0] > 0.0) {
-        r += f.scaled(Vector.AbsCosTheta(wi) * Vector.AbsCosTheta(wo) /
+        r += f * (Vector.AbsCosTheta(wi) * Vector.AbsCosTheta(wo) /
             (pdf_o * pdf_i[0]));
       }
     }

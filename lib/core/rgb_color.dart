@@ -29,11 +29,15 @@ class RGBColor extends Spectrum {
     c[0] = r;
     c[1] = g;
     c[2] = b;
+    assert(!c[0].isNaN && !c[1].isNaN && !c[2].isNaN);
+    assert(!c[0].isInfinite && !c[1].isInfinite && !c[2].isInfinite);
   }
 
   RGBColor.xyz(double x, double y, double z) :
     super.samples(3) {
     Spectrum.XYZToRGB(x, y, z, c);
+    assert(!c[0].isNaN && !c[1].isNaN && !c[2].isNaN);
+    assert(!c[0].isInfinite && !c[1].isInfinite && !c[2].isInfinite);
   }
 
   RGBColor.from(Spectrum s) :
@@ -45,6 +49,8 @@ class RGBColor extends Spectrum {
     } else if (s is XYZColor) {
       Spectrum.XYZToRGB(s.c[0], s.c[1], s.c[2], c);
     }
+    assert(!c[0].isNaN && !c[1].isNaN && !c[2].isNaN);
+    assert(!c[0].isInfinite && !c[1].isInfinite && !c[2].isInfinite);
   }
 
   RGBColor setSampled(List<double> lambda, List<double> v) {
@@ -72,6 +78,8 @@ class RGBColor extends Spectrum {
 
     Spectrum.XYZToRGB(x, y, z, c);
 
+    assert(!c[0].isNaN && !c[1].isNaN && !c[2].isNaN);
+    assert(!c[0].isInfinite && !c[1].isInfinite && !c[2].isInfinite);
     return this;
   }
 
@@ -89,16 +97,30 @@ class RGBColor extends Spectrum {
 
   void setXYZ(double x, double y, double z) {
     Spectrum.XYZToRGB(x, y, z, c);
+    assert(!c[0].isNaN && !c[1].isNaN && !c[2].isNaN);
+    assert(!c[0].isInfinite && !c[1].isInfinite && !c[2].isInfinite);
   }
 
   XYZColor toXYZ() {
     return new XYZColor.from(this);
   }
 
-  void set(double r, [double g, double b]) {
+  void set(double v) {
+    c[0] = v;
+    c[1] = v;
+    c[2] = v;
+    assert(!c[0].isNaN && !c[1].isNaN && !c[2].isNaN);
+    assert(!c[0].isInfinite && !c[1].isInfinite && !c[2].isInfinite);
+  }
+
+  RGBColor setRGB(double r, double g, double b,
+                  [int type = Spectrum.SPECTRUM_REFLECTANCE]) {
     c[0] = r;
-    c[1] = g == null ? r : g;
-    c[2] = g == null ? r : b;
+    c[1] = g;
+    c[2] = b;
+    assert(!c[0].isNaN && !c[1].isNaN && !c[2].isNaN);
+    assert(!c[0].isInfinite && !c[1].isInfinite && !c[2].isInfinite);
+    return this;
   }
 
   RGBColor operator+(RGBColor s) =>
@@ -132,39 +154,6 @@ class RGBColor extends Spectrum {
   RGBColor operator-() =>
         new RGBColor.rgb(-c[0], -c[1], -c[2]);
 
-  RGBColor scaled(double s) =>
-    new RGBColor.rgb(c[0] * s, c[1] * s, c[2] * s);
-
-  RGBColor scale(double s) {
-    c[0] *= s;
-    c[1] *= s;
-    c[2] *= s;
-    return this;
-  }
-
-  RGBColor invScale(double s) {
-    c[0] /= s;
-    c[1] /= s;
-    c[2] /= s;
-    return this;
-  }
-
-  void add(s) {
-    if (s is num) {
-      c[0] += s;
-      c[1] += s;
-      c[2] += s;
-      return;
-    }
-    if (s is RGBColor) {
-      c[0] += s.c[0];
-      c[1] += s.c[1];
-      c[2] += s.c[2];
-      return;
-    }
-    LogSevere('Invalid parameter to RGBSpectrum.add');
-  }
-
   double get y {
     const List<double> YWeight = const [ 0.212671, 0.715160, 0.072169 ];
     return YWeight[0] * c[0] + YWeight[1] * c[1] + YWeight[2] * c[2];
@@ -181,16 +170,17 @@ class RGBColor extends Spectrum {
     new RGBColor.rgb(Math.sqrt(c[0]), Math.sqrt(c[1]), Math.sqrt(c[2]));
 
   RGBColor pow(double e) =>
-      new RGBColor.rgb(Math.pow(c[0], e), Math.pow(c[1], e),
-                          Math.pow(c[2], e));
+      new RGBColor.rgb(Math.pow(c[0], e),
+                       Math.pow(c[1], e),
+                       Math.pow(c[2], e));
 
   RGBColor exp() =>
       new RGBColor.rgb(Math.exp(c[0]), Math.exp(c[1]), Math.exp(c[2]));
 
   RGBColor clamp([double low = 0.0, double high = INFINITY]) =>
       new RGBColor.rgb(c[0].clamp(low, high),
-                          c[1].clamp(low, high),
-                          c[2].clamp(low, high));
+                       c[1].clamp(low, high),
+                       c[2].clamp(low, high));
 
   String toString() {
     return '${c[0]} ${c[1]} ${c[2]}';

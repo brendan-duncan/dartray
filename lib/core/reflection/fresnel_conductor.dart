@@ -21,24 +21,29 @@
 part of core;
 
 class FresnelConductor extends Fresnel {
-  FresnelConductor(RGBColor e, RGBColor kk) :
-    eta = new RGBColor.from(e),
-    k = new RGBColor.from(kk);
+  FresnelConductor(Spectrum e, Spectrum kk) :
+    eta = new Spectrum.from(e),
+    k = new Spectrum.from(kk);
 
-  RGBColor evaluate(double cosi) {
-    RGBColor one = new RGBColor(1.0);
-    RGBColor cosSqr = new RGBColor(cosi * cosi);
+  Spectrum evaluate(double cosi) {
+    cosi = cosi.abs();
 
-    RGBColor tmp = (eta * eta + k * k) * (cosi * cosi);
-    RGBColor Rparl2 = (tmp - (eta * (2.0 * cosi)) + one) /
-                         (tmp + (eta * (2.0 * cosi)) + one);
-    RGBColor tmp_f = eta * eta + k * k;
-    RGBColor Rperp2 = (tmp_f - (eta * (2.0 * cosi)) + cosSqr) /
-                         (tmp_f + (eta * (2.0 * cosi)) + cosSqr);
+    Spectrum cosSqr = new Spectrum(cosi * cosi);
+
+    Spectrum tmp = (eta * eta + k * k) * (cosi * cosi);
+    Spectrum r1 = (tmp - (eta * (2.0 * cosi)) + ONE);
+    Spectrum r2 = (tmp + (eta * (2.0 * cosi)) + ONE);
+    Spectrum Rparl2 = r1 / r2;
+
+    Spectrum tmp_f = eta * eta + k * k;
+    r1 = (tmp_f - (eta * (2.0 * cosi)) + cosSqr);
+    r2 = (tmp_f + (eta * (2.0 * cosi)) + cosSqr);
+    Spectrum Rperp2 = r1 / r2;
 
     return (Rparl2 + Rperp2) / 2.0;
   }
 
-  RGBColor eta;
-  RGBColor k;
+  static final Spectrum ONE = new Spectrum(1.0);
+  Spectrum eta;
+  Spectrum k;
 }

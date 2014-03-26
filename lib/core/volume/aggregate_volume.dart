@@ -48,24 +48,24 @@ class AggregateVolume extends VolumeRegion {
     return (t0[0] < t1[0]);
   }
 
-  RGBColor sigma_a(Point p, Vector w, double time) {
-    RGBColor s = new RGBColor(0.0);
+  Spectrum sigma_a(Point p, Vector w, double time) {
+    Spectrum s = new Spectrum(0.0);
     for (int i = 0; i < regions.length; ++i) {
       s += regions[i].sigma_a(p, w, time);
     }
     return s;
   }
 
-  RGBColor sigma_s(Point p, Vector w, double time) {
-    RGBColor s = new RGBColor(0.0);
+  Spectrum sigma_s(Point p, Vector w, double time) {
+    Spectrum s = new Spectrum(0.0);
     for (int i = 0; i < regions.length; ++i) {
       s += regions[i].sigma_s(p, w, time);
     }
     return s;
   }
 
-  RGBColor Lve(Point p, Vector w, double time) {
-    RGBColor L = new RGBColor(0.0);
+  Spectrum Lve(Point p, Vector w, double time) {
+    Spectrum L = new Spectrum(0.0);
     for (int i = 0; i < regions.length; ++i) {
       L += regions[i].Lve(p, w, time);
     }
@@ -83,16 +83,16 @@ class AggregateVolume extends VolumeRegion {
     return ph / sumWt;
   }
 
-  RGBColor sigma_t(Point p, Vector w, double time) {
-    RGBColor s = new RGBColor(0.0);
+  Spectrum sigma_t(Point p, Vector w, double time) {
+    Spectrum s = new Spectrum(0.0);
     for (int i = 0; i < regions.length; ++i) {
       s += regions[i].sigma_t(p, w, time);
     }
     return s;
   }
 
-  RGBColor tau(Ray ray, [double step = 1.0, double offset = 0.5]) {
-    RGBColor t = new RGBColor(0.0);
+  Spectrum tau(Ray ray, [double step = 1.0, double offset = 0.5]) {
+    Spectrum t = new Spectrum(0.0);
     for (int i = 0; i < regions.length; ++i) {
       t += regions[i].tau(ray, step, offset);
     }

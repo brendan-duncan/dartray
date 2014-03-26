@@ -21,7 +21,7 @@
 part of core;
 
 class SpecularTransmission extends BxDF {
-  SpecularTransmission(RGBColor t, double ei, double et) :
+  SpecularTransmission(Spectrum t, double ei, double et) :
     super(BSDF_TRANSMISSION | BSDF_SPECULAR),
     fresnel = new FresnelDielectric(ei, et) {
     T = t;
@@ -29,12 +29,12 @@ class SpecularTransmission extends BxDF {
     etat = et;
   }
 
-  RGBColor f(Vector wo, Vector wi) {
-    return new RGBColor(0.0);
+  Spectrum f(Vector wo, Vector wi) {
+    return new Spectrum(0.0);
   }
 
-  RGBColor sample_f(Vector wo, Vector wi, double u1, double u2,
-                       List<double> pdf) {
+  Spectrum sample_f(Vector wo, Vector wi, double u1, double u2,
+                    List<double> pdf) {
     // Figure out which [eta] is incident and which is transmitted
     bool entering = Vector.CosTheta(wo) > 0.0;
     double ei = etai;
@@ -52,7 +52,7 @@ class SpecularTransmission extends BxDF {
 
     // Handle total internal reflection for transmission
     if (sint2 >= 1.0) {
-      return new RGBColor(0.0);
+      return new Spectrum(0.0);
     }
 
     double cost = Math.sqrt(Math.max(0.0, 1.0 - sint2));
@@ -64,16 +64,16 @@ class SpecularTransmission extends BxDF {
     wi.y = sintOverSini * -wo.y;
     wi.z = cost;
     pdf[0] = 1.0;
-    RGBColor F = fresnel.evaluate(Vector.CosTheta(wo));
+    Spectrum F = fresnel.evaluate(Vector.CosTheta(wo));
 
-    return ((new RGBColor(1.0) - F) * T).invScale(Vector.AbsCosTheta(wi));
+    return ((new Spectrum(1.0) - F) * T) / Vector.AbsCosTheta(wi);
   }
 
   double pdf(Vector wo, Vector wi) {
     return 0.0;
   }
 
-  RGBColor T;
+  Spectrum T;
   double etai, etat;
   FresnelDielectric fresnel;
 }

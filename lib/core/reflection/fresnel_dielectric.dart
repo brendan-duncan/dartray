@@ -30,7 +30,7 @@ part of core;
 class FresnelDielectric extends Fresnel {
   FresnelDielectric(this.eta_i, this.eta_t);
 
-  RGBColor evaluate(double cosi) {
+  Spectrum evaluate(double cosi) {
     // Compute Fresnel reflectance for dielectric
     cosi = cosi.clamp(-1.0, 1.0);
 
@@ -48,7 +48,7 @@ class FresnelDielectric extends Fresnel {
     double sint = ei / et * Math.sqrt(Math.max(0.0, 1.0 - cosi * cosi));
     if (sint >= 1.0) {
       // Handle total internal reflection
-      return new RGBColor(1.0);
+      return new Spectrum(1.0);
     }
 
     double cost = Math.sqrt(Math.max(0.0, 1.0 - sint * sint));
@@ -60,7 +60,7 @@ class FresnelDielectric extends Fresnel {
     double Rperp = ((ei * cosi) - (et * cost)) /
                          ((ei * cosi) + (et * cost));
 
-    return new RGBColor((Rparl * Rparl + Rperp * Rperp) / 2.0);
+    return new Spectrum((Rparl * Rparl + Rperp * Rperp) / 2.0);
   }
 
   double eta_i;

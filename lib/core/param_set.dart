@@ -114,11 +114,11 @@ class ParamSet {
     eraseSpectrum(name);
     assert(data.length % 3 == 0);
     int nItems = data.length ~/ 3;
-    List<RGBColor> s = new List<RGBColor>(nItems);
+    List<Spectrum> s = new List<Spectrum>(nItems);
     for (int i = 0, di = 0; i < nItems; ++i, di += 3) {
-      s[i] = new RGBColor.rgb(data[di], data[di + 1], data[di + 2]);
+      s[i] = new Spectrum.rgb(data[di], data[di + 1], data[di + 2]);
     }
-    spectra.add(new ParamSetItem<RGBColor>(name, s));
+    spectra.add(new ParamSetItem<Spectrum>(name, s));
   }
 
   void addSpectrumFiles(String name, List<String> filename) {
@@ -286,7 +286,7 @@ class ParamSet {
     return d;
   }
 
-  RGBColor findOneSpectrum(String name, RGBColor d) {
+  Spectrum findOneSpectrum(String name, Spectrum d) {
     name = name.toLowerCase();
     for (int i = 0; i < spectra.length; ++i) {
       if (spectra[i].name == name && spectra[i].data.length == 1) {
@@ -397,7 +397,7 @@ class ParamSet {
     return null;
   }
 
-  List<RGBColor> findSpectrum(String name) {
+  List<Spectrum> findSpectrum(String name) {
     name = name.toLowerCase();
     for (int i = 0; i < spectra.length; ++i) {
       if (spectra[i].name == name) {
@@ -526,15 +526,15 @@ class ParamSet {
     return out;
   }
 
-  List<ParamSetItem<bool> > bools = [];
-  List<ParamSetItem<int> > ints = [];
-  List<ParamSetItem<double> > floats = [];
-  List<ParamSetItem<Point> > points = [];
-  List<ParamSetItem<Vector> > vectors = [];
-  List<ParamSetItem<Normal> > normals = [];
-  List<ParamSetItem<RGBColor> > spectra = [];
-  List<ParamSetItem<String> > strings = [];
-  List<ParamSetItem<String> > textures = [];
+  List<ParamSetItem<bool>> bools = [];
+  List<ParamSetItem<int>> ints = [];
+  List<ParamSetItem<double>> floats = [];
+  List<ParamSetItem<Point>> points = [];
+  List<ParamSetItem<Vector>> vectors = [];
+  List<ParamSetItem<Normal>> normals = [];
+  List<ParamSetItem<Spectrum>> spectra = [];
+  List<ParamSetItem<String>> strings = [];
+  List<ParamSetItem<String>> textures = [];
 }
 
 

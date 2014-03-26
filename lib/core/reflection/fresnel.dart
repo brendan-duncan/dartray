@@ -21,5 +21,5 @@
 part of core;
 
 abstract class Fresnel {
-  RGBColor evaluate(double cosi);
+  Spectrum evaluate(double cosi);
 }

@@ -1,7 +1,7 @@
 
 const String SCENE = """
-SurfaceIntegrator "path" "integer maxdepth" [4]
-Sampler "lowdiscrepancy" "integer pixelsamples" [2]
+SurfaceIntegrator "path" "integer maxdepth" [16]
+Sampler "lowdiscrepancy" "integer pixelsamples" [1024]
 
 LookAt 0 0 -35 0 0 0 0 1 0 
 Camera "perspective" "float fov" [35]
@@ -53,8 +53,8 @@ AttributeEnd
 # Glass Sphere Definition
 ############################################################################
 AttributeBegin
-  Material "shinymetal" "float roughness" [10 ] "color Kr" [0.4 0.4 0 ] "color Ks" [0.6 0.6 0 ]
-  #Material "glass" "float index" [1.5 ] "color Kr" [0.1 0.8 0.8 ] "color Kt" [0.1 0.8 0.8 ] 
+  #Material "shinymetal" "float roughness" [10 ] "color Kr" [0.4 0.4 0 ] "color Ks" [0.6 0.6 0 ]
+  Material "glass" "float index" [1.5 ] "color Kr" [0.1 0.8 0.8 ] "color Kt" [0.1 0.8 0.8 ] 
   Translate -4 -4 0
     Shape "sphere" "float radius" 3  
 AttributeEnd

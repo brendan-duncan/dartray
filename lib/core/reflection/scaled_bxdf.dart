@@ -21,29 +21,29 @@
 part of core;
 
 class ScaledBxDF extends BxDF {
-  ScaledBxDF(BxDF b, RGBColor sc) :
+  ScaledBxDF(BxDF b, Spectrum sc) :
     super(b.type),
     bxdf = b,
-    s = new RGBColor.from(sc);
+    s = new Spectrum.from(sc);
 
-  RGBColor rho(Vector w, int nSamples, List<double> samples) {
+  Spectrum rho(Vector w, int nSamples, List<double> samples) {
     return s * bxdf.rho(w, nSamples, samples);
   }
 
-  RGBColor rho2(int nSamples, List<double> samples1, List<double> samples2) {
+  Spectrum rho2(int nSamples, List<double> samples1, List<double> samples2) {
     return s * bxdf.rho2(nSamples, samples1, samples2);
   }
 
-  RGBColor f(Vector wo, Vector wi) {
+  Spectrum f(Vector wo, Vector wi) {
     return s * bxdf.f(wo, wi);
   }
 
-  RGBColor sample_f(Vector wo, Vector wi, double u1, double u2,
+  Spectrum sample_f(Vector wo, Vector wi, double u1, double u2,
                        List<double> pdf) {
-    RGBColor f = bxdf.sample_f(wo, wi, u1, u2, pdf);
+    Spectrum f = bxdf.sample_f(wo, wi, u1, u2, pdf);
     return s * f;
   }
 
   BxDF bxdf;
-  RGBColor s;
+  Spectrum s;
 }

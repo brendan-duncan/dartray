@@ -43,7 +43,7 @@ class MIPMap {
       List<_ResampleWeight> sWeights = _resampleWeights(xres, sPow2);
       resampledImage = new SpectrumImage(sPow2, tPow2, img.samplesPerPixel);
 
-      RGBColor zero = new RGBColor(0.0);
+      Spectrum zero = new Spectrum(0.0);
 
       // Apply _sWeights_ to zoom in $s$ direction
       for (int t = 0, p = 0; t < yres; ++t) {
@@ -72,7 +72,7 @@ class MIPMap {
 
       for (int s = 0; s < sPow2; ++s) {
         for (int t = 0; t < tPow2; ++t) {
-          workData[t] = img.samplesPerPixel == 3 ? new RGBColor(0.0) : 0.0;
+          workData[t] = img.samplesPerPixel == 3 ? new Spectrum(0.0) : 0.0;
           for (int j = 0; j < 4; ++j) {
             int offset = tWeights[t].firstTexel + j;
             if (wrapMode == TEXTURE_REPEAT) {
@@ -152,7 +152,7 @@ class MIPMap {
       case TEXTURE_BLACK:
         if (s < 0 || s >= l.width ||
             t < 0 || t >= l.height) {
-          return new RGBColor(0.0);
+          return new Spectrum(0.0);
         }
         break;
     }
@@ -160,7 +160,7 @@ class MIPMap {
     return l[t * l.width + s];
   }
 
-  RGBColor lookup(double s, double t, [double width = 0.0]) {
+  Spectrum lookup(double s, double t, [double width = 0.0]) {
     // Compute MIPMap level for trilinear filtering
     double level = levels - 1 + Log2(Math.max(width, 1.0e-8));
 
@@ -180,7 +180,7 @@ class MIPMap {
   lookup2(double s, double t, double ds0, double dt0,
            double ds1, double dt1) {
     if (doTrilinear) {
-      RGBColor val = lookup(s, t,
+      Spectrum val = lookup(s, t,
                      2.0 * Math.max(Math.max(ds0.abs(), dt0.abs()),
                                     Math.max(ds1.abs(), dt1.abs())));
       return val;
@@ -209,7 +209,7 @@ class MIPMap {
     }
 
     if (minorLength == 0.0) {
-      RGBColor val = triangle(0, s, t);
+      Spectrum val = triangle(0, s, t);
       return val;
     }
 
@@ -218,13 +218,13 @@ class MIPMap {
     int ilod = lod.floor();
 
     double d = lod - ilod;
-    RGBColor val = EWA(ilod, s, t, ds0, dt0, ds1, dt1) * (1.0 - d) +
+    Spectrum val = EWA(ilod, s, t, ds0, dt0, ds1, dt1) * (1.0 - d) +
                    EWA(ilod + 1, s, t, ds0, dt0, ds1, dt1) * d;
 
     return val;
   }
 
-  RGBColor EWA(int level, double s, double t, double ds0, double dt0,
+  Spectrum EWA(int level, double s, double t, double ds0, double dt0,
                double ds1, double dt1) {
     if (level >= levels) {
       return texel(levels - 1, 0, 0);
@@ -258,7 +258,7 @@ class MIPMap {
     int t1 = (t + 2.0 * invDet * vSqrt).floor();
 
     // Scan over ellipse bound and compute quadratic equation
-    RGBColor sum = new RGBColor(0.0);
+    Spectrum sum = new Spectrum(0.0);
 
     double sumWts = 0.0;
 
@@ -280,7 +280,7 @@ class MIPMap {
     return sum / sumWts;
   }
 
-  RGBColor triangle(int level, double s, double t) {
+  Spectrum triangle(int level, double s, double t) {
     level = level.clamp(0, levels - 1);
     s = s * pyramid[level].width - 0.5;
     t = t * pyramid[level].height - 0.5;
@@ -295,7 +295,7 @@ class MIPMap {
            texel(level, s0 + 1, t0 + 1) * (ds * dt);
   }
 
-  RGBColor clamp(RGBColor f) => f.clamp(0.0, INFINITY);
+  Spectrum clamp(Spectrum f) => f.clamp(0.0, INFINITY);
 
   List<_ResampleWeight> _resampleWeights(int oldres, int newres) {
     assert(newres >= oldres);

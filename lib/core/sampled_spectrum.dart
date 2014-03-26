@@ -13,17 +13,17 @@ class SampledSpectrum extends Spectrum {
         c[i] = s.c[i];
       }
     } else if (s is RGBColor) {
-      setRGB(s, type);
+      setRGB(s.c[0], s.c[1], s.c[2], type);
     } else if (s is XYZColor) {
       RGBColor rgb = new RGBColor.from(s);
-      setRGB(rgb, type);
+      setRGB(rgb.c[0], rgb.c[1], rgb.c[2], type);
     }
   }
 
   SampledSpectrum.rgb(double r, double g, double b) :
     super.samples(NUM_SAMPLES) {
     RGBColor rgb = new RGBColor.rgb(r, g, b);
-    setRGB(rgb);
+    setRGB(rgb.c[0], rgb.c[1], rgb.c[2]);
   }
 
   SampledSpectrum setSampled(List<double> lambda, List<double> v) {
@@ -100,84 +100,87 @@ class SampledSpectrum extends Spectrum {
     return new SampledSpectrum(0.0);
   }
 
-  void setRGB(RGBColor rgb, [int type = Spectrum.SPECTRUM_REFLECTANCE]) {
-    SampledSpectrum r = new SampledSpectrum();
+  SampledSpectrum setRGB(double r, double g, double b,
+              [int type = Spectrum.SPECTRUM_REFLECTANCE]) {
+    SampledSpectrum res = new SampledSpectrum();
 
     if (type == Spectrum.SPECTRUM_REFLECTANCE) {
       // Convert reflectance spectrum to RGB
-      if (rgb[0] <= rgb[1] && rgb[0] <= rgb[2]) {
-        // Compute reflectance _SampledSpectrum_ with _rgb[0]_ as minimum
-        r += _Spectrum.G.rgbRefl2SpectWhite * rgb[0];
-        if (rgb[1] <= rgb[2]) {
-          r += _Spectrum.G.rgbRefl2SpectCyan * (rgb[1] - rgb[0]);
-          r += _Spectrum.G.rgbRefl2SpectBlue * (rgb[2] - rgb[1]);
+      if (r <= g && r <= b) {
+        // Compute reflectance _SampledSpectrum_ with _r_ as minimum
+        res += _Spectrum.G.rgbRefl2SpectWhite * r;
+        if (g <= b) {
+          res += _Spectrum.G.rgbRefl2SpectCyan * (g - r);
+          res += _Spectrum.G.rgbRefl2SpectBlue * (b - g);
         } else {
-          r += _Spectrum.G. rgbRefl2SpectCyan * (rgb[2] - rgb[0]);
-          r += _Spectrum.G.rgbRefl2SpectGreen * (rgb[1] - rgb[2]);
+          res += _Spectrum.G. rgbRefl2SpectCyan * (b - r);
+          res += _Spectrum.G.rgbRefl2SpectGreen * (g - b);
         }
-      } else if (rgb[1] <= rgb[0] && rgb[1] <= rgb[2]) {
-        // Compute reflectance _SampledSpectrum_ with _rgb[1]_ as minimum
-        r += _Spectrum.G.rgbRefl2SpectWhite * rgb[1];
-        if (rgb[0] <= rgb[2]) {
-          r += _Spectrum.G.rgbRefl2SpectMagenta * (rgb[0] - rgb[1]);
-          r += _Spectrum.G.rgbRefl2SpectBlue * (rgb[2] - rgb[0]);
+      } else if (g <= r && g <= b) {
+        // Compute reflectance _SampledSpectrum_ with _g_ as minimum
+        res += _Spectrum.G.rgbRefl2SpectWhite * g;
+        if (r <= b) {
+          res += _Spectrum.G.rgbRefl2SpectMagenta * (r - g);
+          res += _Spectrum.G.rgbRefl2SpectBlue * (b - r);
         } else {
-          r += _Spectrum.G.rgbRefl2SpectMagenta * (rgb[2] - rgb[1]);
-          r += _Spectrum.G.rgbRefl2SpectRed * (rgb[0] - rgb[2]);
+          res += _Spectrum.G.rgbRefl2SpectMagenta * (b - g);
+          res += _Spectrum.G.rgbRefl2SpectRed * (r - b);
         }
       } else {
-        // Compute reflectance _SampledSpectrum_ with _rgb[2]_ as minimum
-        r += _Spectrum.G.rgbRefl2SpectWhite * rgb[2];
-        if (rgb[0] <= rgb[1]) {
-          r += _Spectrum.G.rgbRefl2SpectYellow * (rgb[0] - rgb[2]);
-          r += _Spectrum.G.rgbRefl2SpectGreen * (rgb[1] - rgb[0]);
+        // Compute reflectance _SampledSpectrum_ with _b_ as minimum
+        res += _Spectrum.G.rgbRefl2SpectWhite * b;
+        if (r <= g) {
+          res += _Spectrum.G.rgbRefl2SpectYellow * (r - b);
+          res += _Spectrum.G.rgbRefl2SpectGreen * (g - r);
         } else {
-          r += _Spectrum.G.rgbRefl2SpectYellow * (rgb[1] - rgb[2]);
-          r += _Spectrum.G.rgbRefl2SpectRed * (rgb[0] - rgb[1]);
+          res += _Spectrum.G.rgbRefl2SpectYellow * (g - b);
+          res += _Spectrum.G.rgbRefl2SpectRed * (r - g);
         }
       }
 
-      r *= 0.94;
+      res *= 0.94;
     } else {
       // Convert illuminant spectrum to RGB
-      if (rgb[0] <= rgb[1] && rgb[0] <= rgb[2]) {
-        // Compute illuminant _SampledSpectrum_ with _rgb[0]_ as minimum
-        r += _Spectrum.G.rgbIllum2SpectWhite * rgb[0];
-        if (rgb[1] <= rgb[2]) {
-          r += _Spectrum.G.rgbIllum2SpectCyan * (rgb[1] - rgb[0]);
-          r += _Spectrum.G.rgbIllum2SpectBlue * (rgb[2] - rgb[1]);
+      if (r <= g && r <= b) {
+        // Compute illuminant _SampledSpectrum_ with _r_ as minimum
+        res += _Spectrum.G.rgbIllum2SpectWhite * r;
+        if (g <= b) {
+          res += _Spectrum.G.rgbIllum2SpectCyan * (g - r);
+          res += _Spectrum.G.rgbIllum2SpectBlue * (b - g);
         } else {
-          r += _Spectrum.G.rgbIllum2SpectCyan * (rgb[2] - rgb[0]);
-          r += _Spectrum.G.rgbIllum2SpectGreen * (rgb[1] - rgb[2]);
+          res += _Spectrum.G.rgbIllum2SpectCyan * (b - r);
+          res += _Spectrum.G.rgbIllum2SpectGreen * (g - b);
         }
-      } else if (rgb[1] <= rgb[0] && rgb[1] <= rgb[2]) {
-        // Compute illuminant _SampledSpectrum_ with _rgb[1]_ as minimum
-        r += _Spectrum.G.rgbIllum2SpectWhite * rgb[1];
-        if (rgb[0] <= rgb[2]) {
-          r += _Spectrum.G.rgbIllum2SpectMagenta * (rgb[0] - rgb[1]);
-          r += _Spectrum.G.rgbIllum2SpectBlue * (rgb[2] - rgb[0]);
+      } else if (g <= r && g <= b) {
+        // Compute illuminant _SampledSpectrum_ with _g_ as minimum
+        res += _Spectrum.G.rgbIllum2SpectWhite * g;
+        if (r <= b) {
+          res += _Spectrum.G.rgbIllum2SpectMagenta * (r - g);
+          res += _Spectrum.G.rgbIllum2SpectBlue * (b - r);
         } else {
-          r += _Spectrum.G.rgbIllum2SpectMagenta * (rgb[2] - rgb[1]);
-          r += _Spectrum.G.rgbIllum2SpectRed * (rgb[0] - rgb[2]);
+          res += _Spectrum.G.rgbIllum2SpectMagenta * (b - g);
+          res += _Spectrum.G.rgbIllum2SpectRed * (r - b);
         }
       } else {
-        // Compute illuminant _SampledSpectrum_ with _rgb[2]_ as minimum
-        r += _Spectrum.G.rgbIllum2SpectWhite * rgb[2];
-        if (rgb[0] <= rgb[1]) {
-          r += _Spectrum.G.rgbIllum2SpectYellow * (rgb[0] - rgb[2]);
-          r += _Spectrum.G.rgbIllum2SpectGreen * (rgb[1] - rgb[0]);
+        // Compute illuminant _SampledSpectrum_ with _b_ as minimum
+        res += _Spectrum.G.rgbIllum2SpectWhite * b;
+        if (r <= g) {
+          res += _Spectrum.G.rgbIllum2SpectYellow * (r - b);
+          res += _Spectrum.G.rgbIllum2SpectGreen * (g - r);
         } else {
-          r += _Spectrum.G.rgbIllum2SpectYellow * (rgb[1] - rgb[2]);
-          r += _Spectrum.G.rgbIllum2SpectRed * (rgb[0] - rgb[1]);
+          res += _Spectrum.G.rgbIllum2SpectYellow * (g - b);
+          res += _Spectrum.G.rgbIllum2SpectRed * (r - g);
         }
       }
 
-      r *= 0.86445;
+      res *= 0.86445;
     }
 
-    c[0] = r.c[0].clamp(0.0, INFINITY);
-    c[1] = r.c[1].clamp(0.0, INFINITY);
-    c[2] = r.c[2].clamp(0.0, INFINITY);
+    c[0] = res.c[0].clamp(0.0, INFINITY);
+    c[1] = res.c[1].clamp(0.0, INFINITY);
+    c[2] = res.c[2].clamp(0.0, INFINITY);
+
+    return this;
   }
 
   XYZColor toXYZ() {

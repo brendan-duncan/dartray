@@ -21,11 +21,11 @@
 part of core;
 
 abstract class VolumeIntegrator extends Integrator {
-  RGBColor Li(Scene scene, Renderer renderer,
+  Spectrum Li(Scene scene, Renderer renderer,
         RayDifferential ray, Sample sample, RNG rng,
-        RGBColor transmittance);
+        Spectrum transmittance);
 
-  RGBColor transmittance(Scene scene,
+  Spectrum transmittance(Scene scene,
         Renderer renderer, RayDifferential ray,
         Sample sample, RNG rng);
 }

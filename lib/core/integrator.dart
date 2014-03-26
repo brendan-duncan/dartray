@@ -36,19 +36,19 @@ abstract class Integrator {
   void requestSamples(Sampler sampler, Sample sample, Scene scene) {
   }
 
-  static RGBColor UniformSampleAllLights(Scene scene, Renderer renderer,
+  static Spectrum UniformSampleAllLights(Scene scene, Renderer renderer,
       Point p, Normal n, Vector wo,
       double rayEpsilon, double time, BSDF bsdf, Sample sample,
       RNG rng, List<LightSampleOffsets> lightSampleOffsets,
       List<BSDFSampleOffsets> bsdfSampleOffsets) {
-    RGBColor L = new RGBColor(0.0);
+    Spectrum L = new Spectrum(0.0);
     for (int i = 0; i < scene.lights.length; ++i) {
       Light light = scene.lights[i];
       int nSamples = lightSampleOffsets != null ?
                      lightSampleOffsets[i].nSamples : 1;
 
       // Estimate direct lighting from _light_ samples
-      RGBColor Ld = new RGBColor(0.0);
+      Spectrum Ld = new Spectrum(0.0);
 
       for (int j = 0; j < nSamples; ++j) {
         // Find light and BSDF sample values for direct lighting estimate
@@ -73,7 +73,7 @@ abstract class Integrator {
     return L;
   }
 
-  static RGBColor UniformSampleOneLight(Scene scene, Renderer renderer,
+  static Spectrum UniformSampleOneLight(Scene scene, Renderer renderer,
       Point p, Normal n, Vector wo,
       double rayEpsilon, double time, BSDF bsdf,
       Sample sample, RNG rng, [int lightNumOffset = -1,
@@ -82,7 +82,7 @@ abstract class Integrator {
     // Randomly choose a single light to sample, _light_
     int nLights = scene.lights.length;
     if (nLights == 0) {
-      return new RGBColor(0.0);
+      return new Spectrum(0.0);
     }
 
     int lightNum;
@@ -109,30 +109,30 @@ abstract class Integrator {
     double s = nLights.toDouble();
     return EstimateDirect(scene, renderer, light, p, n, wo,
                           rayEpsilon, time, bsdf, rng, lightSample,
-                          bsdfSample, BSDF_ALL & ~BSDF_SPECULAR).scale(s);
+                          bsdfSample, BSDF_ALL & ~BSDF_SPECULAR) * s;
   }
 
-  static RGBColor EstimateDirect(Scene scene, Renderer renderer,
+  static Spectrum EstimateDirect(Scene scene, Renderer renderer,
       Light light, Point p,
       Normal n, Vector wo, double rayEpsilon, double time, BSDF bsdf,
       RNG rng, LightSample lightSample, BSDFSample bsdfSample,
       int flags) {
-    RGBColor Ld = new RGBColor(0.0);
+    Spectrum Ld = new Spectrum(0.0);
     // Sample light source with multiple importance sampling
     Vector wi = new Vector();
     List<double> lightPdf = [0.0];
     List<double> bsdfPdf = [0.0];
     VisibilityTester visibility = new VisibilityTester();
-    RGBColor Li = light.sampleL(p, rayEpsilon, lightSample, time,
+    Spectrum Li = light.sampleL(p, rayEpsilon, lightSample, time,
                                    wi, lightPdf, visibility);
 
     if (lightPdf[0] > 0.0 && !Li.isBlack()) {
-      RGBColor f = bsdf.f(wo, wi, flags);
+      Spectrum f = bsdf.f(wo, wi, flags);
       if (!f.isBlack() && visibility.unoccluded(scene)) {
         // Add light's contribution to reflected radiance
         Li *= visibility.transmittance(scene, renderer, null, rng);
         if (light.isDeltaLight()) {
-          Ld += f * Li.scaled(Vector.AbsDot(wi, n) / lightPdf[0]);
+          Ld += f * Li * (Vector.AbsDot(wi, n) / lightPdf[0]);
         } else {
           bsdfPdf[0] = bsdf.pdf(wo, wi, flags);
           double weight = PowerHeuristic(1, lightPdf[0], 1, bsdfPdf[0]);
@@ -144,7 +144,7 @@ abstract class Integrator {
     // Sample BSDF with multiple importance sampling
     if (!light.isDeltaLight()) {
       List<int> sampledType = [0];
-      RGBColor f = bsdf.sample_f(wo, wi, bsdfSample, bsdfPdf, flags,
+      Spectrum f = bsdf.sample_f(wo, wi, bsdfSample, bsdfPdf, flags,
                                     sampledType);
       if (!f.isBlack() && bsdfPdf[0] > 0.0) {
         double weight = 1.0;
@@ -158,7 +158,7 @@ abstract class Integrator {
 
         // Add light contribution from BSDF sampling
         Intersection lightIsect = new Intersection();
-        RGBColor Li = new RGBColor(0.0);
+        Spectrum Li = new Spectrum(0.0);
         RayDifferential ray = new RayDifferential(p, wi, rayEpsilon, INFINITY,
                                                   time);
 
@@ -172,7 +172,7 @@ abstract class Integrator {
 
         if (!Li.isBlack()) {
           Li *= renderer.transmittance(scene, ray, null, rng);
-          Ld += f * Li.scaled(Vector.AbsDot(wi, n) * weight / bsdfPdf[0]);
+          Ld += f * Li * (Vector.AbsDot(wi, n) * weight / bsdfPdf[0]);
         }
       }
     }
@@ -180,7 +180,7 @@ abstract class Integrator {
     return Ld;
   }
 
-  static RGBColor SpecularReflect(RayDifferential ray, BSDF bsdf, RNG rng,
+  static Spectrum SpecularReflect(RayDifferential ray, BSDF bsdf, RNG rng,
       Intersection isect, Renderer renderer, Scene scene,
       Sample sample) {
     Vector wo = -ray.direction;
@@ -188,9 +188,9 @@ abstract class Integrator {
     List<double> pdf = [0.0];
     Point p = bsdf.dgShading.p;
     Normal n = bsdf.dgShading.nn;
-    RGBColor f = bsdf.sample_f(wo, wi, new BSDFSample.random(rng), pdf,
+    Spectrum f = bsdf.sample_f(wo, wi, new BSDFSample.random(rng), pdf,
                                   BSDF_REFLECTION | BSDF_SPECULAR);
-    RGBColor L = new RGBColor(0.0);
+    Spectrum L = new Spectrum(0.0);
 
     if (pdf[0] > 0.0 && !f.isBlack() && Vector.AbsDot(wi, n) != 0.0) {
       // Compute ray differential _rd_ for specular reflection
@@ -217,14 +217,14 @@ abstract class Integrator {
                                                       n * dDNdy)* 2.0;
       }
 
-      RGBColor Li = renderer.Li(scene, rd, sample, rng);
-      L = f * Li.scaled(Vector.AbsDot(wi, n) / pdf[0]);
+      Spectrum Li = renderer.Li(scene, rd, sample, rng);
+      L = f * Li * (Vector.AbsDot(wi, n) / pdf[0]);
     }
 
     return L;
   }
 
-  static RGBColor SpecularTransmit(RayDifferential ray, BSDF bsdf, RNG rng,
+  static Spectrum SpecularTransmit(RayDifferential ray, BSDF bsdf, RNG rng,
       Intersection isect, Renderer renderer, Scene scene,
       Sample sample) {
     Vector wo = -ray.direction;
@@ -232,9 +232,9 @@ abstract class Integrator {
     List<double> pdf = [0.0];
     Point p = bsdf.dgShading.p;
     Normal n = bsdf.dgShading.nn;
-    RGBColor f = bsdf.sample_f(wo, wi, new BSDFSample.random(rng), pdf,
+    Spectrum f = bsdf.sample_f(wo, wi, new BSDFSample.random(rng), pdf,
                                BSDF_TRANSMISSION | BSDF_SPECULAR);
-    RGBColor L = new RGBColor(0.0);
+    Spectrum L = new Spectrum(0.0);
 
     if (pdf[0] > 0.0 && !f.isBlack() && Vector.AbsDot(wi, n) != 0.0) {
       // Compute ray differential _rd_ for specular transmission
@@ -263,8 +263,10 @@ abstract class Integrator {
         double dDNdy = Vector.Dot(dwody, n) + Vector.Dot(wo, dndy);
 
         double mu = eta * Vector.Dot(w, n) - Vector.Dot(wi, n);
-        double dmudx = (eta - (eta * eta * Vector.Dot(w, n)) / Vector.Dot(wi, n)) * dDNdx;
-        double dmudy = (eta - (eta * eta * Vector.Dot(w, n)) / Vector.Dot(wi, n)) * dDNdy;
+        double dmudx = (eta - (eta * eta * Vector.Dot(w, n)) /
+                       Vector.Dot(wi, n)) * dDNdx;
+        double dmudy = (eta - (eta * eta * Vector.Dot(w, n)) /
+                       Vector.Dot(wi, n)) * dDNdy;
 
         rd.rxDirection = wi + dwodx * eta -
                          new Vector.from(dndx * mu + n * dmudx);
@@ -272,9 +274,9 @@ abstract class Integrator {
                          new Vector.from(dndy * mu + n * dmudy);
       }
 
-      RGBColor Li = renderer.Li(scene, rd, sample, rng);
+      Spectrum Li = renderer.Li(scene, rd, sample, rng);
 
-      L = f * Li.scaled(Vector.AbsDot(wi, n) / pdf[0]);
+      L = f * Li * (Vector.AbsDot(wi, n) / pdf[0]);
     }
 
     return L;
@@ -283,7 +285,7 @@ abstract class Integrator {
   static Distribution1D ComputeLightSamplingCDF(Scene scene) {
     int nLights = scene.lights.length;
 
-    List<double> lightPower = new List<double>(nLights);
+    Float32List lightPower = new Float32List(nLights);
 
     for (int i = 0; i < nLights; ++i) {
       lightPower[i] = scene.lights[i].power(scene).y;

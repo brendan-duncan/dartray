@@ -24,7 +24,7 @@ class RegularHalfangleBRDF extends BxDF {
   RegularHalfangleBRDF(this.brdf, this.nThetaH, this.nThetaD, this.nPhiD) :
     super(BSDF_REFLECTION | BSDF_GLOSSY);
 
-  RGBColor f(Vector WO, Vector WI) {
+  Spectrum f(Vector WO, Vector WI) {
     // Compute [wh] and transform $\wi$ to halfangle coordinate system
     Vector wo = new Vector.from(WO);
     Vector wi = new Vector.from(WI);
@@ -36,7 +36,7 @@ class RegularHalfangleBRDF extends BxDF {
     }
 
     if (wh.x == 0.0 && wh.y == 0.0 && wh.z == 0.0) {
-      return new RGBColor(0.0);
+      return new Spectrum(0.0);
     }
 
     wh = Vector.Normalize(wh);
@@ -71,9 +71,9 @@ class RegularHalfangleBRDF extends BxDF {
 
     int index = wdPhiIndex + nPhiD * (wdThetaIndex + whThetaIndex * nThetaD);
 
-    return new RGBColor.rgb(brdf[3 * index],
-                               brdf[3 * index + 1],
-                               brdf[3 * index + 2]);
+    return new Spectrum.rgb(brdf[3 * index],
+                            brdf[3 * index + 1],
+                            brdf[3 * index + 2]);
   }
 
   List<double> brdf;
