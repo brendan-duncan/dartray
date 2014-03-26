@@ -5,3 +5,5 @@ description: Dart port of the PBRT renderer
 dependencies:
   image:
     path: ../image
+dev_dependencies:
+  args: any

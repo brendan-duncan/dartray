@@ -23,13 +23,19 @@ part of film;
 class ImageFilm extends Film {
   List<double> cropWindow;
   Image image;
-  dynamic previewCallback;
+  String filename;
+  PreviewCallback previewCallback;
+  WriteCallback writeCallback;
   int samplesProcessed = 0;
   int previewCount;
-  final Uint8List _gamma;
+  Filter filter;
+  int xPixelStart;
+  int yPixelStart;
+  int xPixelCount;
+  int yPixelCount;
 
-  ImageFilm(int xres, int yres, this.filter, this.cropWindow,
-            [this.image, this.previewCallback]) :
+  ImageFilm(int xres, int yres, this.filter, this.cropWindow, this.filename,
+            [this.image, this.previewCallback, this.writeCallback]) :
     super(xres, yres),
     _gamma = new Uint8List(256) {
     double gamma = 1.0 / 2.2;
@@ -67,9 +73,11 @@ class ImageFilm extends Film {
   }
 
   static ImageFilm Create(ParamSet params, Filter filter,
-                          [Image image, previewCallback]) {
+                          [Image image, PreviewCallback previewCallback,
+                           WriteCallback writeCallback]) {
     int xres = params.findOneInt("xresolution", 640);
     int yres = params.findOneInt("yresolution", 480);
+    String filename = params.findOneString("filename", "");
 
     List<double> crop = params.findFloat('cropWindow');
     if (crop == null) {
@@ -81,7 +89,8 @@ class ImageFilm extends Film {
       yres = image.height;
     }
 
-    return new ImageFilm(xres, yres, filter, crop, image, previewCallback);
+    return new ImageFilm(xres, yres, filter, crop, filename,
+                         image, previewCallback, writeCallback);
   }
 
   void addSample(CameraSample sample, Spectrum L) {
@@ -219,52 +228,48 @@ class ImageFilm extends Film {
   }
 
   void writeImage([double splatScale = 1.0]) {
-    // Convert image to RGB and compute final pixel values
-    /*int nPix = xPixelCount * yPixelCount;
-    int offset = 0;
-    List<double> rgb = [0.0, 0.0, 0.0];
-    List<double> splatRGB = [0.0, 0.0, 0.0];
-    Uint8List pixels = image.getBytes();
-    for (int y = 0, pi = 0, pi3 = 0, oi = 0; y < yPixelCount; ++y) {
-      for (int x = 0; x < xPixelCount; ++x, ++pi, pi3 += 3, oi += 4) {
-        // Convert pixel XYZ color to RGB
-        XYZToRGB(_Lxyz, rgb, pi3);
+    if (writeCallback != null) {
+      // Convert image to RGB and compute final pixel values
+      int nPix = xPixelCount * yPixelCount;
+      Float32List rgb = new Float32List(3 * nPix);
+      List<double> c = [0.0, 0.0, 0.0];
+      List<double> splatRGB = [0.0, 0.0, 0.0];
+      int pi = 0;
+      int pi3 = 0;
+      for (int y = 0; y < yPixelCount; ++y) {
+        for (int x = 0; x < xPixelCount; ++x, ++pi, pi3 += 3) {
+          // Convert pixel XYZ color to RGB
+          Spectrum.XYZToRGB(_Lxyz[pi3], _Lxyz[pi3 + 1], _Lxyz[pi3 + 2], c);
 
-        // Normalize pixel with weight sum
-        double weightSum = _weightSum[pi];
-        if (weightSum != 0.0) {
-          double invWt = 1.0 / weightSum;
-          rgb[0] = max(0.0, rgb[0] * invWt);
-          rgb[1] = max(0.0, rgb[1] * invWt);
-          rgb[2] = max(0.0, rgb[2] * invWt);
+          // Normalize pixel with weight sum
+          double weightSum = _weightSum[pi];
+          if (weightSum != 0.0) {
+            double invWt = 1.0 / weightSum;
+            rgb[pi3] = max(0.0, c[0] * invWt);
+            rgb[pi3 + 1] = max(0.0, c[1] * invWt);
+            rgb[pi3 + 2] = max(0.0, c[2] * invWt);
+          }
+
+          // Add splat value at pixel
+          Spectrum.XYZToRGB(_splatXYZ[pi3], _splatXYZ[pi3 + 1],
+                            _splatXYZ[pi3 + 2], splatRGB);
+
+          rgb[pi3] += splatScale * splatRGB[0];
+          rgb[pi3 + 1] += splatScale * splatRGB[1];
+          rgb[pi3 + 2] += splatScale * splatRGB[2];
         }
-
-        // Add splat value at pixel
-        XYZToRGB(_splatXYZ, splatRGB, pi3);
-        rgb[0] += splatScale * splatRGB[0];
-        rgb[1] += splatScale * splatRGB[1];
-        rgb[2] += splatScale * splatRGB[2];
-
-        pixels[oi] = _gamma[(rgb[0] * 255.0).floor().clamp(0, 255)];
-        pixels[oi + 1] = _gamma[(rgb[1] * 255.0).floor().clamp(0, 255)];
-        pixels[oi + 2] = _gamma[(rgb[2] * 255.0).floor().clamp(0, 255)];
-        pixels[oi + 3] = 255;
       }
-    }*/
+
+      writeCallback(filename, rgb, xPixelCount, yPixelCount,
+                    xResolution, yResolution, xPixelStart, yPixelStart);
+    }
   }
 
-  Filter filter;
-  int xPixelStart;
-  int yPixelStart;
-  int xPixelCount;
-  int yPixelCount;
-
-  // Pixel data
   Float32List _Lxyz;
   Float32List _splatXYZ;
   Float32List _weightSum;
-
   Float32List _filterTable;
+  final Uint8List _gamma;
 
   static const int FILTER_TABLE_SIZE = 16;
 }

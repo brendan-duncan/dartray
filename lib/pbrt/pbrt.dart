@@ -48,8 +48,9 @@ typedef Aggregate AcceleratorCreator(List<Primitive> prims, ParamSet ps);
 typedef Camera CameraCreator(ParamSet params, AnimatedTransform cam2world,
                              Film film);
 
-typedef Film FilmCreator(ParamSet params, Filter filter, [Image image,
-                                                          previewCallback]);
+typedef Film FilmCreator(ParamSet params, Filter filter,
+                         [Image image, PreviewCallback previewCallback,
+                          WriteCallback writeCallback]);
 
 typedef Filter FilterCreator(ParamSet ps);
 

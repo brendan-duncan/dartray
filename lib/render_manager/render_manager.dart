@@ -30,8 +30,6 @@ import '../pbrt/pbrt.dart';
 part 'render_isolate.dart';
 part 'render_task.dart';
 
-typedef PreviewCallback(Image image);
-
 /**
  * Manages the rendering process, either rendering locally or submitting the
  * job to one or more isolates (web workers).
@@ -52,7 +50,7 @@ class RenderManager {
    */
   Future render(String scene, Image image, {String isolate,
               LogCallback log, PreviewCallback display,
-              int numThreads: 1}) {
+              WriteCallback write, int numThreads: 1}) {
     if (log != null) {
       Log = log;
     }
@@ -67,8 +65,8 @@ class RenderManager {
         display(image);
       }
 
-      LogInfo('........rayIntersection: ${Stats.rayIntersection}');
-      LogInfo('........rayIntersectionP: ${Stats.rayIntersectionP}');
+      LogInfo('....rayIntersection: ${Stats.rayIntersection}');
+      LogInfo('....rayIntersectionP: ${Stats.rayIntersectionP}');
       completer.complete();
 
       return completer.future;
