@@ -18,17 +18,8 @@
  *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
  *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
  ****************************************************************************/
-library integrators;
+library volume_regions;
 
-import 'dart:math' as Math;
-import 'dart:typed_data';
 import '../core/core.dart';
 
-part 'ambient_occlusion_integrator.dart';
-part 'diffuse_prt_integrator.dart';
-part 'direct_lighting_integrator.dart';
-part 'emission_integrator.dart';
-part 'glossy_prt_integrator.dart';
-part 'igi_integrator.dart';
-part 'path_integrator.dart';
-part 'whitted_integrator.dart';
+part 'homogenous_volume_density_region.dart';

@@ -49,22 +49,25 @@ class PerspectiveCamera extends ProjectiveCamera {
     double focaldistance = params.findOneFloat('focaldistance', 1.0e30);
     double frame = params.findOneFloat('frameaspectratio',
             film.xResolution / film.yResolution);
-    List<double> screen = [0.0, 0.0, 0.0, 0.0];
-    if (frame > 1.0) {
-      screen[0] = -frame;
-      screen[1] =  frame;
-      screen[2] = -1.0;
-      screen[3] =  1.0;
-    } else {
-      screen[0] = -1.0;
-      screen[1] =  1.0;
-      screen[2] = -1.0 / frame;
-      screen[3] =  1.0 / frame;
-    }
+
+    List<double> screen;
 
     List<double> sw = params.findFloat('screenwindow');
     if (sw != null && sw.length == 4) {
       screen = sw;
+    } else {
+      screen = [0.0, 0.0, 0.0, 0.0];
+      if (frame > 1.0) {
+        screen[0] = -frame;
+        screen[1] =  frame;
+        screen[2] = -1.0;
+        screen[3] =  1.0;
+      } else {
+        screen[0] = -1.0;
+        screen[1] =  1.0;
+        screen[2] = -1.0 / frame;
+        screen[3] =  1.0 / frame;
+      }
     }
 
 

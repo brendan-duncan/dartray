@@ -27,14 +27,15 @@ import '../core/core.dart';
 import '../cameras/cameras.dart';
 import '../film/film.dart';
 import '../filters/filters.dart';
-import '../integrators/integrators.dart';
 import '../lights/lights.dart';
 import '../materials/materials.dart';
 import '../renderers/renderers.dart';
 import '../samplers/samplers.dart';
 import '../shapes/shapes.dart';
+import '../surface_integrators/surface_integrators.dart';
 import '../textures/textures.dart';
-import '../volumes/volumes.dart';
+import '../volume_integrators/volume_integrators.dart';
+import '../volume_regions/volume_regions.dart';
 
 part 'graphics_state.dart';
 part 'pbrt_lexer.dart';
@@ -150,6 +151,7 @@ class Pbrt {
     registerAccelerator('kdtree', KdTreeAccel.Create);
     registerAccelerator('naive', NaiveAccel.Create);
 
+    registerCamera('orthographic', OrthographicCamera.Create);
     registerCamera('perspective', PerspectiveCamera.Create);
 
     registerFilm('image', ImageFilm.Create);
