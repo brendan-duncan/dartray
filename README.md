@@ -9,14 +9,14 @@ of rendering algorithms, lighting and material models.
 DartRay port of the PBRT renderer (www.pbrt.org).
 
 DartRay provides a test-bed for various rendering algorithms. 
-The primary (and perhaps only) objective of DartRay is experimentation, 
+The primary (and perhaps only) objectives of DartRay are experimentation, 
 learning, and most important, fun. While it is perfectly capable of producing 
 incredible images, it has a lot of things going against it to be thought of as 
 anything remotely close to production worthy. 
 
 For one, a production renderer should not be written in an interpreted 
 language, even one as great as Dart. Dart, being a web-centric language, does
-have some limitations that make scalability more difficult. 
+have some limitations that make scalability more difficult.
 
 Dart supports multiple threads using a mechanism called isolates. An isolate
 is more analogous to multi-processing than multi-threading. Each isolate 
