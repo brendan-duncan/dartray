@@ -412,8 +412,12 @@ class Pbrt {
     _renderOptions.outputImage = output;
   }
 
-  void setPreviewCallback(cb) {
+  void setPreviewCallback(PreviewCallback cb) {
     _renderOptions.previewCallback = cb;
+  }
+
+  void setWriteCallback(WriteCallback cb) {
+    _renderOptions.writeCallback = cb;
   }
 
   void sampler(String name, ParamSet params) {
@@ -800,9 +804,11 @@ class Pbrt {
 
     Filter filter = _makeFilter(_renderOptions.filterName,
                                 _renderOptions.filterParams);
+
     Film film = _makeFilm(_renderOptions.filmName, _renderOptions.filmParams,
                           filter, _renderOptions.outputImage,
-                          _renderOptions.previewCallback);
+                          _renderOptions.previewCallback,
+                          _renderOptions.writeCallback);
     if (film == null) {
       LogSevere("Unable to create film.");
     }
@@ -1109,13 +1115,16 @@ class Pbrt {
   }
 
   Film _makeFilm(String name, ParamSet paramSet, Filter filter,
-                [Image outputImage, previewCallback]) {
+                [Image outputImage, PreviewCallback previewCallback,
+                 WriteCallback writeCallback]) {
     if (!_films.containsKey(name)) {
       LogWarning('Film \'${name}\' unknown.');
       return null;
     }
 
-    Film f = _films[name](paramSet, filter, outputImage, previewCallback);
+    Film f = _films[name](paramSet, filter, outputImage, previewCallback,
+                          writeCallback);
+
     paramSet.reportUnused();
 
     return f;

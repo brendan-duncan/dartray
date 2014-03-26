@@ -111,7 +111,7 @@ class RenderIsolate {
     Pbrt pbrt = new Pbrt();
 
     if (doPreview) {
-      pbrt.setPreviewCallback(() {
+      pbrt.setPreviewCallback((Image img) {
         sendPort.send({'cmd': 'preview', 'image': img.getBytes()});
       });
     }

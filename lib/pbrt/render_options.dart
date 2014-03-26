@@ -44,7 +44,8 @@ class RenderOptions {
   String filmName;
   ParamSet filmParams = new ParamSet();
   Image outputImage;
-  dynamic previewCallback;
+  PreviewCallback previewCallback;
+  WriteCallback writeCallback;
   String samplerName;
   ParamSet samplerParams = new ParamSet();
   String acceleratorName;

@@ -59,6 +59,7 @@ class RenderManager {
 
     if (isolate == null) {
       LogInfo('STARTING RENDER');
+      pbrt.setWriteCallback(write);
       pbrt.renderScene(scene, image);
 
       if (display != null) {
