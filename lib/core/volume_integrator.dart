@@ -20,6 +20,9 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * Computes the radiance along a ray as it travels through a volume.
+ */
 abstract class VolumeIntegrator extends Integrator {
   Spectrum Li(Scene scene, Renderer renderer,
         RayDifferential ray, Sample sample, RNG rng,

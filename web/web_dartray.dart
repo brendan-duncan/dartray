@@ -57,7 +57,7 @@ void main() {
   // Use the custom random number generator so we can verify results against
   // C++ pbrt.
   RNG.UseMathRandom = false;
-  //Spectrum.type = Spectrum.SPECTRUM;
+  //Spectrum.type = Spectrum.SAMPLED;
 
   Stopwatch timer = new Stopwatch();
   timer.start();

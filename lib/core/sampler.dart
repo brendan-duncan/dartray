@@ -20,11 +20,12 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * Determines the points on the film plane for tracing rays.
+ */
 abstract class Sampler {
-  Sampler(this.xPixelStart, this.xPixelEnd,
-          this.yPixelStart, this.yPixelEnd,
-          this.samplesPerPixel,
-          this.shutterOpen, this.shutterClose);
+  Sampler(this.xPixelStart, this.xPixelEnd, this.yPixelStart, this.yPixelEnd,
+          this.samplesPerPixel, this.shutterOpen, this.shutterClose);
 
   int getMoreSamples(List<Sample> sample, RNG rng);
 
@@ -70,8 +71,12 @@ abstract class Sampler {
     extents[3] = Lerp(ty1, 0, h).floor();
   }
 
-  int xPixelStart, xPixelEnd, yPixelStart, yPixelEnd;
+  int xPixelStart;
+  int xPixelEnd;
+  int yPixelStart;
+  int yPixelEnd;
   int samplesPerPixel;
-  double shutterOpen, shutterClose;
+  double shutterOpen;
+  double shutterClose;
 }
 

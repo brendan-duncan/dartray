@@ -20,6 +20,10 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * Computes the radiance transmitting in the ray direction from a point
+ * on a surface.
+ */
 abstract class SurfaceIntegrator extends Integrator {
   Spectrum Li(Scene scene, Renderer renderer,
               RayDifferential ray, Intersection isect,

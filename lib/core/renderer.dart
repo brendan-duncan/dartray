@@ -20,6 +20,10 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * Provides an interface for rendering a [Scene] onto a [Film] from the
+ * viewpoint of a [Camera].
+ */
 abstract class Renderer {
   OutputImage render(Scene scene);
 

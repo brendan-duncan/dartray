@@ -20,6 +20,9 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * Base class for cameras that use a projective transformation.
+ */
 abstract class ProjectiveCamera extends Camera {
   Transform cameraToScreen;
   Transform rasterToCamera;
