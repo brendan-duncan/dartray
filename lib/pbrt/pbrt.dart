@@ -49,8 +49,7 @@ typedef Camera CameraCreator(ParamSet params, AnimatedTransform cam2world,
                              Film film);
 
 typedef Film FilmCreator(ParamSet params, Filter filter,
-                         [Image image, PreviewCallback previewCallback,
-                          WriteCallback writeCallback]);
+                         [Image image, PreviewCallback previewCallback]);
 
 typedef Filter FilterCreator(ParamSet ps);
 
@@ -236,17 +235,16 @@ class Pbrt {
     _registerStandardNodes();
   }
 
-  bool renderScene(String scene, [Image output]) {
+  OutputImage renderScene(String scene, [Image output]) {
     if (output != null) {
       setOutputImage(output);
     }
 
     if (!loadScene(scene)) {
-      return false;
+      return null;
     }
 
-    _renderer.render(_scene);
-    return true;
+    return _renderer.render(_scene);
   }
 
   Renderer getRenderer() => _renderer;
@@ -259,12 +257,11 @@ class Pbrt {
     return _renderer != null && _scene != null;
   }
 
-  bool render() {
+  OutputImage render() {
     if (_renderer == null || _scene == null) {
-      return false;
+      return null;
     }
-    _renderer.render(_scene);
-    return true;
+    return _renderer.render(_scene);
   }
 
   static const int _MAX_TRANSFORMS = 2;
@@ -414,10 +411,6 @@ class Pbrt {
 
   void setPreviewCallback(PreviewCallback cb) {
     _renderOptions.previewCallback = cb;
-  }
-
-  void setWriteCallback(WriteCallback cb) {
-    _renderOptions.writeCallback = cb;
   }
 
   void sampler(String name, ParamSet params) {
@@ -807,8 +800,7 @@ class Pbrt {
 
     Film film = _makeFilm(_renderOptions.filmName, _renderOptions.filmParams,
                           filter, _renderOptions.outputImage,
-                          _renderOptions.previewCallback,
-                          _renderOptions.writeCallback);
+                          _renderOptions.previewCallback);
     if (film == null) {
       LogSevere("Unable to create film.");
     }
@@ -1115,15 +1107,13 @@ class Pbrt {
   }
 
   Film _makeFilm(String name, ParamSet paramSet, Filter filter,
-                [Image outputImage, PreviewCallback previewCallback,
-                 WriteCallback writeCallback]) {
+                [Image outputImage, PreviewCallback previewCallback]) {
     if (!_films.containsKey(name)) {
       LogWarning('Film \'${name}\' unknown.');
       return null;
     }
 
-    Film f = _films[name](paramSet, filter, outputImage, previewCallback,
-                          writeCallback);
+    Film f = _films[name](paramSet, filter, outputImage, previewCallback);
 
     paramSet.reportUnused();
 

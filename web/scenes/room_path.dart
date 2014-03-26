@@ -4,7 +4,7 @@ Scale -1 1 1
 LookAt 18 3.5 2    8 -.5 20   0 1 0
 Camera "perspective" "float fov" [50]
 
-Sampler "lowdiscrepancy" "integer pixelsamples" [2]
+Sampler "lowdiscrepancy" "integer pixelsamples" [16]
 #PixelFilter "box"
 
 SurfaceIntegrator "path"
@@ -31,7 +31,7 @@ Shape "trianglemesh" "integer indices" [0 1 2 0 2 3 ]
 AttributeEnd
 
 #ceiling
-Material "matte" "color Kd" [.1 .1 .1]
+Material "matte" "color Kd" [.4 .4 .4]
 Shape "trianglemesh" "integer indices" [0 1 2 0 2 3 ]
     "point P" [ -3 10 -3  23 10 -3   23 10 5   -3 10 5 ]
 Shape "trianglemesh" "integer indices" [0 1 2 0 2 3 ]
@@ -65,47 +65,9 @@ Shape "trianglemesh" "integer indices" [0 1 2 0 2 3 ]
     "point P" [ 0 10 12.4  0 10 12.6 20 10 12.6   20 10 12.4 ]
 
 #floor
-Texture "tmap" "color" "imagemap" "string filename" "textures/buildingblock.exr"
-  "float uscale" 6 "float vscale" 6 
-Texture "tbump-tex" "float" "imagemap" "string filename" "textures/buildingblock.exr"
-  "float uscale" 6 "float vscale" 6 
-Texture "sbump" "float" "scale" "texture tex1" "tbump-tex"
-  "float  tex2" [-.25]
-Material "substrate" "texture Kd" "tmap" 
-   "color Ks" [.5 .5 .5] "float uroughness" [.05]
-  "float vroughness" [.05]
-  "texture bumpmap" "sbump" 
-#Material "plastic" "texture Kd" "tmap" "color Ks" [.3 .3 .3]
-#  "float roughness" [.1] "texture bumpmap" "sbump" 
+Material "matte" "color Kd" [.8 .8 .8]
 Shape "trianglemesh" "integer indices" [0 1 2 0 3 2 ]
     "point P" [ 0 0 0  20 0 0   20 0 20   0 0 20 ]
-
-AttributeBegin
-Material "translucent" "color Kd" [.5 .3 .3]
-Translate 15 0 10
-Scale 1.25 1.25 1.25
-Include "geometry/room-teapot.pbrt"
-AttributeEnd
-
-AttributeBegin
-Material "metal"  "float roughness" [.001]
-    "spectrum eta" "spds/metals/Ag.eta.spd"
-    "spectrum k" "spds/metals/Ag.k.spd"
-Translate 9 0 15
-Rotate 30 0 1 0
-Scale 1.5 1.5 1.5
-Include "geometry/room-teapot.pbrt"
-AttributeEnd
-
-AttributeBegin
-Material "plastic" "color Kd" [.3 .1 .1 ] "color Ks" [.6 .6 .6]
-  "float roughness" [.05]
-Translate 8 0 9
-Rotate 122 0 1 0
-
-Include "geometry/room-teapot.pbrt"
-
-AttributeEnd
 
 WorldEnd
 """;

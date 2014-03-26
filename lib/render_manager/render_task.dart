@@ -39,8 +39,8 @@ class RenderTask {
 
   RenderTask(this.previewCallback, this.taskNum, this.taskCount);
 
-  Future<int> render(String scene, Image image, String isolateUri) {
-    Completer<int> completer = new Completer<int>();
+  Future<OutputImage> render(String scene, Image image, String isolateUri) {
+    Completer<OutputImage> completer = new Completer<OutputImage>();
 
     Sampler.ComputeSubWindow(image.width, image.height, taskNum, taskCount,
                              extents);
@@ -75,9 +75,13 @@ class RenderTask {
             LogInfo('ERROR: ${msg['msg']}');
             completer.completeError(msg['msg']);
             return;
-          } else if (cmd == 'final' && msg.containsKey('image')) {
-            var bytes = msg['image'];
-            if (taskCount > 1) {
+          } else if (cmd == 'final' && msg.containsKey('output')) {
+            Float32List rgb = msg['output'];
+            LogInfo('$taskNum: $extents');
+            OutputImage output = new OutputImage(extents[0], extents[2],
+                                                 extents[1], extents[3],
+                                                 rgb);
+            /*if (taskCount > 1) {
               threadImage.getBytes().setRange(0, bytes.length, bytes);
               copyInto(image, threadImage, dstX: extents[0], dstY: extents[2],
                        srcX: extents[0], srcY: extents[2],
@@ -88,12 +92,9 @@ class RenderTask {
 
             if (previewCallback != null) {
               previewCallback(image);
-            }
+            }*/
 
-            LogInfo('....rayIntersection: ${Stats.rayIntersection}');
-            LogInfo('....rayIntersectionP: ${Stats.rayIntersectionP}');
-
-            completer.complete(taskNum);
+            completer.complete(output);
             return;
           }
         }

@@ -25,7 +25,7 @@ class SamplerRenderer extends Renderer {
                   this.volumeIntegrator,
                   [this.taskNum = 0, this.taskCount = 1]);
 
-  void render(Scene scene) {
+  OutputImage render(Scene scene) {
     // Allow integrators to do preprocessing for the scene
     surfaceIntegrator.preprocess(scene, camera, this);
 
@@ -103,7 +103,7 @@ class SamplerRenderer extends Renderer {
     camera.film.updateDisplay(sampler.xPixelStart, sampler.yPixelStart,
                               sampler.xPixelEnd + 1, sampler.yPixelEnd + 1);
 
-    camera.film.writeImage();
+    return camera.film.writeImage();
   }
 
   Spectrum Li(Scene scene, RayDifferential ray,

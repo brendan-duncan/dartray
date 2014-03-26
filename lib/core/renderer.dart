@@ -21,7 +21,7 @@
 part of core;
 
 abstract class Renderer {
-  void render(Scene scene);
+  OutputImage render(Scene scene);
 
   Spectrum Li(Scene scene, RayDifferential ray, Sample sample,
               RNG rng, [Intersection isect, Spectrum T]);

@@ -1,5 +1,4 @@
-Film "image" "string filename" ["d:\\temp\\cornel.tga"]
-	"integer xresolution" [256] "integer yresolution" [256]
+Film "image" "integer xresolution" [512] "integer yresolution" [512]
   
 SurfaceIntegrator "path" "integer maxdepth" [2]
 Sampler "lowdiscrepancy" "integer pixelsamples" [2]
@@ -11,17 +10,6 @@ WorldBegin
 ############################################################################
 # Light Source Definitions
 ############################################################################
-#AttributeBegin
-#    Material "constant" 
-#    Translate 500 500 200
-#    LightSource "point" "point from" [0 0 0 ] "color I" [100000 100000 100000 ] 
-#AttributeEnd
-
-#AttributeBegin
-#Material "matte" "color Kd" [1 0 0] 
-#AreaLightSource "area" "color L" [80 80 80 ] "integer nsamples" [1000]
-#Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [-2  9.98 -2   -2  9.98  2   2  9.98  2   2 9.98 -2 ] # 4*4
-#AttributeEnd
 
 AttributeBegin
 AreaLightSource "area" "color L" [36 36 36 ] "integer nsamples" [1]
@@ -30,31 +18,17 @@ Rotate 90 1 0 0
 Shape "disk" "float radius" [3]
 AttributeEnd
 
-#AttributeBegin
-#Translate 6 0 -3
-#Material "matte" "color Kd" [0.5 0.5 0.5]
-#Shape "disk" "float radius" [3]
-#AttributeEnd
-
-#AttributeBegin
-#AreaLightSource "area" "color L" [100 100 100 ] "integer nsamples" [1]
-#Translate 275 540 275
-#Rotate 90 1 0 0
-#Shape "disk" "float radius" [50]
-#AttributeEnd
-
 ############################################################################
 # Wall Definitions
 ############################################################################
 AttributeBegin
-Material "shinymetal" "float roughness" [10 ] "color Kr" [0.4 0.4 0 ] "color Ks" [0.6 0.6 0 ]
-#Material "matte" "color Kd" [0.75 0.75 0.75 ] 
+  Material "matte" "color Kd" [0.75 0.75 0.75 ] 
     Shape "trianglemesh"  "integer indices" [0 1 2 0 2 3 ] "point P" [ 10 -10 -10 -10 -10 -10 -10 -10  10  10 -10  10 ] 
     Shape "trianglemesh"  "integer indices" [0 1 2 0 2 3 ] "point P" [ 10  10 -10  10  10  10 -10  10  10 -10  10 -10 ] 
     Shape "trianglemesh"  "integer indices" [0 1 2 0 2 3 ] "point P" [ 10 -10  10 -10 -10  10 -10  10  10  10  10  10 ] 
-#Material "matte" "color Kd" [0.48 0.1125 0.075]
+  Material "matte" "color Kd" [0.48 0.1125 0.075]
     Shape "trianglemesh"  "integer indices" [0 1 2 0 2 3 ] "point P" [-10 -10  10 -10 -10 -10 -10  10 -10 -10  10  10 ] 
-#Material "matte" "color Kd" [0.1125 0.375 0.1125]
+  Material "matte" "color Kd" [0.1125 0.375 0.1125]
     Shape "trianglemesh"  "integer indices" [0 1 2 0 2 3 ] "point P" [ 10 -10 -10  10 -10  10  10  10  10  10  10 -10 ] 
 AttributeEnd
 
@@ -62,25 +36,27 @@ AttributeEnd
 # Short Box Definition
 ############################################################################
 AttributeBegin
-Translate 4 -7 4
-Scale 0.3 0.4 0.3
-Rotate 30 0 1 0
-Material "shinymetal" "float roughness" [10 ] "color Kr" [0.4 0.4 0 ] "color Ks" [0.6 0.6 0 ]
-    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [ 10 -10 -10 -10 -10 -10 -10 -10  10  10 -10  10 ] 
-    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [ 10  10 -10  10  10  10 -10  10  10 -10  10 -10 ] 
-    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [ 10 -10  10 -10 -10  10 -10  10  10  10  10  10 ] 
-    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [-10 -10  10 -10 -10 -10 -10  10 -10 -10  10  10 ] 
-    Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [ 10 -10 -10  10 -10  10  10  10  10  10  10 -10 ] 
-    Shape "trianglemesh"  "integer indices" [0 1 2 0 2 3 ] "point P" [ 10 -10 -10 -10 -10 -10 -10  10 -10  10  10 -10 ] 
+  Translate 4 -7 4
+  Scale 0.3 0.4 0.3
+  Rotate 30 0 1 0
+  #Material "glass" "float index" [1.5 ] "color Kr" [0.1 0.8 0.8 ] "color Kt" [0.1 0.8 0.8 ]
+  Material "shinymetal" "float roughness" [10 ] "color Kr" [0.4 0.4 0 ] "color Ks" [0.6 0.6 0 ]
+  Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [ 10 -10 -10 -10 -10 -10 -10 -10  10  10 -10  10 ] 
+  Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [ 10  10 -10  10  10  10 -10  10  10 -10  10 -10 ] 
+  Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [ 10 -10  10 -10 -10  10 -10  10  10  10  10  10 ] 
+  Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [-10 -10  10 -10 -10 -10 -10  10 -10 -10  10  10 ] 
+  Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [ 10 -10 -10  10 -10  10  10  10  10  10  10 -10 ] 
+  Shape "trianglemesh"  "integer indices" [0 1 2 0 2 3 ] "point P" [ 10 -10 -10 -10 -10 -10 -10  10 -10  10  10 -10 ] 
 AttributeEnd
 
 ############################################################################
 # Glass Sphere Definition
 ############################################################################
-#AttributeBegin
-#Material "glass" "float index" [1.5 ] "color Kr" [0.1 0.8 0.8 ] "color Kt" [0.1 0.8 0.8 ] 
-    #Translate -4 -4 0
-    #Shape "sphere" "float radius" 3  
-#AttributeEnd
+AttributeBegin
+  #Material "shinymetal" "float roughness" [10 ] "color Kr" [0.4 0.4 0 ] "color Ks" [0.6 0.6 0 ]
+  Material "glass" "float index" [1.5 ] "color Kr" [0.1 0.8 0.8 ] "color Kt" [0.1 0.8 0.8 ] 
+  Translate -4 -4 0
+    Shape "sphere" "float radius" 3  
+AttributeEnd
 
 WorldEnd

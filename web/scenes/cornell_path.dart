@@ -1,7 +1,7 @@
 
 const String SCENE = """
-SurfaceIntegrator "path" "integer maxdepth" [16]
-Sampler "lowdiscrepancy" "integer pixelsamples" [32]
+SurfaceIntegrator "path" "integer maxdepth" [2]
+Sampler "lowdiscrepancy" "integer pixelsamples" [2]
 
 LookAt 0 0 -35 0 0 0 0 1 0 
 Camera "perspective" "float fov" [35]

@@ -22,6 +22,7 @@ library render_manager;
 
 import 'dart:async';
 import 'dart:isolate';
+import 'dart:typed_data';
 import 'package:image/image.dart';
 
 import '../core/core.dart';
@@ -48,27 +49,26 @@ class RenderManager {
    *   new RenderIsolate().start(port);
    * }
    */
-  Future render(String scene, Image image, {String isolate,
-              LogCallback log, PreviewCallback display,
-              WriteCallback write, int numThreads: 1}) {
+  Future<OutputImage> render(String scene, {Image image, String isolate,
+              LogCallback log, PreviewCallback preview,
+              int numThreads: 1}) {
     if (log != null) {
       Log = log;
     }
 
-    Completer completer = new Completer();
+    Completer<OutputImage> completer = new Completer<OutputImage>();
 
     if (isolate == null) {
       LogInfo('STARTING RENDER');
-      pbrt.setWriteCallback(write);
-      pbrt.renderScene(scene, image);
+      OutputImage output = pbrt.renderScene(scene, image);
 
-      if (display != null) {
-        display(image);
+      if (preview != null) {
+        preview(image);
       }
 
       LogInfo('....rayIntersection: ${Stats.rayIntersection}');
       LogInfo('....rayIntersectionP: ${Stats.rayIntersectionP}');
-      completer.complete();
+      completer.complete(output);
 
       return completer.future;
     }
@@ -76,7 +76,7 @@ class RenderManager {
     int tasksRemaining = numThreads;
     List<RenderTask> jobs = new List<RenderTask>(numThreads);
     for (int i = 0; i < numThreads; ++i) {
-      jobs[i] = new RenderTask(display, i, numThreads);
+      jobs[i] = new RenderTask(preview, i, numThreads);
       jobs[i].render(scene, image, isolate).then((task) {
         tasksRemaining--;
         if (tasksRemaining == 0) {
@@ -85,7 +85,7 @@ class RenderManager {
       }, onError: (msg) {
         LogError('Error Thread $i: $msg');
         tasksRemaining--;
-        completer.complete();
+        completer.complete(null);
       });
     }
 

@@ -3,14 +3,14 @@
  *                                                                          *
  *  This file is part of DartRay.                                           *
  *                                                                          *
- *  Licensed under the Apache License, Version 2.0 (the "License");         *
+ *  Licensed under the Apache License, Version 2.0 (the 'License');         *
  *  you may not use this file except in compliance with the License.        *
  *  You may obtain a copy of the License at                                 *
  *                                                                          *
  *  http://www.apache.org/licenses/LICENSE-2.0                              *
  *                                                                          *
  *  Unless required by applicable law or agreed to in writing, software     *
- *  distributed under the License is distributed on an "AS IS" BASIS,       *
+ *  distributed under the License is distributed on an 'AS IS' BASIS,       *
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.*
  *  See the License for the specific language governing permissions and     *
  *  limitations under the License.                                          *
@@ -25,7 +25,7 @@ class ImageFilm extends Film {
   Image image;
   String filename;
   PreviewCallback previewCallback;
-  WriteCallback writeCallback;
+  OutputImage output;
   int samplesProcessed = 0;
   int previewCount;
   Filter filter;
@@ -35,7 +35,7 @@ class ImageFilm extends Film {
   int yPixelCount;
 
   ImageFilm(int xres, int yres, this.filter, this.cropWindow, this.filename,
-            [this.image, this.previewCallback, this.writeCallback]) :
+            [this.image, this.previewCallback]) :
     super(xres, yres),
     _gamma = new Uint8List(256) {
     double gamma = 1.0 / 2.2;
@@ -70,14 +70,16 @@ class ImageFilm extends Film {
     if (image == null) {
       image = new Image(xPixelCount, yPixelCount);
     }
+
+    output = new OutputImage(xPixelStart, yPixelStart,
+                             xPixelCount, yPixelCount);
   }
 
   static ImageFilm Create(ParamSet params, Filter filter,
-                          [Image image, PreviewCallback previewCallback,
-                           WriteCallback writeCallback]) {
-    int xres = params.findOneInt("xresolution", 640);
-    int yres = params.findOneInt("yresolution", 480);
-    String filename = params.findOneString("filename", "");
+                          [Image image, PreviewCallback previewCallback]) {
+    int xres = params.findOneInt('xresolution', 640);
+    int yres = params.findOneInt('yresolution', 480);
+    String filename = params.findOneString('filename', '');
 
     List<double> crop = params.findFloat('cropWindow');
     if (crop == null) {
@@ -90,7 +92,7 @@ class ImageFilm extends Film {
     }
 
     return new ImageFilm(xres, yres, filter, crop, filename,
-                         image, previewCallback, writeCallback);
+                         image, previewCallback);
   }
 
   void addSample(CameraSample sample, Spectrum L) {
@@ -177,13 +179,13 @@ class ImageFilm extends Film {
 
     samplesProcessed++;
     if (previewCallback != null && samplesProcessed % previewCount == 0) {
-      previewCallback();
+      previewCallback(image);
     }
   }
 
   void splat(CameraSample sample, Spectrum L) {
     if (L.hasNaNs()) {
-      LogWarning("ImageFilm ignoring splatted spectrum with NaN values");
+      LogWarning('ImageFilm ignoring splatted spectrum with NaN values');
       return;
     }
 
@@ -223,46 +225,41 @@ class ImageFilm extends Film {
   void updateDisplay(int x0, int y0, int x1, int y1,
                      [double splatScale = 1.0]) {
     if (previewCallback != null) {
-      previewCallback();
+      previewCallback(image);
     }
   }
 
-  void writeImage([double splatScale = 1.0]) {
-    if (writeCallback != null) {
-      // Convert image to RGB and compute final pixel values
-      int nPix = xPixelCount * yPixelCount;
-      Float32List rgb = new Float32List(3 * nPix);
-      List<double> c = [0.0, 0.0, 0.0];
-      List<double> splatRGB = [0.0, 0.0, 0.0];
-      int pi = 0;
-      int pi3 = 0;
-      for (int y = 0; y < yPixelCount; ++y) {
-        for (int x = 0; x < xPixelCount; ++x, ++pi, pi3 += 3) {
-          // Convert pixel XYZ color to RGB
-          Spectrum.XYZToRGB(_Lxyz[pi3], _Lxyz[pi3 + 1], _Lxyz[pi3 + 2], c);
+  OutputImage writeImage([double splatScale = 1.0]) {
+    // Convert image to RGB and compute final pixel values
+    List<double> c = [0.0, 0.0, 0.0];
+    List<double> splatRGB = [0.0, 0.0, 0.0];
+    int pi = 0;
+    int pi3 = 0;
+    for (int y = 0; y < yPixelCount; ++y) {
+      for (int x = 0; x < xPixelCount; ++x, ++pi, pi3 += 3) {
+        // Convert pixel XYZ color to RGB
+        Spectrum.XYZToRGB(_Lxyz[pi3], _Lxyz[pi3 + 1], _Lxyz[pi3 + 2], c);
 
-          // Normalize pixel with weight sum
-          double weightSum = _weightSum[pi];
-          if (weightSum != 0.0) {
-            double invWt = 1.0 / weightSum;
-            rgb[pi3] = max(0.0, c[0] * invWt);
-            rgb[pi3 + 1] = max(0.0, c[1] * invWt);
-            rgb[pi3 + 2] = max(0.0, c[2] * invWt);
-          }
-
-          // Add splat value at pixel
-          Spectrum.XYZToRGB(_splatXYZ[pi3], _splatXYZ[pi3 + 1],
-                            _splatXYZ[pi3 + 2], splatRGB);
-
-          rgb[pi3] += splatScale * splatRGB[0];
-          rgb[pi3 + 1] += splatScale * splatRGB[1];
-          rgb[pi3 + 2] += splatScale * splatRGB[2];
+        // Normalize pixel with weight sum
+        double weightSum = _weightSum[pi];
+        if (weightSum != 0.0) {
+          double invWt = 1.0 / weightSum;
+          output.rgb[pi3] = max(0.0, c[0] * invWt);
+          output.rgb[pi3 + 1] = max(0.0, c[1] * invWt);
+          output.rgb[pi3 + 2] = max(0.0, c[2] * invWt);
         }
-      }
 
-      writeCallback(filename, rgb, xPixelCount, yPixelCount,
-                    xResolution, yResolution, xPixelStart, yPixelStart);
+        // Add splat value at pixel
+        Spectrum.XYZToRGB(_splatXYZ[pi3], _splatXYZ[pi3 + 1],
+                          _splatXYZ[pi3 + 2], splatRGB);
+
+        output.rgb[pi3] += splatScale * splatRGB[0];
+        output.rgb[pi3 + 1] += splatScale * splatRGB[1];
+        output.rgb[pi3 + 2] += splatScale * splatRGB[2];
+      }
     }
+
+    return output;
   }
 
   Float32List _Lxyz;

@@ -23,4 +23,4 @@ library renderers;
 import 'dart:math' as Math;
 import '../core/core.dart';
 
-part 'sample_renderer.dart';
+part 'sampler_renderer.dart';

@@ -1,7 +1,7 @@
 library test2;
 
 const String SCENE = """
-SurfaceIntegrator "path"
+#SurfaceIntegrator "path"
 #Sampler "lowdiscrepancy" "integer pixelsamples" [2]
 
 LookAt 4 4 10   0 2 0  0 1 0

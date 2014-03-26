@@ -88,6 +88,7 @@ part 'mipmap.dart';
 part 'montecarlo.dart';
 part 'normal.dart';
 part 'octree.dart';
+part 'output_image.dart';
 part 'param_set.dart';
 part 'point.dart';
 part 'projective_camera.dart';

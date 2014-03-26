@@ -116,9 +116,10 @@ class RenderIsolate {
       });
     }
 
+    OutputImage output;
     try {
       pbrt.setTask(taskNum, taskCount);
-      pbrt.renderScene(scene, img);
+      output = pbrt.renderScene(scene, img);
     } catch (e) {
       sendPort.send({'cmd': 'error', 'msg': e.toString()});
       return false;
@@ -126,7 +127,10 @@ class RenderIsolate {
 
     double time = timer.elapsedMilliseconds / 1000.0;
     _log(LOG_INFO, 'FINISHED: ${time} seconds');
-    sendPort.send({'cmd': 'final', 'image': img.getBytes()});
+    LogInfo('[$taskNum]....rayIntersection: ${Stats.rayIntersection}');
+    LogInfo('[$taskNum]....rayIntersectionP: ${Stats.rayIntersectionP}');
+
+    sendPort.send({'cmd': 'final', 'output': output.rgb});
 
     return true;
   }

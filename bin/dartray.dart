@@ -15,14 +15,13 @@ void main(List<String> argv) {
 
   Stopwatch timer = new Stopwatch();
   timer.start();
-  new RenderManager().render(scene, null, write: writeImage).then((e) {
+  new RenderManager().render(scene).then((output) {
     timer.stop();
     LogInfo('RENDER FINISHED: ${timer.elapsedMilliseconds / 1000.0} seconds');
+    if (output != null) {
+      Image image = output.toImage();
+      List<int> png = encodePng(image);
+      new File('output.png').writeAsBytesSync(png);
+    }
   });
-}
-
-void writeImage(String name, List<double> pixels, int xRes,
-                int yRes, int totalXRes, int totalYRes,
-                int xOffset, int yOffset) {
-  print('WRITE $name');
 }
