@@ -187,7 +187,7 @@ class RGBColor extends Spectrum {
   }
 
   static RGBColor Lerp(double t, RGBColor s1, RGBColor s2) {
-    return s1.scale(1.0 - t) + s2.scale(t);
+    return (s1 * (1.0 - t)) + (s2 * t);
   }
 
   static List<RGBColor> AllocateList(int length) {

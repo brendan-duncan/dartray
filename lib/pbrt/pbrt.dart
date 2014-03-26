@@ -963,6 +963,7 @@ class Pbrt {
   Texture _makeFloatTexture(String name, Transform tex2world, TextureParams tp) {
     if (!_floatTextures.containsKey(name)) {
       LogWarning('Texture \'${name}\' unknown.');
+      return ConstantTexture.CreateFloat(tex2world, tp);
     }
 
     Texture t = _floatTextures[name](tex2world, tp);
@@ -975,6 +976,7 @@ class Pbrt {
                               TextureParams tp) {
     if (!_spectrumTextures.containsKey(name)) {
       LogWarning('Texture \'${name}\' unknown.');
+      return ConstantTexture.CreateSpectrum(tex2world, tp);
     }
 
     Texture t = _spectrumTextures[name](tex2world, tp);
@@ -986,6 +988,7 @@ class Pbrt {
   Light _makeLight(String name, Transform light2world, ParamSet paramSet) {
     if (!_lights.containsKey(name)) {
       LogWarning('Light \'${name}\' unknown.');
+      return null;
     }
 
     Light l = _lights[name](light2world, paramSet);
@@ -998,6 +1001,7 @@ class Pbrt {
                           Shape shape) {
     if (!_areaLights.containsKey(name)) {
       LogWarning('Area Light \'${name}\' unknown.');
+      return null;
     }
 
     Light l = _areaLights[name](light2world, paramSet, shape);
@@ -1010,6 +1014,7 @@ class Pbrt {
                                 ParamSet paramSet) {
     if (!_volumeRegions.containsKey(name)) {
       LogWarning('Volume Region \'${name}\' unknown.');
+      return null;
     }
 
     VolumeRegion v = _volumeRegions[name](volume2world, paramSet);
@@ -1021,6 +1026,7 @@ class Pbrt {
   SurfaceIntegrator _makeSurfaceIntegrator(String name, ParamSet paramSet) {
     if (!_surfaceIntegrators.containsKey(name)) {
       LogWarning('Surface Integrator \'${name}\' unknown.');
+      return null;
     }
 
     SurfaceIntegrator si = _surfaceIntegrators[name](paramSet);
@@ -1032,6 +1038,7 @@ class Pbrt {
   VolumeIntegrator _makeVolumeIntegrator(String name, ParamSet paramSet) {
     if (!_volumeIntegrators.containsKey(name)) {
       LogWarning('Volume Integrator \'${name}\' unknown.');
+      return null;
     }
 
     VolumeIntegrator vi = _volumeIntegrators[name](paramSet);
@@ -1044,6 +1051,7 @@ class Pbrt {
                             ParamSet paramSet) {
     if (!_accelerators.containsKey(name)) {
       LogWarning('Accelerator \'${name}\' unknown.');
+      return null;
     }
 
     Primitive a = _accelerators[name](prims, paramSet);
@@ -1057,6 +1065,7 @@ class Pbrt {
           double transformEnd, Film film) {
     if (!_cameras.containsKey(name)) {
       LogWarning('Camera \'${name}\' unknown.');
+      return null;
     }
 
     Transform cam2world0 = new Transform.from(cam2worldSet[0]);
@@ -1075,6 +1084,7 @@ class Pbrt {
           ParamSet paramSet, Film film, Camera camera) {
     if (!_samplers.containsKey(name)) {
       LogWarning('Sampler \'${name}\' unknown.');
+      return null;
     }
 
     Sampler s = _samplers[name](paramSet, film, camera);
@@ -1086,6 +1096,7 @@ class Pbrt {
   Filter _makeFilter(String name, ParamSet paramSet) {
     if (!_filters.containsKey(name)) {
       LogWarning('Filter \'${name}\' unknown.');
+      return null;
     }
 
     Filter f = _filters[name](paramSet);
@@ -1098,6 +1109,7 @@ class Pbrt {
                 [Image outputImage, previewCallback]) {
     if (!_films.containsKey(name)) {
       LogWarning('Film \'${name}\' unknown.');
+      return null;
     }
 
     Film f = _films[name](paramSet, filter, outputImage, previewCallback);

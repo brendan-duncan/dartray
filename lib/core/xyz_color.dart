@@ -71,6 +71,7 @@ class XYZColor extends Spectrum {
   XYZColor setRGB(double r, double g, double b,
                   [int type = Spectrum.SPECTRUM_REFLECTANCE]) {
     Spectrum.RGBToXYZ(r, g, b, c);
+    return this;
   }
 
   XYZColor operator+(XYZColor s) =>

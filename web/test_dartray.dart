@@ -35,8 +35,8 @@ import 'package:image/image.dart';
 //import 'scenes/08_whitted.dart';
 //import 'scenes/09_quadrics.dart';
 
-//import 'scenes/bunny.dart';
-import 'scenes/cornell_path.dart';
+import 'scenes/bunny.dart';
+//import 'scenes/cornell_path.dart';
 //import 'scenes/test1.dart';
 //import 'scenes/test2.dart';
 //import 'scenes/teapot.dart';
@@ -64,7 +64,7 @@ void main() {
   Stopwatch timer = new Stopwatch();
   timer.start();
   new RenderManager().render(SCENE, img,
-      isolate: 'render_isolate.dart', numThreads: 1,
+      //isolate: 'render_isolate.dart', numThreads: 1,
       log: (int type, String msg) {
         print(msg);
         var div = new Html.Element.html('<div>$msg</div>');

@@ -20,7 +20,6 @@
  ****************************************************************************/
 library core;
 
-import 'dart:async';
 import 'dart:math' as Math;
 import 'dart:typed_data';
 import 'package:image/image.dart' as Img;
