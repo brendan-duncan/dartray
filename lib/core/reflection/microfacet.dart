@@ -22,7 +22,7 @@ part of core;
 
 class Microfacet extends BxDF {
   Microfacet(this.R, this.fresnel, this.distribution) :
-    super(0);
+    super(BSDF_REFLECTION | BSDF_GLOSSY);
 
   Spectrum f(Vector wo, Vector wi) {
     double cosThetaO = Vector.AbsCosTheta(wo);
