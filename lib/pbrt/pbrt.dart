@@ -151,6 +151,7 @@ class Pbrt {
     registerAccelerator('kdtree', KdTreeAccel.Create);
     registerAccelerator('naive', NaiveAccel.Create);
 
+    registerCamera('environment', EnvironmentCamera.Create);
     registerCamera('orthographic', OrthographicCamera.Create);
     registerCamera('perspective', PerspectiveCamera.Create);
 

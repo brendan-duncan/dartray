@@ -51,7 +51,6 @@ class PerspectiveCamera extends ProjectiveCamera {
             film.xResolution / film.yResolution);
 
     List<double> screen;
-
     List<double> sw = params.findFloat('screenwindow');
     if (sw != null && sw.length == 4) {
       screen = sw;
@@ -69,7 +68,6 @@ class PerspectiveCamera extends ProjectiveCamera {
         screen[3] =  1.0 / frame;
       }
     }
-
 
     double fov = params.findOneFloat('fov', 60.0);
     double halffov = params.findOneFloat('halffov', -1.0);

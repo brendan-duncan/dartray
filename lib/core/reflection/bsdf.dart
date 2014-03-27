@@ -37,9 +37,9 @@ const int BSDF_ALL = BSDF_ALL_REFLECTION | BSDF_ALL_TRANSMISSION;
  * The BSDF encompasses surfaces which can reflect and/or transmit light.
  * The reflective surface properties are described using a set of Bidirectional
  * Reflectance Distribution Functions (BRDF's).
- * The transmittive surface properties are described using a set of Bidirectional
- * Transmission Distribution Functions (BTDF's).
- * The common interface of these functions is defined in {BxDF}.
+ * The transmittive surface properties are described using a set of
+ * Bidirectional Transmission Distribution Functions (BTDF's).
+ * The common interface of these functions is defined in [BxDF].
  */
 class BSDF {
   DifferentialGeometry dgShading;
@@ -177,9 +177,11 @@ class BSDF {
     Vector wi = worldToLocal(wiW);
     Vector wo = worldToLocal(woW);
 
-    if (Vector.Dot(wiW, ng) * Vector.Dot(woW, ng) > 0) { // ignore BTDFs
+    if (Vector.Dot(wiW, ng) * Vector.Dot(woW, ng) > 0) {
+      // ignore BTDFs
       flags = flags & ~BSDF_TRANSMISSION;
-    } else { // ignore BRDFs
+    } else {
+      // ignore BRDFs
       flags = flags & ~BSDF_REFLECTION;
     }
 

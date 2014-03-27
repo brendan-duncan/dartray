@@ -19,7 +19,9 @@
  ****************************************************************************/
 library cameras;
 
+import 'dart:math' as Math;
 import '../core/core.dart';
 
+part 'environment_camera.dart';
 part 'orthographic_camera.dart';
 part 'perspective_camera.dart';
