@@ -36,8 +36,7 @@ uniform GPGPU acceleration impossible for both environments.
 There are of course many other limitions. But on the positive side, Dart is
 a great environment for experimentation and learning about rendering techniques.
 It provides a reasonably fast and flexible, cross-platform environment for
-experimentation and learning. And, most importantly, it's fun. These are the 
-goals of DartRay.
+experimentation and learning. And, most importantly, it's fun!
 
 ##License
 Copyright (C) 2014 Brendan Duncan
