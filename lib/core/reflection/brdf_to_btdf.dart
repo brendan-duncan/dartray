@@ -20,6 +20,9 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * Translates a BRDF (reflection function) as a BTDF (transmission function).
+ */
 class BRDFToBTDF extends BxDF {
   BRDFToBTDF(BxDF b) :
     super(b.type ^ (BSDF_REFLECTION | BSDF_TRANSMISSION)),

@@ -20,6 +20,12 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * Bidirectional surface scattering reflectance distribution function describes
+ * the relation between outgoing radiance and the incident flux, including the
+ * phenomena like subsurface scattering (SSS). The BSSRDF describes how light
+ * is transported between any two rays that hit a surface.
+ */
 class BSSRDF {
   final double eta;
   final Spectrum sigma_a;

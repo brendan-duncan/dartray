@@ -21,7 +21,9 @@
 part of core;
 
 /**
- * Defines the basic interface of BRDF and {BTDF} classes.
+ * Abstract base class for defining both BRDF reflectance functions and
+ * BTDF transmission functions. The type flags are used to identify whether
+ * the BxDF is a BRDF or a BTDF.
  */
 abstract class BxDF {
   BxDF(this.type);

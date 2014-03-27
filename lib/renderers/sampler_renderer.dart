@@ -25,16 +25,17 @@ class SamplerRenderer extends Renderer {
                   this.volumeIntegrator,
                   [this.taskNum = 0, this.taskCount = 1]);
 
+  /**
+   * Render the [scene] from the viewpoint of the [camera].
+   */
   OutputImage render(Scene scene) {
     // Allow integrators to do preprocessing for the scene
     surfaceIntegrator.preprocess(scene, camera, this);
-
-    if (volumeIntegrator != null) {
-      volumeIntegrator.preprocess(scene, camera, this);
-    }
+    volumeIntegrator.preprocess(scene, camera, this);
 
     // Allocate and initialize sample
     Sampler mainSampler = this.sampler;
+
     Sample sample = new Sample(mainSampler, surfaceIntegrator,
                                volumeIntegrator, scene);
 
