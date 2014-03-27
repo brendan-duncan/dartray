@@ -19,7 +19,7 @@ language, even one as great as Dart. Dart, being a web-centric language, does
 have some limitations that make scalability more difficult.
 
 Dart supports multiple threads using a mechanism called isolates. An isolate
-is more analogous to multi-processing than multi-threading. Each isolate 
+is more similar to multi-processing than multi-threading. Each isolate 
 has its own memory space, and cannot share any memory with any other
 isolate. Communication between isolates is done through messaging, where the
 data packet of the messages is copied as it's transfered to the other isolate.
