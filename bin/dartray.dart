@@ -23,7 +23,7 @@ void main(List<String> argv) {
   timer.start();
   new RenderManager().render(scene).then((output) {
     timer.stop();
-    LogInfo('RENDER FINISHED: ${timer.elapsedMilliseconds / 1000.0} seconds');
+    LogInfo('RENDER FINISHED: ${timer.elapsed}');
     if (output != null) {
       Image image = output.toImage();
       List<int> png = encodeNamedImage(image, out);

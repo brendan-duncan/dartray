@@ -125,8 +125,7 @@ class RenderIsolate {
       return false;
     }
 
-    double time = timer.elapsedMilliseconds / 1000.0;
-    _log(LOG_INFO, 'FINISHED: ${time} seconds');
+    _log(LOG_INFO, 'FINISHED: ${timer.elapsed}');
     LogInfo('[$taskNum]....rayIntersection: ${Stats.rayIntersection}');
     LogInfo('[$taskNum]....rayIntersectionP: ${Stats.rayIntersectionP}');
 

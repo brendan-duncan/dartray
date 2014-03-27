@@ -35,9 +35,9 @@ import 'package:image/image.dart';
 
 //import 'scenes/bunny.dart';
 //import 'scenes/cornell_path.dart';
-//import 'scenes/area_light.dart';
+import 'scenes/area_light.dart';
 //import 'scenes/spheres.dart';
-import 'scenes/test.dart';
+//import 'scenes/test.dart';
 //import 'scenes/teapot.dart';
 //import 'scenes/room_path.dart';
 
@@ -63,7 +63,7 @@ void main() {
   Stopwatch timer = new Stopwatch();
   timer.start();
   new RenderManager().render(SCENE, image: img,
-      //isolate: 'render_isolate.dart', numThreads: 2,
+      isolate: 'render_isolate.dart', numThreads: 2,
       log: (int type, String msg) {
         print(msg);
         var div = new Html.Element.html('<div>$msg</div>');
@@ -75,7 +75,7 @@ void main() {
         c.context2D.putImageData(imageData, 0, 0);
       }).then((OutputImage output) {
         timer.stop();
-        LogInfo('RENDER FINISHED: ${timer.elapsedMilliseconds / 1000.0} seconds');
+        LogInfo('RENDER FINISHED: ${timer.elapsed}');
         var bytes = img.getBytes();
         imageData.data.setRange(0, bytes.length, bytes);
         c.context2D.putImageData(imageData, 0, 0);

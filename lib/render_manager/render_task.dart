@@ -77,7 +77,6 @@ class RenderTask {
             return;
           } else if (cmd == 'final' && msg.containsKey('output')) {
             Float32List rgb = msg['output'];
-            LogInfo('$taskNum: $extents');
             OutputImage output = new OutputImage(extents[0], extents[2],
                                                  extents[1], extents[3],
                                                  rgb);
