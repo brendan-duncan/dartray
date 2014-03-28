@@ -31,15 +31,12 @@ const int BSDF_ALL_TRANSMISSION = BSDF_TRANSMISSION | BSDF_ALL_TYPES;
 const int BSDF_ALL = BSDF_ALL_REFLECTION | BSDF_ALL_TRANSMISSION;
 
 /**
- * The Bidirectional Scattering Distribution Function (BSDF) describes the
- * material properties of a point on a surface.
+ * A Bidirectional Scattering Distribution Function ([BSDF]) describes the
+ * way light is scattered by a surface.
  *
- * The BSDF encompasses surfaces which can reflect and/or transmit light.
- * The reflective surface properties are described using a set of Bidirectional
- * Reflectance Distribution Functions (BRDF's).
- * The transmittive surface properties are described using a set of
- * Bidirectional Transmission Distribution Functions (BTDF's).
- * The common interface of these functions is defined in [BxDF].
+ * It is defined by a set of [BxDF] functions, including
+ * Bidirectional Reflectance Distribution Functions [BRDF], and
+ * Bidirectional Transmission Distribution Functions [BTDF].
  */
 class BSDF {
   DifferentialGeometry dgShading;
@@ -54,8 +51,8 @@ class BSDF {
   }
 
   Spectrum sample_f(Vector woW, Vector wiW, BSDFSample bsdfSample,
-                      List<double> pdf, [int flags = BSDF_ALL,
-                      List<int> sampledType]) {
+                    List<double> pdf, [int flags = BSDF_ALL,
+                    List<int> sampledType]) {
     // Choose which _BxDF_ to sample
     int matchingComps = numComponents(flags);
     if (matchingComps == 0) {

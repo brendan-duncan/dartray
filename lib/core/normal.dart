@@ -47,6 +47,9 @@ class Normal extends Vector {
   Normal operator-(Vector p) =>
       new Normal(x - p.x, y - p.y, z - p.z);
 
+  Normal operator-() =>
+        new Normal(-x, -y, -z);
+
   static Normal Normalize(Vector n) {
     return new Normal.from(n).normalize();
   }

@@ -20,17 +20,18 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * The base class for geometric shapes.
+ */
 abstract class Shape {
   final Transform objectToWorld;
   final Transform worldToObject;
   bool reverseOrientation;
   bool transformSwapsHandedness = false;
-  int shapeId;
-  static int nextShapeId = 1;
+  final int shapeId;
 
-  Shape(this.objectToWorld, this.worldToObject, this.reverseOrientation) {
-    shapeId = nextShapeId++;
-  }
+  Shape(this.objectToWorld, this.worldToObject, this.reverseOrientation) :
+    shapeId = _nextShapeId++;
 
   BBox objectBound();
 
@@ -43,7 +44,7 @@ abstract class Shape {
   }
 
   void refine(List<Shape> refined) {
-    throw new Exception('Unimplemented Shape.refine() method called');
+    LogSevere('Unimplemented Shape.refine() method called');
   }
 
   /**
@@ -54,7 +55,8 @@ abstract class Shape {
    */
   bool intersect(Ray ray, List<double> tHit, List<double> rayEpsilon,
                  DifferentialGeometry dg) {
-    throw new Exception('Unimplemented Shape.intersect() method called');
+    LogSevere('Unimplemented Shape.intersect() method called');
+    return false;
   }
 
   /**
@@ -64,7 +66,8 @@ abstract class Shape {
    * [intersect].
    */
   bool intersectP(Ray ray) {
-    throw new Exception('Unimplemented Shape.intersectP() method called');
+    LogSevere('Unimplemented Shape.intersectP() method called');
+    return false;
   }
 
   void getShadingGeometry(Transform obj2world,
@@ -77,11 +80,13 @@ abstract class Shape {
    * Surface area of the geometry.
    */
   double area() {
-    throw new Exception('Unimplemented Shape.area() method called');
+    LogSevere('Unimplemented Shape.area() method called');
+    return 0.0;
   }
 
   Point sample(double u1, double u2, Normal Ns) {
-    throw new Exception('Unimplemented Shape::sample() method called');
+    LogSevere('Unimplemented Shape::sample() method called');
+    return new Point();
   }
 
   double pdf(Point Pshape) {
@@ -114,4 +119,6 @@ abstract class Shape {
 
     return pdf;
   }
+
+  static int _nextShapeId = 1;
 }

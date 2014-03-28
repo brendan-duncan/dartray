@@ -321,7 +321,7 @@ double RadicalInverse(int n, int base) {
     // Compute next digit of radical inverse
     int d_i = (n % base);
     val += d_i * invBi;
-    n *= invBase;
+    n = (n * invBase).toInt();
     invBi *= invBase;
   }
   return val;

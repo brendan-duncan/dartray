@@ -20,6 +20,9 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * A primitive with an animatable world-space transformation.
+ */
 class TransformedPrimitive extends Primitive {
   TransformedPrimitive(this.primitive, AnimatedTransform w2p) :
       worldToPrimitive = new AnimatedTransform.from(w2p);

@@ -23,11 +23,13 @@ library surface_integrators;
 import 'dart:math' as Math;
 import 'dart:typed_data';
 import '../core/core.dart';
+import '../samplers/samplers.dart';
 
 part 'ambient_occlusion_integrator.dart';
 part 'diffuse_prt_integrator.dart';
 part 'direct_lighting_integrator.dart';
 part 'glossy_prt_integrator.dart';
 part 'igi_integrator.dart';
+part 'irradiance_cache_integrator.dart';
 part 'path_integrator.dart';
 part 'whitted_integrator.dart';

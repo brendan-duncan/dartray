@@ -168,6 +168,7 @@ class Pbrt {
     registerSurfaceIntegrator('directlighting', DirectLightingIntegrator.Create);
     registerSurfaceIntegrator('glossyprt', GlossyPRTIntegrator.Create);
     registerSurfaceIntegrator('igi', IGIIntegrator.Create);
+    registerSurfaceIntegrator('irradiancecache', IrradianceCacheIntegrator.Create);
     registerSurfaceIntegrator('path', PathIntegrator.Create);
     registerSurfaceIntegrator('whitted', WhittedIntegrator.Create);
 

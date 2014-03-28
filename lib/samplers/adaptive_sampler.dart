@@ -141,9 +141,11 @@ class AdaptiveSampler extends Sampler {
       }
       return true;
     } else if (needsSupersampling(samples, rays, Ls, isects, count)) {
+      Stats.SUPERSAMPLE_PIXEL_YES(xPos, yPos);
       supersamplePixel = true;
       return false;
     } else {
+      Stats.SUPERSAMPLE_PIXEL_NO(xPos, yPos);
       // Advance to next pixel for sampling for _AdaptiveSampler_
       if (++xPos == xPixelEnd) {
         xPos = xPixelStart;

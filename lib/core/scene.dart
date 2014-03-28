@@ -42,9 +42,9 @@ class Scene {
    * point along the ray.
    */
   bool intersect(Ray ray, Intersection isect) {
-    Stats.StartedRayIntersection(ray);
+    Stats.STARTED_RAY_INTERSECTION(ray);
     bool hit = aggregate.intersect(ray, isect);
-    Stats.FinishedRayIntersection(ray);
+    Stats.FINISHED_RAY_INTERSECTION(ray, isect, hit);
     return hit;
   }
 
@@ -54,9 +54,9 @@ class Scene {
    * the intersection, and so is more efficient than [intersect].
    */
   bool intersectP(Ray ray) {
-    Stats.StartedRayIntersectionP(ray);
+    Stats.STARTED_RAY_INTERSECTIONP(ray);
     bool hit = aggregate.intersectP(ray);
-    Stats.FinishedRayIntersectionP(ray);
+    Stats.FINISHED_RAY_INTERSECTIONP(ray, hit);
     return hit;
   }
 }

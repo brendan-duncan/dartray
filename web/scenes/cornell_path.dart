@@ -1,6 +1,7 @@
 
 const String SCENE = """
-SurfaceIntegrator "path" "integer maxdepth" [2]
+SurfaceIntegrator "path"
+#SurfaceIntegrator "irradiancecache" 
 Sampler "lowdiscrepancy" "integer pixelsamples" [2]
 
 LookAt 0 0 -35 0 0 0 0 1 0 

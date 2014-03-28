@@ -39,7 +39,8 @@ class BVHAccel extends Aggregate {
       return;
     }
 
-    // Build BVH from $primitives
+    // Build BVH from primitives
+    Stats.BVH_STARTED_CONSTRUCTION(this, primitives.length);
 
     // Initialize _buildData_ array for primitives
     List<_BVHPrimitiveInfo> buildData = [];
@@ -70,6 +71,7 @@ class BVHAccel extends Aggregate {
     List<int> offset = [0];
     _flattenBVHTree(root, offset);
     assert(offset[0] == totalNodes[0]);
+    Stats.BVH_FINISHED_CONSTRUCTION(this);
   }
 
   static BVHAccel Create(List<Primitive> prims, ParamSet ps) {
@@ -95,6 +97,8 @@ class BVHAccel extends Aggregate {
       return false;
     }
 
+    Stats.BVH_INTERSECTION_STARTED(this, ray);
+
     bool hit = false;
     final Vector invDir = new Vector(1.0 / ray.direction.x,
                                      1.0 / ray.direction.y,
@@ -115,11 +119,17 @@ class BVHAccel extends Aggregate {
       if (_intersectP(node.bounds, ray, invDir, dirIsNeg)) {
         if (node.nPrimitives > 0) {
           // Intersect ray with primitives in leaf BVH node
+          Stats.BVH_INTERSECTION_TRAVERSED_LEAF_NODE(node);
           for (int i = 0; i < node.nPrimitives; ++i) {
+            Stats.BVH_INTERSECTION_PRIMITIVE_TEST(primitives[node.offset + i]);
             if (primitives[node.offset + i].intersect(ray, isect)) {
+              Stats.BVH_INTERSECTION_PRIMITIVE_HIT(primitives[node.offset + i]);
               hit = true;
+            } else {
+              Stats.BVH_INTERSECTION_PRIMITIVE_MISSED(primitives[node.offset + i]);
             }
           }
+
           if (todoOffset == 0) {
             break;
           }
@@ -127,6 +137,7 @@ class BVHAccel extends Aggregate {
           nodeNum = todo[--todoOffset];
         } else {
           // Put far BVH node on _todo_ stack, advance to near node
+          Stats.BVH_INTERSECTION_TRAVERSED_INTERIOR_NODE(node);
           if (dirIsNeg[node.axis] != 0) {
             todo[todoOffset++] = nodeNum + 1;
             nodeNum = node.offset;
@@ -143,6 +154,7 @@ class BVHAccel extends Aggregate {
       }
     }
 
+    Stats.BVH_INTERSECTION_FINISHED();
     return hit;
   }
 
@@ -150,6 +162,7 @@ class BVHAccel extends Aggregate {
     if (nodes == null) {
       return false;
     }
+    Stats.BVH_INTERSECTIONP_STARTED(this, ray);
 
     final Vector invDir = new Vector(1.0 / ray.direction.x,
                                      1.0 / ray.direction.y,
@@ -168,9 +181,14 @@ class BVHAccel extends Aggregate {
       if (_intersectP(node.bounds, ray, invDir, dirIsNeg)) {
         // Process BVH node _node_ for traversal
         if (node.nPrimitives > 0) {
+          Stats.BVH_INTERSECTIONP_TRAVERSED_LEAF_NODE(node);
           for (int i = 0; i < node.nPrimitives; ++i) {
+            Stats.BVH_INTERSECTIONP_PRIMITIVE_TEST(primitives[node.offset + i]);
             if (primitives[node.offset + i].intersectP(ray)) {
+              Stats.BVH_INTERSECTIONP_PRIMITIVE_HIT(primitives[node.offset + i]);
               return true;
+            } else {
+              Stats.BVH_INTERSECTIONP_PRIMITIVE_MISSED(primitives[node.offset + i]);
             }
           }
           if (todoOffset == 0) {
@@ -179,6 +197,7 @@ class BVHAccel extends Aggregate {
 
           nodeNum = todo[--todoOffset];
         } else {
+          Stats.BVH_INTERSECTIONP_TRAVERSED_INTERIOR_NODE(node);
           if (dirIsNeg[node.axis] != 0) {
             // second child first
             todo[todoOffset++] = nodeNum + 1;
@@ -196,6 +215,7 @@ class BVHAccel extends Aggregate {
       }
     }
 
+    Stats.BVH_INTERSECTIONP_FINISHED();
     return false;
   }
 

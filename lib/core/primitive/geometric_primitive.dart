@@ -20,6 +20,10 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * A primitive that has [Shape] geometry and a [Material]. All geometetry
+ * primitives can also be made into an [AreaLight].
+ */
 class GeometricPrimitive extends Primitive {
   GeometricPrimitive(this.shape, this.material, this.areaLight);
 

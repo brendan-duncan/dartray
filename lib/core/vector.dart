@@ -183,4 +183,8 @@ class Vector {
 
     v3.copy(Vector.Cross(v1, v2));
   }
+
+  static Vector FaceForward(Vector n, Vector n2) {
+    return (Vector.Dot(n, n2) < 0.0) ? new Vector(-n.x, -n.y, -n.z) : n;
+  }
 }

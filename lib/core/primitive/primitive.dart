@@ -20,24 +20,54 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * Base class for objects that can be for ray intersections.
+ */
 abstract class Primitive {
   Primitive() :
     primitiveId = _nextprimitiveId++;
 
+  /**
+   * The world-space bounding box for this primitive.
+   */
   BBox worldBound();
 
+  /**
+   * If false, the primitive should be refined using the [refine] method into
+   * its sub primitives, until primitives that can be ray intersected are
+   * found.
+   */
   bool canIntersect() {
     return true;
   }
 
-  bool intersect(Ray r, Intersection intersect);
+  /**
+   * Test the primitive for an intersection with the given [ray]. This will
+   * also compute the geometric data at the intersection point, such as
+   * the normal and derivatives.
+   */
+  bool intersect(Ray ray, Intersection intersect);
 
-  bool intersectP(Ray r);
+  /**
+   * A faster version of [intersect] that only tests for [ray] intersection,
+   * but does not compute intersection geometric data.
+   */
+  bool intersectP(Ray ray);
 
+  /**
+   * If the primitive is not directly intersectable, then it should be
+   * refined into sub-primitives. This method will refine the primitive one
+   * level, which may contain non-intersectable sub-primitives. Use
+   * [fullyRefine] to get the list of all intersectable sub-primitives.
+   */
   void refine(List<Primitive> refined) {
     LogSevere("Unimplemented Primitive.refine() method called!");
   }
 
+  /**
+   * Recursively refine the primitive until all intersectable sub-primitives
+   * are found.
+   */
   void fullyRefine(List<Primitive> refined) {
     List<Primitive> todo = [];
     todo.add(this);
@@ -53,12 +83,25 @@ abstract class Primitive {
     }
   }
 
+  /**
+   * If the primitive is an area light, it will have an [AreaLight] associated
+   * with it.
+   */
   AreaLight getAreaLight();
 
+  /**
+   * Return the bi-directional scattering distribution function (BSDF) to
+   * shade the surface of the primitive at the given point.
+   */
   BSDF getBSDF(DifferentialGeometry dg, Transform ObjectToWorld);
 
+  /**
+   * Return the Bidirectional surface scattering reflectance distribution
+   * function (BSSRDF) to compute things like sub-surface scattering.
+   */
   BSSRDF getBSSRDF(DifferentialGeometry dg, Transform ObjectToWorld);
 
+  /// A unique identifier for the primitive, useful for debugging.
   final int primitiveId;
 
   static int _nextprimitiveId = 1;

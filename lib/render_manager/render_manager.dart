@@ -66,8 +66,8 @@ class RenderManager {
         preview(image);
       }
 
-      LogInfo('....rayIntersection: ${Stats.rayIntersection}');
-      LogInfo('....rayIntersectionP: ${Stats.rayIntersectionP}');
+      LogInfo('Stats....\n${Stats.getString()}');
+
       completer.complete(output);
 
       return completer.future;

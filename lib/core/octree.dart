@@ -22,11 +22,11 @@ part of core;
 
 class Octree {
   Octree(BBox b, [this.maxDepth = 16]) :
-    bound = new BBox.from(b) {
-  }
+    bound = new BBox.from(b),
+    root = new _OctreeNode();
 
   void add(dataItem, BBox dataBound) {
-    addPrivate(root, bound, dataItem, dataBound,
+    _add(root, bound, dataItem, dataBound,
                Vector.DistanceSquared(dataBound.pMin, dataBound.pMax));
   }
 
@@ -35,10 +35,10 @@ class Octree {
       return;
     }
 
-    _lookupPrivate(root, bound, p, process);
+    _lookup(root, bound, p, process);
   }
 
-  void addPrivate(_OctreeNode node, BBox nodeBound, dataItem, BBox dataBound,
+  void _add(_OctreeNode node, BBox nodeBound, dataItem, BBox dataBound,
                   double diag2, [int depth = 0]) {
     // Possibly add data item to current octree node
     if (depth == maxDepth ||
@@ -71,12 +71,12 @@ class Octree {
 
       BBox childBound = octreeChildBound(child, nodeBound, pMid);
 
-      addPrivate(node.children[child], childBound,
-                    dataItem, dataBound, diag2, depth  +1);
+      _add(node.children[child], childBound,
+           dataItem, dataBound, diag2, depth + 1);
      }
   }
 
-  bool _lookupPrivate(_OctreeNode node, BBox nodeBound, Point p, process) {
+  bool _lookup(_OctreeNode node, BBox nodeBound, Point p, process) {
     for (int i = 0; i < node.data.length; ++i) {
       if (!process(node.data[i])) {
         return false;
@@ -95,7 +95,7 @@ class Octree {
 
     BBox childBound = octreeChildBound(child, nodeBound, pMid);
 
-    return _lookupPrivate(node.children[child], childBound, p, process);
+    return _lookup(node.children[child], childBound, p, process);
   }
 
   static BBox octreeChildBound(int child, BBox nodeBound, Point pMid) {
@@ -116,9 +116,10 @@ class Octree {
 
 
 class _OctreeNode {
-  _OctreeNode() {
-  }
+  final List<_OctreeNode> children;
+  final List data;
 
-  final List<_OctreeNode> children = new List<_OctreeNode>(8);
-  List data;
+  _OctreeNode() :
+    children = new List<_OctreeNode>(8),
+    data = [];
 }

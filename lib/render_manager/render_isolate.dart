@@ -126,8 +126,7 @@ class RenderIsolate {
     }
 
     _log(LOG_INFO, 'FINISHED: ${timer.elapsed}');
-    LogInfo('[$taskNum]....rayIntersection: ${Stats.rayIntersection}');
-    LogInfo('[$taskNum]....rayIntersectionP: ${Stats.rayIntersectionP}');
+    LogInfo('[$taskNum] Stats....\n${Stats.getString()}');
 
     sendPort.send({'cmd': 'final', 'output': output.rgb});
 
