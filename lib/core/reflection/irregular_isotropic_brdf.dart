@@ -50,7 +50,7 @@ class IrregularIsotropicBRDF extends BxDF {
       }
 
       // Try to find enough BRDF samples around _m_ within search radius
-      double maxDist2 = lastMaxDist2;
+      List<double> maxDist2 = [lastMaxDist2];
       isoBRDFData.lookup(m, proc, maxDist2);
       if (nFound > 2 || lastMaxDist2 > 1.5) {
         return v.clamp() / sumWeights;

@@ -159,6 +159,10 @@ class BSDF {
   }
 
   int numComponents([int flags]) {
+    if (flags == null) {
+      return nBxDFs;
+    }
+
     int num = 0;
     for (int i = 0; i < nBxDFs; ++i) {
       if (bxdfs[i].matchesFlags(flags)) {

@@ -248,3 +248,64 @@ int find_element(List list, value, [bool compare(a, b) = less_than]) {
   }
   return -1;
 }
+
+/**
+ * This operation makes the elements in [first,last) into a heap.
+ */
+void make_heap(List list, int first, int last) {
+  if (last - first < 2) {
+    return;
+  }
+
+  int len = last - first;
+  int parent = (len - 2) ~/ 2;
+  while (true) {
+    _adjust_heap(list, first, parent, len, list[first + parent]);
+    if (parent == 0) {
+        return;
+    }
+    parent--;
+  }
+}
+
+void push_heap(List list, int first, int last) {
+  _push_heap(list, first, (last - first) - 1, 0, list[last - 1]);
+}
+
+void pop_heap(List list, int first, int last) {
+  _pop_heap(list, first, last - 1, last - 1, list[last - 1]);
+}
+
+void _adjust_heap(List list, int first, int holeIndex, int len, value) {
+  final int topIndex = holeIndex;
+  int secondChild = 2 * holeIndex + 2;
+  while (secondChild < len) {
+    if (list[first + secondChild] < list[first + (secondChild - 1)]) {
+      secondChild--;
+    }
+
+    list[first + holeIndex] = list[first + secondChild];
+    holeIndex = secondChild;
+    secondChild = 2 * (secondChild + 1);
+  }
+  if (secondChild == len) {
+    list[first + holeIndex] = list[first + (secondChild - 1)];
+    holeIndex = secondChild - 1;
+  }
+  _push_heap(list, first, holeIndex, topIndex, value);
+}
+
+void _push_heap(List list, int first, int holeIndex, int topIndex, value) {
+  int parent = (holeIndex - 1) ~/ 2;
+  while (holeIndex > topIndex && list[first + parent] < value) {
+    list[first + holeIndex] = list[first + parent];
+    holeIndex = parent;
+    parent = (holeIndex - 1) ~/ 2;
+  }
+  list[first + holeIndex] = value;
+}
+
+void _pop_heap(List list, int first, int last, int result, value) {
+  list[result] = list[first];
+  _adjust_heap(list, first, 0, last - first, value);
+}

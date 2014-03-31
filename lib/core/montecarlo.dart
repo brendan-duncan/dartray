@@ -342,7 +342,7 @@ double PermutedRadicalInverse(int n, int base, List<int> p, int pi) {
   while (n > 0) {
     int d_i = p[pi + n % base];
     val += d_i * invBi;
-    n *= invBase;
+    n = (n * invBase).toInt();
     invBi *= invBase;
   }
 

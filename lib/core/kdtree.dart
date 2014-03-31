@@ -61,11 +61,13 @@ class KdTree {
     }
 
     tree = new List<_KdTreeNode>(data.length);
+    tree[0] = new _KdTreeNode();
 
     final int num = data.length;
     Point p = data[0].p;
     bounds = new BBox(p);
     for (int i = 1; i < num; ++i) {
+      tree[i] = new _KdTreeNode();
       bounds.unionPoint(data[i].p);
       tree[i].index = i;
     }
@@ -73,7 +75,7 @@ class KdTree {
     _sortAndSubdivide(0, data.length - 1, X_AXIS + Y_AXIS + Z_AXIS);
   }
 
-  void lookup(Vector p, process, double radius) {
+  void lookup(Vector p, process, List<double> radius) {
     _lookup(p, 0, numPoints - 1, radius, process);
   }
 
@@ -242,9 +244,9 @@ class KdTree {
     }
   }
 
-  void _lookup(Point p, int start, int end, double radius, process) {
+  void _lookup(Point p, int start, int end, List<double> radius, process) {
     // find midpoint
-    double radius2 = radius * radius;
+    double radius2 = radius[0] * radius[0];
     int mid = (end + start) >> 1;
     int axis = tree[mid].axis;
     Point P = _position(mid);
@@ -264,26 +266,26 @@ class KdTree {
 
     if (delta[axis] < 0.0) {
       // on left - go left first
-      if (P[axis] - radius < P[axis]) {
+      if (P[axis] - radius[0] < P[axis]) {
         if (mid - 1 >= start) {
           _lookup(p, start, mid - 1, radius, process);
         }
       }
 
-      if (p[axis] + radius > P[axis]) {
+      if (p[axis] + radius[0] > P[axis]) {
         if (end >= mid + 1) {
           _lookup(p, mid + 1, end, radius, process);
         }
       }
     } else {
       // on right - go right first
-      if (p[axis] + radius > P[axis]) {
+      if (p[axis] + radius[0] > P[axis]) {
         if (end >= mid + 1) {
           _lookup(p, mid + 1, end, radius, process);
         }
       }
 
-      if (p[axis] - radius < P[axis]) {
+      if (p[axis] - radius[0] < P[axis]) {
         if (mid - 1 >= start) {
           _lookup(p, start, mid - 1, radius, process);
         }

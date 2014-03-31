@@ -6,8 +6,26 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
                       this.maxPhotonDepth, double maxdist,
                       this.finalGather, this.gatherSamples,
                       double ga) :
-    maxDistSquared = maxdist * maxdist,
+    maxDistSquared = [maxdist * maxdist],
     cosGatherAngle = Math.cos(Radians(ga));
+
+  static PhotonMapIntegrator Create(ParamSet params) {
+    int nCaustic = params.findOneInt("causticphotons", 20000);
+    int nIndirect = params.findOneInt("indirectphotons", 100000);
+    int nUsed = params.findOneInt("nused", 50);
+
+    int maxSpecularDepth = params.findOneInt("maxspeculardepth", 5);
+    int maxPhotonDepth = params.findOneInt("maxphotondepth", 5);
+    bool finalGather = params.findOneBool("finalgather", true);
+    int gatherSamples = params.findOneInt("finalgathersamples", 32);
+
+    double maxDist = params.findOneFloat("maxdist", 0.1);
+    double gatherAngle = params.findOneFloat("gatherangle", 10.0);
+
+    return new PhotonMapIntegrator(nCaustic, nIndirect, nUsed,
+                                   maxSpecularDepth, maxPhotonDepth, maxDist,
+                                   finalGather, gatherSamples, gatherAngle);
+  }
 
   Spectrum Li(Scene scene, Renderer renderer,
       RayDifferential ray, Intersection isect, Sample sample,
@@ -46,9 +64,9 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
         const int nIndirSamplePhotons = 50;
         PhotonProcess proc = new PhotonProcess(nIndirSamplePhotons,
                                     new List<ClosePhoton>(nIndirSamplePhotons));
-        double searchDist2 = maxDistSquared;
+        double searchDist2 = maxDistSquared[0];
         while (proc.nFound < nIndirSamplePhotons) {
-          double md2 = searchDist2;
+          List<double> md2 = [searchDist2];
           proc.nFound = 0;
           indirectMap.lookup(p, proc, md2);
           searchDist2 *= 2.0;
@@ -85,7 +103,7 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
             Normal nGather = gatherIsect.dg.nn;
             nGather = Normal.FaceForward(nGather, -bounceRay.direction);
             RadiancePhotonProcess proc = new RadiancePhotonProcess(nGather);
-            double md2 = INFINITY;
+            List<double> md2 = [INFINITY];
             radianceMap.lookup(gatherIsect.dg.p, proc, md2);
             if (proc.photon != null) {
               Lindir = proc.photon.Lo;
@@ -145,7 +163,7 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
             Normal nGather = gatherIsect.dg.nn;
             nGather = Normal.FaceForward(nGather, -bounceRay.direction);
             RadiancePhotonProcess proc = new RadiancePhotonProcess(nGather);
-            double md2 = INFINITY;
+            List<double> md2 = [INFINITY];
             radianceMap.lookup(gatherIsect.dg.p, proc, md2);
             if (proc.photon != null) {
               Lindir = proc.photon.Lo;
@@ -223,14 +241,14 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
     }
 
     // Declare shared variables for photon shooting
-    int nDirectPaths = 0;
+    List<int> nDirectPaths = [0];
     List<Photon> causticPhotons = [];
     List<Photon> directPhotons = [];
     List<Photon> indirectPhotons = [];
     List<RadiancePhoton> radiancePhotons = [];
-    bool abortTasks = false;
+    List<bool> abortTasks = [false];
 
-    int nshot = 0;
+    List<int> nshot = [0];
     List<Spectrum> rpReflectances = [];
     List<Spectrum> rpTransmittances = [];
 
@@ -262,7 +280,7 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
       // Launch tasks to compute photon radiances
       ComputeRadianceTask task = new ComputeRadianceTask(0, 1, radiancePhotons,
               rpReflectances, rpTransmittances,
-              nLookup, maxDistSquared, nDirectPaths, directMap,
+              nLookup, maxDistSquared, nDirectPaths[0], directMap,
               nIndirectPaths, indirectMap,
               nCausticPaths, causticMap);
       task.run();
@@ -274,7 +292,7 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
   int nCausticPhotonsWanted;
   int nIndirectPhotonsWanted;
   int nLookup;
-  double maxDistSquared;
+  List<double> maxDistSquared;
   int maxSpecularDepth;
   int maxPhotonDepth;
   bool finalGather;
@@ -286,8 +304,8 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
   List<BSDFSampleOffsets> bsdfSampleOffsets;
   BSDFSampleOffsets bsdfGatherSampleOffsets;
   BSDFSampleOffsets indirGatherSampleOffsets;
-  int nCausticPaths;
-  int nIndirectPaths;
+  int nCausticPaths = 0;
+  int nIndirectPaths = 0;
   KdTree causticMap;
   KdTree indirectMap;
   KdTree radianceMap;
@@ -459,11 +477,11 @@ class PhotonShootingTask {
       // Merge local photon data with data in _PhotonIntegrator_
       {
         // Give up if we're not storing enough photons
-        if (abortTasks) {
+        if (abortTasks[0]) {
           return;
         }
 
-        if (nshot > 500000 &&
+        if (nshot[0] > 500000 &&
             (_unsuccessful(integrator.nCausticPhotonsWanted,
                            causticPhotons.length, blockSize) ||
              _unsuccessful(integrator.nIndirectPhotonsWanted,
@@ -472,11 +490,11 @@ class PhotonShootingTask {
           causticPhotons.clear();
           indirectPhotons.clear();
           radiancePhotons.clear();
-          abortTasks = true;
+          abortTasks[0] = true;
           return;
         }
 
-        nshot += blockSize;
+        nshot[0] += blockSize;
 
         // Merge indirect photons into shared array
         if (!indirectDone) {
@@ -490,7 +508,7 @@ class PhotonShootingTask {
             indirectDone = true;
           }
 
-          nDirectPaths += blockSize;
+          nDirectPaths[0] += blockSize;
           for (int i = 0; i < localDirectPhotons.length; ++i) {
             directPhotons.add(localDirectPhotons[i]);
           }
@@ -534,15 +552,15 @@ class PhotonShootingTask {
   int taskNum;
   double time;
   PhotonMapIntegrator integrator;
-  bool abortTasks;
-  int nDirectPaths;
+  List<bool> abortTasks;
+  List<int> nDirectPaths;
   List<Photon> directPhotons;
   List<Photon> indirectPhotons;
   List<Photon> causticPhotons;
   List<RadiancePhoton> radiancePhotons;
   List<Spectrum> rpReflectances;
   List<Spectrum> rpTransmittances;
-  int nshot;
+  List<int> nshot;
   Distribution1D lightDistribution;
   Scene scene;
   Renderer renderer;
@@ -605,7 +623,7 @@ class ComputeRadianceTask {
   List<Spectrum> rpReflectances;
   List<Spectrum> rpTransmittances;
   int nLookup;
-  double maxDistSquared;
+  List<double> maxDistSquared;
   int nDirectPaths;
   int nIndirectPaths;
   int nCausticPaths;
@@ -636,16 +654,16 @@ class PhotonProcess {
     if (nFound < nLookup) {
       // Add photon to unordered array of photons
       photons[nFound++] = new ClosePhoton(photon, distSquared);
-      /*if (nFound == nLookup) {
-        std::make_heap(&photons[0], &photons[nLookup]);
+      if (nFound == nLookup) {
+        make_heap(photons, 0, nLookup);
         maxDistSquared[0] = photons[0].distanceSquared;
-      }*/
+      }
     } else {
       // Remove most distant photon from heap and add new photon
-      /*std::pop_heap(&photons[0], &photons[nLookup]);
+      pop_heap(photons, 0, nLookup);
       photons[nLookup - 1] = new ClosePhoton(photon, distSquared);
-      std::push_heap(&photons[0], &photons[nLookup]);
-      maxDistSquared[0] = photons[0].distanceSquared;*/
+      push_heap(photons, 0, nLookup);
+      maxDistSquared[0] = photons[0].distanceSquared;
     }
   }
 
@@ -680,7 +698,7 @@ double _kernel(Photon photon, Point p, double maxDist2) {
 
 Spectrum _LPhoton(KdTree map, int nPaths, int nLookup,
       List<ClosePhoton> lookupBuf, BSDF bsdf, RNG rng,
-      Intersection isect, Vector wo, double maxDist2) {
+      Intersection isect, Vector wo, List<double> maxDist2) {
   Spectrum L = new Spectrum(0.0);
   int nonSpecular = BSDF_REFLECTION | BSDF_TRANSMISSION | BSDF_DIFFUSE |
                     BSDF_GLOSSY;
@@ -700,8 +718,8 @@ Spectrum _LPhoton(KdTree map, int nPaths, int nLookup,
       // Compute exitant radiance from photons for glossy surface
       for (int i = 0; i < nFound; ++i) {
         Photon p = photons[i].photon;
-        double k = _kernel(p, isect.dg.p, maxDist2);
-        L += bsdf.f(wo, p.wi) * p.alpha * (k / (nPaths * maxDist2));
+        double k = _kernel(p, isect.dg.p, maxDist2[0]);
+        L += bsdf.f(wo, p.wi) * p.alpha * (k / (nPaths * maxDist2[0]));
       }
     } else {
       // Compute exitant radiance from photons for diffuse surface
@@ -709,11 +727,11 @@ Spectrum _LPhoton(KdTree map, int nPaths, int nLookup,
       Spectrum Lt = new Spectrum(0.0);
       for (int i = 0; i < nFound; ++i) {
         if (Vector.Dot(Nf, photons[i].photon.wi) > 0.0) {
-          double k = _kernel(photons[i].photon, isect.dg.p, maxDist2);
-          Lr += photons[i].photon.alpha * (k / (nPaths * maxDist2));
+          double k = _kernel(photons[i].photon, isect.dg.p, maxDist2[0]);
+          Lr += photons[i].photon.alpha * (k / (nPaths * maxDist2[0]));
         } else {
-          double k = _kernel(photons[i].photon, isect.dg.p, maxDist2);
-          Lt += photons[i].photon.alpha * (k / (nPaths * maxDist2));
+          double k = _kernel(photons[i].photon, isect.dg.p, maxDist2[0]);
+          Lt += photons[i].photon.alpha * (k / (nPaths * maxDist2[0]));
         }
       }
       L += Lr * bsdf.rho2(wo, rng, BSDF_ALL_REFLECTION) * INV_PI +
@@ -726,7 +744,7 @@ Spectrum _LPhoton(KdTree map, int nPaths, int nLookup,
 
 
 Spectrum _EPhoton(KdTree map, int count, int nLookup,
-                  List<ClosePhoton> lookupBuf, double maxDist2, Point p,
+                  List<ClosePhoton> lookupBuf, List<double> maxDist2, Point p,
                   Normal n) {
   if (map == null) {
     return new Spectrum(0.0);
@@ -734,9 +752,9 @@ Spectrum _EPhoton(KdTree map, int count, int nLookup,
 
   // Lookup nearby photons at irradiance computation point
   PhotonProcess proc = new PhotonProcess(nLookup, lookupBuf);
-  double md2 = maxDist2;
+  List<double> md2 = [maxDist2[0]];
   map.lookup(p, proc, md2);
-  assert(md2 > 0.0);
+  assert(md2[0] > 0.0);
 
   // Accumulate irradiance value from nearby photons
   if (proc.nFound == 0) {
@@ -751,5 +769,5 @@ Spectrum _EPhoton(KdTree map, int count, int nLookup,
     }
   }
 
-  return E / (count * md2 * Math.PI);
+  return E / (count * md2[0] * Math.PI);
 }
