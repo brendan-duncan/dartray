@@ -40,7 +40,13 @@ class DistantLight extends Light {
     return true;
   }
 
-  Spectrum sampleL(Point p, double pEpsilon, LightSample ls,
+  Spectrum power(Scene scene) {
+    Point worldCenter = new Point();
+    double worldRadius = scene.worldBound.boundingSphere(worldCenter);
+    return L * Math.PI * worldRadius * worldRadius;
+  }
+
+  Spectrum sampleLAtPoint(Point p, double pEpsilon, LightSample ls,
           double time, Vector wi, List<double> pdf, VisibilityTester vis) {
     wi.copy(lightDir);
     pdf[0] = 1.0;
@@ -48,17 +54,10 @@ class DistantLight extends Light {
     return L;
   }
 
-  Spectrum power(Scene scene) {
-    Point worldCenter = new Point();
-    double worldRadius = scene.worldBound.boundingSphere(worldCenter);
-    return L * Math.PI * worldRadius * worldRadius;
-  }
-
-  Spectrum sampleL2(Scene scene, LightSample ls, double u1,
-                        double u2, double time, Ray ray, Normal Ns,
-                        List<double> pdf) {
+  Spectrum sampleL(Scene scene, LightSample ls, double u1, double u2,
+                   double time, Ray ray, Normal Ns, List<double> pdf) {
     // Choose point on disk oriented toward infinite light direction
-    Point worldCenter;
+    Point worldCenter = new Point();
     double worldRadius = scene.worldBound.boundingSphere(worldCenter);
 
     Vector v1 = new Vector();

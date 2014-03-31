@@ -55,10 +55,15 @@ class RNG {
   }
 
   double randomFloat() {
+    Stats.RNG_STARTED_RANDOM_FLOAT();
     if (UseMathRandom) {
-      return random.nextDouble();
+      double v = random.nextDouble();
+      Stats.RNG_FINISHED_RANDOM_FLOAT();
+      return v;
     }
-    return (randomUInt() & 0xffffff) / 16777216.0;
+    double v = (randomUInt() & 0xffffff) / 16777216.0;
+    Stats.RNG_FINISHED_RANDOM_FLOAT();
+    return v;
   }
 
   int randomUInt() {
@@ -76,6 +81,7 @@ class RNG {
     // mag01[x] = x * MATRIX_A  for x=0,1 */
 
     if (mti >= N) { // generate N words at one time
+      Stats.RNG_STARTED_TABLEGEN();
       int kk;
 
       if (mti == N + 1) {   // if Seed() has not been called,
@@ -96,6 +102,7 @@ class RNG {
       mt[N - 1] = mt[M - 1] ^ (y >> 1) ^ mag01[y & 0x1];
 
       mti = 0;
+      Stats.RNG_FINISHED_TABLEGEN();
     }
 
     y = mt[mti++];

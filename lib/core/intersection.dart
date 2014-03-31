@@ -43,14 +43,18 @@ class Intersection {
   }
 
   BSDF getBSDF(RayDifferential ray) {
+    Stats.STARTED_BSDF_SHADING(ray);
     dg.computeDifferentials(ray);
     BSDF bsdf = primitive.getBSDF(dg, objectToWorld);
+    Stats.FINISHED_BSDF_SHADING(ray, bsdf);
     return bsdf;
   }
 
   BSSRDF getBSSRDF(RayDifferential ray) {
+    Stats.STARTED_BSSRDF_SHADING(ray);
     dg.computeDifferentials(ray);
     BSSRDF bssrdf = primitive.getBSSRDF(dg, objectToWorld);
+    Stats.FINISHED_BSSRDF_SHADING(ray, bssrdf);
     return bssrdf;
   }
 

@@ -349,14 +349,15 @@ class PhotonShootingTask {
         LightSample ls = new LightSample.set(u[1], u[2], u[3]);
         Normal Nl = new Normal();
 
-        Spectrum Le = light.sampleL2(scene, ls, u[4], u[5], time, photonRay,
+        Spectrum Le = light.sampleL(scene, ls, u[4], u[5], time, photonRay,
                                      Nl, pdf);
 
         if (pdf[0] == 0.0 || Le.isBlack()) {
           continue;
         }
 
-        Spectrum alpha = (Le * Vector.AbsDot(Nl, photonRay.direction)) / (pdf[0] * lightPdf[0]);
+        Spectrum alpha = (Le * Vector.AbsDot(Nl, photonRay.direction)) /
+                         (pdf[0] * lightPdf[0]);
         if (!alpha.isBlack()) {
           // Follow photon path through scene and record intersections
           Stats.PHOTON_MAP_STARTED_RAY_PATH(photonRay, alpha);

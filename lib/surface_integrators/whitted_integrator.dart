@@ -50,7 +50,7 @@ class WhittedIntegrator extends SurfaceIntegrator {
       Vector wi = new Vector();
       List<double> pdf = [0.0];
       VisibilityTester visibility = new VisibilityTester();
-      Spectrum Li = scene.lights[i].sampleL(p, isect.rayEpsilon,
+      Spectrum Li = scene.lights[i].sampleLAtPoint(p, isect.rayEpsilon,
           new LightSample.random(rng), ray.time, wi, pdf, visibility);
 
       if (Li.isBlack() || pdf[0] == 0.0) {

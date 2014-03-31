@@ -34,7 +34,7 @@ class PointLight extends Light {
     return new PointLight(l2w, I * sc);
   }
 
-  Spectrum sampleL(Point p, double pEpsilon, LightSample ls,
+  Spectrum sampleLAtPoint(Point p, double pEpsilon, LightSample ls,
         double time, Vector wi, List<double> pdf, VisibilityTester vis) {
     wi.copy(Vector.Normalize(lightPos - p));
     pdf[0] = 1.0;
@@ -50,9 +50,9 @@ class PointLight extends Light {
     return true;
   }
 
-  Spectrum sampleL2(Scene scene, LightSample ls, double u1,
-                      double u2, double time, Ray ray, Normal Ns,
-                      List<double> pdf) {
+  Spectrum sampleL(Scene scene, LightSample ls, double u1,
+                   double u2, double time, Ray ray, Normal Ns,
+                   List<double> pdf) {
     ray.origin = new Point.from(lightPos);
     ray.direction = UniformSampleSphere(ls.uPos[0], ls.uPos[1]);
     ray.minDistance = 0.0;

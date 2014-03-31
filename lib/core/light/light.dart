@@ -39,27 +39,67 @@ abstract class Light {
       }
   }
 
-  Spectrum sampleL(Point p, double pEpsilon,
-        LightSample ls, double time, Vector wi, List<double> pdf,
-        VisibilityTester vis);
-
+  /**
+   * Returns the total emitted power of the light into the scene.
+   * This quantity is useful for light transport algorithms that may want
+   * to devote additional computational resources to lights in the scene
+   * that make the largest distributions.
+   */
   Spectrum power(Scene scene);
 
+  /** I
+   * ndicates whether the light is described by a delta distribution.
+   * Such lights include point lights, which emit illumination from a single
+   * point, and directional lights, where all light arrives from the same
+   * direction. The only way to detect illumination from light sources like
+   * these is to call their {@link #sampleL} methods. It is impossible to
+   * randomly choose a direction from a point p that happens to find such
+   * a light source.
+   */
   bool isDeltaLight();
 
+  /**
+   * Returns the emitted radiance of the light along a ray that didn't hit
+   * anything in the scene.
+   */
   Spectrum Le(RayDifferential r) {
     return new Spectrum(0.0);
   }
 
+  /**
+   * The probability density function (PDF) describes the relative
+   * probability of a random variable taking on a particular value.
+   */
   double pdf(Point p, Vector wi);
 
-  Spectrum sampleL2(Scene scene, LightSample ls,
-                         double u1, double u2, double time,
-                         Ray ray, Normal Ns, List<double> pdf);
+  /**
+   * Returns the incident radiance from the light at a point [p] and also
+   * returns the direction vector [wi] that gives the direction from which
+   * radiance is arriving, assuming that there are no occluding objects between
+   * them.
+   *
+   * For some types of lights (usually area lights), light may arrive at p
+   * from many directions. For these types of lights, the sampleL method
+   * must randomly sample a point on the light source's surface, so that
+   * Monte Carlo integration can be used to find the reflected light at p
+   * due to illumination from the light.
+   */
+  Spectrum sampleLAtPoint(Point p, double pEpsilon,
+                          LightSample ls, double time, Vector wi,
+                          List<double> pdf, VisibilityTester vis);
+
+  /**
+   * Returns the incident radiance from the light in a direction ([u1],[u2])
+   * from the sample point [ls] on the light.
+   * TODO What is the actual description of this function?
+   */
+  Spectrum sampleL(Scene scene, LightSample ls,
+                   double u1, double u2, double time,
+                   Ray ray, Normal Ns, List<double> pdf);
 
   void shProject(Point p, double pEpsilon, int lmax,
-                   Scene scene, bool computeLightVisibility, double time,
-                   RNG rng, List<Spectrum> coeffs) {
+                 Scene scene, bool computeLightVisibility, double time,
+                 RNG rng, List<Spectrum> coeffs) {
     for (int i = 0; i < SHTerms(lmax); ++i) {
       coeffs[i] = new Spectrum(0.0);
     }
@@ -78,7 +118,7 @@ abstract class Light {
                                                   VanDerCorput(i, scramble1D));
       Vector wi = new Vector();
       VisibilityTester vis = new VisibilityTester();
-      Spectrum Li = sampleL(p, pEpsilon, lightSample, time, wi, pdf, vis);
+      Spectrum Li = sampleLAtPoint(p, pEpsilon, lightSample, time, wi, pdf, vis);
       if (!Li.isBlack() && pdf[0] > 0.0 &&
           (!computeLightVisibility || vis.unoccluded(scene))) {
         // Add light sample contribution to MC estimate of SH coefficients

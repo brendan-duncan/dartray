@@ -29,9 +29,14 @@ class SamplerRenderer extends Renderer {
    * Render the [scene] from the viewpoint of the [camera].
    */
   OutputImage render(Scene scene) {
+    Stats.STARTED_RENDERTASK(taskNum);
     // Allow integrators to do preprocessing for the scene
+    Stats.STARTED_PREPROCESSING();
     surfaceIntegrator.preprocess(scene, camera, this);
     volumeIntegrator.preprocess(scene, camera, this);
+    Stats.FINISHED_PREPROCESSING();
+
+    Stats.STARTED_RENDERING();
 
     // Allocate and initialize sample
     Sampler mainSampler = this.sampler;
@@ -40,6 +45,10 @@ class SamplerRenderer extends Renderer {
                                volumeIntegrator, scene);
 
     Sampler sampler = mainSampler.getSubSampler(taskNum, taskCount);
+    if (sampler == null) {
+      Stats.FINISHED_RENDERTASK(taskNum);
+      return null;
+    }
 
     RNG rng = new RNG(taskNum);
 
@@ -63,11 +72,14 @@ class SamplerRenderer extends Renderer {
     while ((sampleCount = sampler.getMoreSamples(samples, rng)) > 0) {
       // Generate camera rays and compute radiance along rays
       for (int i = 0; i < sampleCount; ++i) {
+        Stats.STARTED_GENERATING_CAMERA_RAY(samples[i]);
         // Find camera ray for sample[i]
         double rayWeight = camera.generateRayDifferential(samples[i], rays[i]);
         rays[i].scaleDifferentials(1.0 / Math.sqrt(sampler.samplesPerPixel));
+        Stats.FINISHED_GENERATING_CAMERA_RAY(samples[i], rays[i], rayWeight);
 
         // Evaluate radiance along camera ray
+        Stats.STARTED_CAMERA_RAY_INTEGRATION(rays[i], samples[i]);
         if (rayWeight > 0.0) {
           Ls[i] = Li(scene, rays[i], samples[i], rng, isects[i], Ts[i]) *
                   rayWeight;
@@ -90,12 +102,16 @@ class SamplerRenderer extends Renderer {
                 'for image sample. Setting to black.');
           Ls[i] = new Spectrum(0.0);
         }
+
+        Stats.FINISHED_CAMERA_RAY_INTEGRATION(rays[i], samples[i], Ls[i]);
       }
 
       // Report sample results to [Sampler], add contributions to image
       if (sampler.reportResults(samples, rays, Ls, isects, sampleCount)) {
         for (int i = 0; i < sampleCount; ++i) {
+          Stats.STARTED_ADDING_IMAGE_SAMPLE(samples[i], rays[i], Ls[i], Ts[i]);
           camera.film.addSample(samples[i], Ls[i]);
+          Stats.FINISHED_ADDING_IMAGE_SAMPLE();
         }
       }
     }
@@ -104,7 +120,11 @@ class SamplerRenderer extends Renderer {
     camera.film.updateDisplay(sampler.xPixelStart, sampler.yPixelStart,
                               sampler.xPixelEnd + 1, sampler.yPixelEnd + 1);
 
-    return camera.film.writeImage();
+    OutputImage out = camera.film.writeImage();
+    Stats.FINISHED_RENDERING();
+    Stats.FINISHED_RENDERTASK(taskNum);
+
+    return out;
   }
 
   Spectrum Li(Scene scene, RayDifferential ray,

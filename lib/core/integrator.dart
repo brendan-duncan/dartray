@@ -123,8 +123,8 @@ abstract class Integrator {
     List<double> lightPdf = [0.0];
     List<double> bsdfPdf = [0.0];
     VisibilityTester visibility = new VisibilityTester();
-    Spectrum Li = light.sampleL(p, rayEpsilon, lightSample, time,
-                                   wi, lightPdf, visibility);
+    Spectrum Li = light.sampleLAtPoint(p, rayEpsilon, lightSample, time,
+                                       wi, lightPdf, visibility);
 
     if (lightPdf[0] > 0.0 && !Li.isBlack()) {
       Spectrum f = bsdf.f(wo, wi, flags);
@@ -181,8 +181,8 @@ abstract class Integrator {
   }
 
   static Spectrum SpecularReflect(RayDifferential ray, BSDF bsdf, RNG rng,
-      Intersection isect, Renderer renderer, Scene scene,
-      Sample sample) {
+                                  Intersection isect, Renderer renderer,
+                                  Scene scene, Sample sample) {
     Vector wo = -ray.direction;
     Vector wi = new Vector();
     List<double> pdf = [0.0];
@@ -217,8 +217,10 @@ abstract class Integrator {
                                                       n * dDNdy)* 2.0;
       }
 
+      Stats.STARTED_SPECULAR_REFLECTION_RAY(rd);
       Spectrum Li = renderer.Li(scene, rd, sample, rng);
       L = f * Li * (Vector.AbsDot(wi, n) / pdf[0]);
+      Stats.FINISHED_SPECULAR_REFLECTION_RAY(rd);
     }
 
     return L;
@@ -274,9 +276,10 @@ abstract class Integrator {
                          new Vector.from(dndy * mu + n * dmudy);
       }
 
+      Stats.STARTED_SPECULAR_REFRACTION_RAY(rd);
       Spectrum Li = renderer.Li(scene, rd, sample, rng);
-
       L = f * Li * (Vector.AbsDot(wi, n) / pdf[0]);
+      Stats.FINISHED_SPECULAR_REFRACTION_RAY(rd);
     }
 
     return L;

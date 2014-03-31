@@ -53,6 +53,7 @@ class BSDF {
   Spectrum sample_f(Vector woW, Vector wiW, BSDFSample bsdfSample,
                     List<double> pdf, [int flags = BSDF_ALL,
                     List<int> sampledType]) {
+    Stats.STARTED_BSDF_SAMPLE();
     // Choose which _BxDF_ to sample
     int matchingComps = numComponents(flags);
     if (matchingComps == 0) {
@@ -60,6 +61,7 @@ class BSDF {
       if (sampledType != null) {
         sampledType[0] = 0;
       }
+      Stats.FINISHED_BSDF_SAMPLE();
       return new RGBColor(0.0);
     }
 
@@ -74,6 +76,7 @@ class BSDF {
         break;
       }
     }
+    assert(bxdf != null);
 
     // Sample chosen _BxDF_
     Vector wo = worldToLocal(woW);
@@ -86,6 +89,7 @@ class BSDF {
       if (sampledType != null) {
         sampledType[0] = 0;
       }
+      Stats.FINISHED_BSDF_SAMPLE();
       return new Spectrum(0.0);
     }
 
@@ -124,6 +128,7 @@ class BSDF {
       }
     }
 
+    Stats.FINISHED_BSDF_SAMPLE();
     return f;
   }
 
@@ -131,6 +136,7 @@ class BSDF {
     if (nBxDFs == 0.0) {
       return 0.0;
     }
+    Stats.STARTED_BSDF_PDF();
 
     Vector wo = worldToLocal(woW);
     Vector wi = worldToLocal(wiW);
@@ -143,7 +149,9 @@ class BSDF {
       }
     }
 
-    return matchingComps > 0 ? pdf / matchingComps : 0.0;
+    double v = matchingComps > 0 ? pdf / matchingComps : 0.0;
+    Stats.FINISHED_BSDF_PDF();
+    return v;
   }
 
   void add(BxDF bxdf) {
@@ -171,6 +179,7 @@ class BSDF {
   }
 
   Spectrum f(Vector woW, Vector wiW, [int flags = BSDF_ALL]) {
+    Stats.STARTED_BSDF_EVAL();
     Vector wi = worldToLocal(wiW);
     Vector wo = worldToLocal(woW);
 
@@ -190,6 +199,7 @@ class BSDF {
       }
     }
 
+    Stats.FINISHED_BSDF_EVAL();
     return f;
   }
 

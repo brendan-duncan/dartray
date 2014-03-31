@@ -29,6 +29,7 @@ class GridAccel extends Aggregate {
   }
 
   GridAccel(List<Primitive> p, bool refineImmediately) {
+    Stats.GRID_STARTED_CONSTRUCTION(this, p.length);
     // Initialize _primitives_ with primitives for grid
     if (refineImmediately) {
       for (int i = 0; i < p.length; ++i) {
@@ -56,6 +57,7 @@ class GridAccel extends Aggregate {
       nVoxels[axis] = (delta[axis] * voxelsPerUnitDist).round();
       nVoxels[axis] = nVoxels[axis].clamp(1, 64);
     }
+    Stats.GRID_BOUNDS_AND_RESOLUTION(bounds, nVoxels);
 
     // Compute voxel widths and allocate voxels
     for (int axis = 0; axis < 3; ++axis) {
@@ -73,16 +75,6 @@ class GridAccel extends Aggregate {
     for (int i = 0; i < primitives.length; ++i) {
       Primitive prim = primitives[i];
 
-      // DEBUG put all prims into all voxels
-      /*for (int o = 0; o < voxels.length; ++o) {
-        if (voxels[o] == null) {
-          voxels[o] = new _Voxel(prim);
-        } else {
-          voxels[o].addPrimitive(prim);
-        }
-      }
-      continue;*/
-
       // Find voxel extent of primitive
       BBox pb = prim.worldBound();
 
@@ -92,6 +84,7 @@ class GridAccel extends Aggregate {
       }
 
       // Add primitive to overlapping voxels
+      Stats.GRID_VOXELIZED_PRIMITIVE(vmin, vmax);
       for (int z = vmin[2]; z <= vmax[2]; ++z) {
         for (int y = vmin[1]; y <= vmax[1]; ++y) {
           for (int x = vmin[0]; x <= vmax[0]; ++x) {
@@ -105,6 +98,7 @@ class GridAccel extends Aggregate {
         }
       }
     }
+    Stats.GRID_FINISHED_CONSTRUCTION(this);
   }
 
   BBox worldBound() => new BBox.from(bounds);
@@ -114,11 +108,13 @@ class GridAccel extends Aggregate {
   }
 
   bool intersect(Ray ray, Intersection isect) {
+    Stats.GRID_INTERSECTION_TEST(this, ray);
     // Check ray against overall grid bounds
     List<double> rayT = [0.0];
     if (bounds.inside(ray.pointAt(ray.minDistance))) {
       rayT[0] = ray.minDistance;
     } else if (!bounds.intersectP(ray, rayT)) {
+      Stats.GRID_RAY_MISSED_BOUNDS();
       return false;
     }
 
@@ -159,6 +155,7 @@ class GridAccel extends Aggregate {
     while (true) {
       // Check for intersection in current voxel and advance to next
       _Voxel voxel = voxels[offset(pos[0], pos[1], pos[2])];
+      Stats.GRID_RAY_TRAVERSED_VOXEL(pos, voxel != null ? voxel.size() : 0);
       if (voxel != null) {
         if (voxel.intersect(ray, isect)) {
           hitSomething =  true;
@@ -196,6 +193,7 @@ class GridAccel extends Aggregate {
     if (bounds.inside(ray.pointAt(ray.minDistance))) {
       rayT[0] = ray.minDistance;
     } else if (!bounds.intersectP(ray, rayT)) {
+      Stats.GRID_RAY_MISSED_BOUNDS();
       return false;
     }
 
@@ -237,6 +235,7 @@ class GridAccel extends Aggregate {
       int o = offset(pos[0], pos[1], pos[2]);
       _Voxel voxel = voxels[o];
 
+      Stats.GRID_RAY_TRAVERSED_VOXEL(pos, voxel != null ? voxel.size() : 0);
       if (voxel != null && voxel.intersectP(ray)) {
         return true;
       }
@@ -299,8 +298,6 @@ class _Voxel {
     primitives.add(prim);
   }
 
-  static int __count = 0;
-
   bool intersect(Ray ray, Intersection isect) {
     int si = 0;
     int ei = primitives.length;
@@ -328,8 +325,10 @@ class _Voxel {
     bool hitSomething = false;
     for (int i = si; i < ei; ++i) {
       Primitive prim = primitives[i];
+      Stats.GRID_RAY_PRIMITIVE_INTERSECTION_TEST(prim);
 
       if (prim.intersect(ray, isect)) {
+        Stats.GRID_RAY_PRIMITIVE_HIT(prim);
         hitSomething = true;
       }
     }
@@ -338,6 +337,7 @@ class _Voxel {
   }
 
   bool intersectP(Ray ray) {
+    Stats.GRID_INTERSECTIONP_TEST(this, ray);
     // Refine primitives in voxel if needed
     if (!allCanIntersect) {
       for (int i = 0; i < primitives.length; ++i) {
@@ -360,7 +360,9 @@ class _Voxel {
 
     for (int i = 0; i < primitives.length; ++i) {
       Primitive prim = primitives[i];
+      Stats.GRID_RAY_PRIMITIVE_INTERSECTIONP_TEST(prim);
       if (prim.intersectP(ray)) {
+        Stats.GRID_RAY_PRIMITIVE_HIT(prim);
         return true;
       }
     }

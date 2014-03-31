@@ -225,9 +225,9 @@ class IGIIntegrator extends SurfaceIntegrator {
                                              lightSampComp[sampOffset]);
 
         Normal Nl = new Normal();
-        Spectrum alpha = light.sampleL2(scene, ls, lightSampDir[2 * sampOffset],
-                                        lightSampDir[2 * sampOffset + 1],
-                                        camera.shutterOpen, ray, Nl, pdf);
+        Spectrum alpha = light.sampleL(scene, ls, lightSampDir[2 * sampOffset],
+                                       lightSampDir[2 * sampOffset + 1],
+                                       camera.shutterOpen, ray, Nl, pdf);
 
         if (pdf[0] == 0.0 || alpha.isBlack()) {
           continue;

@@ -56,15 +56,6 @@ class SpotLight extends Light {
                          coneangle - conedelta);
   }
 
-  Spectrum sampleL(Point p, double pEpsilon, LightSample ls,
-          double time, Vector wi, List<double> pdf, VisibilityTester vis) {
-    wi.copy(Vector.Normalize(lightPos - p));
-    pdf[0] = 1.0;
-    vis.setSegment(p, pEpsilon, lightPos, 0.0, time);
-
-    return intensity * falloff(-wi) / Vector.DistanceSquared(lightPos, p);
-  }
-
   bool isDeltaLight() {
     return true;
   }
@@ -92,9 +83,18 @@ class SpotLight extends Light {
                (1.0 - 0.5 * (cosFalloffStart + cosTotalWidth));
   }
 
-  Spectrum sampleL2(Scene scene, LightSample ls, double u1,
-                        double u2, double time, Ray ray, Normal Ns,
-                        List<double> pdf) {
+  Spectrum sampleLAtPoint(Point p, double pEpsilon, LightSample ls,
+                          double time, Vector wi, List<double> pdf,
+                          VisibilityTester vis) {
+    wi.copy(Vector.Normalize(lightPos - p));
+    pdf[0] = 1.0;
+    vis.setSegment(p, pEpsilon, lightPos, 0.0, time);
+
+    return intensity * falloff(-wi) / Vector.DistanceSquared(lightPos, p);
+  }
+
+  Spectrum sampleL(Scene scene, LightSample ls, double u1, double u2,
+                   double time, Ray ray, Normal Ns, List<double> pdf) {
     Vector v = UniformSampleCone(ls.uPos[0], ls.uPos[1], cosTotalWidth);
     ray.set(lightPos, lightToWorld.transformVector(v), 0.0, INFINITY, time);
     Ns.copy(ray.direction);

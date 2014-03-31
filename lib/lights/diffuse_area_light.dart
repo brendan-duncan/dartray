@@ -53,7 +53,7 @@ class DiffuseAreaLight extends AreaLight {
     return shapeSet.pdf(p, w);
   }
 
-  Spectrum sampleL(Point p, double pEpsilon, LightSample ls, double time,
+  Spectrum sampleLAtPoint(Point p, double pEpsilon, LightSample ls, double time,
       Vector wo, List<double> pdf, VisibilityTester visibility) {
     Normal ns = new Normal();
     Point ps = shapeSet.sample(ls, ns, p);
@@ -64,8 +64,8 @@ class DiffuseAreaLight extends AreaLight {
     return Ls;
   }
 
-  Spectrum sampleL2(Scene scene, LightSample ls, double u1, double u2,
-                       double time, Ray ray, Normal Ns, List<double> pdf) {
+  Spectrum sampleL(Scene scene, LightSample ls, double u1, double u2,
+                   double time, Ray ray, Normal Ns, List<double> pdf) {
     Point org = shapeSet.sample(ls, Ns);
     Vector dir = UniformSampleSphere(u1, u2);
     if (Vector.Dot(dir, Ns) < 0.0) {
@@ -78,6 +78,7 @@ class DiffuseAreaLight extends AreaLight {
     ray.maxDistance = INFINITY;
     ray.time = time;
     pdf[0] = shapeSet.pdf(org) * INV_TWOPI;
+
     Spectrum Ls = L(org, Ns, dir);
     return Ls;
   }
