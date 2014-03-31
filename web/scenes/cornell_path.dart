@@ -1,6 +1,7 @@
 
 const String SCENE = """
-SurfaceIntegrator "path"
+#SurfaceIntegrator "path"
+SurfaceIntegrator "photonmap"
 #SurfaceIntegrator "irradiancecache" 
 Sampler "lowdiscrepancy" "integer pixelsamples" [2]
 
@@ -40,8 +41,8 @@ AttributeBegin
   Translate 4 -7 4
   Scale 0.3 0.4 0.3
   Rotate 30 0 1 0
-  #Material "glass" "float index" [1.5 ] "color Kr" [0.1 0.8 0.8 ] "color Kt" [0.1 0.8 0.8 ]
   Material "shinymetal" "float roughness" [10 ] "color Kr" [0.4 0.4 0 ] "color Ks" [0.6 0.6 0 ]
+  #Material "matte" "color Kd" [0.48 0.48 0.48]
   Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [ 10 -10 -10 -10 -10 -10 -10 -10  10  10 -10  10 ] 
   Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [ 10  10 -10  10  10  10 -10  10  10 -10  10 -10 ] 
   Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [ 10 -10  10 -10 -10  10 -10  10  10  10  10  10 ] 
@@ -54,8 +55,8 @@ AttributeEnd
 # Glass Sphere Definition
 ############################################################################
 AttributeBegin
-  #Material "shinymetal" "float roughness" [10 ] "color Kr" [0.4 0.4 0 ] "color Ks" [0.6 0.6 0 ]
-  Material "glass" "float index" [1.5 ] "color Kr" [0.1 0.8 0.8 ] "color Kt" [0.1 0.8 0.8 ] 
+  Material "glass" "float index" [1.5 ] "color Kr" [0.1 0.8 0.8 ] "color Kt" [0.1 0.8 0.8 ]
+  #Material "matte" "color Kd" [0.48 0.48 0.48] 
   Translate -4 -4 0
     Shape "sphere" "float radius" 3  
 AttributeEnd

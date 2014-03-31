@@ -486,7 +486,7 @@ class PhotonShootingTask {
                            causticPhotons.length, blockSize) ||
              _unsuccessful(integrator.nIndirectPhotonsWanted,
                            indirectPhotons.length, blockSize))) {
-          LogError("Unable to store enough photons.  Giving up.\n");
+          LogError("Unable to store enough photons. Giving up.\n");
           causticPhotons.clear();
           indirectPhotons.clear();
           radiancePhotons.clear();
