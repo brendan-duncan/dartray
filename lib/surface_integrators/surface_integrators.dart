@@ -32,4 +32,5 @@ part 'glossy_prt_integrator.dart';
 part 'igi_integrator.dart';
 part 'irradiance_cache_integrator.dart';
 part 'path_integrator.dart';
+part 'photon_map_integrator.dart';
 part 'whitted_integrator.dart';
