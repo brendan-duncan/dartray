@@ -10,17 +10,17 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
     cosGatherAngle = Math.cos(Radians(ga));
 
   static PhotonMapIntegrator Create(ParamSet params) {
-    int nCaustic = params.findOneInt("causticphotons", 20000);
-    int nIndirect = params.findOneInt("indirectphotons", 100000);
-    int nUsed = params.findOneInt("nused", 50);
+    int nCaustic = params.findOneInt('causticphotons', 20000);
+    int nIndirect = params.findOneInt('indirectphotons', 100000);
+    int nUsed = params.findOneInt('nused', 50);
 
-    int maxSpecularDepth = params.findOneInt("maxspeculardepth", 5);
-    int maxPhotonDepth = params.findOneInt("maxphotondepth", 5);
-    bool finalGather = params.findOneBool("finalgather", true);
-    int gatherSamples = params.findOneInt("finalgathersamples", 32);
+    int maxSpecularDepth = params.findOneInt('maxspeculardepth', 5);
+    int maxPhotonDepth = params.findOneInt('maxphotondepth', 5);
+    bool finalGather = params.findOneBool('finalgather', true);
+    int gatherSamples = params.findOneInt('finalgathersamples', 32);
 
-    double maxDist = params.findOneFloat("maxdist", 0.1);
-    double gatherAngle = params.findOneFloat("gatherangle", 10.0);
+    double maxDist = params.findOneFloat('maxdist', 0.1);
+    double gatherAngle = params.findOneFloat('gatherangle', 10.0);
 
     return new PhotonMapIntegrator(nCaustic, nIndirect, nUsed,
                                    maxSpecularDepth, maxPhotonDepth, maxDist,
@@ -486,7 +486,7 @@ class PhotonShootingTask {
                            causticPhotons.length, blockSize) ||
              _unsuccessful(integrator.nIndirectPhotonsWanted,
                            indirectPhotons.length, blockSize))) {
-          LogError("Unable to store enough photons. Giving up.\n");
+          LogError('Unable to store enough photons. Giving up.\n');
           causticPhotons.clear();
           indirectPhotons.clear();
           radiancePhotons.clear();
