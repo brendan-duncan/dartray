@@ -20,8 +20,14 @@
  ****************************************************************************/
 part of core;
 
-class ResourceManager {
-  /*Future<List<int>> requrestFile(String path) {
+abstract class ResourceManager {
+  List<String> includePaths = [];
 
-  }*/
+  void addIncludePath(path) {
+    includePaths.add(path);
+  }
+
+  Future<List<int>> requrestFile(String path);
+
+  List<int> getFile(String path);
 }

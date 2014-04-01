@@ -50,6 +50,9 @@ class RenderIsolate {
   int taskCount = 1;
   ReceivePort receivePort;
   SendPort sendPort;
+  RenderManagerInterface manager;
+
+  RenderIsolate(this.manager);
 
   void start(SendPort port) {
     Log = _log;
@@ -108,7 +111,7 @@ class RenderIsolate {
     Stopwatch timer = new Stopwatch()..start();
 
     var img = new Image(w, h);
-    Pbrt pbrt = new Pbrt();
+    Pbrt pbrt = new Pbrt(manager);
 
     if (doPreview) {
       pbrt.setPreviewCallback((Image img) {
@@ -119,16 +122,16 @@ class RenderIsolate {
     OutputImage output;
     try {
       pbrt.setTask(taskNum, taskCount);
-      output = pbrt.renderScene(scene, img);
+      pbrt.renderScene(scene, img).then((output) {
+        _log(LOG_INFO, 'FINISHED: ${timer.elapsed}');
+        LogInfo('[$taskNum] Stats....\n${Stats.getString()}');
+
+        sendPort.send({'cmd': 'final', 'output': output.rgb});
+      });
     } catch (e) {
       sendPort.send({'cmd': 'error', 'msg': e.toString()});
       return false;
     }
-
-    _log(LOG_INFO, 'FINISHED: ${timer.elapsed}');
-    LogInfo('[$taskNum] Stats....\n${Stats.getString()}');
-
-    sendPort.send({'cmd': 'final', 'output': output.rgb});
 
     return true;
   }

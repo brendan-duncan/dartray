@@ -19,8 +19,8 @@
  *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
  ****************************************************************************/
 import 'dart:isolate';
-import 'package:dartray/dartray.dart';
+import 'package:dartray/dartray_web.dart';
 
 void main(List<String> args, SendPort port) {
-  new RenderIsolate().start(port);
+  new RenderManager().startIsolate(port);
 }

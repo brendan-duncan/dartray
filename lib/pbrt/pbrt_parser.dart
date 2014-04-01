@@ -22,15 +22,62 @@ part of pbrt;
 
 class PbrtParser {
   Pbrt pbrt;
-  PbrtParser(this.pbrt) {
+
+  PbrtParser(this.pbrt);
+
+  Future parse(String input) {
+    Completer c = new Completer();
+    _loadIncludes(input).then((x) {
+      _parse(input);
+      c.complete();
+    });
+
+    return c.future;
   }
 
-  void parse(String input) {
-    _lexer = new PbrtLexer(input);
+  Future _loadIncludes(String input) {
+    PbrtLexer _lexer = new PbrtLexer(input);
+
+    List<Future<List<int>>> futures = [];
+
+    Completer c = new Completer();
 
     int tk = _lexer.nextToken();
     while (!_lexer.isEof()) {
-      Map cmd = _parseCommand();
+      Map cmd = _parseCommand(_lexer);
+      if (cmd == null) {
+        _lexer.nextToken();
+        continue;
+      }
+
+      String name = cmd['name'].toLowerCase();
+
+      switch (name) {
+        case 'include':
+          futures.add(pbrt.resourceManager.requrestFile(cmd['value']));
+          break;
+      }
+    }
+
+    Future.wait(futures)
+          .then((List responses) {
+            c.complete();
+          })
+          .catchError((e) {
+            print(e);
+            c.completeError(e);
+          });
+
+    return c.future;
+  }
+
+  void _parse(String input) {
+    PbrtLexer _lexer = new PbrtLexer(input);
+
+    int tk = _lexer.nextToken();
+    while (!_lexer.isEof()) {
+      Map cmd = _parseCommand(_lexer);
+
       if (cmd == null) {
         _lexer.nextToken();
         continue;
@@ -193,6 +240,13 @@ class PbrtParser {
         case 'worldend':
           pbrt.worldEnd();
           break;
+        case 'include':
+          List<int> bytes = pbrt.resourceManager.getFile(cmd['value']);
+          if (bytes != null) {
+            String inc = new String.fromCharCodes(bytes);
+            _parse(inc);
+          }
+          break;
         default:
           LogWarning('Unhandled command ${cmd['name']}');
           break;
@@ -200,7 +254,7 @@ class PbrtParser {
     }
   }
 
-  Map _parseCommand() {
+  Map _parseCommand(PbrtLexer _lexer) {
     if (_lexer.currentToken != PbrtLexer.TOKEN_IDENTIFIER) {
       return null;
     }
@@ -209,6 +263,12 @@ class PbrtParser {
     cmd['name'] = _lexer.currentTokenString;
 
     String name = cmd['name'].toLowerCase();
+
+    if (name == 'include') {
+      int tk = _lexer.nextToken();
+      cmd['value'] = _lexer.currentTokenString;
+      return cmd;
+    }
 
     if (name == 'activetransform') {
       int tk = _lexer.nextToken();
@@ -400,6 +460,4 @@ class PbrtParser {
 
     return ps;
   }
-
-  PbrtLexer _lexer;
 }

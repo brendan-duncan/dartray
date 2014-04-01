@@ -1,7 +1,7 @@
 
 const String SCENE = """
-#SurfaceIntegrator "path"
-SurfaceIntegrator "photonmap"
+SurfaceIntegrator "path"
+#SurfaceIntegrator "photonmap"
 #SurfaceIntegrator "irradiancecache" 
 Sampler "lowdiscrepancy" "integer pixelsamples" [2]
 

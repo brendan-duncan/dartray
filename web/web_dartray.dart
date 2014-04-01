@@ -19,7 +19,7 @@
  *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
  ****************************************************************************/
 import 'dart:html' as Html;
-import 'package:dartray/dartray.dart';
+import 'package:dartray/dartray_web.dart';
 import 'package:image/image.dart';
 
 //import 'scenes/01_bowl_of_spheres.dart';
@@ -54,10 +54,6 @@ void main() {
   var imageData = c.context2D.getImageData(0, 0, c.width, c.height);
   var img = new Image(c.width, c.height);
 
-
-  // Use the custom random number generator so we can verify results against
-  // C++ pbrt.
-  RNG.UseMathRandom = false;
   //Spectrum.type = Spectrum.SAMPLED;
 
   Stopwatch timer = new Stopwatch();

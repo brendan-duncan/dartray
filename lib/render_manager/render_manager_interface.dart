@@ -35,10 +35,20 @@ part 'render_task.dart';
  * Manages the rendering process, either rendering locally or submitting the
  * job to one or more isolates (web workers).
  */
-class RenderManager {
-  Pbrt pbrt = new Pbrt();
+abstract class RenderManagerInterface extends ResourceManager {
+  Pbrt pbrt;
+  RenderIsolate isolate;
 
-  RenderManager();
+  RenderManagerInterface() {
+    pbrt = new Pbrt(this);
+  }
+
+  void startIsolate([SendPort port]) {
+    if (port != null) {
+      isolate = new RenderIsolate(this);
+      isolate.start(port);
+    }
+  }
 
   /**
    * [isolateUri] is the path to the script that initiates the
@@ -60,15 +70,15 @@ class RenderManager {
 
     if (isolate == null) {
       LogInfo('STARTING RENDER');
-      OutputImage output = pbrt.renderScene(scene, image);
+      pbrt.renderScene(scene, image).then((output) {
+        if (preview != null) {
+          preview(image);
+        }
 
-      if (preview != null) {
-        preview(image);
-      }
+        LogInfo('Stats....\n${Stats.getString()}');
 
-      LogInfo('Stats....\n${Stats.getString()}');
-
-      completer.complete(output);
+        completer.complete(output);
+      });
 
       return completer.future;
     }

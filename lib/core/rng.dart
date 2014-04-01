@@ -26,7 +26,7 @@ part of core;
  * the c++ implementation of PBRT.
  */
 class RNG {
-  static bool UseMathRandom = true;
+  static bool UseMathRandom = false;
 
   RNG([int seed = 5489]) {
     if (UseMathRandom) {

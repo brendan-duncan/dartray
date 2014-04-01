@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:args/args.dart';
-import 'package:dartray/dartray.dart';
+import 'package:dartray/dartray_io.dart';
 import 'package:image/image.dart';
 
 void main(List<String> argv) {
@@ -17,11 +17,9 @@ void main(List<String> argv) {
 
   String out = args['output'];
 
-  String scene = new File(args.rest[0]).readAsStringSync();
-
   Stopwatch timer = new Stopwatch();
   timer.start();
-  new RenderManager().render(scene).then((output) {
+  new RenderManager().renderFile(args.rest[0]).then((output) {
     timer.stop();
     LogInfo('RENDER FINISHED: ${timer.elapsed}');
     if (output != null) {

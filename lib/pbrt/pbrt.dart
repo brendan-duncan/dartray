@@ -20,6 +20,7 @@
  ****************************************************************************/
 library pbrt;
 
+import 'dart:async';
 import 'package:image/image.dart';
 
 import '../accelerators/accelerators.dart';
@@ -242,30 +243,38 @@ class Pbrt {
     registerVolumeRegion('homogenous', HomogeneousVolumeDensityRegion.Create);
   }
 
-  Pbrt() {
+  ResourceManager resourceManager;
+
+  Pbrt(this.resourceManager) {
     _registerStandardNodes();
   }
 
-  OutputImage renderScene(String scene, [Image output]) {
+  Future<OutputImage> renderScene(String scene, [Image output]) {
     if (output != null) {
       setOutputImage(output);
     }
 
-    if (!loadScene(scene)) {
-      return null;
-    }
+    Completer<OutputImage> c = new Completer<OutputImage>();
 
-    return _renderer.render(_scene);
+    loadScene(scene).then((x) {
+      if (_scene == null) {
+        c.complete(null);
+      }
+
+      OutputImage output = _renderer.render(_scene);
+      c.complete(output);
+    });
+
+    return c.future;
   }
 
   Renderer getRenderer() => _renderer;
 
   Scene getScene() => _scene;
 
-  bool loadScene(String file) {
+  Future loadScene(String file) {
     PbrtParser parser = new PbrtParser(this);
-    parser.parse(file);
-    return _renderer != null && _scene != null;
+    return parser.parse(file);
   }
 
   OutputImage render() {
