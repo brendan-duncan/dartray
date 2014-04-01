@@ -74,6 +74,7 @@ typedef Texture TextureCreator(Transform tex2world, TextureParams tp);
 typedef VolumeRegion VolumeRegionCreator(Transform volume2world,
                                          ParamSet params);
 
+typedef Renderer RendererCreator(ParamSet params);
 
 
 /**
@@ -95,6 +96,7 @@ class Pbrt {
   static Map<String, TextureCreator> _floatTextures = {};
   static Map<String, TextureCreator> _spectrumTextures = {};
   static Map<String, VolumeRegionCreator> _volumeRegions = {};
+  static Map<String, RendererCreator> _renderers = {};
 
   static void registerAccelerator(String name, AcceleratorCreator func) {
     _accelerators[name] = func;
@@ -139,6 +141,9 @@ class Pbrt {
   }
   static void registerVolumeRegion(String name, VolumeRegionCreator func) {
     _volumeRegions[name] = func;
+  }
+  static void registerRenderer(String name, RendererCreator func) {
+    _renderers[name] = func;
   }
 
   static void _registerStandardNodes() {
@@ -844,16 +849,18 @@ class Pbrt {
       if (lights.size() == 0)
           Warning("No light sources defined in scene; "
               "possibly rendering a black image.");
-    } else if (RendererName == "aggregatetest") {
-      renderer = CreateAggregateTestRenderer(RendererParams, primitives);
-      RendererParams.ReportUnused();
     } else if (RendererName == "surfacepoints") {
       Point pCamera = camera.CameraToWorld(camera.shutterOpen, Point(0, 0, 0));
       renderer = CreateSurfacePointsRenderer(RendererParams, pCamera, camera.shutterOpen);
       RendererParams.ReportUnused();
-    } else*/ {
+    } else*/ if (_renderOptions.rendererName == 'aggregatetest') {
+      renderer = AggregateTestRenderer.Create(_renderOptions.rendererParams,
+                                              _renderOptions.primitives);
+      _renderOptions.rendererParams.reportUnused();
+    } else {
       if (_renderOptions.rendererName != "sampler") {
-        LogWarning("Renderer type \"${_renderOptions.rendererName}\" unknown.  Using \"sampler\".");
+        LogWarning('Renderer type \"${_renderOptions.rendererName}\" unknown. '
+                   'Using \"sampler\".');
       }
 
       _renderOptions.rendererParams.reportUnused();

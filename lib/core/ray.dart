@@ -33,6 +33,14 @@ class Ray {
     origin = o == null ? new Point() : new Point.from(o),
     direction = d == null ? new Vector() : new Vector.from(d);
 
+  Ray.from(Ray other) :
+    origin = new Point.from(other.origin),
+    direction = new Vector.from(other.direction),
+    minDistance = other.minDistance,
+    maxDistance = other.maxDistance,
+    time = other.time,
+    depth = other.depth;
+
   Ray.withParent(Point origin, Vector direction, Ray parent,
            [this.minDistance = 0.0, this.maxDistance = INFINITY]) :
     this.origin = new Point.from(origin),
