@@ -7,7 +7,8 @@ of rendering, lighting and material algorithms.
 
 DartRay port of the PBRT renderer (www.pbrt.org).
 
-![bunny](https://cloud.githubusercontent.com/assets/3642099/2627497/ffb80e38-be08-11e3-908a-bf121421df08.jpg)
+![bunny](https://cloud.githubusercontent.com/assets/3642099/2627497/ffb80e38-be08-11e3-908a-bf121421df08.jpg)<br>
+_Rendered with the Ambient Occlusion integrator._
 
 ##Caveats
 DartRay provides a test-bed for various rendering algorithms. 
