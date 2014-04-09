@@ -21,63 +21,21 @@
 part of core;
 
 /**
- * Determines the points on the film plane for tracing rays.
+ * Determines the pixels on the film plane for sampling by a [Sampler].
+ *
+ * This allows the separation of calculating what pixels to render vs what
+ * sample within pixels to sample (as done by [Sampler]).
  */
-abstract class Sampler {
-  Sampler(this.xPixelStart, this.xPixelEnd, this.yPixelStart,
-               this.yPixelEnd, this.samplesPerPixel, this.shutterOpen,
-               this.shutterClose);
+abstract class ImageSampler {
+  ImageSampler(this.xPixelStart, this.xPixelEnd, this.yPixelStart,
+               this.yPixelEnd);
 
-  int getMoreSamples(List<Sample> sample, RNG rng);
+  int numPixels();
 
-  int maximumSampleCount();
-
-  bool reportResults(List<Sample> samples, List<RayDifferential> rays,
-                     List<Spectrum> Ls, List<Intersection> isects,
-                     int count) {
-    return true;
-  }
-
-  Sampler getSubSampler(int num, int count);
-
-  int roundSize(int size);
-
-  void computeSubWindow(int num, int count, List<int> extents) {
-    int dx = xPixelEnd - xPixelStart;
-    int dy = yPixelEnd - yPixelStart;
-    ComputeSubWindow(dx, dy, num, count, extents);
-  }
-
-  static void ComputeSubWindow(int w, int h, int num, int count,
-                               List<int> extents) {
-    // Determine how many tiles to use in each dimension, _nx_ and _ny_
-    int nx = count;
-    int ny = 1;
-    while ((nx & 0x1) == 0 && 2 * w * ny < h * nx) {
-      nx >>= 1;
-      ny <<= 1;
-    }
-    assert(nx * ny == count);
-
-    // Compute $x$ and $y$ pixel sample range for sub-window
-    int xo = num % nx;
-    int yo = num ~/ nx;
-    double tx0 = xo / nx;
-    double tx1 = (xo + 1) / nx;
-    double ty0 = yo / ny;
-    double ty1 = (yo + 1) / ny;
-    extents[0] = Lerp(tx0, 0, w).floor();
-    extents[1] = Lerp(tx1, 0, w).floor();
-    extents[2] = Lerp(ty0, 0, h).floor();
-    extents[3] = Lerp(ty1, 0, h).floor();
-  }
+  void getPixel(int index, List<int> pixel);
 
   int xPixelStart;
   int xPixelEnd;
   int yPixelStart;
   int yPixelEnd;
-  int samplesPerPixel;
-  double shutterOpen;
-  double shutterClose;
 }
-

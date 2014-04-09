@@ -1,7 +1,7 @@
 
 const String SCENE = """
 SurfaceIntegrator "path"
-Sampler "lowdiscrepancy" "integer pixelsamples" [16] 
+Sampler "lowdiscrepancy" "integer pixelsamples" [4] 
 Accelerator "bvh"
 #Accelerator "grid"
 
@@ -48,8 +48,8 @@ WorldBegin
   AttributeEnd
 
   AttributeBegin
-    #Material "matte" "color Kd" [.8 .8 .8]
-    Material "uber" "color Kd" [0 0 1] "color opacity" [.5 .5 .5] "color Kr" [0 0 1] "color Kt" [0 0 0.5]
+    Material "matte" "color Kd" [.8 .8 .8]
+    #Material "uber" "color Kd" [0 0 1] "color opacity" [.5 .5 .5] "color Kr" [0 0 1] "color Kt" [0 0 0.5]
     Shape "trianglemesh" 
         "point P" [ -100 0 -100   100 0 -100   100 0 100   -100 0 100 ]
         "float uv" [ 0 0 1 0 1 1 0 1 ]

@@ -78,6 +78,7 @@ part 'common.dart';
 part 'differential_geometry.dart';
 part 'film.dart';
 part 'filter.dart';
+part 'image_sampler.dart';
 part 'integrator.dart';
 part 'intersection.dart';
 part 'kdtree.dart';

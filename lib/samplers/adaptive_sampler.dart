@@ -28,10 +28,10 @@ class AdaptiveSampler extends Sampler {
     // Initialize common sampler parameters
     List<int> extent = [0, 0, 0, 0];
     film.getSampleExtent(extent);
-    int minsamp = params.findOneInt("minsamples", 4);
-    int maxsamp = params.findOneInt("maxsamples", 32);
+    int minsamp = params.findOneInt('minsamples', 4);
+    int maxsamp = params.findOneInt('maxsamples', 32);
 
-    String m = params.findOneString("method", "contrast");
+    String m = params.findOneString('method', 'contrast');
 
     int method = (m == 'contrast') ? ADAPTIVE_CONTRAST_THRESHOLD :
                  (m == 'shapeid') ? ADAPTIVE_COMPARE_SHAPE_ID :
@@ -78,14 +78,15 @@ class AdaptiveSampler extends Sampler {
     }
 
     if (minSamples < 2) {
-      LogWarning("Adaptive sampler needs at least two initial pixel samples.  Using two.");
+      LogWarning('Adaptive sampler needs at least two initial pixel samples. '
+                 'Using two.');
       minSamples = 2;
     }
 
     if (minSamples == maxSamples) {
       maxSamples *= 2;
-      LogWarning('Adaptive sampler must have more maximum samples than minimum. '
-              'Using $minSamples - $maxSamples');
+      LogWarning('Adaptive sampler must have more maximum samples than '
+                 'minimum. Using $minSamples - $maxSamples');
     }
   }
 
@@ -95,10 +96,10 @@ class AdaptiveSampler extends Sampler {
     if (extent[0] == extent[1] || extent[2] == extent[3]) {
       return null;
     }
+
     return new AdaptiveSampler(extent[0], extent[1], extent[2], extent[3],
                                minSamples, maxSamples, method,
                                shutterOpen, shutterClose);
-
   }
 
 
@@ -113,7 +114,7 @@ class AdaptiveSampler extends Sampler {
   int getMoreSamples(List<Sample> samples, RNG rng) {
     if (sampleBuf == null) {
         sampleBuf = new Float32List(LDPixelSampleFloatsNeeded(samples[0],
-                                                        maxSamples));
+                                                              maxSamples));
     }
 
     if (supersamplePixel) {
@@ -131,7 +132,7 @@ class AdaptiveSampler extends Sampler {
   }
 
   bool reportResults(List<Sample> samples, List<RayDifferential> rays,
-      List<Spectrum> Ls, List<Intersection> isects, int count) {
+                     List<Spectrum> Ls, List<Intersection> isects, int count) {
     if (supersamplePixel) {
       supersamplePixel = false;
       // Advance to next pixel for sampling for _AdaptiveSampler_

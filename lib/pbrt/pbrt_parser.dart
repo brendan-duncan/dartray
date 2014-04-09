@@ -64,7 +64,7 @@ class PbrtParser {
             c.complete();
           })
           .catchError((e) {
-            print(e);
+            LogError(e);
             c.completeError(e);
           });
 

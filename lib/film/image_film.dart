@@ -49,7 +49,7 @@ class ImageFilm extends Film {
     yPixelStart = (yResolution * cropWindow[2]).ceil();
     yPixelCount = max(1, (yResolution * cropWindow[3]).ceil() - yPixelStart);
 
-    previewCount = xPixelCount * 4;
+    previewCount = xPixelCount * 12;
 
     // Allocate film image storage
     _Lxyz = new Float32List(xPixelCount * yPixelCount * 3);

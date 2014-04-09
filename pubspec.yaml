@@ -2,8 +2,7 @@ name: dartray
 version: 0.0.1
 author: Brendan Duncan <brendanduncan@gmail.com>
 description: Dart port of the PBRT renderer
-dependencies:
-  image:
-    path: ../image
 dev_dependencies:
   args: any
+  image:
+    path: ../image

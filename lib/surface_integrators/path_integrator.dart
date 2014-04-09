@@ -20,6 +20,14 @@
  ****************************************************************************/
 part of surface_integrators;
 
+/**
+ * Path tracing surface integrator.
+ *
+ * PBRT Spec:
+ *  Name: 'path'
+ *  Parameters:
+ *    int maxdepth _5_: The maximum number of bounces for a ray.
+ */
 class PathIntegrator extends SurfaceIntegrator {
   PathIntegrator(int md) {
     maxDepth = md;

@@ -34,10 +34,9 @@ import 'package:image/image.dart';
 //import 'scenes/09_quadrics.dart';
 
 //import 'scenes/bunny.dart';
-import 'scenes/cornell_path.dart';
-//import 'scenes/area_light.dart';
+//import 'scenes/cornell_path.dart';
+import 'scenes/area_light.dart';
 //import 'scenes/spheres.dart';
-//import 'scenes/test.dart';
 //import 'scenes/teapot.dart';
 //import 'scenes/room_path.dart';
 
@@ -59,7 +58,7 @@ void main() {
   Stopwatch timer = new Stopwatch();
   timer.start();
   new RenderManager().render(SCENE, image: img,
-      //isolate: 'render_isolate.dart', numThreads: 2,
+      isolate: 'render_isolate.dart', numThreads: 1,
       log: (int type, String msg) {
         print(msg);
         var div = new Html.Element.html('<div>$msg</div>');

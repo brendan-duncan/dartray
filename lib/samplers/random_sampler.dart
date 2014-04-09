@@ -22,7 +22,7 @@ part of samplers;
 
 class RandomSampler extends Sampler {
   static RandomSampler Create(ParamSet params, Film film, Camera camera) {
-    int ns = params.findOneInt("pixelsamples", 4);
+    int ns = params.findOneInt('pixelsamples', 4);
     List<int> extents = [0, 0, 0, 0];
     film.getSampleExtent(extents);
     return new RandomSampler(extents[0], extents[1], extents[2], extents[3], ns,
@@ -53,7 +53,7 @@ class RandomSampler extends Sampler {
     // Shift image samples to pixel coordinates
     for (int o = 0, len = 2 * nSamples; o < len; o += 2) {
       imageSamples[o] += xPos;
-      imageSamples[o+1] += yPos;
+      imageSamples[o + 1] += yPos;
     }
 
     samplePos = 0;

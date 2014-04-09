@@ -21,14 +21,15 @@
 part of surface_integrators;
 
 class AmbientOcclusionIntegrator extends SurfaceIntegrator {
-  AmbientOcclusionIntegrator(int ns, this.maxDist) {
+  AmbientOcclusionIntegrator(int ns, this.minDist, this.maxDist) {
     nSamples = RoundUpPow2(ns);
   }
 
   static AmbientOcclusionIntegrator Create(ParamSet params) {
-    int nSamples = params.findOneInt("nsamples", 2048);
-    double maxDist = params.findOneFloat("maxdist", INFINITY);
-    return new AmbientOcclusionIntegrator(nSamples, maxDist);
+    int nSamples = params.findOneInt('nsamples', 2048);
+    double maxDist = params.findOneFloat('maxdist', INFINITY);
+    double minDist = params.findOneFloat('mindist', 1.0e-4);
+    return new AmbientOcclusionIntegrator(nSamples, minDist, maxDist);
   }
 
   Spectrum Li(Scene scene, Renderer renderer,
@@ -48,7 +49,7 @@ class AmbientOcclusionIntegrator extends SurfaceIntegrator {
         w = -w;
       }
 
-      Ray r = new Ray(p, w, 0.01, maxDist);
+      Ray r = new Ray(p, w, minDist, maxDist);
 
       if (!scene.intersectP(r)) {
         ++nClear;
@@ -59,5 +60,6 @@ class AmbientOcclusionIntegrator extends SurfaceIntegrator {
   }
 
   int nSamples;
+  double minDist;
   double maxDist;
 }

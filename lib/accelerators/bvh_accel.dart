@@ -235,14 +235,12 @@ class BVHAccel extends Aggregate {
     }
 
     int nPrimitives = end - start;
-    //print('$start $end');
 
     if (nPrimitives == 1) {
       // Create leaf _BVHBuildNode_
       int firstPrimOffset = orderedPrims.length;
       for (int i = start; i < end; ++i) {
         int primNum = buildData[i].primitiveNumber;
-        //print('  @${primNum}');
         orderedPrims.add(primitives[primNum]);
       }
       node.initLeaf(firstPrimOffset, nPrimitives, bbox);
@@ -254,7 +252,6 @@ class BVHAccel extends Aggregate {
       }
 
       int dim = centroidBounds.maximumExtent();
-      //print('  ${centroidBounds.pMin[dim]}  :  ${centroidBounds.pMax[dim]}');
 
       // Partition primitives into two sets and build children
       int mid = (start + end) ~/ 2;
@@ -264,7 +261,6 @@ class BVHAccel extends Aggregate {
         int firstPrimOffset = orderedPrims.length;
         for (int i = start; i < end; ++i) {
           int primNum = buildData[i].primitiveNumber;
-          //print('  #${primNum}');
           orderedPrims.add(primitives[primNum]);
         }
         node.initLeaf(firstPrimOffset, nPrimitives, bbox);
@@ -387,7 +383,6 @@ class BVHAccel extends Aggregate {
               int firstPrimOffset = orderedPrims.length;
               for (int i = start; i < end; ++i) {
                 int primNum = buildData[i].primitiveNumber;
-                //print('  %${primNum}');
                 orderedPrims.add(primitives[primNum]);
               }
               node.initLeaf(firstPrimOffset, nPrimitives, bbox);

@@ -1,8 +1,5 @@
 const String SCENE = """
-Sampler "stratified" 
-  "integer xsamples" [4] "integer ysamples" [4]
-  "bool jitter" ["true"]
-
+Sampler "stratified" "integer xsamples" [4] "integer ysamples" [4] "bool jitter" ["true"]
 PixelFilter "mitchell"
 
 LookAt 0 0 -20   0 0 1   0 1 0
