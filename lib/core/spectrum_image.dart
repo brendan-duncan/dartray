@@ -53,6 +53,7 @@ class SpectrumImage {
   SpectrumImage.from(SpectrumImage other) :
     width = other.width,
     height = other.height,
+    samplesPerPixel = other.samplesPerPixel,
     data = new Float32List.fromList(other.data);
 
   void set(SpectrumImage other) {

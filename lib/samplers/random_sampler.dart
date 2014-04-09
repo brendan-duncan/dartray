@@ -32,7 +32,8 @@ class RandomSampler extends Sampler {
   RandomSampler(int xstart, int xend, int ystart,
       int yend, int ns, double sopen, double sclose) :
     super(xstart, xend, ystart, yend, ns, sopen, sclose) {
-    pixels = new RandomImageSampler(xstart, xend, ystart, yend);
+    //pixels = new RandomImageSampler(xstart, xend, ystart, yend);
+    pixels = new TileImageSampler(xstart, xend, ystart, yend);
     pixelIndex = 0;
     // Get storage for a pixel's worth of stratified samples
     imageSamples = new Float32List(2 * samplesPerPixel);

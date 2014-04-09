@@ -121,6 +121,22 @@ class ParamSet {
     spectra.add(new ParamSetItem<Spectrum>(name, s));
   }
 
+  void addBlackbodySpectrum(String name, List<double> data) {
+    name = name.toLowerCase();
+    eraseSpectrum(name);
+    assert(data.length % 2 == 0);
+    int nItems = data.length ~/ 2;
+    List<Spectrum> s = new List<Spectrum>(nItems);
+    Float32List bb = new Float32List(Spectrum.NUM_CIE_SAMPLES);
+    for (int i = 0, di = 0; i < nItems; ++i, di += 2) {
+      Spectrum.Blackbody(Spectrum.CIE_lambda, data[2 * i], bb);
+      SampledSpectrum bs = new SampledSpectrum();
+      bs.setSampled(Spectrum.CIE_lambda, bb);
+      s[i] = new Spectrum.from(bs) * data[2 * i + 1];
+    }
+    spectra.add(new ParamSetItem<Spectrum>(name, s));
+  }
+
   void addSpectrumFiles(String name, List<String> filename) {
 
   }

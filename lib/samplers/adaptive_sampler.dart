@@ -53,7 +53,8 @@ class AdaptiveSampler extends Sampler {
           RoundUpPow2(Math.max(mins, maxs)),
           sopen, sclose) {
     //pixels = new LinearImageSampler(xstart, xend, ystart, yend);
-    pixels = new RandomImageSampler(xstart, xend, ystart, yend);
+    //pixels = new RandomImageSampler(xstart, xend, ystart, yend);
+    pixels = new TileImageSampler(xstart, xend, ystart, yend);
     pixelIndex = 0;
     supersamplePixel = false;
 
@@ -118,13 +119,12 @@ class AdaptiveSampler extends Sampler {
                                                             maxSamples));
     }
 
-    /*if (supersamplePixel) {
+    if (supersamplePixel) {
       LDPixelSample(pixel[0], pixel[1], shutterOpen, shutterClose, maxSamples,
                     samples, sampleBuf, rng);
       return maxSamples;
-    } else*/ {
+    } else {
       if (pixelIndex >= pixels.numPixels()) {
-        LogInfo('$pixel : $pixelIndex : ${pixels.numPixels()}');
         return 0;
       }
 

@@ -130,8 +130,12 @@ class BestCandidateSampler extends Sampler {
 
   double tableWidth;
   int tableOffset;
-  int xTileStart, xTileEnd, yTileStart, yTileEnd;
-  int xTile, yTile;
+  int xTileStart;
+  int xTileEnd;
+  int yTileStart;
+  int yTileEnd;
+  int xTile;
+  int yTile;
   List<double> sampleOffsets = [0.0, 0.0, 0.0];
 }
 

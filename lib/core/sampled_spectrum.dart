@@ -77,7 +77,7 @@ class SampledSpectrum extends Spectrum {
       }
       return r;
     }
-    LogSevere('SampledSpectrum or double expected.');
+    LogSevere('SampledSpectrum or num expected.');
     return new SampledSpectrum(0.0);
   }
 

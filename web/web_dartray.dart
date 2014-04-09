@@ -28,7 +28,6 @@ import 'package:image/image.dart';
 //import 'scenes/04_box.dart';
 //import 'scenes/05_distant_light.dart';
 //import 'scenes/05_distant_light2.dart';
-//import 'scenes/06_woman.dart';
 //import 'scenes/07_area_light.dart';
 //import 'scenes/08_whitted.dart';
 //import 'scenes/09_quadrics.dart';
@@ -37,7 +36,6 @@ import 'package:image/image.dart';
 //import 'scenes/cornell_path.dart';
 import 'scenes/area_light.dart';
 //import 'scenes/spheres.dart';
-//import 'scenes/teapot.dart';
 //import 'scenes/room_path.dart';
 
 
@@ -53,7 +51,7 @@ void main() {
   var imageData = c.context2D.getImageData(0, 0, c.width, c.height);
   var img = new Image(c.width, c.height);
 
-  //Spectrum.type = Spectrum.SAMPLED;
+  Spectrum.type = Spectrum.SAMPLED;
 
   Stopwatch timer = new Stopwatch();
   timer.start();

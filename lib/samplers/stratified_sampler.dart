@@ -26,7 +26,8 @@ class StratifiedSampler extends Sampler {
                     double sopen, double sclose) :
     super(xstart, xend, ystart, yend, xs * ys, sopen, sclose) {
     //pixels = new LinearImageSampler(xstart, xend, ystart, yend);
-    pixels = new RandomImageSampler(xstart, xend, ystart, yend);
+    //pixels = new RandomImageSampler(xstart, xend, ystart, yend);
+    pixels = new TileImageSampler(xstart, xend, ystart, yend);
     pixelIndex = 0;
     xPixelSamples = xs;
     yPixelSamples = ys;
@@ -42,8 +43,16 @@ class StratifiedSampler extends Sampler {
     List<int> extents = [0, 0, 0, 0];
     film.getSampleExtent(extents);
 
-    int xsamp = params.findOneInt('xsamples', 2);
-    int ysamp = params.findOneInt('ysamples', 2);
+    int pixelsamples = params.findOneInt('pixelsamples', null);
+    int xsamp;
+    int ysamp;
+    if (pixelsamples != null) {
+      xsamp = pixelsamples;
+      ysamp = pixelsamples;
+    } else {
+      xsamp = params.findOneInt('xsamples', 2);
+      ysamp = params.findOneInt('ysamples', 2);
+    }
 
     return new StratifiedSampler(extents[0], extents[1], extents[2],
                                  extents[3], xsamp, ysamp, jitter,

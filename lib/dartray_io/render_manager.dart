@@ -13,12 +13,12 @@ class RenderManager extends RenderManagerInterface {
     Completer<List<int>> c = new Completer<List<int>>();
 
     if (path == null) {
-      print('File not found: $file');
+      LogInfo('File not found: $file');
       c.complete(null);
       return c.future;
     }
 
-    print('LOAD $path');
+    LogInfo('LOAD $path');
     Future<List<int>> f = new File(path).readAsBytes();
     f.then((bytes) {
       resources[file] = bytes;
@@ -45,6 +45,4 @@ class RenderManager extends RenderManagerInterface {
     }
     return null;
   }
-
-  Map<String, List<int>> resources = {};
 }

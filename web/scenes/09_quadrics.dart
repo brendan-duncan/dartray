@@ -1,5 +1,5 @@
 const String SCENE = """
-Sampler "bestcandidate" "integer pixelsamples" [64]
+#Sampler "bestcandidate" "integer pixelsamples" [64]
 PixelFilter "mitchell"
 
 Scale -1 1 1

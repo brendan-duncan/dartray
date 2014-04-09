@@ -5,3 +5,4 @@ import '../core/core.dart';
 
 part 'linear_image_sampler.dart';
 part 'random_image_sampler.dart';
+part 'tile_image_sampler.dart';

@@ -27,7 +27,8 @@ abstract class Spectrum {
   final Float32List c;
 
   static const int RGB = 0;
-  static const int SAMPLED = 1;
+  static const int XYZ = 1;
+  static const int SAMPLED = 2;
 
   /// Determines the type of spectrum to use for color calculations, either
   /// [SAMPLED] wavelength or [RGB] tripple.
@@ -37,24 +38,31 @@ abstract class Spectrum {
    * Factor constructor will create the type of spectrum currently being used.
    */
   factory Spectrum([double v = 0.0]) {
-    return (type == SAMPLED) ? new SampledSpectrum(v) : new RGBColor(v);
+    return (type == RGB) ? new RGBColor(v) :
+           (type == SAMPLED) ? new SampledSpectrum(v) :
+           (type == XYZ) ? new XYZColor(v) :
+           null;
   }
 
-  factory Spectrum.from(Spectrum other) {
-    if (other is RGBColor) {
-      return new RGBColor.from(other);
-    }
-    if (other is SampledSpectrum) {
-      return new SampledSpectrum.from(other);
+  factory Spectrum.from(Spectrum other,
+                        [int type = Spectrum.SPECTRUM_REFLECTANCE]) {
+    switch (Spectrum.type) {
+      case RGB:
+        return new RGBColor.from(other);
+      case XYZ:
+        return new XYZColor.from(other);
+      case SAMPLED:
+        return new SampledSpectrum.from(other, type);
     }
     LogSevere('Invalid Spectrum type');
     return null;
   }
 
   factory Spectrum.rgb(double r, double g, double b) {
-    return (type == SAMPLED) ?
-           new SampledSpectrum.rgb(r, g, b) :
-           new RGBColor.rgb(r, g, b);
+    return (type == RGB) ? new RGBColor.rgb(r, g, b) :
+           (type == SAMPLED) ? new SampledSpectrum.rgb(r, g, b) :
+           (type == XYZ) ? new XYZColor.rgb(r, g, b) :
+           null;
   }
 
   Spectrum.samples(int nSamples, [double v = 0.0]) :
@@ -84,7 +92,9 @@ abstract class Spectrum {
   Spectrum setSampled(List<double> lambda, List<double> v);
 
   Spectrum setRGB(double r, double g, double b,
-                  [int type = Spectrum.SPECTRUM_REFLECTANCE]);
+                  [int type = SPECTRUM_REFLECTANCE]);
+
+  RGBColor toRGB();
 
   XYZColor toXYZ();
 

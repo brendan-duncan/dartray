@@ -31,14 +31,24 @@ class XYZColor extends Spectrum {
     c[2] = z;
   }
 
+  XYZColor.rgb(double r, double g, double b) :
+    super.samples(3) {
+    Spectrum.RGBToXYZ(r, g, b, c);
+  }
+
   XYZColor.from(Spectrum color) :
     super.samples(3) {
     if (color is RGBColor) {
       Spectrum.RGBToXYZ(color.c[0], color.c[1], color.c[2], c);
-    } else {
+    } else if (color is XYZColor) {
       c[0] = color.c[0];
       c[1] = color.c[1];
       c[2] = color.c[2];
+    } else if (color is SampledSpectrum) {
+      Spectrum xyz = color.toXYZ();
+      c[0] = xyz.c[0];
+      c[1] = xyz.c[1];
+      c[2] = xyz.c[2];
     }
   }
 
@@ -54,13 +64,9 @@ class XYZColor extends Spectrum {
 
   set z(double v) => c[2] = v;
 
-  RGBColor toRgb() {
-    return new RGBColor.from(this);
-  }
+  RGBColor toRGB() => new RGBColor.from(this);
 
-  XYZColor toXYZ() {
-    return this;
-  }
+  XYZColor toXYZ() => this;
 
   XYZColor setSampled(List<double> lambda, List<double> v) {
     RGBColor rgb = new RGBColor().setSampled(lambda, v);

@@ -184,6 +184,7 @@ class Pbrt {
     registerLight('distant', DistantLight.Create);
     registerLight('point', PointLight.Create);
     registerLight('spot', SpotLight.Create);
+    registerLight('infinite', InfiniteAreaLight.Create);
 
     registerAreaLight('diffuse', DiffuseAreaLight.Create);
     // alias for diffuse

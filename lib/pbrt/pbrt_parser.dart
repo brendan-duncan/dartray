@@ -434,8 +434,20 @@ class PbrtParser {
                 LogWarning("Non-even number of values given with sampled spectrum "
                            "parameter \"${p['name']}\". Ignoring extra.");
               }
+              for (int i = 0, l = v.length; i < l; ++i) {
+                v[i] = double.parse(v[i]);
+              }
               ps.addSampledSpectrum(p['name'], v);
             }
+          }
+          break;
+        case 'blackbody':
+          var v = p['value'];
+          if (v.isNotEmpty) {
+            for (int i = 0, l = v.length; i < l; ++i) {
+              v[i] = double.parse(v[i]);
+            }
+            ps.addBlackbodySpectrum(p['name'], v);
           }
           break;
         case 'bool':

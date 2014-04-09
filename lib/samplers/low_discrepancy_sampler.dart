@@ -25,7 +25,8 @@ class LowDiscrepancySampler extends Sampler {
                         int nsamp, double sopen, double sclose) :
     super(xstart, xend, ystart, yend, RoundUpPow2(nsamp), sopen, sclose) {
     //pixels = new LinearImageSampler(xstart, xend, ystart, yend);
-    pixels = new RandomImageSampler(xstart, xend, ystart, yend);
+    //pixels = new RandomImageSampler(xstart, xend, ystart, yend);
+    pixels = new TileImageSampler(xstart, xend, ystart, yend);
     pixelIndex = 0;
     if (!IsPowerOf2(nsamp)) {
       LogWarning('Pixel samples being rounded up to power of 2');
@@ -72,13 +73,13 @@ class LowDiscrepancySampler extends Sampler {
 
     if (sampleBuf == null) {
        sampleBuf = new Float32List(LDPixelSampleFloatsNeeded(samples[0],
-                                                             nPixelSamples));
+                                                            nPixelSamples));
     }
 
     pixels.getPixel(pixelIndex++, pixel);
 
     LDPixelSample(pixel[0], pixel[1], shutterOpen, shutterClose,
-                  nPixelSamples, samples, sampleBuf, rng);
+                 nPixelSamples, samples, sampleBuf, rng);
 
     return nPixelSamples;
   }
@@ -86,6 +87,7 @@ class LowDiscrepancySampler extends Sampler {
   int maximumSampleCount() {
     return nPixelSamples;
   }
+
 
   ImageSampler pixels;
   Int32List pixel = new Int32List(2);

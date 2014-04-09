@@ -21,7 +21,21 @@
 part of core;
 
 abstract class ResourceManager {
+  static ResourceManager global;
+
   List<String> includePaths = [];
+
+  ResourceManager() {
+    global = this;
+  }
+
+  static Future<List<int>> RequrestFile(String path) {
+    return global.requrestFile(path);
+  }
+
+  static List<int> GetFile(String path) {
+    return global.getFile(path);
+  }
 
   void addIncludePath(path) {
     includePaths.add(path);
@@ -29,5 +43,12 @@ abstract class ResourceManager {
 
   Future<List<int>> requrestFile(String path);
 
-  List<int> getFile(String path);
+  List<int> getFile(String path) {
+    if (!resources.containsKey(path)) {
+      return null;
+    }
+    return resources[path];
+  }
+
+  Map<String, List<int>> resources = {};
 }

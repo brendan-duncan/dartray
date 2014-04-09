@@ -252,7 +252,7 @@ class Distribution2D {
   }
 
   // Distribution2D Private Data
-  List<Distribution1D> pConditionalV;
+  List<Distribution1D> pConditionalV = [];
   Distribution1D pMarginal;
 }
 

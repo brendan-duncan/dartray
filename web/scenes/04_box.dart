@@ -29,7 +29,16 @@ AttributeEnd
 AttributeBegin # red box
   Translate 2.1 0 0
   Material "matte" "color Kd" [1 0 0]
-  Shape "box"  
+  Shape "trianglemesh"
+    "integer indices"  [
+      0 1 2  0 2 3 # back
+      0 5 1 0 4 5 # up
+      1 5 6 1 6 2 #right
+      4 6 5 4 7 6 # front
+      0 7 3 0 4 7 # left
+      2 6 7 2 7 3 # down
+       ] 
+    "point P" [-1 1 1  1 1 1  1 -1 1 -1 -1 1  -1 1 -1  1 1 -1  1 -1 -1 -1 -1 -1]
 AttributeEnd
 
 AttributeBegin # yellow sphere

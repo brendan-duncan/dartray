@@ -48,6 +48,11 @@ class RGBColor extends Spectrum {
       c[2] = s.c[2];
     } else if (s is XYZColor) {
       Spectrum.XYZToRGB(s.c[0], s.c[1], s.c[2], c);
+    } else if (s is SampledSpectrum) {
+      Spectrum rgb = s.toRGB();
+      c[0] = rgb.c[0];
+      c[1] = rgb.c[1];
+      c[2] = rgb.c[2];
     }
     assert(!c[0].isNaN && !c[1].isNaN && !c[2].isNaN);
     assert(!c[0].isInfinite && !c[1].isInfinite && !c[2].isInfinite);
@@ -104,6 +109,8 @@ class RGBColor extends Spectrum {
   XYZColor toXYZ() {
     return new XYZColor.from(this);
   }
+
+  RGBColor toRGB() => this;
 
   void set(double v) {
     c[0] = v;
