@@ -68,8 +68,12 @@ class SamplerRenderer extends Renderer {
     }
 
     // Get samples from [Sampler] and update image
-    int sampleCount;
-    while ((sampleCount = sampler.getMoreSamples(samples, rng)) > 0) {
+    while (true) {
+      int sampleCount = sampler.getMoreSamples(samples, rng);
+      if (sampleCount == 0) {
+        break;
+      }
+
       // Generate camera rays and compute radiance along rays
       for (int i = 0; i < sampleCount; ++i) {
         Stats.STARTED_GENERATING_CAMERA_RAY(samples[i]);

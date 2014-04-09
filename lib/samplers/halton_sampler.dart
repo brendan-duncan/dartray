@@ -25,7 +25,7 @@ class HaltonSampler extends Sampler {
                 double sopen, double sclose) :
     super(xs, xe, ys, ye, ps, sopen, sclose) {
     int delta = Math.max(xPixelEnd - xPixelStart,
-                    yPixelEnd - yPixelStart);
+                         yPixelEnd - yPixelStart);
     wantedSamples = samplesPerPixel * delta * delta;
     currentSample = 0;
   }
@@ -58,10 +58,13 @@ class HaltonSampler extends Sampler {
 
       samples[0].imageX = Lerp(u, xPixelStart, xPixelStart + lerpDelta);
       samples[0].imageY = Lerp(v, yPixelStart, yPixelStart + lerpDelta);
+
       ++currentSample;
+
       if (samples[0].imageX >= xPixelEnd || samples[0].imageY >= yPixelEnd) {
         continue;
       }
+
       break;
     }
 
@@ -69,7 +72,7 @@ class HaltonSampler extends Sampler {
     samples[0].lensU = RadicalInverse(currentSample, 5);
     samples[0].lensV = RadicalInverse(currentSample, 7);
     samples[0].time = Lerp(RadicalInverse(currentSample, 11),
-                        shutterOpen, shutterClose);
+                           shutterOpen, shutterClose);
 
     for (int i = 0; i < samples[0].n1D.length; ++i) {
       LatinHypercube(samples[0].oneD[i], samples[0].n1D[i], 1, rng);
@@ -96,5 +99,6 @@ class HaltonSampler extends Sampler {
     return size;
   }
 
-  int wantedSamples, currentSample;
+  int wantedSamples;
+  int currentSample;
 }

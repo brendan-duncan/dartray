@@ -1,9 +1,11 @@
 
 const String SCENE = """
 SurfaceIntegrator "path"
-Sampler "lowdiscrepancy" "integer pixelsamples" [4] 
-Accelerator "bvh"
-#Accelerator "grid"
+#Sampler "lowdiscrepancy" "integer pixelsamples" [4] 
+#Sampler "stratified" "integer pixelsamples" [1]
+#Sampler "random" "integer pixelsamples" [1]
+#Sampler "adaptive" "integer minSamples" [2] "integer maxSamples" [4]
+Sampler "halton"
 
 LookAt 4 4 10   0 2 0  0 1 0
 Camera "perspective" "float fov" [30]
@@ -18,7 +20,7 @@ WorldBegin
   AttributeEnd
 
   AttributeBegin
-    Material "matte" "color Kd" [.5 .5 .5]
+    Material "matte" "color Kd" [.6 .4 .4]
     Translate 0 1 0
 
     Shape "trianglemesh" 
@@ -48,8 +50,7 @@ WorldBegin
   AttributeEnd
 
   AttributeBegin
-    Material "matte" "color Kd" [.8 .8 .8]
-    #Material "uber" "color Kd" [0 0 1] "color opacity" [.5 .5 .5] "color Kr" [0 0 1] "color Kt" [0 0 0.5]
+    Material "matte" "color Kd" [.4 .6 .4]
     Shape "trianglemesh" 
         "point P" [ -100 0 -100   100 0 -100   100 0 100   -100 0 100 ]
         "float uv" [ 0 0 1 0 1 1 0 1 ]

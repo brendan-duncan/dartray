@@ -3,14 +3,14 @@
  *                                                                          *
  *  This file is part of DartRay.                                           *
  *                                                                          *
- *  Licensed under the Apache License, Version 2.0 (the "License");         *
+ *  Licensed under the Apache License, Version 2.0 (the 'License');         *
  *  you may not use this file except in compliance with the License.        *
  *  You may obtain a copy of the License at                                 *
  *                                                                          *
  *  http://www.apache.org/licenses/LICENSE-2.0                              *
  *                                                                          *
  *  Unless required by applicable law or agreed to in writing, software     *
- *  distributed under the License is distributed on an "AS IS" BASIS,       *
+ *  distributed under the License is distributed on an 'AS IS' BASIS,       *
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.*
  *  See the License for the specific language governing permissions and     *
  *  limitations under the License.                                          *
@@ -32,13 +32,12 @@ class AdaptiveSampler extends Sampler {
     int maxsamp = params.findOneInt('maxsamples', 32);
 
     String m = params.findOneString('method', 'contrast');
-
     int method = (m == 'contrast') ? ADAPTIVE_CONTRAST_THRESHOLD :
                  (m == 'shapeid') ? ADAPTIVE_COMPARE_SHAPE_ID :
                  -1;
 
     if (method == -1) {
-      LogWarning("Adaptive sampling metric \"$m\" unknown. Using \"contrast\".");
+      LogWarning('Adaptive sampling metric \'$m\' unknown. Using \'contrast\'.');
       method = ADAPTIVE_CONTRAST_THRESHOLD;
     }
 
@@ -53,9 +52,12 @@ class AdaptiveSampler extends Sampler {
     super(xstart, xend, ystart, yend,
           RoundUpPow2(Math.max(mins, maxs)),
           sopen, sclose) {
-    xPos = xPixelStart;
-    yPos = yPixelStart;
+    //pixels = new LinearImageSampler(xstart, xend, ystart, yend);
+    pixels = new RandomImageSampler(xstart, xend, ystart, yend);
+    pixelIndex = 0;
     supersamplePixel = false;
+
+    pixels.getPixel(pixelIndex, pixel);
 
     if (mins > maxs) {
       int t = mins;
@@ -64,14 +66,14 @@ class AdaptiveSampler extends Sampler {
     }
 
     if (!IsPowerOf2(mins)) {
-      LogWarning("Minimum pixel samples being rounded up to power of 2");
+      LogWarning('Minimum pixel samples being rounded up to power of 2');
       minSamples = RoundUpPow2(mins);
     } else {
       minSamples = mins;
     }
 
     if (!IsPowerOf2(maxs)) {
-      LogWarning("Maximum pixel samples being rounded up to power of 2");
+      LogWarning('Maximum pixel samples being rounded up to power of 2');
       maxSamples = RoundUpPow2(maxs);
     } else {
       maxSamples = maxs;
@@ -102,7 +104,6 @@ class AdaptiveSampler extends Sampler {
                                shutterOpen, shutterClose);
   }
 
-
   int roundSize(int size) {
     return RoundUpPow2(size);
   }
@@ -113,20 +114,23 @@ class AdaptiveSampler extends Sampler {
 
   int getMoreSamples(List<Sample> samples, RNG rng) {
     if (sampleBuf == null) {
-        sampleBuf = new Float32List(LDPixelSampleFloatsNeeded(samples[0],
-                                                              maxSamples));
+      sampleBuf = new Float32List(LDPixelSampleFloatsNeeded(samples[0],
+                                                            maxSamples));
     }
 
-    if (supersamplePixel) {
-      LDPixelSample(xPos, yPos, shutterOpen, shutterClose, maxSamples,
+    /*if (supersamplePixel) {
+      LDPixelSample(pixel[0], pixel[1], shutterOpen, shutterClose, maxSamples,
                     samples, sampleBuf, rng);
       return maxSamples;
-    } else {
-      if (yPos == yPixelEnd) {
+    } else*/ {
+      if (pixelIndex >= pixels.numPixels()) {
+        LogInfo('$pixel : $pixelIndex : ${pixels.numPixels()}');
         return 0;
       }
-      LDPixelSample(xPos, yPos, shutterOpen, shutterClose, minSamples,
+
+      LDPixelSample(pixel[0], pixel[1], shutterOpen, shutterClose, minSamples,
                     samples, sampleBuf, rng);
+
       return minSamples;
     }
   }
@@ -135,34 +139,31 @@ class AdaptiveSampler extends Sampler {
                      List<Spectrum> Ls, List<Intersection> isects, int count) {
     if (supersamplePixel) {
       supersamplePixel = false;
-      // Advance to next pixel for sampling for _AdaptiveSampler_
-      if (++xPos == xPixelEnd) {
-        xPos = xPixelStart;
-        ++yPos;
+      // Advance to next pixel for sampling
+      if (pixelIndex < pixels.numPixels()) {
+        pixels.getPixel(++pixelIndex, pixel);
       }
       return true;
     } else if (needsSupersampling(samples, rays, Ls, isects, count)) {
-      Stats.SUPERSAMPLE_PIXEL_YES(xPos, yPos);
+      Stats.SUPERSAMPLE_PIXEL_YES(pixel[0], pixel[1]);
       supersamplePixel = true;
       return false;
     } else {
-      Stats.SUPERSAMPLE_PIXEL_NO(xPos, yPos);
-      // Advance to next pixel for sampling for _AdaptiveSampler_
-      if (++xPos == xPixelEnd) {
-        xPos = xPixelStart;
-        ++yPos;
+      Stats.SUPERSAMPLE_PIXEL_NO(pixel[0], pixel[1]);
+      // Advance to next pixel for sampling
+      if (pixelIndex < pixels.numPixels()) {
+        pixels.getPixel(++pixelIndex, pixel);
       }
       return true;
     }
   }
-
 
   bool needsSupersampling(List<Sample> samples, List<RayDifferential> rays,
       List<Spectrum> Ls, List<Intersection> isects, int count) {
     switch (method) {
       case ADAPTIVE_COMPARE_SHAPE_ID:
         // See if any shape ids differ within samples
-        for (int i = 0; i < count-1; ++i) {
+        for (int i = 0; i < count - 1; ++i) {
           if (isects[i].shapeId != isects[i + 1].shapeId ||
               isects[i].primitiveId != isects[i + 1].primitiveId) {
             return true;
@@ -188,8 +189,11 @@ class AdaptiveSampler extends Sampler {
     return false;
   }
 
-  int xPos, yPos;
-  int minSamples, maxSamples;
+  ImageSampler pixels;
+  Int32List pixel = new Int32List(2);
+  int pixelIndex;
+  int minSamples;
+  int maxSamples;
   Float32List sampleBuf;
 
   int method;

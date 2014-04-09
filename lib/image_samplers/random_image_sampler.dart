@@ -41,6 +41,9 @@ class RandomImageSampler extends ImageSampler {
 
   void getPixel(int index, List<int> pixel) {
     index *= 2;
+    if (index >= _samples.length - 1) {
+      return;
+    }
     pixel[0] = _samples[index];
     pixel[1] = _samples[index + 1];
   }

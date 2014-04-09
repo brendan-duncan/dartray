@@ -32,31 +32,13 @@ class RandomSampler extends Sampler {
   RandomSampler(int xstart, int xend, int ystart,
       int yend, int ns, double sopen, double sclose) :
     super(xstart, xend, ystart, yend, ns, sopen, sclose) {
-    xPos = xPixelStart;
-    yPos = yPixelStart;
-    nSamples = ns;
+    pixels = new RandomImageSampler(xstart, xend, ystart, yend);
+    pixelIndex = 0;
     // Get storage for a pixel's worth of stratified samples
-    imageSamples = new Float32List(2 * nSamples);
-    lensSamples = new Float32List(2 * nSamples);
-    timeSamples = new Float32List(nSamples);
-
-    RNG rng = new RNG(xstart + ystart * (xend - xstart));
-    int i = 0;
-    for (; i < nSamples; ++i) {
-      timeSamples[i] = rng.randomFloat();
-    }
-    for (; i < 2 * nSamples; ++i) {
-      imageSamples[i] = rng.randomFloat();
-      lensSamples[i] = rng.randomFloat();
-    }
-
-    // Shift image samples to pixel coordinates
-    for (int o = 0, len = 2 * nSamples; o < len; o += 2) {
-      imageSamples[o] += xPos;
-      imageSamples[o + 1] += yPos;
-    }
-
-    samplePos = 0;
+    imageSamples = new Float32List(2 * samplesPerPixel);
+    lensSamples = new Float32List(2 * samplesPerPixel);
+    timeSamples = new Float32List(samplesPerPixel);
+    samplePos = samplesPerPixel;
   }
 
   int maximumSampleCount() {
@@ -64,33 +46,29 @@ class RandomSampler extends Sampler {
   }
 
   int getMoreSamples(List<Sample> sample, RNG rng) {
-    if (samplePos == nSamples) {
-      if (xPixelStart == xPixelEnd || yPixelStart == yPixelEnd) {
-        return 0;
-      }
+    if (pixelIndex >= pixels.numPixels()) {
+      return 0;
+    }
 
-      if (++xPos == xPixelEnd) {
-        xPos = xPixelStart;
-        ++yPos;
-      }
-
-      if (yPos == yPixelEnd) {
-        return 0;
-      }
+    if (samplePos == samplesPerPixel) {
+      pixels.getPixel(pixelIndex++, pixel);
 
       int i = 0;
-      for (; i < nSamples; ++i) {
+      for (; i < samplesPerPixel; ++i) {
         timeSamples[i] = rng.randomFloat();
+        imageSamples[i] = rng.randomFloat();
+        lensSamples[i] = rng.randomFloat();
       }
-      for (; i < 2 * nSamples; ++i) {
+
+      for (; i < 2 * samplesPerPixel; ++i) {
         imageSamples[i] = rng.randomFloat();
         lensSamples[i] = rng.randomFloat();
       }
 
       // Shift image samples to pixel coordinates
-      for (int o = 0; o < 2 * nSamples; o += 2) {
-        imageSamples[o] += xPos;
-        imageSamples[o + 1] += yPos;
+      for (int o = 0; o < 2 * samplesPerPixel; o += 2) {
+        imageSamples[o] += pixel[0];
+        imageSamples[o + 1] += pixel[1];
       }
 
       samplePos = 0;
@@ -132,10 +110,12 @@ class RandomSampler extends Sampler {
     }
 
     return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
-                             nSamples, shutterOpen, shutterClose);
+        samplesPerPixel, shutterOpen, shutterClose);
   }
 
-  int xPos, yPos, nSamples;
+  ImageSampler pixels;
+  Int32List pixel = new Int32List(2);
+  int pixelIndex;
   Float32List imageSamples;
   Float32List lensSamples;
   Float32List timeSamples;
