@@ -84,8 +84,6 @@ class Distribution1D {
   int count;
 }
 
-/*void RejectionSampleDisk(List<double> x, List<double> y, RNG rng);*/
-
 Vector UniformSampleHemisphere(double u1, double u2) {
   double z = u1;
   double r = Math.sqrt(Math.max(0.0, 1.0 - z * z));
@@ -461,9 +459,6 @@ void LDPixelSample(int xPos, int yPos, double shutterOpen,
   }
 }
 
-/*Vector SampleHG(Vector w, double g, double u1, double u2);
-
-double HGPdf(Vector w, Vector wp, double g);*/
 
 // Monte Carlo Inline Functions
 double BalanceHeuristic(int nf, double fPdf, int ng, double gPdf) {

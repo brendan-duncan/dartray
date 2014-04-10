@@ -20,11 +20,18 @@
  ****************************************************************************/
 part of core;
 
-
+/**
+ * A scene encompasses all of the geometry and lights to be rendered.
+ */
 class Scene {
+  /// An aggregate primitive is one that contains sub-primitives, usually an
+  /// acceleration structure.
   Primitive aggregate;
+  /// The list of lights in the scene.
   List<Light> lights;
+  /// A region for volumetric effects.
   VolumeRegion volumeRegion;
+  /// The world-space boudning box of all geometry.
   BBox worldBound;
 
   Scene(this.aggregate, List<Light> lights, this.volumeRegion) :

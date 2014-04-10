@@ -262,7 +262,7 @@ class IrradianceCacheIntegrator extends SurfaceIntegrator {
       specularBounce = (flags[0] & BSDF_SPECULAR) != 0;
       pathThroughput *= f * Vector.AbsDot(wi, n) / pdf[0];
 
-      ray = new RayDifferential.withParent(p, wi, ray, isect.rayEpsilon);
+      ray = new RayDifferential.child(p, wi, ray, isect.rayEpsilon);
 
       // Possibly terminate the path
       if (pathLength > 2) {

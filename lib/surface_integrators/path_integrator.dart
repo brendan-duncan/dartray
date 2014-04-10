@@ -100,7 +100,7 @@ class PathIntegrator extends SurfaceIntegrator {
       specularBounce = (flags[0] & BSDF_SPECULAR) != 0;
       pathThroughput *= f * Vector.AbsDot(wi, n) / pdf[0];
 
-      ray = new RayDifferential.withParent(p, wi, ray, isectP.rayEpsilon);
+      ray = new RayDifferential.child(p, wi, ray, isectP.rayEpsilon);
 
       // Possibly terminate the path
       if (bounces > 3) {

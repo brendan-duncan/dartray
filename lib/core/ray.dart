@@ -20,12 +20,23 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * A ray is a line with one end, starting at an [origin] and going off in
+ * a [direction] from that [origin].
+ */
 class Ray {
+  /// The starting point of the ray.
   Point origin;
+  /// The direction the ray is pointing toward.
   Vector direction;
+  /// The minimum distance for a valid intersection test with this ray.
+  /// This is used to reduce self-intersections with geometry.
   double minDistance;
+  /// The maximum distance for a valid intersection test.
   double maxDistance;
+  /// The animation time of this ray, for testing against animated scenes.
   double time;
+  /// The recursive depth of this ray, for secondary rays.
   int depth;
 
   Ray([Point o, Vector d, this.minDistance = 0.0, this.maxDistance = INFINITY,

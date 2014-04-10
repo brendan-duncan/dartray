@@ -94,7 +94,7 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
           assert(pdf[0] >= 0.0);
 
           // Trace BSDF final gather ray and accumulate radiance
-          RayDifferential bounceRay = new RayDifferential.withParent(p, wi, ray,
+          RayDifferential bounceRay = new RayDifferential.child(p, wi, ray,
                                                               isect.rayEpsilon);
           Intersection gatherIsect = new Intersection();
           if (scene.intersect(bounceRay, gatherIsect)) {
@@ -153,7 +153,7 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
             continue;
           }
 
-          RayDifferential bounceRay = new RayDifferential.withParent(p, wi, ray,
+          RayDifferential bounceRay = new RayDifferential.child(p, wi, ray,
                                                               isect.rayEpsilon);
           Intersection gatherIsect = new Intersection();
           Stats.PHOTON_MAP_STARTED_GATHER_RAY(bounceRay);
@@ -466,7 +466,7 @@ class PhotonShootingTask {
               break;
             }
 
-            photonRay = new RayDifferential.withParent(photonIsect.dg.p, wi,
+            photonRay = new RayDifferential.child(photonIsect.dg.p, wi,
                                                        photonRay,
                                                        photonIsect.rayEpsilon);
           }

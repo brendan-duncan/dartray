@@ -26,8 +26,8 @@ class StratifiedSampler extends Sampler {
                     double sopen, double sclose) :
     super(xstart, xend, ystart, yend, xs * ys, sopen, sclose) {
     //pixels = new LinearImageSampler(xstart, xend, ystart, yend);
-    //pixels = new RandomImageSampler(xstart, xend, ystart, yend);
-    pixels = new TileImageSampler(xstart, xend, ystart, yend);
+    pixels = new RandomImageSampler(xstart, xend, ystart, yend);
+    //pixels = new TileImageSampler(xstart, xend, ystart, yend);
     pixelIndex = 0;
     xPixelSamples = xs;
     yPixelSamples = ys;

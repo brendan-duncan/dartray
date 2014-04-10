@@ -20,11 +20,11 @@
  ****************************************************************************/
 part of core;
 
-const int TEXTURE_REPEAT = 0;
-const int TEXTURE_BLACK = 1;
-const int TEXTURE_CLAMP = 2;
-
 class MIPMap {
+  static const int TEXTURE_REPEAT = 0;
+  static const int TEXTURE_BLACK = 1;
+  static const int TEXTURE_CLAMP = 2;
+
   MIPMap() :
     width = 0,
     height = 0,
@@ -160,7 +160,7 @@ class MIPMap {
     return l[t * l.width + s];
   }
 
-  Spectrum lookup(double s, double t, [double width = 0.0]) {
+  lookup(double s, double t, [double width = 0.0]) {
     // Compute MIPMap level for trilinear filtering
     double level = levels - 1 + Log2(Math.max(width, 1.0e-8));
 
@@ -280,7 +280,7 @@ class MIPMap {
     return sum / sumWts;
   }
 
-  Spectrum triangle(int level, double s, double t) {
+  triangle(int level, double s, double t) {
     level = level.clamp(0, levels - 1);
     s = s * pyramid[level].width - 0.5;
     t = t * pyramid[level].height - 0.5;

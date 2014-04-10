@@ -20,6 +20,10 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * A RayDifferential is a Ray that contains additional information used for
+ * filtering textures.
+ */
 class RayDifferential extends Ray {
   bool hasDifferentials = false;
   Point rxOrigin = new Point();
@@ -35,15 +39,14 @@ class RayDifferential extends Ray {
     super(new Point.from(ray.origin), new Vector.from(ray.direction),
           ray.minDistance, ray.maxDistance, ray.time, ray.depth);
 
-  RayDifferential.withParent([Point origin, Vector direction, Ray parent,
+  RayDifferential.child([Point origin, Vector direction, Ray parent,
                        double start = 0.0, end = INFINITY]) :
     super.withParent(origin, direction, parent, start, end);
 
   void scaleDifferentials(double s) {
-      rxOrigin = new Point.from(origin + (rxOrigin - origin) * s);
-      ryOrigin = new Point.from(origin + (ryOrigin - origin) * s);
-      rxDirection = direction + (rxDirection - direction) * s;
-      ryDirection = direction + (ryDirection - direction) * s;
+    rxOrigin = new Point.from(origin + (rxOrigin - origin) * s);
+    ryOrigin = new Point.from(origin + (ryOrigin - origin) * s);
+    rxDirection = direction + (rxDirection - direction) * s;
+    ryDirection = direction + (ryDirection - direction) * s;
   }
-
 }

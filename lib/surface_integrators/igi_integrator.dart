@@ -87,7 +87,7 @@ class IGIIntegrator extends SurfaceIntegrator {
 
       Spectrum Llight = f * G * vl.pathContrib / nLightPaths;
 
-      RayDifferential connectRay = new RayDifferential.withParent(p, wi, ray,
+      RayDifferential connectRay = new RayDifferential.child(p, wi, ray,
                                         isect.rayEpsilon,
                                         Math.sqrt(d2) * (1.0 - vl.rayEpsilon));
 
@@ -125,7 +125,7 @@ class IGIIntegrator extends SurfaceIntegrator {
         if (!f.isBlack() && pdf[0] > 0.0) {
           // Trace ray for bias compensation gather sample
           double maxDist = Math.sqrt(Vector.AbsDot(wi, n) / gLimit);
-          RayDifferential gatherRay = new RayDifferential.withParent(p, wi, ray,
+          RayDifferential gatherRay = new RayDifferential.child(p, wi, ray,
                                                     isect.rayEpsilon, maxDist);
 
           Intersection gatherIsect = new Intersection();
@@ -271,7 +271,7 @@ class IGIIntegrator extends SurfaceIntegrator {
 
           alpha *= contribScale / rrProb;
 
-          ray = new RayDifferential.withParent(isect.dg.p, wi, ray,
+          ray = new RayDifferential.child(isect.dg.p, wi, ray,
                                                isect.rayEpsilon);
         }
       }

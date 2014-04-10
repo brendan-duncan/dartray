@@ -20,6 +20,9 @@
  ****************************************************************************/
 part of core;
 
+/**
+ * A 3-dimensional vector.
+ */
 class Vector {
   double x, y, z;
 

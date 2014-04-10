@@ -226,6 +226,8 @@ class Pbrt {
     registerSpectrumTexture('dots', DotsTexture.CreateSpectrum);
     registerFloatTexture('fbm', FBmTexture.CreateFloat);
     registerSpectrumTexture('fbm', FBmTexture.CreateSpectrum);
+    registerFloatTexture('imagemap', ImageTexture.CreateFloat);
+    registerSpectrumTexture('imagemap', ImageTexture.CreateSpectrum);
     registerFloatTexture('marble', MarbleTexture.CreateFloat);
     registerSpectrumTexture('marble', MarbleTexture.CreateSpectrum);
     registerFloatTexture('mix', MixTexture.CreateFloat);

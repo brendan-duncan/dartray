@@ -251,7 +251,7 @@ class Stats {
   static void KDTREE_INTERSECTIONP_TRAVERSED_LEAF_NODE(arg0, arg1) {
   }
 
-  static void LOADED_IMAGE_MAP(arg0, arg1, arg2, arg3, arg4) {
+  static void LOADED_IMAGE_MAP(arg0, arg1, arg2, arg3) {
   }
 
   static void MIPMAP_EWA_FILTER(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10) {

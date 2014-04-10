@@ -194,7 +194,7 @@ abstract class Integrator {
 
     if (pdf[0] > 0.0 && !f.isBlack() && Vector.AbsDot(wi, n) != 0.0) {
       // Compute ray differential _rd_ for specular reflection
-      RayDifferential rd = new RayDifferential.withParent(p, wi, ray,
+      RayDifferential rd = new RayDifferential.child(p, wi, ray,
                                                           isect.rayEpsilon);
       if (ray.hasDifferentials) {
         rd.hasDifferentials = true;
@@ -240,7 +240,7 @@ abstract class Integrator {
 
     if (pdf[0] > 0.0 && !f.isBlack() && Vector.AbsDot(wi, n) != 0.0) {
       // Compute ray differential _rd_ for specular transmission
-      RayDifferential rd = new RayDifferential.withParent(p, wi, ray,
+      RayDifferential rd = new RayDifferential.child(p, wi, ray,
                                                           isect.rayEpsilon);
 
       if (ray.hasDifferentials) {

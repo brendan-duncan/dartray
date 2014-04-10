@@ -26,51 +26,32 @@ part of core;
  * the c++ implementation of PBRT.
  */
 class RNG {
-  static bool UseMathRandom = false;
-
   RNG([int seed = 5489]) {
-    if (UseMathRandom) {
-      random = new Math.Random(seed);
-    } else {
-      mti = N + 1; // mti==N+1 means mt[N] is not initialized
-      this.seed(seed);
-    }
+    mti = N + 1; // mti==N+1 means mt[N] is not initialized
+    this.seed(seed);
   }
 
   void seed(int seed) {
-    if (UseMathRandom) {
-      random = new Math.Random(seed);
-    } else {
-      mt[0] = seed & 0xffffffff;
-      for (mti = 1; mti < N; mti++) {
-        mt[mti] =
-          (1812433253 * (mt[mti - 1] ^ (mt[mti - 1] >> 30)) + mti);
-          // See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier.
-          // In the previous versions, MSBs of the seed affect
-          // only MSBs of the array mt[].
-          // 2002/01/09 modified by Makoto Matsumoto
-        mt[mti] &= 0xffffffff; // for >32 bit machines
-      }
+    mt[0] = seed & 0xffffffff;
+    for (mti = 1; mti < N; mti++) {
+      mt[mti] =
+        (1812433253 * (mt[mti - 1] ^ (mt[mti - 1] >> 30)) + mti);
+        // See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier.
+        // In the previous versions, MSBs of the seed affect
+        // only MSBs of the array mt[].
+        // 2002/01/09 modified by Makoto Matsumoto
+      mt[mti] &= 0xffffffff; // for >32 bit machines
     }
   }
 
   double randomFloat() {
     Stats.RNG_STARTED_RANDOM_FLOAT();
-    if (UseMathRandom) {
-      double v = random.nextDouble();
-      Stats.RNG_FINISHED_RANDOM_FLOAT();
-      return v;
-    }
     double v = (randomUInt() & 0xffffff) / 16777216.0;
     Stats.RNG_FINISHED_RANDOM_FLOAT();
     return v;
   }
 
   int randomUInt() {
-    if (UseMathRandom) {
-      return random.nextInt(0xffffffff);
-    }
-
     int y;
     const int M = 397;
     const int MATRIX_A = 0x9908b0df; // constant vector a
@@ -119,6 +100,7 @@ class RNG {
   Math.Random random;
 
   static const int N = 624;
-  Uint32List mt = new Uint32List(N); // the array for the state vector
+  /// the array for the state vector
+  Uint32List mt = new Uint32List(N);
   int mti;
 }
