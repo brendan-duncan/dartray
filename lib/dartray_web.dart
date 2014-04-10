@@ -1,7 +1,9 @@
 library dartray_web;
 
 import 'dart:async';
-import 'render_manager/render_manager_interface.dart';
+
+import 'core/core.dart';
+import 'manager/manager.dart';
 
 export 'dartray.dart';
 

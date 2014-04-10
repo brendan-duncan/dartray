@@ -18,17 +18,16 @@
  *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
  *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
  ****************************************************************************/
-part of dartray_web;
+library manager;
 
-class RenderManager extends RenderManagerInterface {
-  Future<List<int>> requrestFile(String path) {
-    LogInfo('LOAD $path');
-    Completer<List<int>> c = new Completer<List<int>>();
-    c.complete(null);
-    return c.future;
-  }
+import 'dart:async';
+import 'dart:isolate';
+import 'dart:typed_data';
+import 'package:image/image.dart';
 
-  List<int> getFile(String path) {
-    return null;
-  }
-}
+import '../core/core.dart';
+import '../pbrt/pbrt.dart';
+
+part 'render_isolate.dart';
+part 'render_manager_interface.dart';
+part 'render_task.dart';
