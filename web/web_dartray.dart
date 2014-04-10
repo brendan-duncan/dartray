@@ -57,7 +57,7 @@ void main() {
   Stopwatch timer = new Stopwatch();
   timer.start();
   new RenderManager().render(SCENE, image: img,
-      isolate: 'render_isolate.dart', numThreads: 1,
+      isolate: 'render_isolate.dart', numThreads: 2,
       log: (int type, String msg) {
         print(msg);
         var div = new Html.Element.html('<pre>$msg</pre>');
@@ -70,6 +70,10 @@ void main() {
       }).then((OutputImage output) {
         timer.stop();
         LogInfo('RENDER FINISHED: ${timer.elapsed}');
+        String s = Stats.getString();
+        if (s.isNotEmpty) {
+          LogInfo('STATS....\n${Stats.getString()}');
+        }
         var bytes = img.getBytes();
         imageData.data.setRange(0, bytes.length, bytes);
         c.context2D.putImageData(imageData, 0, 0);

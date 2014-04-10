@@ -1,4 +1,4 @@
-Film "image" "integer xresolution" [512] "integer yresolution" [512]
+Film "image" "integer xresolution" [512] "integer yresolution" [512] "string filename" "cornel_path.png"
   
 SurfaceIntegrator "path" "integer maxdepth" [2]
 Sampler "lowdiscrepancy" "integer pixelsamples" [2]

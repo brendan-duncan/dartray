@@ -209,7 +209,7 @@ class MIPMap {
     }
 
     if (minorLength == 0.0) {
-      Spectrum val = triangle(0, s, t);
+      var val = triangle(0, s, t);
       return val;
     }
 
@@ -218,14 +218,14 @@ class MIPMap {
     int ilod = lod.floor();
 
     double d = lod - ilod;
-    Spectrum val = EWA(ilod, s, t, ds0, dt0, ds1, dt1) * (1.0 - d) +
-                   EWA(ilod + 1, s, t, ds0, dt0, ds1, dt1) * d;
+    var val = EWA(ilod, s, t, ds0, dt0, ds1, dt1) * (1.0 - d) +
+              EWA(ilod + 1, s, t, ds0, dt0, ds1, dt1) * d;
 
     return val;
   }
 
-  Spectrum EWA(int level, double s, double t, double ds0, double dt0,
-               double ds1, double dt1) {
+  EWA(int level, double s, double t, double ds0, double dt0,
+      double ds1, double dt1) {
     if (level >= levels) {
       return texel(levels - 1, 0, 0);
     }
@@ -258,7 +258,8 @@ class MIPMap {
     int t1 = (t + 2.0 * invDet * vSqrt).floor();
 
     // Scan over ellipse bound and compute quadratic equation
-    Spectrum sum = new Spectrum(0.0);
+    var sum = pyramid[level].samplesPerPixel == 1 ? 0.0 :
+              new Spectrum(0.0);
 
     double sumWts = 0.0;
 

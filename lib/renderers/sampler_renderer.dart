@@ -29,7 +29,9 @@ class SamplerRenderer extends Renderer {
    * Render the [scene] from the viewpoint of the [camera].
    */
   OutputImage render(Scene scene) {
+    LogInfo('Starting Render');
     Stats.STARTED_RENDERTASK(taskNum);
+
     // Allow integrators to do preprocessing for the scene
     Stats.STARTED_PREPROCESSING();
     surfaceIntegrator.preprocess(scene, camera, this);
@@ -41,14 +43,14 @@ class SamplerRenderer extends Renderer {
     // Allocate and initialize sample
     Sampler mainSampler = this.sampler;
 
-    Sample sample = new Sample(mainSampler, surfaceIntegrator,
-                               volumeIntegrator, scene);
-
     Sampler sampler = mainSampler.getSubSampler(taskNum, taskCount);
     if (sampler == null) {
       Stats.FINISHED_RENDERTASK(taskNum);
       return null;
     }
+
+    Sample sample = new Sample(sampler, surfaceIntegrator,
+                               volumeIntegrator, scene);
 
     RNG rng = new RNG(taskNum);
 

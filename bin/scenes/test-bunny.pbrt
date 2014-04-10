@@ -1,4 +1,4 @@
-Film "image" "string filename" ["d:\\temp\\test-bunny.tga"]
+Film "image" "string filename" ["test-bunny.png"]
 	"integer xresolution" [256] "integer yresolution" [256]
   
 Sampler "lowdiscrepancy" "integer pixelsamples" [4] 

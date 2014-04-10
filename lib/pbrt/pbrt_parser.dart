@@ -26,9 +26,14 @@ class PbrtParser {
   PbrtParser(this.pbrt);
 
   Future parse(String input) {
+    Stopwatch t = new Stopwatch();
+    t.start();
+    LogInfo('Parsing Scene');
     Completer c = new Completer();
     _loadIncludes(input).then((x) {
       _parse(input);
+      t.stop();
+      LogInfo('Finished Parsing Scene: ${t.elapsed}');
       c.complete();
     });
 
@@ -54,19 +59,28 @@ class PbrtParser {
 
       switch (name) {
         case 'include':
+          LogInfo('Include ${cmd['value']}');
           futures.add(pbrt.resourceManager.requrestFile(cmd['value']));
           break;
       }
     }
 
-    Future.wait(futures)
-          .then((List responses) {
-            c.complete();
-          })
-          .catchError((e) {
-            LogError(e);
-            c.completeError(e);
-          });
+    Future.wait(futures).then((List responses) {
+      List<Future<List<int>>> subFutures = [];
+      for (List<int> bytes in responses) {
+        String inc = new String.fromCharCodes(bytes);
+        subFutures.add(_loadIncludes(inc));
+      }
+      Future.wait(subFutures).then((List subResponses) {
+        c.complete();
+      }).catchError((e) {
+        LogError(e);
+        c.completeError(e);
+      });
+    }).catchError((e) {
+      LogError(e);
+      c.completeError(e);
+    });
 
     return c.future;
   }
@@ -245,6 +259,8 @@ class PbrtParser {
           if (bytes != null) {
             String inc = new String.fromCharCodes(bytes);
             _parse(inc);
+          } else {
+            LogWarning('Missing include: ${cmd['value']}');
           }
           break;
         default:

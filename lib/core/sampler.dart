@@ -25,8 +25,20 @@ part of core;
  */
 abstract class Sampler {
   Sampler(this.xPixelStart, this.xPixelEnd, this.yPixelStart,
-               this.yPixelEnd, this.samplesPerPixel, this.shutterOpen,
-               this.shutterClose);
+          this.yPixelEnd, this.samplesPerPixel, this.shutterOpen,
+          this.shutterClose);
+
+  int get width => (xPixelEnd - xPixelStart);
+
+  int get height => (yPixelEnd - yPixelStart);
+
+  int get top => yPixelStart;
+
+  int get left => xPixelStart;
+
+  int get right => xPixelEnd - 1;
+
+  int get bottom => yPixelEnd - 1;
 
   int getMoreSamples(List<Sample> sample, RNG rng);
 
@@ -43,14 +55,12 @@ abstract class Sampler {
   int roundSize(int size);
 
   void computeSubWindow(int num, int count, List<int> extents) {
-    int dx = xPixelEnd - xPixelStart;
-    int dy = yPixelEnd - yPixelStart;
-    ComputeSubWindow(dx, dy, num, count, extents);
+    ComputeSubWindow(width, height, num, count, extents);
   }
 
   static void ComputeSubWindow(int w, int h, int num, int count,
                                List<int> extents) {
-    // Determine how many tiles to use in each dimension, _nx_ and _ny_
+    // Determine how many tiles to use in each dimension, nx and ny
     int nx = count;
     int ny = 1;
     while ((nx & 0x1) == 0 && 2 * w * ny < h * nx) {
@@ -59,7 +69,7 @@ abstract class Sampler {
     }
     assert(nx * ny == count);
 
-    // Compute $x$ and $y$ pixel sample range for sub-window
+    // Compute x and y pixel sample range for sub-window
     int xo = num % nx;
     int yo = num ~/ nx;
     double tx0 = xo / nx;
@@ -67,9 +77,9 @@ abstract class Sampler {
     double ty0 = yo / ny;
     double ty1 = (yo + 1) / ny;
     extents[0] = Lerp(tx0, 0, w).floor();
-    extents[1] = Lerp(tx1, 0, w).floor();
+    extents[1] = Math.min(Lerp(tx1, 0, w).floor(), w - 1);
     extents[2] = Lerp(ty0, 0, h).floor();
-    extents[3] = Lerp(ty1, 0, h).floor();
+    extents[3] = Math.min(Lerp(ty1, 0, h).floor(), h - 1);
   }
 
   int xPixelStart;

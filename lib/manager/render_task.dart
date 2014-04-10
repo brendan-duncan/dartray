@@ -21,7 +21,7 @@
 part of manager;
 
 /**
- * Manages [RenderIsolate]s controlled by the [RenderManager].
+ * Manages a [RenderIsolate], which is controlled by the [RenderManager].
  */
 class RenderTask {
   static const int CONNECTING = 1;
@@ -60,10 +60,7 @@ class RenderTask {
           if (cmd == 'preview' && msg.containsKey('image')) {
             var bytes = msg['image'];
             if (taskCount > 1) {
-              threadImage.getBytes().setRange(0, bytes.length, bytes);
-              copyInto(image, threadImage, dstX: extents[0], dstY: extents[2],
-                       srcX: extents[0], srcY: extents[2],
-                       srcW: extents[1], srcH: extents[3]);
+              _updatePreviewImage(image, bytes);
             } else {
               image.getBytes().setRange(0, bytes.length, bytes);
             }
@@ -80,19 +77,6 @@ class RenderTask {
             OutputImage output = new OutputImage(extents[0], extents[2],
                                                  extents[1], extents[3],
                                                  rgb);
-            /*if (taskCount > 1) {
-              threadImage.getBytes().setRange(0, bytes.length, bytes);
-              copyInto(image, threadImage, dstX: extents[0], dstY: extents[2],
-                       srcX: extents[0], srcY: extents[2],
-                       srcW: extents[1], srcH: extents[3]);
-            } else {
-              image.getBytes().setRange(0, bytes.length, bytes);
-            }
-
-            if (previewCallback != null) {
-              previewCallback(image);
-            }*/
-
             completer.complete(output);
             return;
           }
@@ -103,6 +87,16 @@ class RenderTask {
     });
 
     return completer.future;
+  }
+
+  void _updatePreviewImage(Image image, Uint8List bytes) {
+    Uint32List src = new Uint32List.view(bytes.buffer);
+    Uint32List dst = image.data;
+    int w = extents[1] - extents[0];
+    int dsti = extents[2] * image.width + extents[0];
+    for (int y = extents[2]; y < extents[3]; ++y, dsti += image.width) {
+      dst.setRange(dsti, dsti + w, src, dsti);
+    }
   }
 
   void _linkEstablish(msg, [Image image, String scene]) {

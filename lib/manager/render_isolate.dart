@@ -124,7 +124,7 @@ class RenderIsolate {
       pbrt.setTask(taskNum, taskCount);
       pbrt.renderScene(scene, img).then((output) {
         _log(LOG_INFO, 'FINISHED: ${timer.elapsed}');
-        LogInfo('[$taskNum] Stats....\n${Stats.getString()}');
+        LogInfo('[$taskNum] STATS:\n${Stats.getString()}');
 
         sendPort.send({'cmd': 'final', 'output': output.rgb});
       });

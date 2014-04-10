@@ -64,8 +64,6 @@ abstract class RenderManagerInterface extends ResourceManager {
           preview(image);
         }
 
-        LogInfo('Stats....\n${Stats.getString()}');
-
         completer.complete(output);
       });
 

@@ -518,19 +518,19 @@ class Stats {
 
   static List<StatTracker> trackers = [];
 
-  static StatsCounter shapesMade = new StatsCounter("Shapes", "Total Shapes Created");
-  static StatsCounter trianglesMade = new StatsCounter("Shapes", "Total Triangles Created");
-  static StatsCounter cameraRays = new StatsCounter("Rays", "Camera Rays Traced");
-  static StatsCounter specularReflectionRays = new StatsCounter("Rays", "Specular Reflection Rays Traced");
-  static StatsCounter specularRefractionRays = new StatsCounter("Rays", "Specular Refraction Rays Traced");
-  static StatsCounter shadowRays = new StatsCounter("Rays", "Shadow Rays Traced");
-  static StatsCounter nonShadowRays = new StatsCounter("Rays", "Total Non-Shadow Rays Traced");
-  static StatsCounter kdTreeInteriorNodes = new StatsCounter("Kd-Tree", "Interior Nodes Created");
-  static StatsCounter kdTreeLeafNodes = new StatsCounter("Kd-Tree", "Interior Nodes Created");
-  static StatsCounter kdTreeMaxPrims = new StatsCounter("Kd-Tree", "Maximum Primitives in Leaf");
-  static StatsCounter kdTreeMaxDepth = new StatsCounter("Kd-Tree", "Maximum Depth of Leaf Nodes");
-  static StatsPercentage rayTriIntersections = new StatsPercentage("Intersections", "Ray/Triangle Intersection Hits");
-  static StatsPercentage rayTriIntersectionPs = new StatsPercentage("Intersections", "Ray/Triangle IntersectionP Hits");
+  static StatsCounter shapesMade = new StatsCounter('Shapes', 'Total Shapes Created');
+  static StatsCounter trianglesMade = new StatsCounter('Shapes', 'Total Triangles Created');
+  static StatsCounter cameraRays = new StatsCounter('Rays', 'Camera Rays Traced');
+  static StatsCounter specularReflectionRays = new StatsCounter('Rays', 'Specular Reflection Rays Traced');
+  static StatsCounter specularRefractionRays = new StatsCounter('Rays', 'Specular Refraction Rays Traced');
+  static StatsCounter shadowRays = new StatsCounter('Rays', 'Shadow Rays Traced');
+  static StatsCounter nonShadowRays = new StatsCounter('Rays', 'Total Non-Shadow Rays Traced');
+  static StatsCounter kdTreeInteriorNodes = new StatsCounter('Kd-Tree', 'Interior Nodes Created');
+  static StatsCounter kdTreeLeafNodes = new StatsCounter('Kd-Tree', 'Interior Nodes Created');
+  static StatsCounter kdTreeMaxPrims = new StatsCounter('Kd-Tree', 'Maximum Primitives in Leaf');
+  static StatsCounter kdTreeMaxDepth = new StatsCounter('Kd-Tree', 'Maximum Depth of Leaf Nodes');
+  static StatsPercentage rayTriIntersections = new StatsPercentage('Intersections', 'Ray/Triangle Intersection Hits');
+  static StatsPercentage rayTriIntersectionPs = new StatsPercentage('Intersections', 'Ray/Triangle IntersectionP Hits');
 }
 
 class StatTracker {
@@ -560,7 +560,7 @@ class StatsCounter extends StatTracker {
     count = Math.min(count, newval);
   }
 
-  String toString() => '$category / $name: $count';
+  String toString() => '$category | $name: $count';
 
   int count;
 }
@@ -578,7 +578,7 @@ class StatsPercentage extends StatTracker {
     nb += b;
   }
 
-  String toString() => '$category / $name: $na / $nb (${(na / nb) * 100}';
+  String toString() => '$category | $name: $na / $nb (${(na / nb) * 100}';
 
   int na;
   int nb;

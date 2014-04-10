@@ -821,8 +821,10 @@ class Pbrt {
     Filter filter = _makeFilter(_renderOptions.filterName,
                                 _renderOptions.filterParams);
 
-    Film film = _makeFilm(_renderOptions.filmName, _renderOptions.filmParams,
-                          filter, _renderOptions.outputImage,
+    Film film = _makeFilm(_renderOptions.filmName,
+                          _renderOptions.filmParams,
+                          filter,
+                          _renderOptions.outputImage,
                           _renderOptions.previewCallback);
     if (film == null) {
       LogSevere("Unable to create film.");
