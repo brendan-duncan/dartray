@@ -57,10 +57,10 @@ void main() {
   Stopwatch timer = new Stopwatch();
   timer.start();
   new RenderManager().render(SCENE, image: img,
-      isolate: 'render_isolate.dart', numThreads: 1,
+      //isolate: 'render_isolate.dart', numThreads: 1,
       log: (int type, String msg) {
         print(msg);
-        var div = new Html.Element.html('<div>$msg</div>');
+        var div = new Html.Element.html('<pre>$msg</pre>');
         Html.document.body.nodes.add(div);
       },
       preview: (Image img) {

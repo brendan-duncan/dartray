@@ -5,46 +5,65 @@ part of core;
  */
 class Stats {
   static String getString() {
-    return '';
+    String s = '';
+    for (StatTracker t in trackers) {
+      s += '$t\n';
+    }
+    return s;
   }
 
   static void CREATED_SHAPE(Shape shape) {
+    shapesMade++;
   }
 
   static void CREATED_TRIANGLE(tri) {
+    trianglesMade++;
   }
 
   static void STARTED_GENERATING_CAMERA_RAY(CameraSample s) {
+    cameraRays++;
   }
 
   static void KDTREE_CREATED_INTERIOR_NODE(int axis, double split) {
+    kdTreeInteriorNodes++;
   }
 
   static void KDTREE_CREATED_LEAF(int nprims, int depth) {
+    kdTreeLeafNodes++;
+    kdTreeMaxPrims.max(nprims);
+    kdTreeMaxDepth.max(depth);
   }
 
   static void RAY_TRIANGLE_INTERSECTION_TEST(Ray ray, tri) {
+    rayTriIntersections.add(0, 1);
   }
 
   static void RAY_TRIANGLE_INTERSECTIONP_TEST(Ray ray, tri) {
+    rayTriIntersectionPs.add(0, 1);
   }
 
   static void RAY_TRIANGLE_INTERSECTION_HIT(Ray ray, double t) {
+    rayTriIntersections.add(1, 0);
   }
 
   static void RAY_TRIANGLE_INTERSECTIONP_HIT(Ray ray, double t) {
+    rayTriIntersectionPs.add(1, 0);
   }
 
   static void FINISHED_RAY_INTERSECTION(Ray ray, Intersection isect, bool hit) {
+    nonShadowRays++;
   }
 
   static void FINISHED_RAY_INTERSECTIONP(Ray ray, bool hit) {
+    shadowRays++;
   }
 
   static void STARTED_SPECULAR_REFLECTION_RAY(RayDifferential ray) {
+    specularReflectionRays++;
   }
 
   static void STARTED_SPECULAR_REFRACTION_RAY(RayDifferential ray) {
+    specularRefractionRays++;
   }
 
   static void ACCESSED_TEXEL(arg0, arg1, arg2, arg3) {
@@ -496,4 +515,71 @@ class Stats {
 
   static void INFINITE_LIGHT_FINISHED_PDF() {
   }
+
+  static List<StatTracker> trackers = [];
+
+  static StatsCounter shapesMade = new StatsCounter("Shapes", "Total Shapes Created");
+  static StatsCounter trianglesMade = new StatsCounter("Shapes", "Total Triangles Created");
+  static StatsCounter cameraRays = new StatsCounter("Rays", "Camera Rays Traced");
+  static StatsCounter specularReflectionRays = new StatsCounter("Rays", "Specular Reflection Rays Traced");
+  static StatsCounter specularRefractionRays = new StatsCounter("Rays", "Specular Refraction Rays Traced");
+  static StatsCounter shadowRays = new StatsCounter("Rays", "Shadow Rays Traced");
+  static StatsCounter nonShadowRays = new StatsCounter("Rays", "Total Non-Shadow Rays Traced");
+  static StatsCounter kdTreeInteriorNodes = new StatsCounter("Kd-Tree", "Interior Nodes Created");
+  static StatsCounter kdTreeLeafNodes = new StatsCounter("Kd-Tree", "Interior Nodes Created");
+  static StatsCounter kdTreeMaxPrims = new StatsCounter("Kd-Tree", "Maximum Primitives in Leaf");
+  static StatsCounter kdTreeMaxDepth = new StatsCounter("Kd-Tree", "Maximum Depth of Leaf Nodes");
+  static StatsPercentage rayTriIntersections = new StatsPercentage("Intersections", "Ray/Triangle Intersection Hits");
+  static StatsPercentage rayTriIntersectionPs = new StatsPercentage("Intersections", "Ray/Triangle IntersectionP Hits");
+}
+
+class StatTracker {
+  String category;
+  String name;
+
+  StatTracker(this.category, this.name);
+}
+
+class StatsCounter extends StatTracker {
+  StatsCounter(String category, String name) :
+    super(category, name),
+    count = 0 {
+    Stats.trackers.add(this);
+  }
+
+  StatsCounter operator+(int n) {
+    count += n;
+    return this;
+  }
+
+  void max(int newval) {
+    count = Math.max(count, newval);
+  }
+
+  void min(int newval) {
+    count = Math.min(count, newval);
+  }
+
+  String toString() => '$category / $name: $count';
+
+  int count;
+}
+
+class StatsPercentage extends StatTracker {
+  StatsPercentage(String category, String name) :
+    super(category, name),
+    na = 0,
+    nb = 0 {
+    Stats.trackers.add(this);
+  }
+
+  void add(int a, int b) {
+    na += a;
+    nb += b;
+  }
+
+  String toString() => '$category / $name: $na / $nb (${(na / nb) * 100}';
+
+  int na;
+  int nb;
 }
