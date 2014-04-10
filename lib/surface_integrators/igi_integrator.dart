@@ -233,7 +233,8 @@ class IGIIntegrator extends SurfaceIntegrator {
           continue;
         }
 
-        alpha /= pdf[0] * lightPdf[0];
+        alpha = alpha * Vector.AbsDot(Nl, ray.direction) /
+                (pdf[0] * lightPdf[0]);
 
         Intersection isect = new Intersection();
         while (scene.intersect(ray, isect) && !alpha.isBlack()) {

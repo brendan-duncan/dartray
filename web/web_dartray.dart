@@ -51,7 +51,8 @@ void main() {
   var imageData = c.context2D.getImageData(0, 0, c.width, c.height);
   var img = new Image(c.width, c.height);
 
-  Spectrum.type = Spectrum.SAMPLED;
+  //Spectrum.type = Spectrum.SAMPLED;
+  //Spectrum.type = Spectrum.XYZ;
 
   Stopwatch timer = new Stopwatch();
   timer.start();

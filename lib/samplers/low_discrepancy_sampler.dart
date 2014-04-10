@@ -25,8 +25,8 @@ class LowDiscrepancySampler extends Sampler {
                         int nsamp, double sopen, double sclose) :
     super(xstart, xend, ystart, yend, RoundUpPow2(nsamp), sopen, sclose) {
     //pixels = new LinearImageSampler(xstart, xend, ystart, yend);
-    //pixels = new RandomImageSampler(xstart, xend, ystart, yend);
-    pixels = new TileImageSampler(xstart, xend, ystart, yend);
+    pixels = new RandomImageSampler(xstart, xend, ystart, yend);
+    //pixels = new TileImageSampler(xstart, xend, ystart, yend);
     pixelIndex = 0;
     if (!IsPowerOf2(nsamp)) {
       LogWarning('Pixel samples being rounded up to power of 2');

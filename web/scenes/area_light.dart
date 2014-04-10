@@ -1,9 +1,9 @@
 
 const String SCENE = """
 SurfaceIntegrator "path"
-#Sampler "lowdiscrepancy" "integer pixelsamples" [4] 
+Sampler "lowdiscrepancy" "integer pixelsamples" [4] 
 #Sampler "stratified" "integer pixelsamples" [1]
-Sampler "random" "integer pixelsamples" [1]
+#Sampler "random" "integer pixelsamples" [1]
 #Sampler "adaptive" "integer minSamples" [2] "integer maxSamples" [4]
 #Sampler "halton"
 #Sampler "bestcandidate"
