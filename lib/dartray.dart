@@ -29,7 +29,6 @@ export 'lights/lights.dart';
 export 'materials/materials.dart';
 export 'pbrt/pbrt.dart';
 export 'renderers/renderers.dart';
-export 'manager/manager.dart';
 export 'samplers/samplers.dart';
 export 'shapes/shapes.dart';
 export 'surface_integrators/surface_integrators.dart';

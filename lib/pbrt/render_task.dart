@@ -18,7 +18,7 @@
  *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
  *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
  ****************************************************************************/
-part of manager;
+part of pbrt;
 
 /**
  * Manages a [RenderIsolate], which is controlled by the [RenderManager].

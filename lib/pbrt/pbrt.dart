@@ -21,6 +21,8 @@
 library pbrt;
 
 import 'dart:async';
+import 'dart:isolate';
+import 'dart:typed_data';
 import 'package:image/image.dart';
 
 import '../accelerators/accelerators.dart';
@@ -41,7 +43,10 @@ import '../volume_regions/volume_regions.dart';
 part 'graphics_state.dart';
 part 'pbrt_lexer.dart';
 part 'pbrt_parser.dart';
+part 'render_isolate.dart';
+part 'render_manager_interface.dart';
 part 'render_options.dart';
+part 'render_task.dart';
 part 'transform_set.dart';
 
 typedef Aggregate AcceleratorCreator(List<Primitive> prims, ParamSet ps);

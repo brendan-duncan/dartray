@@ -3,7 +3,7 @@ library dartray_web;
 import 'dart:async';
 
 import 'core/core.dart';
-import 'manager/manager.dart';
+import 'pbrt/pbrt.dart';
 
 export 'dartray.dart';
 
