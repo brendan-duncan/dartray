@@ -1,4 +1,3 @@
-const String SCENE = """
 Sampler "stratified" 
   "integer xsamples" [2] "integer ysamples" [2]
   "bool jitter" ["false"]
@@ -154,4 +153,3 @@ AttributeBegin # "sun" shining from the top left on the scene
   Shape "disk" "float radius" [40]
 AttributeEnd
 WorldEnd
-""";

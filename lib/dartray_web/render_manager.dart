@@ -20,10 +20,29 @@
  ****************************************************************************/
 part of dartray_web;
 
+/**
+ * [RenderManager] provides the interface for loading scenes and rendering.
+ * This implementation is used by dart:http web apps, and uses HttpRequest
+ * calls to load resources such as geometry and texture images.
+ */
 class RenderManager extends RenderManagerInterface {
   String scenePath;
 
   RenderManager(this.scenePath);
+
+  Future<OutputImage> renderFile(String path, {var image, String isolate,
+                  LogCallback log, PreviewCallback preview,
+                  int numThreads: 1}) {
+    Completer<OutputImage> c = new Completer<OutputImage>();
+    requestTextFile(path).then((scene) {
+      render(scene, image: image, isolate: isolate, log: log,
+             preview: preview, numThreads: numThreads).then((output) {
+        c.complete(output);
+      });
+    });
+
+    return c.future;
+  }
 
   Future<List<int>> loadFile(String path, [Future future]) {
     if (future != null) {
@@ -32,7 +51,6 @@ class RenderManager extends RenderManagerInterface {
 
     Completer<List<int>> c = new Completer<List<int>>();
 
-    LogInfo('LOAD $path');
     _loadFile(path).then((bytes) {
       c.complete(bytes);
     }).catchError((e) {

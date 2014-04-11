@@ -1,4 +1,3 @@
-const String SCENE = """
 Sampler "stratified" 
   "integer xsamples" [2] "integer ysamples" [2]
   "bool jitter" ["false"]
@@ -94,4 +93,3 @@ AttributeBegin # sun disk
 AttributeEnd
 
 WorldEnd
-""";

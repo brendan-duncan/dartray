@@ -99,7 +99,6 @@ abstract class ResourceManager {
     resources[path] = c.future;
 
     loadFile(path).then((bytes) {
-      LogInfo('FILE $path LOADED: ${bytes != null}');
       if (bytes == null) {
         c.complete(null);
         return;
@@ -142,7 +141,7 @@ abstract class ResourceManager {
     resources[path] = c.future;
 
     loadFile(path).then((bytes) {
-      LogInfo('FILE $path LOADED: ${bytes != null}');
+      LogDebug('FILE $path LOADED: ${bytes != null}');
       if (bytes == null) {
         c.complete(null);
         return;
@@ -222,7 +221,7 @@ abstract class ResourceManager {
           }
         }
 
-        LogInfo('HDR IMAGE $path LOADED');
+        LogDebug('HDR IMAGE $path LOADED');
         resources[path] = res;
         c.complete(res);
         return;
@@ -231,7 +230,7 @@ abstract class ResourceManager {
       Img.Image img = decoder.decodeFrame(0);
       SpectrumImage res = new SpectrumImage.fromImage(img);
 
-      LogInfo('IMAGE $path LOADED');
+      LogDebug('IMAGE $path LOADED');
       resources[path] = res;
       c.complete(res);
     });

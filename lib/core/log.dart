@@ -24,11 +24,13 @@ const int LOG_INFO = 0;
 const int LOG_WARNING = 1;
 const int LOG_ERROR = 2;
 const int LOG_SEVERE = 3;
+const int LOG_DEBUG = 4;
 const List<String> LOG_TYPES = const [
   'INFO',
   'WARNING',
   'ERROR',
-  'SEVERE'];
+  'SEVERE',
+  'DEBUG'];
 
 /**
  * A callback to call when a log message has been recieved.
@@ -48,6 +50,10 @@ LogCallback Log = PrintLogger;
 
 void SetLogger(LogCallback cb) {
   Log = cb;
+}
+
+void LogDebug(String msg) {
+  Log(LOG_DEBUG, msg);
 }
 
 void LogInfo(String msg) {

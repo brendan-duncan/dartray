@@ -1,5 +1,3 @@
-
-const String SCENE = """
 SurfaceIntegrator "path"
 Sampler "lowdiscrepancy" "integer pixelsamples" [4] 
 #Sampler "stratified" "integer pixelsamples" [1]
@@ -58,4 +56,3 @@ WorldBegin
         "integer indices" [ 0 1 2 2 3 0]
   AttributeEnd
 WorldEnd
-""";

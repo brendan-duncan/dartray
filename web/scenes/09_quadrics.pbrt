@@ -1,4 +1,3 @@
-const String SCENE = """
 #Sampler "bestcandidate" "integer pixelsamples" [64]
 PixelFilter "mitchell"
 
@@ -68,4 +67,3 @@ Shape "hyperboloid" "point p1" [ 1 0 0 ] "point p2" [ .8 1 .8 ]
 AttributeEnd
 
 WorldEnd
-""";

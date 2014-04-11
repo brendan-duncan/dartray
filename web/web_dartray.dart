@@ -22,21 +22,20 @@ import 'dart:html' as Html;
 import 'package:dartray/dartray_web.dart';
 import 'package:image/image.dart';
 
-//import 'scenes/01_bowl_of_spheres.dart';
-//import 'scenes/02_kon_tiki_directlighting.dart';
-//import 'scenes/03_quadrics_directlighting.dart';
-//import 'scenes/04_box.dart';
-//import 'scenes/05_distant_light.dart';
-//import 'scenes/05_distant_light2.dart';
-//import 'scenes/07_area_light.dart';
-//import 'scenes/08_whitted.dart';
-//import 'scenes/09_quadrics.dart';
-
-//import 'scenes/bunny.dart';
-import 'scenes/cornell_path.dart';
-//import 'scenes/area_light.dart';
-//import 'scenes/spheres.dart';
-//import 'scenes/room_path.dart';
+//String scene = '01_bowl_of_spheres.pbrt';
+//String scene = '02_kin_tiki_directlighting.pbrt';
+//String scene = '03_quadrics_directlighting.pbrt';
+//String scene = '04_box.pbrt';
+//String scene = '05_distant_light.pbrt';
+//String scene = '05_distant_light2.pbrt';
+//String scene = '07_area_light.pbrt';
+//String scene = '08_whitted.pbrt';
+//String scene = '09_quadrics.pbrt';
+//String scene = 'area_light.pbrt';
+//String scene = 'bunny.pbrt';
+//String scene = 'cornell_path.pbrt';
+//String scene = 'room-path.pbrt';
+String scene = 'spheres.pbrt';
 
 
 void main() {
@@ -51,17 +50,14 @@ void main() {
   c.context2D.fill();
   var imageData = c.context2D.getImageData(0, 0, c.width, c.height);
   var img = new Image(c.width, c.height);
-  img.fill(0xff000000);
-
-  //Spectrum.type = Spectrum.SAMPLED;
-  //Spectrum.type = Spectrum.XYZ;
 
   Stopwatch timer = new Stopwatch();
   timer.start();
-  new RenderManager('scenes').render(SCENE, image: img,
+  new RenderManager('scenes').renderFile(scene,
+      image: img,
       isolate: 'web_isolate.dart', numThreads: 1,
       log: (int type, String msg) {
-        print(msg);
+        print('$msg');
         var div = new Html.Element.html('<pre>$msg</pre>');
         Html.document.body.nodes.add(div);
       },

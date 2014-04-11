@@ -39,7 +39,7 @@ class RenderManager extends RenderManagerInterface {
       return c.future;
     }
 
-    LogInfo('LOAD $path');
+    LogDebug('LOAD $path');
     Future<List<int>> f = new File(path).readAsBytes();
     f.then((bytes) {
       c.complete(bytes);

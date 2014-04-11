@@ -1,4 +1,3 @@
-const String SCENE = """
 Sampler "bestcandidate" 
   "integer pixelsamples" [4]
 
@@ -58,4 +57,3 @@ AttributeBegin
 AttributeEnd
 
 WorldEnd
-""";

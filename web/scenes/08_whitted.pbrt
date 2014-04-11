@@ -1,4 +1,3 @@
-const String SCENE = """
 Sampler "stratified" 
   "integer xsamples" [5] "integer ysamples" [5]
   "bool jitter" ["false"]
@@ -63,4 +62,3 @@ AttributeEnd
 
 
 WorldEnd
-""";

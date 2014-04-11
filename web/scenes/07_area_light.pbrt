@@ -1,4 +1,3 @@
-const String SCENE = """
 Sampler "stratified" "integer xsamples" [4] "integer ysamples" [4] "bool jitter" ["true"]
 PixelFilter "mitchell"
 
@@ -76,4 +75,3 @@ AttributeBegin # area light source
 AttributeEnd
 
 WorldEnd
-""";
