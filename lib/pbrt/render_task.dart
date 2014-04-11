@@ -57,7 +57,23 @@ class RenderTask {
         if (msg is Map && msg.containsKey('cmd')) {
           var cmd = msg['cmd'];
 
-          if (cmd == 'preview' && msg.containsKey('image')) {
+          if (cmd == 'request') {
+            int id = msg['id'];
+            var subMsg = msg['msg'];
+            if (subMsg is Map && subMsg.containsKey('cmd')) {
+              var subCmd = subMsg['cmd'];
+              if (subCmd == 'file') {
+                String path = subMsg['path'];
+                ResourceManager.RequestBinaryFile(path).then((bytes) {
+                  var data = {'cmd': 'request',
+                             'id': id,
+                             'data': bytes};
+                  sendPort.send(data);
+                });
+              }
+            }
+            return;
+          } else if (cmd == 'preview' && msg.containsKey('image')) {
             var bytes = msg['image'];
             if (taskCount > 1) {
               _updatePreviewImage(image, bytes);
@@ -82,7 +98,7 @@ class RenderTask {
           }
         }
 
-        LogInfo(msg);
+        LogInfo(msg.toString());
       }
     });
 

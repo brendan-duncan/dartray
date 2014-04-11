@@ -22,6 +22,7 @@ library pbrt;
 
 import 'dart:async';
 import 'dart:isolate';
+import 'dart:math' as Math;
 import 'dart:typed_data';
 import 'package:image/image.dart';
 

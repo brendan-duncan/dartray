@@ -25,7 +25,7 @@ class RenderManager extends RenderManagerInterface {
 
   RenderManager(this.scenePath);
 
-  Future<List<int>> requestFile(String path, [Future future]) {
+  Future<List<int>> loadFile(String path, [Future future]) {
     if (future != null) {
       futures.add(future);
     }
@@ -46,27 +46,47 @@ class RenderManager extends RenderManagerInterface {
   Future<List<int>> _loadFile(String path) {
     Completer<List<int>> c = new Completer<List<int>>();
 
-    path = scenePath + '/' + path;
+    // As of dart 1.3.0, we can't call HttpRequest from an isolate. To work
+    // around this, we send a request message back to the main isolate asking
+    // it to load the file, and it will send the file data back here.
+    if (isolate != null) {
+      isolate.requestResponse({'cmd': 'file', 'path': path}).then((bytes) {
+        if (bytes is String) {
+          c.complete(bytes.codeUnits);
+          return;
+        } else if (bytes is ByteBuffer) {
+          c.complete(new Uint8List.view(bytes));
+          return;
+        } else if (bytes is List<int>) {
+          c.complete(bytes);
+          return;
+        } else {
+          LogError('Unknown HttpRequest response type');
+        }
+      });
+    } else {
+      path = scenePath + '/' + path;
 
-    Html.HttpRequest.request(path, method: 'GET',
-                             mimeType: 'text\/plain; charset=x-user-defined')
-    .then((resp) {
-      if (resp.response is String) {
-        String s = resp.response;
-        c.complete(s.codeUnits);
-        return;
-      } else if (resp.response is ByteBuffer) {
-        c.complete(new Uint8List.view(resp.response));
-        return;
-      } else if (resp.response is List<int>) {
-        c.complete(resp.response);
-        return;
-      } else {
-        LogError('Unknown HttpRequest response type');
-      }
-    }).catchError((e) {
-      LogError('Error Loading Resource: $path');
-    });
+      Html.HttpRequest.request(path, method: 'GET',
+                               mimeType: 'text\/plain; charset=x-user-defined')
+      .then((resp) {
+        if (resp.response is String) {
+          String s = resp.response;
+          c.complete(s.codeUnits);
+          return;
+        } else if (resp.response is ByteBuffer) {
+          c.complete(new Uint8List.view(resp.response));
+          return;
+        } else if (resp.response is List<int>) {
+          c.complete(resp.response);
+          return;
+        } else {
+          LogError('Unknown HttpRequest response type');
+        }
+      }).catchError((e) {
+        LogError('Error Loading Resource: $path');
+      });
+    }
 
     return c.future;
   }

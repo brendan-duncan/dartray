@@ -33,8 +33,8 @@ import 'package:image/image.dart';
 //import 'scenes/09_quadrics.dart';
 
 //import 'scenes/bunny.dart';
-//import 'scenes/cornell_path.dart';
-import 'scenes/area_light.dart';
+import 'scenes/cornell_path.dart';
+//import 'scenes/area_light.dart';
 //import 'scenes/spheres.dart';
 //import 'scenes/room_path.dart';
 
@@ -48,8 +48,10 @@ void main() {
   c.width = width;
   c.height = height;
 
+  c.context2D.fill();
   var imageData = c.context2D.getImageData(0, 0, c.width, c.height);
   var img = new Image(c.width, c.height);
+  img.fill(0xff000000);
 
   //Spectrum.type = Spectrum.SAMPLED;
   //Spectrum.type = Spectrum.XYZ;
@@ -57,7 +59,7 @@ void main() {
   Stopwatch timer = new Stopwatch();
   timer.start();
   new RenderManager('scenes').render(SCENE, image: img,
-      isolate: 'render_isolate.dart', numThreads: 2,
+      isolate: 'web_isolate.dart', numThreads: 1,
       log: (int type, String msg) {
         print(msg);
         var div = new Html.Element.html('<pre>$msg</pre>');

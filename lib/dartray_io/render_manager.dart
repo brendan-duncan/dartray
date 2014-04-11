@@ -28,7 +28,7 @@ class RenderManager extends RenderManagerInterface {
     return render(scene);
   }
 
-  Future<List<int>> requestFile(String file) {
+  Future<List<int>> loadFile(String file) {
     Completer<List<int>> c = new Completer<List<int>>();
 
     String path = _findFile(file);

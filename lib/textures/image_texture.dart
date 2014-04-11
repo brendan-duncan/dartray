@@ -28,6 +28,7 @@ class ImageTexture extends Texture {
       Completer completer = new Completer();
       ResourceManager.RequestImage(filename, completer.future)
         .then((SpectrumImage img) {
+          LogInfo('ImageTexture $spectrum RESOURCE $filename');
           if (img != null) {
             if (!spectrum) {
               img = img.convert(SpectrumImage.FLOAT);
@@ -41,9 +42,12 @@ class ImageTexture extends Texture {
               }
             }
 
+            LogInfo('ImageTexture GENERATING MIPMap ${img.width} ${img.height}');
             mipmap = new MIPMap.texture(img.width, img.height, img,
                                         doTri, maxAniso, wrap);
           }
+
+          LogInfo('ImageTexture $spectrum RESOURCE complete');
           // Let the renderer know we're done processing the resource.
           completer.complete();
         });

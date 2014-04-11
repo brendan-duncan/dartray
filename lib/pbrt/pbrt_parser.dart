@@ -60,12 +60,13 @@ class PbrtParser {
       if (name == 'include') {
         if (!pbrt.resourceManager.hasResource(cmd['value'])) {
           LogInfo('Include ${cmd['value']}');
-          futures.add(pbrt.resourceManager.requestScene(cmd['value']));
+          futures.add(pbrt.resourceManager.requestTextFile(cmd['value']));
         }
       }
     }
 
     Future.wait(futures).then((List responses) {
+      LogInfo('Includes loaded');
       List<Future<String>> subFutures = [];
 
       if (responses.isNotEmpty) {

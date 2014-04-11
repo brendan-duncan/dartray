@@ -296,7 +296,7 @@ class MIPMap {
            texel(level, s0 + 1, t0 + 1) * (ds * dt);
   }
 
-  Spectrum clamp(Spectrum f) => f.clamp(0.0, INFINITY);
+  clamp(f) => f.clamp(0.0, INFINITY);
 
   List<_ResampleWeight> _resampleWeights(int oldres, int newres) {
     assert(newres >= oldres);

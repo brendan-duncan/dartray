@@ -29,8 +29,12 @@ abstract class ResourceManager {
     global = this;
   }
 
-  static Future<String> RequestScene(String path, [Future future]) {
-    return global.requestScene(path, future);
+  static Future<String> RequestTextFile(String path, [Future future]) {
+    return global.requestTextFile(path, future);
+  }
+
+  static Future<List<int>> RequestBinaryFile(String path, [Future future]) {
+    return global.requestBinaryFile(path, future);
   }
 
   static Future<SpectrumImage> RequestImage(String path, [Future future]) {
@@ -60,13 +64,13 @@ abstract class ResourceManager {
   /**
    * Asynchronously load a file. This does not store the file as a resource,
    * so requesting the same file twice will load the file twice. Use the
-   * resource based request methods instead, such as [requestScene] or
+   * resource based request methods instead, such as [requestTextFile] or
    * [requestImage].
    */
-  Future<List<int>> requestFile(String path);
+  Future<List<int>> loadFile(String path);
 
   /**
-   * Request a scene file (read from disk as a string).
+   * Request a binary file.
    *
    * Requesting the same file multiple times will only load the file once.
    * If the requester wants to process the contents of the file prior to
@@ -76,7 +80,50 @@ abstract class ResourceManager {
    * came from. When all requesters of data have completed, the render will
    * continue.
    */
-  Future<String> requestScene(String path, [Future future]) {
+  Future<List<int>> requestBinaryFile(String path, [Future future]) {
+    if (future != null) {
+      futures.add(future);
+    }
+
+    if (resources.containsKey(path)) {
+      if (resources[path] is Future) {
+        return resources[path];
+      }
+
+      Completer<List<int>> c = new Completer<List<int>>();
+      c.complete(resources[path]);
+      return c.future;
+    }
+
+    Completer<List<int>> c = new Completer<List<int>>();
+    resources[path] = c.future;
+
+    loadFile(path).then((bytes) {
+      LogInfo('FILE $path LOADED: ${bytes != null}');
+      if (bytes == null) {
+        c.complete(null);
+        return;
+      }
+
+      resources[path] = bytes;
+      c.complete(bytes);
+    });
+
+    return c.future;
+  }
+
+  /**
+   * Request a text file (read from disk as a string).
+   *
+   * Requesting the same file multiple times will only load the file once.
+   * If the requester wants to process the contents of the file prior to
+   * rendering starting, they must pass a [future] to the request. Once the
+   * requester recieves the response from the request, it can then process
+   * the data and, once finished, complete the [Completer] that the [future]
+   * came from. When all requesters of data have completed, the render will
+   * continue.
+   */
+  Future<String> requestTextFile(String path, [Future future]) {
     if (future != null) {
       futures.add(future);
     }
@@ -94,14 +141,15 @@ abstract class ResourceManager {
     Completer<String> c = new Completer<String>();
     resources[path] = c.future;
 
-    requestFile(path).then((bytes) {
-      print('SCENE $path LOADED: ${bytes != null}');
+    loadFile(path).then((bytes) {
+      LogInfo('FILE $path LOADED: ${bytes != null}');
       if (bytes == null) {
         c.complete(null);
         return;
       }
 
       String s = new String.fromCharCodes(bytes);
+
       resources[path] = s;
       c.complete(s);
     });
@@ -138,7 +186,7 @@ abstract class ResourceManager {
     Completer<SpectrumImage> c = new Completer<SpectrumImage>();
     resources[path] = c.future;
 
-    requestFile(path).then((bytes) {
+    loadFile(path).then((bytes) {
       if (bytes == null) {
         c.complete(null);
         return;
@@ -159,7 +207,6 @@ abstract class ResourceManager {
       if (info is Img.ExrImage) {
         Img.ExrImage exr = info;
         Img.HdrImage hdr = info.parts[0].framebuffer;
-        LogInfo('HDR IMAGE $path LOADED');
 
         SpectrumImage res = new SpectrumImage(hdr.width, hdr.height);
 
@@ -175,16 +222,16 @@ abstract class ResourceManager {
           }
         }
 
+        LogInfo('HDR IMAGE $path LOADED');
         resources[path] = res;
         c.complete(res);
         return;
       }
 
-      LogInfo('IMAGE $path LOADED');
-
       Img.Image img = decoder.decodeFrame(0);
       SpectrumImage res = new SpectrumImage.fromImage(img);
 
+      LogInfo('IMAGE $path LOADED');
       resources[path] = res;
       c.complete(res);
     });

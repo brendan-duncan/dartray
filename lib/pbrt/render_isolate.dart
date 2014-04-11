@@ -51,6 +51,7 @@ class RenderIsolate {
   ReceivePort receivePort;
   SendPort sendPort;
   RenderManagerInterface manager;
+  Math.Random rng = new Math.Random();
 
   RenderIsolate(this.manager);
 
@@ -71,6 +72,15 @@ class RenderIsolate {
     });
   }
 
+  Future requestResponse(msg) {
+    int id = rng.nextInt(0xffffffff);
+    Completer c = new Completer();
+    Map cmd = {'cmd': 'request', 'id': id, 'msg': msg};
+    sendPort.send(cmd);
+    requests[id] = c;
+    return c.future;
+  }
+
   void _linkEstablish(msg) {
     if (msg == 'ping') {
       sendPort.send('pong');
@@ -82,7 +92,14 @@ class RenderIsolate {
     if (msg is Map) {
       if (msg.containsKey('cmd')) {
         var cmd = msg['cmd'];
-        if (cmd == 'render') {
+        if (cmd == 'request') {
+          int id = msg['id'];
+          if (requests.containsKey(id)) {
+            Completer c = requests[id];
+            requests.remove(id);
+            c.complete(msg['data']);
+          }
+        } else if (cmd == 'render') {
           taskNum = msg.containsKey('taskNum') ? msg['taskNum'] : 0;
           taskCount = msg.containsKey('taskCount') ? msg['taskCount'] : 1;
           int w = msg.containsKey('width') ? msg['width'] : 256;
@@ -110,7 +127,9 @@ class RenderIsolate {
     _log(LOG_INFO, 'RENDER ${w}x${h}');
     Stopwatch timer = new Stopwatch()..start();
 
-    var img = new Image(w, h);
+    Image img = new Image(w, h);
+    img.fill(0xff000000);
+
     Pbrt pbrt = new Pbrt(manager);
 
     if (doPreview) {
@@ -119,8 +138,8 @@ class RenderIsolate {
       });
     }
 
-    OutputImage output;
     try {
+      OutputImage output;
       pbrt.setTask(taskNum, taskCount);
       pbrt.renderScene(scene, img).then((output) {
         _log(LOG_INFO, 'FINISHED: ${timer.elapsed}');
@@ -135,4 +154,6 @@ class RenderIsolate {
 
     return true;
   }
+
+  Map<int, Completer> requests = {};
 }
