@@ -264,8 +264,10 @@ class Pbrt {
         c.complete(null);
       }
 
-      OutputImage output = _renderer.render(_scene);
-      c.complete(output);
+      resourceManager.waitUntilReady().then((e) {
+        OutputImage output = _renderer.render(_scene);
+        c.complete(output);
+      });
     });
 
     return c.future;

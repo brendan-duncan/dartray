@@ -43,7 +43,7 @@ class PbrtParser {
   Future _loadIncludes(String input) {
     PbrtLexer _lexer = new PbrtLexer(input);
 
-    List<Future<List<int>>> futures = [];
+    List<Future> futures = [];
 
     Completer c = new Completer();
 
@@ -57,26 +57,32 @@ class PbrtParser {
 
       String name = cmd['name'].toLowerCase();
 
-      switch (name) {
-        case 'include':
+      if (name == 'include') {
+        if (!pbrt.resourceManager.hasFile(cmd['value'])) {
           LogInfo('Include ${cmd['value']}');
-          futures.add(pbrt.resourceManager.requrestFile(cmd['value']));
-          break;
+          futures.add(pbrt.resourceManager.requestScene(cmd['value']));
+        }
       }
     }
 
     Future.wait(futures).then((List responses) {
-      List<Future<List<int>>> subFutures = [];
-      for (List<int> bytes in responses) {
-        String inc = new String.fromCharCodes(bytes);
-        subFutures.add(_loadIncludes(inc));
-      }
-      Future.wait(subFutures).then((List subResponses) {
+      List<Future<String>> subFutures = [];
+
+      if (responses.isNotEmpty) {
+        for (int i = 0; i < responses.length; ++i) {
+          String inc = responses[i];
+          subFutures.add(_loadIncludes(inc));
+        }
+
+        Future.wait(subFutures).then((List subResponses) {
+          c.complete();
+        }).catchError((e) {
+          LogError(e);
+          c.completeError(e);
+        });
+      } else {
         c.complete();
-      }).catchError((e) {
-        LogError(e);
-        c.completeError(e);
-      });
+      }
     }).catchError((e) {
       LogError(e);
       c.completeError(e);
@@ -255,9 +261,8 @@ class PbrtParser {
           pbrt.worldEnd();
           break;
         case 'include':
-          List<int> bytes = pbrt.resourceManager.getFile(cmd['value']);
-          if (bytes != null) {
-            String inc = new String.fromCharCodes(bytes);
+          var inc = pbrt.resourceManager.getFile(cmd['value']);
+          if (inc is String) {
             _parse(inc);
           } else {
             LogWarning('Missing include: ${cmd['value']}');

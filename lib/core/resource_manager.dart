@@ -29,8 +29,16 @@ abstract class ResourceManager {
     global = this;
   }
 
-  static Future<List<int>> RequrestFile(String path) {
-    return global.requrestFile(path);
+  static Future<List<int>> RequestFile(String path, [Future future]) {
+    return global.requestFile(path, future);
+  }
+
+  static Future<String> RequestScene(String path, [Future future]) {
+    return global.requestScene(path, future);
+  }
+
+  static Future<SpectrumImage> RequestImage(String path, [Future future]) {
+    return global.requestImage(path, future);
   }
 
   static List<int> GetFile(String path) {
@@ -41,14 +49,73 @@ abstract class ResourceManager {
     includePaths.add(path);
   }
 
-  Future<List<int>> requrestFile(String path);
+  bool hasFile(String path) => resources.containsKey(path);
 
-  List<int> getFile(String path) {
+  Future<List<int>> requestFile(String path, [Future future]);
+
+  Future<String> requestScene(String path, [Future future]) {
+    if (resources.containsKey(path)) {
+      if (resources[path] is Future) {
+        return resources[path];
+      }
+
+      Completer<List<int>> c = new Completer<List<int>>();
+      c.complete(resources[path]);
+      return c.future;
+    }
+
+    Completer<String> c = new Completer<String>();
+    resources[path] = c.future;
+
+    requestFile(path, future).then((bytes) {
+      print('SCENE $path LOADED');
+      String s = new String.fromCharCodes(bytes);
+      resources[path] = s;
+      c.complete(s);
+    });
+    return c.future;
+  }
+
+  Future<SpectrumImage> requestImage(String path, [Future future]) {
+    if (resources.containsKey(path)) {
+      if (resources[path] is Future) {
+        return resources[path];
+      }
+
+      Completer<List<int>> c = new Completer<List<int>>();
+      c.complete(resources[path]);
+      return c.future;
+    }
+
+    Completer<SpectrumImage> c = new Completer<SpectrumImage>();
+    resources[path] = c.future;
+
+    requestFile(path, future).then((bytes) {
+      print('IMAGE $path LOADED');
+      SpectrumImage img = new SpectrumImage(1, 1);
+      resources[path] = img;
+      c.complete(img);
+    });
+
+    return c.future;
+  }
+
+  Future waitUntilReady() {
+    Completer c = new Completer();
+    Future.wait(futures).then((List responses) {
+      futures.clear();
+      c.complete();
+    });
+    return c.future;
+  }
+
+  getFile(String path) {
     if (!resources.containsKey(path)) {
       return null;
     }
     return resources[path];
   }
 
-  Map<String, List<int>> resources = {};
+  List<Future> futures = [];
+  Map<String, dynamic> resources = {};
 }

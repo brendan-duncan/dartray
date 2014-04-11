@@ -28,9 +28,14 @@ class RenderManager extends RenderManagerInterface {
     return render(scene);
   }
 
-  Future<List<int>> requrestFile(String file) {
-    String path = _findFile(file);
+  Future<List<int>> requestFile(String file, [Future future]) {
+    if (future != null) {
+      futures.add(future);
+    }
+
     Completer<List<int>> c = new Completer<List<int>>();
+
+    String path = _findFile(file);
 
     if (path == null) {
       LogInfo('File not found: $file');
@@ -42,9 +47,10 @@ class RenderManager extends RenderManagerInterface {
     Future<List<int>> f = new File(path).readAsBytes();
     f.then((bytes) {
       resources[file] = bytes;
+      c.complete(bytes);
     });
 
-    return f;
+    return c.future;
   }
 
   List<int> getFile(String path) {

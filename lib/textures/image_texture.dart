@@ -24,6 +24,14 @@ class ImageTexture extends Texture {
   ImageTexture(this.mapping, String filename, bool doTri,
                double maxAniso, int wrap, double scale, double gamma,
                bool spectrum) {
+    if (filename.isNotEmpty) {
+      Completer completer = new Completer();
+      ResourceManager.RequestImage(filename, completer.future)
+        .then((SpectrumImage image) {
+          completer.complete();
+        });
+    }
+
     double v = pow(scale, gamma);
     SpectrumImage img = new SpectrumImage(1, 1, spectrum ?
                                           SpectrumImage.SPECTRUM :

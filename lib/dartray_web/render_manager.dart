@@ -21,7 +21,12 @@
 part of dartray_web;
 
 class RenderManager extends RenderManagerInterface {
-  Future<List<int>> requrestFile(String path) {
+  Future<List<int>> requestFile(String path, [Future future]) {
+    if (future != null) {
+      futures.add(future);
+    }
+
+    futures.add(future);
     LogInfo('LOAD $path');
     Completer<List<int>> c = new Completer<List<int>>();
     c.complete(null);

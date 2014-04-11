@@ -20,6 +20,7 @@
  ****************************************************************************/
 library textures;
 
+import 'dart:async';
 import 'dart:math' hide Point;
 import '../core/core.dart';
 
