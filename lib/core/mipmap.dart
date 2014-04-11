@@ -43,7 +43,7 @@ class MIPMap {
       List<_ResampleWeight> sWeights = _resampleWeights(xres, sPow2);
       resampledImage = new SpectrumImage(sPow2, tPow2, img.samplesPerPixel);
 
-      Spectrum zero = new Spectrum(0.0);
+      var zero = img.samplesPerPixel == 1 ? 0.0 : new Spectrum(0.0);
 
       // Apply _sWeights_ to zoom in $s$ direction
       for (int t = 0, p = 0; t < yres; ++t) {
@@ -111,7 +111,7 @@ class MIPMap {
       // Initialize $i$th MIPMap level from $i-1$st level
       int sRes = Math.max(1, pyramid[i - 1].width ~/ 2);
       int tRes = Math.max(1, pyramid[i - 1].height ~/ 2);
-      pyramid[i] = new SpectrumImage(sRes, tRes);
+      pyramid[i] = new SpectrumImage(sRes, tRes, img.samplesPerPixel);
 
       // Filter four texels from finer level of pyramid
       for (int t = 0, p = 0; t < tRes; ++t) {

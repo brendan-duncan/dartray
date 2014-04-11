@@ -32,8 +32,4 @@ class RenderManager extends RenderManagerInterface {
     c.complete(null);
     return c.future;
   }
-
-  List<int> getFile(String path) {
-    return null;
-  }
 }

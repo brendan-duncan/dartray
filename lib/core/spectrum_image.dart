@@ -56,6 +56,44 @@ class SpectrumImage {
     samplesPerPixel = other.samplesPerPixel,
     data = new Float32List.fromList(other.data);
 
+  /**
+   * Convert the image to [FLOAT] or [SPECTRUM] format.
+   */
+  SpectrumImage convert(int format) {
+    if (format == samplesPerPixel) {
+      return this;
+    }
+
+    if (format == FLOAT) {
+      SpectrumImage out = new SpectrumImage(width, height, FLOAT);
+      int i = 0;
+      int j = 0;
+      int len = data.length;
+      while (i < len) {
+        double r = data[i++];
+        double g = data[i++];
+        double b = data[i++];
+        double y = 0.212671 * r + 0.715160 * g + 0.072169 * b;
+        out.data[j++] = y;
+      }
+
+      return out;
+    }
+
+    SpectrumImage out = new SpectrumImage(width, height, SPECTRUM);
+    int i = 0;
+    int j = 0;
+    int len = data.length;
+    while (i < len) {
+      double y = data[i++];
+      out.data[j++] = y;
+      out.data[j++] = y;
+      out.data[j++] = y;
+    }
+
+    return out;
+  }
+
   void set(SpectrumImage other) {
     data = other.data;
     width = other.width;

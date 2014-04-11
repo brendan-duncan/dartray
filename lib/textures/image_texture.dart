@@ -27,7 +27,23 @@ class ImageTexture extends Texture {
     if (filename.isNotEmpty) {
       Completer completer = new Completer();
       ResourceManager.RequestImage(filename, completer.future)
-        .then((SpectrumImage image) {
+        .then((SpectrumImage img) {
+          if (img != null) {
+            if (!spectrum) {
+              img = img.convert(SpectrumImage.FLOAT);
+            } else {
+              img = new SpectrumImage.from(img);
+            }
+
+            if (scale != 1.0 || gamma != 1.0) {
+              for (int i = 0, len = img.data.length; i < len; ++i) {
+                img.data[i] = pow(img.data[i] * scale, gamma);
+              }
+            }
+
+            mipmap = new MIPMap.texture(img.width, img.height, img,
+                                        doTri, maxAniso, wrap);
+          }
           completer.complete();
         });
     }
@@ -135,7 +151,8 @@ class ImageTexture extends Texture {
     List<double> dsdy = [0.0];
     List<double> dtdy = [0.0];
     mapping.map(dg, s, t, dsdx, dtdx, dsdy, dtdy);
-    return mipmap.lookup2(s[0], t[0], dsdx[0], dtdx[0], dsdy[0], dtdy[0]);
+    var v = mipmap.lookup2(s[0], t[0], dsdx[0], dtdx[0], dsdy[0], dtdy[0]);
+    return v;
   }
 
   MIPMap mipmap;

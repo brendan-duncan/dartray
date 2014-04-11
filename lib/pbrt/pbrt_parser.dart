@@ -58,7 +58,7 @@ class PbrtParser {
       String name = cmd['name'].toLowerCase();
 
       if (name == 'include') {
-        if (!pbrt.resourceManager.hasFile(cmd['value'])) {
+        if (!pbrt.resourceManager.hasResource(cmd['value'])) {
           LogInfo('Include ${cmd['value']}');
           futures.add(pbrt.resourceManager.requestScene(cmd['value']));
         }
@@ -261,7 +261,7 @@ class PbrtParser {
           pbrt.worldEnd();
           break;
         case 'include':
-          var inc = pbrt.resourceManager.getFile(cmd['value']);
+          var inc = pbrt.resourceManager.getResource(cmd['value']);
           if (inc is String) {
             _parse(inc);
           } else {
