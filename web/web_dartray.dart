@@ -56,7 +56,7 @@ void main() {
 
   Stopwatch timer = new Stopwatch();
   timer.start();
-  new RenderManager().render(SCENE, image: img,
+  new RenderManager('scenes').render(SCENE, image: img,
       isolate: 'render_isolate.dart', numThreads: 2,
       log: (int type, String msg) {
         print(msg);

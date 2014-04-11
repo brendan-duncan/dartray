@@ -71,7 +71,9 @@ class PbrtParser {
       if (responses.isNotEmpty) {
         for (int i = 0; i < responses.length; ++i) {
           String inc = responses[i];
-          subFutures.add(_loadIncludes(inc));
+          if (inc != null && inc.isNotEmpty) {
+            subFutures.add(_loadIncludes(inc));
+          }
         }
 
         Future.wait(subFutures).then((List subResponses) {

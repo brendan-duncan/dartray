@@ -95,7 +95,12 @@ abstract class ResourceManager {
     resources[path] = c.future;
 
     requestFile(path).then((bytes) {
-      print('SCENE $path LOADED');
+      print('SCENE $path LOADED: ${bytes != null}');
+      if (bytes == null) {
+        c.complete(null);
+        return;
+      }
+
       String s = new String.fromCharCodes(bytes);
       resources[path] = s;
       c.complete(s);
@@ -134,6 +139,11 @@ abstract class ResourceManager {
     resources[path] = c.future;
 
     requestFile(path).then((bytes) {
+      if (bytes == null) {
+        c.complete(null);
+        return;
+      }
+
       Img.Decoder decoder = Img.findDecoderForData(bytes);
       if (decoder == null) {
         c.complete(null);
@@ -187,7 +197,7 @@ abstract class ResourceManager {
    */
   Future waitUntilReady() {
     Completer c = new Completer();
-    Future.wait(futures).then((List responses) {
+    Future.wait(futures).then((r) {
       futures.clear();
       c.complete();
     });

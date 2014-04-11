@@ -44,6 +44,7 @@ class ImageTexture extends Texture {
             mipmap = new MIPMap.texture(img.width, img.height, img,
                                         doTri, maxAniso, wrap);
           }
+          // Let the renderer know we're done processing the resource.
           completer.complete();
         });
     }

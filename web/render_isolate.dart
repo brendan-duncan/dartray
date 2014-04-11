@@ -22,5 +22,5 @@ import 'dart:isolate';
 import 'package:dartray/dartray_web.dart';
 
 void main(List<String> args, SendPort port) {
-  new RenderManager().startIsolate(port);
+  new RenderManager('scenes').startIsolate(port);
 }

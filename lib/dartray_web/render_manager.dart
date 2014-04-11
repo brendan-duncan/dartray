@@ -21,15 +21,53 @@
 part of dartray_web;
 
 class RenderManager extends RenderManagerInterface {
+  String scenePath;
+
+  RenderManager(this.scenePath);
+
   Future<List<int>> requestFile(String path, [Future future]) {
     if (future != null) {
       futures.add(future);
     }
 
-    futures.add(future);
-    LogInfo('LOAD $path');
     Completer<List<int>> c = new Completer<List<int>>();
-    c.complete(null);
+
+    LogInfo('LOAD $path');
+    _loadFile(path).then((bytes) {
+      c.complete(bytes);
+    }).catchError((e) {
+      LogError(e.toString());
+      c.complete(null);
+    });
+
+    return c.future;
+  }
+
+  Future<List<int>> _loadFile(String path) {
+    Completer<List<int>> c = new Completer<List<int>>();
+
+    path = scenePath + '/' + path;
+
+    Html.HttpRequest.request(path, method: 'GET',
+                             mimeType: 'text\/plain; charset=x-user-defined')
+    .then((resp) {
+      if (resp.response is String) {
+        String s = resp.response;
+        c.complete(s.codeUnits);
+        return;
+      } else if (resp.response is ByteBuffer) {
+        c.complete(new Uint8List.view(resp.response));
+        return;
+      } else if (resp.response is List<int>) {
+        c.complete(resp.response);
+        return;
+      } else {
+        LogError('Unknown HttpRequest response type');
+      }
+    }).catchError((e) {
+      LogError('Error Loading Resource: $path');
+    });
+
     return c.future;
   }
 }
