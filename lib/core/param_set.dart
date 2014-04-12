@@ -615,6 +615,10 @@ class ParamSet {
       return cu >= ZERO && cu <= NINE;
     }
 
+    bool _isspace(String c) {
+      return c == ' ' || c == '\t';
+    }
+
     List<double> values = [];
     bool inNumber = false;
     String curNumber = '';
@@ -632,8 +636,20 @@ class ParamSet {
           inNumber = false;
           curNumber = '';
         }
+      } else {
+        if (_isdigit(c) || c == '.' || c == '-' || c == '+') {
+          inNumber = true;
+          curNumber += c;
+        } else if (c == '#') {
+          while ((c = text[ci++]) != '\n' && ci < len) ;
+          ++lineNumber;
+        } else if (!_isspace(c)) {
+          LogWarning('Unexpected text found at line $lineNumber of float file');
+        }
       }
     }
+
+    return values;
   }
 
   List<ParamSetItem<bool>> bools = [];

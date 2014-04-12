@@ -511,7 +511,7 @@ class Pbrt {
   }
 
   void transformEnd() {
-    if (_pushedTransforms.isNotEmpty) {
+    if (_pushedTransforms.isEmpty) {
       LogWarning("Unmatched pbrtTransformEnd() encountered. "
           "Ignoring it.");
       return;

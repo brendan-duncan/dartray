@@ -149,7 +149,7 @@ class PbrtParser {
                        '${cmd['values'].length} found.');
           } else {
             var v = cmd['values'];
-            Matrix4x4 m = new Matrix4x4.fromList(v);
+            Matrix4x4 m = Matrix4x4.Transpose(new Matrix4x4.fromList(v));
             pbrt.concatTransform(m);
           }
           break;
@@ -304,12 +304,14 @@ class PbrtParser {
     if (name == 'include') {
       int tk = _lexer.nextToken();
       cmd['value'] = _lexer.currentTokenString;
+      _lexer.nextToken();
       return cmd;
     }
 
     if (name == 'activetransform') {
       int tk = _lexer.nextToken();
       cmd['type'] = _lexer.currentTokenString;
+      _lexer.nextToken();
       return cmd;
     }
 

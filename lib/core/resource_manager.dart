@@ -141,7 +141,6 @@ abstract class ResourceManager {
     resources[path] = c.future;
 
     loadFile(path).then((bytes) {
-      LogDebug('FILE $path LOADED: ${bytes != null}');
       if (bytes == null) {
         c.complete(null);
         return;

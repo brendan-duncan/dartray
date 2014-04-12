@@ -244,7 +244,6 @@ class Matrix4x4 {
     return this;
   }
 
-
   double determinant() {
     final double n11 = m[0];
     final double n12 = m[4];
