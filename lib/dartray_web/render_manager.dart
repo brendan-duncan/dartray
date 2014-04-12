@@ -28,11 +28,17 @@ part of dartray_web;
 class RenderManager extends RenderManagerInterface {
   String scenePath;
 
-  RenderManager(this.scenePath);
+  RenderManager([this.scenePath = '']);
 
   Future<OutputImage> renderFile(String path, {var image, String isolate,
                   LogCallback log, PreviewCallback preview,
                   int numThreads: 1}) {
+    if (path.contains('/')) {
+      int i = path.lastIndexOf('/');
+      scenePath = path.substring(0, i);
+      path = path.substring(i + 1);
+    }
+
     Completer<OutputImage> c = new Completer<OutputImage>();
     requestTextFile(path).then((scene) {
       render(scene, image: image, isolate: isolate, log: log,

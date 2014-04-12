@@ -21,7 +21,8 @@
 part of core;
 
 class ParamSet {
-  ParamSet() { }
+  ParamSet() {
+  }
 
   ParamSet.from(ParamSet other) :
     bools = new List.from(other.bools),
@@ -121,6 +122,18 @@ class ParamSet {
     spectra.add(new ParamSetItem<Spectrum>(name, s));
   }
 
+  void addXYZSpectrum(String name, List<double> data) {
+    name = name.toLowerCase();
+    eraseSpectrum(name);
+    assert(data.length % 3 == 0);
+    int nItems = data.length ~/ 3;
+    List<Spectrum> s = new List<Spectrum>(nItems);
+    for (int i = 0, di = 0; i < nItems; ++i, di += 3) {
+      s[i] = new Spectrum.xyz(data[di], data[di + 1], data[di + 2]);
+    }
+    spectra.add(new ParamSetItem<Spectrum>(name, s));
+  }
+
   void addBlackbodySpectrum(String name, List<double> data) {
     name = name.toLowerCase();
     eraseSpectrum(name);
@@ -129,20 +142,70 @@ class ParamSet {
     List<Spectrum> s = new List<Spectrum>(nItems);
     Float32List bb = new Float32List(Spectrum.NUM_CIE_SAMPLES);
     for (int i = 0, di = 0; i < nItems; ++i, di += 2) {
-      Spectrum.Blackbody(Spectrum.CIE_lambda, data[2 * i], bb);
-      SampledSpectrum bs = new SampledSpectrum();
-      bs.setSampled(Spectrum.CIE_lambda, bb);
-      s[i] = new Spectrum.from(bs) * data[2 * i + 1];
+      Spectrum.Blackbody(Spectrum.CIE_lambda, data[di], bb);
+
+      SampledSpectrum bs =
+          new SampledSpectrum.fromSampled(Spectrum.CIE_lambda, bb);
+
+      s[i] = new Spectrum.from(bs) * data[di];
     }
     spectra.add(new ParamSetItem<Spectrum>(name, s));
   }
 
-  void addSpectrumFiles(String name, List<String> filename) {
+  void addSpectrumFiles(String name, List<String> filenames,
+                        List<Future> futures) {
+    if (futures == null) {
+      return;
+    }
 
+    Completer c = new Completer();
+    futures.add(c.future);
+
+    List<Spectrum> s = new List<Spectrum>(filenames.length);
+
+    List<Future> subFutures = [];
+    for (int fi = 0; fi < filenames.length; ++fi) {
+      String path = filenames[fi];
+
+      Completer sc = new Completer();
+      ResourceManager.RequestTextFile(path).then((text) {
+        List<double> values = _readFloatFile(text);
+        int numSamples = values.length ~/ 2;
+        Float32List wls = new Float32List(numSamples);
+        Float32List v = new Float32List(numSamples);
+        for (int i = 0, j = 0; i < numSamples; ++i) {
+          wls[i] = values[j++];
+          v[i] = values[j++];
+        }
+        s[fi] = new Spectrum.fromSampled(wls, v);
+        sc.complete();
+      });
+      subFutures.add(sc.future);
+    }
+
+    Future.wait(subFutures).then((e) {
+      spectra.add(new ParamSetItem<Spectrum>(name, s));
+      c.complete();
+    });
   }
 
-  void addSampledSpectrum(String name, List<double> samples) {
+  void addSampledSpectrum(String name, List<double> data) {
+    eraseSpectrum(name);
+    int nItems = data.length;
+    assert(nItems % 2 == 0);
+    nItems ~/= 2;
 
+    Float32List wl = new Float32List(nItems);
+    Float32List v = new Float32List(nItems);
+
+    for (int i = 0, j = 0; i < nItems; ++i) {
+      wl[i] = data[j++];
+      v[i] = data[j++];
+    }
+
+    List<Spectrum> s = [new Spectrum.fromSampled(wl, v)];
+
+    spectra.add(new ParamSetItem<Spectrum>(name, s));
   }
 
   bool eraseInt(String n) {
@@ -330,7 +393,6 @@ class ParamSet {
     if (filename == "") {
       return d;
     }
-    //filename = AbsolutePath(ResolveFilename(filename));
     return filename;
   }
 
@@ -540,6 +602,38 @@ class ParamSet {
     }
     out += '] ';
     return out;
+  }
+
+  List<double> _readFloatFile(String text) {
+    int len = text.length;
+    int ci = 0;
+
+    final int ZERO = '0'.codeUnits[0];
+    final int NINE = '9'.codeUnits[0];
+    bool _isdigit(String c) {
+      int cu = c.codeUnits[0];
+      return cu >= ZERO && cu <= NINE;
+    }
+
+    List<double> values = [];
+    bool inNumber = false;
+    String curNumber = '';
+    int lineNumber = 0;
+    while (ci < len) {
+      String c = text[ci++];
+      if (c == '\n') {
+        ++lineNumber;
+      }
+      if (inNumber) {
+        if (_isdigit(c) || c == '.' || c == 'e' || c == '-' || c == '+') {
+          curNumber += c;
+        } else {
+          values.add(double.parse(curNumber));
+          inNumber = false;
+          curNumber = '';
+        }
+      }
+    }
   }
 
   List<ParamSetItem<bool>> bools = [];

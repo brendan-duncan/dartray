@@ -20,6 +20,9 @@
  ****************************************************************************/
 library volume_integrators;
 
+import 'dart:math' hide Point;
+import 'dart:typed_data';
 import '../core/core.dart';
 
 part 'emission_integrator.dart';
+part 'single_scatter_integrator.dart';

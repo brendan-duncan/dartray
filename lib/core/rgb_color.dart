@@ -58,20 +58,22 @@ class RGBColor extends Spectrum {
     assert(!c[0].isInfinite && !c[1].isInfinite && !c[2].isInfinite);
   }
 
-  RGBColor setSampled(List<double> lambda, List<double> v) {
+  RGBColor setSampled(List<double> lambda, List<double> v, [int offset = 0]) {
     // Sort samples if unordered, use sorted for returned spectrum
-    if (!Spectrum.SpectrumSamplesSorted(lambda, v)) {
-      Spectrum.SortSpectrumSamples(lambda, v);
+    if (!Spectrum.SpectrumSamplesSorted(lambda)) {
+      Spectrum.SortSpectrumSamples(lambda, v, offset);
     }
 
     double x = 0.0;
     double y = 0.0;
     double z = 0.0;
     double  yint = 0.0;
+
     for (int i = 0; i < Spectrum.NUM_CIE_SAMPLES; ++i) {
       yint += Spectrum.CIE_Y[i];
       double val = Spectrum.InterpolateSpectrumSamples(lambda, v,
-                                                       Spectrum.CIE_lambda[i]);
+                                                       Spectrum.CIE_lambda[i],
+                                                       offset);
       x += val * Spectrum.CIE_X[i];
       y += val * Spectrum.CIE_Y[i];
       z += val * Spectrum.CIE_Z[i];
@@ -85,6 +87,7 @@ class RGBColor extends Spectrum {
 
     assert(!c[0].isNaN && !c[1].isNaN && !c[2].isNaN);
     assert(!c[0].isInfinite && !c[1].isInfinite && !c[2].isInfinite);
+
     return this;
   }
 

@@ -68,8 +68,8 @@ class XYZColor extends Spectrum {
 
   XYZColor toXYZ() => this;
 
-  XYZColor setSampled(List<double> lambda, List<double> v) {
-    RGBColor rgb = new RGBColor().setSampled(lambda, v);
+  XYZColor setSampled(List<double> lambda, List<double> v, [int offset = 0]) {
+    RGBColor rgb = new RGBColor().setSampled(lambda, v, offset);
     Spectrum.RGBToXYZ(rgb.c[0], rgb.c[1], rgb.c[2], c);
     return this;
   }

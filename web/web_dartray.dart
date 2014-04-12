@@ -33,10 +33,10 @@ import 'package:image/image.dart';
 //String scene = '09_quadrics.pbrt';
 //String scene = 'area_light.pbrt';
 //String scene = 'bunny.pbrt';
-//String scene = 'cornell_path.pbrt';
+String scene = 'cornell_path.pbrt';
 //String scene = 'room-path.pbrt';
-String scene = 'spheres.pbrt';
-
+//String scene = 'spheres.pbrt';
+//String scene = 'teapot-area-light.pbrt';
 
 void main() {
   const int width = 256;
@@ -53,7 +53,7 @@ void main() {
 
   Stopwatch timer = new Stopwatch();
   timer.start();
-  new RenderManager('scenes').renderFile(scene,
+  new RenderManager().renderFile('scenes/' + scene,
       image: img,
       isolate: 'web_isolate.dart', numThreads: 1,
       log: (int type, String msg) {

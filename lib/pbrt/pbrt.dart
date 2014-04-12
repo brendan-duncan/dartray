@@ -199,6 +199,7 @@ class Pbrt {
     registerMaterial('glass', GlassMaterial.Create);
     registerMaterial('kdsubsurface', KdSubsurfaceMaterial.Create);
     registerMaterial('matte', MatteMaterial.Create);
+    registerMaterial('measured', MeasuredMaterial.Create);
     registerMaterial('metal', MetalMaterial.Create);
     registerMaterial('mirror', MirrorMaterial.Create);
     registerMaterial('plastic', PlasticMaterial.Create);
@@ -248,8 +249,11 @@ class Pbrt {
     registerSpectrumTexture('wrinkled', WrinkledTexture.CreateSpectrum);
 
     registerVolumeIntegrator('emission', EmissionIntegrator.Create);
+    registerVolumeIntegrator('single', SingleScatteringIntegrator.Create);
 
-    registerVolumeRegion('homogenous', HomogeneousVolumeDensityRegion.Create);
+    registerVolumeRegion('exponential', ExponentialDensityRegion.Create);
+    registerVolumeRegion('homogenous', HomogeneousVolumeRegion.Create);
+    registerVolumeRegion('volumegrid', VolumeGridDensity.Create);
   }
 
   ResourceManager resourceManager;

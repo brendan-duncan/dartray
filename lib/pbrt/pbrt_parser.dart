@@ -31,10 +31,11 @@ class PbrtParser {
     LogInfo('Parsing Scene');
     Completer c = new Completer();
     _loadIncludes(input).then((x) {
-      _parse(input);
-      t.stop();
-      LogInfo('Finished Parsing Scene: ${t.elapsed}');
-      c.complete();
+      _parse(input).then((e) {
+        t.stop();
+        LogInfo('Finished Parsing Scene: ${t.elapsed}');
+        c.complete();
+      });
     });
 
     return c.future;
@@ -49,7 +50,7 @@ class PbrtParser {
 
     int tk = _lexer.nextToken();
     while (!_lexer.isEof()) {
-      Map cmd = _parseCommand(_lexer);
+      Map cmd = _parseCommand(_lexer, null);
       if (cmd == null) {
         _lexer.nextToken();
         continue;
@@ -94,12 +95,15 @@ class PbrtParser {
     return c.future;
   }
 
-  void _parse(String input) {
+  Future _parse(String input) {
+    Completer c = new Completer();
+    List<Future> futures = [];
+
     PbrtLexer _lexer = new PbrtLexer(input);
 
     int tk = _lexer.nextToken();
     while (!_lexer.isEof()) {
-      Map cmd = _parseCommand(_lexer);
+      Map cmd = _parseCommand(_lexer, futures);
 
       if (cmd == null) {
         _lexer.nextToken();
@@ -141,7 +145,8 @@ class PbrtParser {
           break;
         case 'concattransform':
           if (!cmd.containsKey('values') || cmd['values'].length != 16) {
-            LogWarning('ConcatTransform requires 16 values, ${cmd['values'].length} found.');
+            LogWarning('ConcatTransform requires 16 values, '
+                       '${cmd['values'].length} found.');
           } else {
             var v = cmd['values'];
             Matrix4x4 m = new Matrix4x4.fromList(v);
@@ -276,9 +281,17 @@ class PbrtParser {
           break;
       }
     }
+
+    // Wait until all files loaded by the parsing process have finished
+    // before indicating the parse has finished.
+    Future.wait(futures).then((e) {
+      c.complete();
+    });
+
+    return c.future;
   }
 
-  Map _parseCommand(PbrtLexer _lexer) {
+  Map _parseCommand(PbrtLexer _lexer, List<Future> futures) {
     if (_lexer.currentToken != PbrtLexer.TOKEN_IDENTIFIER) {
       return null;
     }
@@ -387,7 +400,7 @@ class PbrtParser {
     }
 
     if (params.isNotEmpty) {
-      cmd['params'] = _parseParameters(params);
+      cmd['params'] = _parseParameters(params, futures);
     } else {
       cmd['params'] = new ParamSet();
     }
@@ -395,7 +408,7 @@ class PbrtParser {
     return cmd;
   }
 
-  ParamSet _parseParameters(List params) {
+  ParamSet _parseParameters(List params, List<Future> futures) {
     ParamSet ps = new ParamSet();
 
     for (var p in params) {
@@ -452,7 +465,7 @@ class PbrtParser {
           var v = p['value'];
           if (v.isNotEmpty) {
             if (v[0] is String) {
-              ps.addSpectrumFiles(p['name'], v);
+               ps.addSpectrumFiles(p['name'], v, futures);
             } else {
               if ((v.length % 2) != 0) {
                 LogWarning("Non-even number of values given with sampled spectrum "
@@ -464,6 +477,13 @@ class PbrtParser {
               ps.addSampledSpectrum(p['name'], v);
             }
           }
+          break;
+        case 'xyz':
+          var v = p['value'];
+          for (int i = 0, l = v.length; i < l; ++i) {
+            v[i] = double.parse(v[i]);
+          }
+          ps.addXYZSpectrum(p['name'], v);
           break;
         case 'blackbody':
           var v = p['value'];

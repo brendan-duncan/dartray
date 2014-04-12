@@ -20,11 +20,17 @@
  ****************************************************************************/
 library materials;
 
+import 'dart:async';
+import 'dart:typed_data';
+import 'dart:math' hide Point;
 import '../core/core.dart';
+
+import 'package:image/image.dart';
 
 part 'glass_material.dart';
 part 'kd_subsurface_material.dart';
 part 'matte_material.dart';
+part 'measured_material.dart';
 part 'metal_material.dart';
 part 'mirror_material.dart';
 part 'mix_material.dart';

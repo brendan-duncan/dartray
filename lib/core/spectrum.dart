@@ -65,6 +65,18 @@ abstract class Spectrum {
            null;
   }
 
+  factory Spectrum.xyz(double x, double y, double z) {
+    return (type == RGB) ? new RGBColor.xyz(x, y, z) :
+           (type == SAMPLED) ? new SampledSpectrum.xyz(x, y, z) :
+           (type == XYZ) ? new XYZColor.xyz(x, y, z) :
+           null;
+  }
+
+  factory Spectrum.fromSampled(List<double> lambda, List<double> v,
+                               [int offset = 0]) {
+    return new Spectrum()..setSampled(lambda, v, offset);
+  }
+
   Spectrum.samples(int nSamples, [double v = 0.0]) :
     c = new Float32List(nSamples) {
     if (v != 0.0) {
@@ -89,7 +101,7 @@ abstract class Spectrum {
     }
   }
 
-  Spectrum setSampled(List<double> lambda, List<double> v);
+  Spectrum setSampled(List<double> lambda, List<double> v, [int offset = 0]);
 
   Spectrum setRGB(double r, double g, double b,
                   [int type = SPECTRUM_REFLECTANCE]);
@@ -272,7 +284,7 @@ abstract class Spectrum {
   static const int SPECTRUM_REFLECTANCE = 0;
   static const int SPECTRUM_ILLUMINANT = 1;
 
-  static bool SpectrumSamplesSorted(List<double> lambda, List<double> vals) {
+  static bool SpectrumSamplesSorted(List<double> lambda) {
     final int n = lambda.length;
     for (int i = 0; i < n - 1; ++i) {
       if (lambda[i] > lambda[i + 1]) {
@@ -282,42 +294,47 @@ abstract class Spectrum {
     return true;
   }
 
-  static void SortSpectrumSamples(List<double> lambda, List<double> vals) {
+  static void SortSpectrumSamples(List<double> lambda, List<double> vals,
+                                  [int offset = 0]) {
     List sortVec = [];
     final int n = lambda.length;
     for (int i = 0; i < n; ++i) {
-      sortVec.add([lambda[i], vals[i]]);
+      sortVec.add([lambda[i], vals[offset + i]]);
     }
 
     sortVec.sort((a, b) => a[0] < b[0]);
 
     for (int i = 0; i < n; ++i) {
       lambda[i] = sortVec[i][0];
-      vals[i] = sortVec[i][1];
+      vals[offset + i] = sortVec[i][1];
     }
   }
 
   static double AverageSpectrumSamples(List<double> lambda, List<double> vals,
-                                       double lambdaStart, double lambdaEnd) {
+                                       double lambdaStart, double lambdaEnd,
+                                       [int offset = 0]) {
     final int n = lambda.length;
+
     // Handle cases with out-of-bounds range or single sample only
     if (lambdaEnd <= lambda[0]) {
-      return vals[0];
+      return vals[offset];
     }
+
     if (lambdaStart >= lambda[n - 1]) {
-      return vals[n-1];
+      return vals[offset + n - 1];
     }
+
     if (n == 1) {
-      return vals[0];
+      return vals[offset];
     }
 
     double sum = 0.0;
     // Add contributions of constant segments before/after samples
     if (lambdaStart < lambda[0]) {
-      sum += vals[0] * (lambda[0] - lambdaStart);
+      sum += vals[offset] * (lambda[0] - lambdaStart);
     }
     if (lambdaEnd > lambda[n - 1]) {
-      sum += vals[n - 1] * (lambdaEnd - lambda[n - 1]);
+      sum += vals[offset + n - 1] * (lambdaEnd - lambda[n - 1]);
     }
 
     // Advance to first relevant wavelength segment
@@ -330,7 +347,7 @@ abstract class Spectrum {
     // Loop over wavelength sample segments and add contributions
     INTERP(w, i) =>
         Lerp(((w) - lambda[i]) / (lambda[(i) + 1] - lambda[i]),
-             vals[i], vals[(i) + 1]);
+             vals[offset + i], vals[offset + i + 1]);
 
     SEG_AVG(wl0, wl1, i) =>
         (0.5 * (INTERP(wl0, i) + INTERP(wl1, i)));
@@ -362,21 +379,23 @@ abstract class Spectrum {
 
   static double InterpolateSpectrumSamples(List<double> lambda,
                                            List<double> vals,
-                                           num l) {
+                                           num l,
+                                           [int offset = 0]) {
     final int n = lambda.length;
     //for (int i = 0; i < n-1; ++i) Assert(lambda[i+1] > lambda[i]);
+
     if (l <= lambda[0]) {
-      return vals[0];
+      return vals[offset];
     }
 
     if (l >= lambda[n - 1]) {
-      return vals[n - 1];
+      return vals[offset + (n - 1)];
     }
 
     for (int i = 0; i < n - 1; ++i) {
       if (l >= lambda[i] && l <= lambda[i + 1]) {
         double t = (l - lambda[i]) / (lambda[i + 1] - lambda[i]);
-        return Lerp(t, vals[i], vals[i + 1]);
+        return Lerp(t, vals[offset + i], vals[i + 1]);
       }
     }
 

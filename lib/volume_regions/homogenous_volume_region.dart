@@ -20,8 +20,8 @@
  ****************************************************************************/
 part of volume_regions;
 
-class HomogeneousVolumeDensityRegion extends VolumeRegion {
-  HomogeneousVolumeDensityRegion(Spectrum sa, Spectrum ss, double gg,
+class HomogeneousVolumeRegion extends VolumeRegion {
+  HomogeneousVolumeRegion(Spectrum sa, Spectrum ss, double gg,
                                  Spectrum emit, BBox e, Transform v2w) {
     worldToVolume = Transform.Inverse(v2w);
     sig_a = sa;
@@ -31,7 +31,7 @@ class HomogeneousVolumeDensityRegion extends VolumeRegion {
     extent = e;
   }
 
-  static HomogeneousVolumeDensityRegion Create(Transform volume2world,
+  static HomogeneousVolumeRegion Create(Transform volume2world,
                                          ParamSet params) {
     // Initialize common volume region parameters
     Spectrum sigma_a = params.findOneSpectrum("sigma_a", new Spectrum(0.0));
@@ -41,7 +41,7 @@ class HomogeneousVolumeDensityRegion extends VolumeRegion {
     Point p0 = params.findOnePoint("p0", new Point(0.0, 0.0, 0.0));
     Point p1 = params.findOnePoint("p1", new Point(1.0, 1.0, 1.0));
 
-    return new HomogeneousVolumeDensityRegion(sigma_a, sigma_s, g, Le,
+    return new HomogeneousVolumeRegion(sigma_a, sigma_s, g, Le,
                                         new BBox(p0, p1),
                                         volume2world);
   }

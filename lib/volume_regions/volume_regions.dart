@@ -20,6 +20,10 @@
  ****************************************************************************/
 library volume_regions;
 
+import 'dart:math' hide Point;
+import 'dart:typed_data';
 import '../core/core.dart';
 
-part 'homogenous_volume_density_region.dart';
+part 'exponential_density_region.dart';
+part 'homogenous_volume_region.dart';
+part 'volume_grid.dart';

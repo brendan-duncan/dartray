@@ -89,6 +89,7 @@ class SamplerRenderer extends Renderer {
         if (rayWeight > 0.0) {
           Ls[i] = Li(scene, rays[i], samples[i], rng, isects[i], Ts[i]) *
                   rayWeight;
+          //Ls[i] = new Spectrum(1.0); // for debugging ray intersections.
         } else {
           Ls[i] = new Spectrum(0.0);
           Ts[i] = new Spectrum(1.0);

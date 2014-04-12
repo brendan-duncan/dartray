@@ -34,7 +34,7 @@ class IrregularIsotropicBRDF extends BxDF {
     super(BSDF_REFLECTION | BSDF_GLOSSY);
 
   Spectrum f(Vector wo, Vector wi) {
-    Point m = _BRDFRemap(wo, wi);
+    Point m = BRDFRemap(wo, wi);
     double lastMaxDist2 = 0.001;
     while (true) {
       Spectrum v = new Spectrum(0.0);
@@ -58,30 +58,6 @@ class IrregularIsotropicBRDF extends BxDF {
 
       lastMaxDist2 *= 2.0;
     }
-  }
-
-  Point _BRDFRemap(Vector wo, Vector wi) {
-    double cosi = Vector.CosTheta(wi);
-    double coso = Vector.CosTheta(wo);
-    double sini = Vector.SinTheta(wi);
-    double sino = Vector.SinTheta(wo);
-    double phii = Vector.SphericalPhi(wi);
-    double phio = Vector.SphericalPhi(wo);
-    double dphi = phii - phio;
-
-    if (dphi < 0.0) {
-      dphi += 2.0 * Math.PI;
-    }
-
-    if (dphi > 2.0 * Math.PI) {
-      dphi -= 2.0 * Math.PI;
-    }
-
-    if (dphi > Math.PI) {
-      dphi = 2.0 * Math.PI - dphi;
-    }
-
-    return new Point(sini * sino, dphi / Math.PI, cosi * coso);
   }
 
   KdTree isoBRDFData;

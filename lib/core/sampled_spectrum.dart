@@ -22,14 +22,25 @@ class SampledSpectrum extends Spectrum {
 
   SampledSpectrum.rgb(double r, double g, double b) :
     super.samples(NUM_SAMPLES) {
-    RGBColor rgb = new RGBColor.rgb(r, g, b);
-    setRGB(rgb.c[0], rgb.c[1], rgb.c[2]);
+    setRGB(r, g, b);
   }
 
-  SampledSpectrum setSampled(List<double> lambda, List<double> v) {
+  SampledSpectrum.xyz(double x, double y, double z) :
+    super.samples(NUM_SAMPLES) {
+    setXYZ(x, y, z);
+  }
+
+  SampledSpectrum.fromSampled(List<double> lambda, List<double> v,
+                             [int offset = 0]) :
+    super.samples(NUM_SAMPLES) {
+    setSampled(lambda, v, offset);
+  }
+
+  SampledSpectrum setSampled(List<double> lambda, List<double> v,
+                             [int offset = 0]) {
     // Sort samples if unordered, use sorted for returned spectrum
-    if (!Spectrum.SpectrumSamplesSorted(lambda, v)) {
-      Spectrum.SortSpectrumSamples(lambda, v);
+    if (!Spectrum.SpectrumSamplesSorted(lambda)) {
+      Spectrum.SortSpectrumSamples(lambda, v, offset);
     }
 
     for (int i = 0; i < NUM_SAMPLES; ++i) {
@@ -41,7 +52,8 @@ class SampledSpectrum extends Spectrum {
       double lambda1 = Lerp((i + 1) / NUM_SAMPLES,
           Spectrum.SAMPLED_LAMBDA_START, Spectrum.SAMPLED_LAMBDA_END);
 
-      c[i] = Spectrum.AverageSpectrumSamples(lambda, v, lambda0, lambda1);
+      c[i] = Spectrum.AverageSpectrumSamples(lambda, v, lambda0, lambda1,
+                                             offset);
     }
     return this;
   }
@@ -98,6 +110,12 @@ class SampledSpectrum extends Spectrum {
     }
     LogSevere('SampledSpectrum or double expected.');
     return new SampledSpectrum(0.0);
+  }
+
+  SampledSpectrum setXYZ(double x, double y, double z) {
+    RGBColor rgb = new RGBColor.xyz(x, y, z);
+    setRGB(rgb.c[0], rgb.c[1], rgb.c[2]);
+    return this;
   }
 
   SampledSpectrum setRGB(double r, double g, double b,

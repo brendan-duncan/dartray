@@ -37,6 +37,7 @@ part 'primitive/primitive.dart';
 part 'primitive/transformed_primitive.dart';
 part 'reflection/anisotropic.dart';
 part 'reflection/blinn.dart';
+part 'reflection/brdf_remap.dart';
 part 'reflection/brdf_to_btdf.dart';
 part 'reflection/bsdf.dart';
 part 'reflection/bsdf_sample.dart';
