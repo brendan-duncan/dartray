@@ -252,7 +252,7 @@ class Pbrt {
     registerVolumeIntegrator('single', SingleScatteringIntegrator.Create);
 
     registerVolumeRegion('exponential', ExponentialDensityRegion.Create);
-    registerVolumeRegion('homogenous', HomogeneousVolumeRegion.Create);
+    registerVolumeRegion('homogeneous', HomogeneousVolumeRegion.Create);
     registerVolumeRegion('volumegrid', VolumeGridDensity.Create);
   }
 
