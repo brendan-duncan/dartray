@@ -157,6 +157,7 @@ class PbrtParser {
           pbrt.film(cmd['type'], cmd['params']);
           break;
         case 'ident':
+        case 'identity':
           pbrt.identity();
           break;
         case 'lightsource':
