@@ -30,10 +30,8 @@ class AnimatedTransform {
     startTransform = new Transform.from(transform1),
     endTransform = new Transform.from(transform2),
     actuallyAnimated = (transform1 != transform2) {
-    if (actuallyAnimated) {
-      Decompose(startTransform.m, T[0], R[0], S[0]);
-      Decompose(endTransform.m, T[1], R[1], S[1]);
-    }
+    Decompose(startTransform.m, T[0], R[0], S[0]);
+    Decompose(endTransform.m, T[1], R[1], S[1]);
   }
 
   AnimatedTransform.from(AnimatedTransform other) :
