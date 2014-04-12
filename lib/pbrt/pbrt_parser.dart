@@ -429,6 +429,7 @@ class PbrtParser {
           }
           ps.addInt(p['name'], v);
           break;
+        case 'rgb':
         case 'color':
           var v = p['value'];
           for (int i = 0, l = v.length; i < l; ++i) {
