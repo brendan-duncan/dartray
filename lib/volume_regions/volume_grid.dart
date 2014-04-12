@@ -16,7 +16,6 @@ class VolumeGridDensity extends DensityRegion {
     Spectrum Le = params.findOneSpectrum('Le', new Spectrum(0.0));
     Point p0 = params.findOnePoint('p0', new Point(0.0, 0.0, 0.0));
     Point p1 = params.findOnePoint('p1', new Point(1.0, 1.0, 1.0));
-    int nitems;
     List<double> data = params.findFloat('density');
     if (data == null) {
       LogError('No \'density\' values provided for volume grid?');
@@ -27,8 +26,8 @@ class VolumeGridDensity extends DensityRegion {
     int ny = params.findOneInt('ny', 1);
     int nz = params.findOneInt('nz', 1);
 
-    if (nitems != nx * ny * nz) {
-      LogError('VolumeGridDensity has $nitems density values but '
+    if (data.length != nx * ny * nz) {
+      LogError('VolumeGridDensity has ${data.length} density values but '
                'nx*ny*nz = ${nx * ny * nz}');
       return null;
     }
