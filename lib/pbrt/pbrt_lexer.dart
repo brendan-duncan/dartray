@@ -65,10 +65,13 @@ class PbrtLexer {
   static const int TOKEN_A = 65; // A
   static const int TOKEN_Z = 90; // Z
 
-  final String _input;
+  PbrtLexer(String input) {
+    _inputStack.add(new _PbrtLexerInput(input));
+  }
 
-  PbrtLexer(this._input) :
-    _inputPosition = 0;
+  void addInclude(String input) {
+    _inputStack.add(new _PbrtLexerInput(input));
+  }
 
   /**
    * Returns true if the parse position is at the end of the input.
@@ -251,17 +254,23 @@ class PbrtLexer {
    * comparisons.
    */
   String _nextChar() {
-    if (_inputPosition >= _input.length) {
-      return _EOF;
+    if (_inputStack.last.isEOF) {
+      if (_inputStack.length == 1) {
+        return _EOF;
+      }
+      _inputStack.removeLast();
     }
-    return _input[_inputPosition++];
+    return _inputStack.last.nextChar();
   }
 
   String _peekNext() {
-    if (_inputPosition >= _input.length) {
-      return _EOF;
+    int len = _inputStack.length;
+    while (len > 0) {
+      if (!_inputStack[len - 1].isEOF) {
+        return _inputStack[len - 1].peekNext();
+      }
     }
-    return _input[_inputPosition];
+    return _EOF;
   }
 
   /**
@@ -300,10 +309,23 @@ class PbrtLexer {
 
   static const String _EOF = '';
 
+  List<_PbrtLexerInput> _inputStack = [];
   String _identifierStr;
   double _numValue;
   String _lastChar = ' ';
-  int _inputPosition;
   int _curToken;
   String _curTokenStr;
+}
+
+class _PbrtLexerInput {
+  String input;
+  int position = 0;
+
+  _PbrtLexerInput(this.input);
+
+  bool get isEOF => position >= input.length;
+
+  String nextChar() => input[position++];
+
+  String peekNext() => input[position];
 }

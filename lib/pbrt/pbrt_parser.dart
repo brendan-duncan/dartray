@@ -271,7 +271,7 @@ class PbrtParser {
         case 'include':
           var inc = pbrt.resourceManager.getResource(cmd['value']);
           if (inc is String) {
-            _parse(inc);
+            _lexer.addInclude(inc);
           } else {
             LogWarning('Missing include: ${cmd['value']}');
           }
@@ -304,7 +304,6 @@ class PbrtParser {
     if (name == 'include') {
       int tk = _lexer.nextToken();
       cmd['value'] = _lexer.currentTokenString;
-      _lexer.nextToken();
       return cmd;
     }
 
