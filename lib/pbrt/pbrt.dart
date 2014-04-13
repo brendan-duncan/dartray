@@ -3,14 +3,14 @@
  *                                                                          *
  *  This file is part of DartRay.                                           *
  *                                                                          *
- *  Licensed under the Apache License, Version 2.0 (the "License");         *
+ *  Licensed under the Apache License, Version 2.0 (the 'License');         *
  *  you may not use this file except in compliance with the License.        *
  *  You may obtain a copy of the License at                                 *
  *                                                                          *
  *  http://www.apache.org/licenses/LICENSE-2.0                              *
  *                                                                          *
  *  Unless required by applicable law or agreed to in writing, software     *
- *  distributed under the License is distributed on an "AS IS" BASIS,       *
+ *  distributed under the License is distributed on an 'AS IS' BASIS,       *
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.*
  *  See the License for the specific language governing permissions and     *
  *  limitations under the License.                                          *
@@ -327,9 +327,9 @@ class Pbrt {
   void cleanup() {
     //ProbesCleanup();
     if (_currentApiState == STATE_UNINITIALIZED) {
-      LogWarning("cleanup() called without init().");
+      LogWarning('cleanup() called without init().');
     } else if (_currentApiState == STATE_WORLD_BLOCK) {
-      LogWarning("cleanup() called while inside world block.");
+      LogWarning('cleanup() called while inside world block.');
     }
 
     _currentApiState = STATE_UNINITIALIZED;
@@ -409,7 +409,7 @@ class Pbrt {
     if (_namedCoordinateSystems.containsKey(name)) {
       _curTransform = _namedCoordinateSystems[name];
     } else {
-      LogWarning("Couldn't find named coordinate system \"$name\"");
+      LogWarning('Couldn\'t find named coordinate system \'$name\'');
     }
   }
 
@@ -477,7 +477,7 @@ class Pbrt {
     _renderOptions.cameraName = name;
     _renderOptions.cameraParams = params;
     _renderOptions.cameraToWorld = TransformSet.Inverse(_curTransform);
-    _namedCoordinateSystems["camera"] = _renderOptions.cameraToWorld;
+    _namedCoordinateSystems['camera'] = _renderOptions.cameraToWorld;
   }
 
   void worldBegin() {
@@ -486,7 +486,7 @@ class Pbrt {
       _curTransform[i] = new Transform();
     }
     _activeTransformBits = _ALL_TRANSFORMS_BITS;
-    _namedCoordinateSystems["world"] = _curTransform;
+    _namedCoordinateSystems['world'] = _curTransform;
   }
 
   void attributeBegin() {
@@ -497,8 +497,8 @@ class Pbrt {
 
   void attributeEnd() {
     if (_pushedGraphicsStates.isEmpty) {
-      LogWarning("Unmatched attributeEnd() encountered. "
-              "Ignoring it.");
+      LogWarning('Unmatched attributeEnd() encountered. '
+              'Ignoring it.');
       return;
     }
     _graphicsState = _pushedGraphicsStates.removeLast();
@@ -512,8 +512,8 @@ class Pbrt {
 
   void transformEnd() {
     if (_pushedTransforms.isEmpty) {
-      LogWarning("Unmatched pbrtTransformEnd() encountered. "
-          "Ignoring it.");
+      LogWarning('Unmatched pbrtTransformEnd() encountered. '
+          'Ignoring it.');
       return;
     }
 
@@ -525,37 +525,37 @@ class Pbrt {
     TextureParams tp = new TextureParams(params, params,
                             _graphicsState.doubleTextures,
                             _graphicsState.spectrumTextures);
-    if (type == "float")  {
+    if (type == 'float')  {
       // Create _double_ texture and store in _doubleTextures_
       if (_graphicsState.doubleTextures.containsKey(name)) {
-        LogWarning("Texture \"$name\" being redefined");
+        LogWarning('Texture \'$name\' being redefined');
       }
 
-      //WARN_IF_ANIMATED_TRANSFORM("Texture");
+      //WARN_IF_ANIMATED_TRANSFORM('Texture');
       Texture ft = _makeFloatTexture(texname, _curTransform[0], tp);
       if (ft != null) {
         _graphicsState.doubleTextures[name] = ft;
       }
-    } else if (type == "color" || type == "spectrum")  {
+    } else if (type == 'color' || type == 'spectrum')  {
       // Create _color_ texture and store in _spectrumTextures_
       if (_graphicsState.spectrumTextures.containsKey(name)) {
-        LogWarning("Texture \"$name\" being redefined");
+        LogWarning('Texture \'$name\' being redefined');
       }
 
-      //WARN_IF_ANIMATED_TRANSFORM("Texture");
+      //WARN_IF_ANIMATED_TRANSFORM('Texture');
       Texture st = _makeSpectrumTexture(texname, _curTransform[0], tp);
       if (st != null) {
         _graphicsState.spectrumTextures[name] = st;
       }
     } else {
-      LogWarning("Texture type \"$type\" unknown.");
+      LogWarning('Texture type \'$type\' unknown.');
     }
   }
 
   void material(String name, ParamSet params) {
     _graphicsState.material = name;
     _graphicsState.materialParams = params;
-    _graphicsState.currentNamedMaterial = "";
+    _graphicsState.currentNamedMaterial = '';
   }
 
   void makeNamedMaterial(String name, ParamSet params) {
@@ -563,11 +563,11 @@ class Pbrt {
     TextureParams mp = new TextureParams(params, _graphicsState.materialParams,
                      _graphicsState.doubleTextures,
                      _graphicsState.spectrumTextures);
-    String matName = mp.findString("type");
+    String matName = mp.findString('type');
 
-    //WARN_IF_ANIMATED_TRANSFORM("MakeNamedMaterial");
+    //WARN_IF_ANIMATED_TRANSFORM('MakeNamedMaterial');
     if (matName.isEmpty) {
-      LogWarning("No parameter string \"type\" found in MakeNamedMaterial");
+      LogWarning('No parameter string \'type\' found in MakeNamedMaterial');
     } else {
       Material mtl = _makeMaterial(matName, _curTransform[0], mp);
       if (mtl != null) {
@@ -581,10 +581,10 @@ class Pbrt {
   }
 
   void lightSource(String name, ParamSet params) {
-    //WARN_IF_ANIMATED_TRANSFORM("LightSource");
+    //WARN_IF_ANIMATED_TRANSFORM('LightSource');
     Light lt = _makeLight(name, _curTransform[0], params);
     if (lt == null) {
-      LogWarning("pbrtLightSource: light type \"$name\" unknown.");
+      LogWarning('pbrtLightSource: light type \'$name\' unknown.');
     } else {
       _renderOptions.lights.add(lt);
     }
@@ -615,7 +615,7 @@ class Pbrt {
       params.reportUnused();
 
       // Possibly create area light for shape
-      if (_graphicsState.areaLight != "") {
+      if (_graphicsState.areaLight != '') {
         area = _makeAreaLight(_graphicsState.areaLight, _curTransform[0],
                              _graphicsState.areaLightParams, shape);
       }
@@ -625,9 +625,9 @@ class Pbrt {
       // Create primitive for animated shape
 
       // Create initial _Shape_ for animated shape
-      if (_graphicsState.areaLight != "") {
-        LogWarning("Ignoring currently set area light when creating "
-              "animated shape");
+      if (_graphicsState.areaLight != '') {
+        LogWarning('Ignoring currently set area light when creating '
+              'animated shape');
       }
 
       Transform identity = new Transform();
@@ -674,7 +674,7 @@ class Pbrt {
     // Add primitive to scene or current instance
     if (_renderOptions.currentInstance != null) {
       if (area != null) {
-        LogWarning("Area lights not supported with object instancing");
+        LogWarning('Area lights not supported with object instancing');
       }
 
       _renderOptions.currentInstance.add(prim);
@@ -700,7 +700,7 @@ class Pbrt {
   void objectBegin(String name) {
     attributeBegin();
     if (_renderOptions.currentInstance != null) {
-      LogWarning("ObjectBegin called inside of instance definition");
+      LogWarning('ObjectBegin called inside of instance definition');
     }
     _renderOptions.instances[name] = new List<Primitive>();
     _renderOptions.currentInstance = _renderOptions.instances[name];
@@ -709,7 +709,7 @@ class Pbrt {
 
   void objectEnd() {
     if (_renderOptions.currentInstance == null) {
-      LogWarning("ObjectEnd called outside of instance definition");
+      LogWarning('ObjectEnd called outside of instance definition');
     }
     _renderOptions.currentInstance = null;
     attributeEnd();
@@ -719,12 +719,12 @@ class Pbrt {
   void objectInstance(String name) {
     // Object instance error checking
     if (_renderOptions.currentInstance != null) {
-      LogWarning("ObjectInstance can't be called inside instance definition");
+      LogWarning('ObjectInstance can\'t be called inside instance definition');
       return;
     }
 
     if (!_renderOptions.instances.containsKey(name)) {
-      LogWarning("Unable to find instance named \"$name\"");
+      LogWarning('Unable to find instance named \'$name\'');
       return;
     }
 
@@ -739,11 +739,11 @@ class Pbrt {
                            inst, _renderOptions.acceleratorParams);
 
       if (accel == null) {
-        accel = _makeAccelerator("bvh", inst, new ParamSet());
+        accel = _makeAccelerator('bvh', inst, new ParamSet());
       }
 
       if (accel == null) {
-        LogSevere("Unable to create \"bvh\" accelerator");
+        LogSevere('Unable to create \'bvh\' accelerator');
       }
 
       inst.clear();
@@ -814,7 +814,7 @@ class Pbrt {
     }
 
     if (accelerator == null) {
-      LogSevere("Unable to create \"bvh\" accelerator.");
+      LogSevere('Unable to create \'bvh\' accelerator.');
     }
 
     Scene scene = new Scene(accelerator, _renderOptions.lights, volumeRegion);
@@ -839,7 +839,7 @@ class Pbrt {
                           _renderOptions.outputImage,
                           _renderOptions.previewCallback);
     if (film == null) {
-      LogSevere("Unable to create film.");
+      LogSevere('Unable to create film.');
     }
 
     Camera camera = _makeCamera(_renderOptions.cameraName,
@@ -850,43 +850,47 @@ class Pbrt {
                                 film);
 
     if (camera == null) {
-      LogSevere("Unable to create camera.");
+      LogSevere('Unable to create camera.');
     }
 
-    /*if (RendererName == "metropolis") {
-      renderer = MetropolisRenderer.Create(RendererParams, camera);
-      RendererParams.reportUnused();
-      // Warn if no light sources are defined
-      if (lights.length == 0) {
-        Warning("No light sources defined in scene; "
-                "possibly rendering a black image.");
-      }
-    } else if (RendererName == "createprobes") {
+    /*if (_renderOptions.rendererName == 'createprobes') {
       // Create surface and volume integrators
       SurfaceIntegrator *surfaceIntegrator = MakeSurfaceIntegrator(SurfIntegratorName,
           SurfIntegratorParams);
-      if (!surfaceIntegrator) Severe("Unable to create surface integrator.");
+      if (!surfaceIntegrator) Severe('Unable to create surface integrator.');
       VolumeIntegrator *volumeIntegrator = MakeVolumeIntegrator(VolIntegratorName,
           VolIntegratorParams);
-      if (!volumeIntegrator) Severe("Unable to create volume integrator.");
+      if (!volumeIntegrator) Severe('Unable to create volume integrator.');
       renderer = CreateRadianceProbesRenderer(camera, surfaceIntegrator, volumeIntegrator, RendererParams);
       RendererParams.ReportUnused();
       // Warn if no light sources are defined
       if (lights.size() == 0)
-          Warning("No light sources defined in scene; "
-              "possibly rendering a black image.");
-    } else if (RendererName == "surfacepoints") {
+          Warning('No light sources defined in scene; '
+              'possibly rendering a black image.');
+    } else if (_renderOptions.rendererName == 'surfacepoints') {
       Point pCamera = camera.CameraToWorld(camera.shutterOpen, Point(0, 0, 0));
       renderer = CreateSurfacePointsRenderer(RendererParams, pCamera, camera.shutterOpen);
       RendererParams.ReportUnused();
-    } else*/ if (_renderOptions.rendererName == 'aggregatetest') {
+    } else*/
+
+    if (_renderOptions.rendererName == 'aggregatetest') {
       renderer = AggregateTestRenderer.Create(_renderOptions.rendererParams,
                                               _renderOptions.primitives);
       _renderOptions.rendererParams.reportUnused();
+    } else if (_renderOptions.rendererName == 'metropolis') {
+      renderer = MetropolisRenderer.Create(_renderOptions.rendererParams,
+                                           camera);
+      _renderOptions.rendererParams.reportUnused();
+
+      // Warn if no light sources are defined
+      if (_renderOptions.lights.length == 0) {
+        LogWarning('No light sources defined in scene; '
+              'possibly rendering a black image.');
+      }
     } else {
-      if (_renderOptions.rendererName != "sampler") {
-        LogWarning('Renderer type \"${_renderOptions.rendererName}\" unknown. '
-                   'Using \"sampler\".');
+      if (_renderOptions.rendererName != 'sampler') {
+        LogWarning('Renderer type \'${_renderOptions.rendererName}\' unknown. '
+                   'Using \'sampler\'.');
       }
 
       _renderOptions.rendererParams.reportUnused();
@@ -895,7 +899,7 @@ class Pbrt {
                                      _renderOptions.samplerParams,
                                      camera.film, camera);
       if (sampler == null) {
-        LogSevere("Unable to create sampler.");
+        LogSevere('Unable to create sampler.');
       }
 
       // Create surface and volume integrators
@@ -903,14 +907,14 @@ class Pbrt {
           _makeSurfaceIntegrator(_renderOptions.surfIntegratorName,
                                  _renderOptions.surfIntegratorParams);
       if (surfaceIntegrator == null) {
-        LogSevere("Unable to create surface integrator.");
+        LogSevere('Unable to create surface integrator.');
       }
 
       VolumeIntegrator volumeIntegrator =
           _makeVolumeIntegrator(_renderOptions.volIntegratorName,
                                 _renderOptions.volIntegratorParams);
       if (volumeIntegrator == null) {
-        LogSevere("Unable to create volume integrator.");
+        LogSevere('Unable to create volume integrator.');
       }
 
       renderer = new SamplerRenderer(sampler, camera, surfaceIntegrator,
@@ -919,8 +923,8 @@ class Pbrt {
 
       // Warn if no light sources are defined
       if (_renderOptions.lights.length == 0) {
-        LogWarning("No light sources defined in scene; "
-              "possibly rendering a black image.");
+        LogWarning('No light sources defined in scene; '
+              'possibly rendering a black image.');
       }
     }
 
@@ -947,7 +951,7 @@ class Pbrt {
         _graphicsState.spectrumTextures);
 
     Material mtl;
-    if (_graphicsState.currentNamedMaterial != "" &&
+    if (_graphicsState.currentNamedMaterial != '' &&
         _graphicsState.namedMaterials.containsKey(_graphicsState.currentNamedMaterial)) {
       mtl = _graphicsState.namedMaterials[_graphicsState.currentNamedMaterial];
     }
@@ -957,11 +961,11 @@ class Pbrt {
     }
 
     if (mtl == null) {
-      mtl = _makeMaterial("matte", _curTransform[0], mp);
+      mtl = _makeMaterial('matte', _curTransform[0], mp);
     }
 
     if (mtl == null) {
-      LogSevere("Unable to create \"matte\" material?!");
+      LogSevere('Unable to create \'matte\' material?!');
     }
 
     return mtl;

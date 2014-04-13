@@ -43,6 +43,16 @@ class RayDifferential extends Ray {
                        double start = 0.0, end = INFINITY]) :
     super.withParent(origin, direction, parent, start, end);
 
+  void copy(RayDifferential b) {
+    origin.copy(b.origin);
+    direction.copy(b.direction);
+    hasDifferentials = b.hasDifferentials;
+    rxOrigin.copy(b.rxOrigin);
+    ryOrigin.copy(b.ryOrigin);
+    rxDirection.copy(b.rxDirection);
+    ryDirection.copy(b.ryDirection);
+  }
+
   void scaleDifferentials(double s) {
     rxOrigin = new Point.from(origin + (rxOrigin - origin) * s);
     ryOrigin = new Point.from(origin + (ryOrigin - origin) * s);

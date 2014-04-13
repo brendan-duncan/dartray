@@ -30,7 +30,6 @@ class SamplerRenderer extends Renderer {
    */
   OutputImage render(Scene scene) {
     LogInfo('Starting Render');
-    Stats.STARTED_RENDERTASK(taskNum);
 
     // Allow integrators to do preprocessing for the scene
     Stats.STARTED_PREPROCESSING();
@@ -41,95 +40,17 @@ class SamplerRenderer extends Renderer {
     Stats.STARTED_RENDERING();
 
     // Allocate and initialize sample
-    Sampler mainSampler = this.sampler;
-
-    Sampler sampler = mainSampler.getSubSampler(taskNum, taskCount);
-    if (sampler == null) {
-      Stats.FINISHED_RENDERTASK(taskNum);
-      return null;
-    }
-
     Sample sample = new Sample(sampler, surfaceIntegrator,
                                volumeIntegrator, scene);
 
-    RNG rng = new RNG(taskNum);
+    _SamplerRendererTask task = new _SamplerRendererTask(scene, this, camera,
+                                                         sampler, sample,
+                                                         taskNum, taskCount);
 
-    // Allocate space for samples and intersections
-    int maxSamples = sampler.maximumSampleCount();
-    List<Sample> samples = sample.duplicate(maxSamples);
-
-    List<RayDifferential> rays = new List<RayDifferential>(maxSamples);
-    List<Spectrum> Ls = new List<Spectrum>(maxSamples);
-    List<Spectrum> Ts = new List<Spectrum>(maxSamples);
-    List<Intersection> isects = new List<Intersection>(maxSamples);
-    for (int i = 0; i < maxSamples; ++i) {
-      rays[i] = new RayDifferential();
-      Ls[i] = new Spectrum(0.0);
-      Ts[i] = new Spectrum(0.0);
-      isects[i] = new Intersection();
-    }
-
-    // Get samples from [Sampler] and update image
-    while (true) {
-      int sampleCount = sampler.getMoreSamples(samples, rng);
-      if (sampleCount == 0) {
-        break;
-      }
-
-      // Generate camera rays and compute radiance along rays
-      for (int i = 0; i < sampleCount; ++i) {
-        Stats.STARTED_GENERATING_CAMERA_RAY(samples[i]);
-        // Find camera ray for sample[i]
-        double rayWeight = camera.generateRayDifferential(samples[i], rays[i]);
-        rays[i].scaleDifferentials(1.0 / Math.sqrt(sampler.samplesPerPixel));
-        Stats.FINISHED_GENERATING_CAMERA_RAY(samples[i], rays[i], rayWeight);
-
-        // Evaluate radiance along camera ray
-        Stats.STARTED_CAMERA_RAY_INTEGRATION(rays[i], samples[i]);
-        if (rayWeight > 0.0) {
-          Ls[i] = Li(scene, rays[i], samples[i], rng, isects[i], Ts[i]) *
-                  rayWeight;
-          //Ls[i] = new Spectrum(1.0); // for debugging ray intersections.
-        } else {
-          Ls[i] = new Spectrum(0.0);
-          Ts[i] = new Spectrum(1.0);
-        }
-
-        // Issue warning if unexpected radiance value returned
-        if (Ls[i].hasNaNs()) {
-          LogWarning('Not-a-number radiance value returned '
-                'for image sample. Setting to black.');
-          Ls[i] = new Spectrum(0.0);
-        } else if (Ls[i].y < -1e-5) {
-          LogWarning('Negative luminance value, ${Ls[i].y}, returned'
-                'for image sample. Setting to black.');
-          Ls[i] = new Spectrum(0.0);
-        } else if (Ls[i].y.isInfinite) {
-          LogWarning('Infinite luminance value returned'
-                'for image sample. Setting to black.');
-          Ls[i] = new Spectrum(0.0);
-        }
-
-        Stats.FINISHED_CAMERA_RAY_INTEGRATION(rays[i], samples[i], Ls[i]);
-      }
-
-      // Report sample results to [Sampler], add contributions to image
-      if (sampler.reportResults(samples, rays, Ls, isects, sampleCount)) {
-        for (int i = 0; i < sampleCount; ++i) {
-          Stats.STARTED_ADDING_IMAGE_SAMPLE(samples[i], rays[i], Ls[i], Ts[i]);
-          camera.film.addSample(samples[i], Ls[i]);
-          Stats.FINISHED_ADDING_IMAGE_SAMPLE();
-        }
-      }
-    }
-
-    // Clean up after [SamplerRenderer] is done with its image region
-    camera.film.updateDisplay(sampler.xPixelStart, sampler.yPixelStart,
-                              sampler.xPixelEnd + 1, sampler.yPixelEnd + 1);
+    task.run();
 
     OutputImage out = camera.film.writeImage();
     Stats.FINISHED_RENDERING();
-    Stats.FINISHED_RENDERTASK(taskNum);
 
     return out;
   }
@@ -177,4 +98,104 @@ class SamplerRenderer extends Renderer {
   Camera camera;
   SurfaceIntegrator surfaceIntegrator;
   VolumeIntegrator volumeIntegrator;
+}
+
+class _SamplerRendererTask {
+  _SamplerRendererTask(this.scene, this.renderer, this.camera,
+                       this.mainSampler, this.origSample,
+                       this.taskNum, this.taskCount);
+
+  void run() {
+    Stats.STARTED_RENDERTASK(taskNum);
+    // Get sub-_Sampler_ for _SamplerRendererTask_
+    Sampler sampler = mainSampler.getSubSampler(taskNum, taskCount);
+    if (sampler == null) {
+      Stats.FINISHED_RENDERTASK(taskNum);
+      return;
+    }
+
+    // Declare local variables used for rendering loop
+    RNG rng = new RNG(taskNum);
+
+    // Allocate space for samples and intersections
+    int maxSamples = sampler.maximumSampleCount();
+    List<Sample> samples = origSample.duplicate(maxSamples);
+    List<RayDifferential> rays = new List<RayDifferential>(maxSamples);
+    List<Spectrum> Ls = new List<Spectrum>(maxSamples);
+    List<Spectrum> Ts = new List<Spectrum>(maxSamples);
+    List<Intersection> isects = new List<Intersection>(maxSamples);
+    for (int i = 0; i < maxSamples; ++i) {
+      rays[i] = new RayDifferential();
+      Ls[i] = new Spectrum(0.0);
+      Ts[i] = new Spectrum(0.0);
+      isects[i] = new Intersection();
+    }
+
+    // Get samples from [Sampler] and update image
+    while (true) {
+      int sampleCount = sampler.getMoreSamples(samples, rng);
+      if (sampleCount == 0) {
+        break;
+      }
+      // Generate camera rays and compute radiance along rays
+      for (int i = 0; i < sampleCount; ++i) {
+        // Find camera ray for _sample[i]_
+        Stats.STARTED_GENERATING_CAMERA_RAY(samples[i]);
+        double rayWeight = camera.generateRayDifferential(samples[i], rays[i]);
+        rays[i].scaleDifferentials(1.0 / Math.sqrt(sampler.samplesPerPixel));
+        Stats.FINISHED_GENERATING_CAMERA_RAY(samples[i], rays[i], rayWeight);
+
+        // Evaluate radiance along camera ray
+        Stats.STARTED_CAMERA_RAY_INTEGRATION(rays[i], samples[i]);
+
+        if (rayWeight > 0.0) {
+          Ls[i] = renderer.Li(scene, rays[i], samples[i], rng, isects[i],
+                              Ts[i]) * rayWeight;
+        } else {
+          Ls[i] = new Spectrum(0.0);
+          Ts[i] = new Spectrum(1.0);
+        }
+
+        // Issue warning if unexpected radiance value returned
+        if (Ls[i].hasNaNs()) {
+          LogWarning('Not-a-number radiance value returned '
+                     'for image sample. Setting to black.');
+          Ls[i] = new Spectrum(0.0);
+        } else if (Ls[i].y < -1e-5) {
+          LogWarning('Negative luminance value, ${Ls[i].y}, returned'
+                     'for image sample. Setting to black.');
+          Ls[i] = new Spectrum(0.0);
+        } else if (Ls[i].y.isInfinite) {
+          LogWarning('Infinite luminance value returned'
+                     'for image sample. Setting to black.');
+          Ls[i] = new Spectrum(0.0);
+        }
+
+        Stats.FINISHED_CAMERA_RAY_INTEGRATION(rays[i], samples[i], Ls[i]);
+      }
+
+      // Report sample results to [Sampler], add contributions to image
+      if (sampler.reportResults(samples, rays, Ls, isects, sampleCount)) {
+        for (int i = 0; i < sampleCount; ++i) {
+          Stats.STARTED_ADDING_IMAGE_SAMPLE(samples[i], rays[i], Ls[i], Ts[i]);
+          camera.film.addSample(samples[i], Ls[i]);
+          Stats.FINISHED_ADDING_IMAGE_SAMPLE();
+        }
+      }
+    }
+
+    // Clean up after [SamplerRenderer] is done with its image region
+    camera.film.updateDisplay(sampler.xPixelStart, sampler.yPixelStart,
+                              sampler.xPixelEnd + 1, sampler.yPixelEnd + 1);
+
+    Stats.FINISHED_RENDERTASK(taskNum);
+  }
+
+  Scene scene;
+  Renderer renderer;
+  Camera camera;
+  Sampler mainSampler;
+  Sample origSample;
+  int taskNum;
+  int taskCount;
 }

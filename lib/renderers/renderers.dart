@@ -21,7 +21,12 @@
 library renderers;
 
 import 'dart:math' as Math;
+import 'dart:typed_data';
+
 import '../core/core.dart';
+import '../samplers/samplers.dart';
+import '../surface_integrators/surface_integrators.dart';
 
 part 'aggregate_test_renderer.dart';
+part 'metropolis_renderer.dart';
 part 'sampler_renderer.dart';
