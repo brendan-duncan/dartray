@@ -23,25 +23,24 @@ part of core;
 const double ONE_MINUS_EPSILON = 0.9999999403953552;
 
 class Distribution1D {
-  Distribution1D(List<double> f, int n) {
-    count = n;
+  Distribution1D(List<double> f, this.count) {
     func = new List<double>.from(f);
-    cdf = new List<double>(n + 1);
+    cdf = new List<double>(count + 1);
 
     // Compute integral of step function at $x_i$
     cdf[0] = 0.0;
     for (int i = 1; i < count + 1; ++i) {
-      cdf[i] = cdf[i - 1] + func[i - 1] / n;
+      cdf[i] = cdf[i - 1] + func[i - 1] / count;
     }
 
     // Transform step function integral into CDF
     funcInt = cdf[count];
     if (funcInt == 0.0) {
-      for (int i = 1; i < n + 1; ++i) {
-        cdf[i] = i / n;
+      for (int i = 1; i < count + 1; ++i) {
+        cdf[i] = i / count;
       }
     } else {
-      for (int i = 1; i < n + 1; ++i) {
+      for (int i = 1; i < count + 1; ++i) {
         cdf[i] /= funcInt;
       }
     }
@@ -50,14 +49,17 @@ class Distribution1D {
 
   double sampleContinuous(double u, List<double> pdf, [List<int> off]) {
     // Find surrounding CDF segments and _offset_
-    int ptr = upper_bound(cdf, u);
-    int offset = Math.max(0, (cdf[ptr] - cdf[0] - 1).toInt());
+    int ptr = upper_bound(cdf, u, last: count + 1);
+    int offset = Math.max(0, ptr - 1);
     if (off != null) {
       off[0] = offset;
     }
+    assert(offset < count);
+    assert(u >= cdf[offset] && u < cdf[offset + 1]);
 
     // Compute offset along CDF segment
     double du = (u - cdf[offset]) / (cdf[offset+1] - cdf[offset]);
+    assert(!du.isNaN);
 
     // Compute PDF for sampled offset
     if (pdf != null) {
@@ -70,8 +72,10 @@ class Distribution1D {
 
   int sampleDiscrete(double u, List<double> pdf) {
     // Find surrounding CDF segments and _offset_
-    int ptr = upper_bound(cdf, u);
-    int offset = Math.max(0, (cdf[ptr] - cdf[0] - 1).toInt());
+    int ptr = upper_bound(cdf, u, last: count + 1);
+    int offset = Math.max(0, ptr - 1);
+    assert(offset < count);
+    assert(u >= cdf[offset] && u < cdf[offset+1]);
     if (pdf != null) {
       pdf[0] = func[offset] / (funcInt * count);
     }

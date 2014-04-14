@@ -159,7 +159,8 @@ void nth_element(List list, int first, int nth, int last,
  * Returns an index of the first element in the sorted list which compares
  * greater than value.  Derived from c++ std::upper_bound.
  */
-int upper_bound(List list, value, [BinaryPredicate compare = less_than]) {
+int upper_bound(List list, value, {int first: 0, int last,
+                BinaryPredicate compare: less_than}) {
   if (list.isEmpty) {
     return -1;
   }
@@ -168,8 +169,10 @@ int upper_bound(List list, value, [BinaryPredicate compare = less_than]) {
     return 0;
   }
 
-  int first = 0;
-  int last = list.length - 1;
+  if  (last == null) {
+    last = list.length;
+  }
+
   int count = last;
   while (count > 0) {
     int index = first;
@@ -191,7 +194,8 @@ int upper_bound(List list, value, [BinaryPredicate compare = less_than]) {
  * Returns an index of the first element in the sorted list which does not
  * compare less than value. Derived from c++ std::lower_bound.
  */
-int lower_bound(List list, value, [BinaryPredicate compare = less_than]) {
+int lower_bound(List list, value, {int first: 0, int last,
+                BinaryPredicate compare: less_than}) {
   if (list.isEmpty) {
     return -1;
   }
@@ -203,8 +207,10 @@ int lower_bound(List list, value, [BinaryPredicate compare = less_than]) {
     return 0;
   }
 
-  int first = 0;
-  int last = list.length - 1;
+  if  (last == null) {
+    last = list.length;
+  }
+
   int count = last;
   while (count > 0) {
     int index = first;
@@ -229,7 +235,8 @@ int lower_bound(List list, value, [BinaryPredicate compare = less_than]) {
  * Returns the index of the value in a sorted list, or -1 if the value is not
  * in the list. Derived from c++ std::binary_search.
  */
-int find_element(List list, value, [bool compare(a, b) = less_than]) {
+int find_element(List list, value, {int first: 0, int last,
+                 BinaryPredicate compare: less_than}) {
   if (list.isEmpty) {
     return -1;
   }
@@ -240,7 +247,13 @@ int find_element(List list, value, [bool compare(a, b) = less_than]) {
     }
   }
 
-  int index = lower_bound(list, value, compare);
+  if (last == null) {
+    last = list.length;
+  }
+
+  int index = lower_bound(list, value, first: first, last: last,
+                          compare: compare);
+
   if (index != list.length) {
     if (!compare(value, list[index])) {
       return index;
