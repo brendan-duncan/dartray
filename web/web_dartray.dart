@@ -22,21 +22,21 @@ import 'dart:html' as Html;
 import 'package:dartray/dartray_web.dart';
 import 'package:image/image.dart';
 
-//String scene = '01_bowl_of_spheres.pbrt';
-//String scene = '02_kin_tiki_directlighting.pbrt';
-//String scene = '03_quadrics_directlighting.pbrt';
-//String scene = '04_box.pbrt';
-//String scene = '05_distant_light.pbrt';
-//String scene = '05_distant_light2.pbrt';
-//String scene = '07_area_light.pbrt';
-//String scene = '08_whitted.pbrt';
-//String scene = '09_quadrics.pbrt';
-//String scene = 'area_light.pbrt';
-//String scene = 'bunny.pbrt';
-String scene = 'cornell_path.pbrt';
-//String scene = 'room-path.pbrt';
-//String scene = 'spheres.pbrt';
-//String scene = 'teapot-area-light.pbrt';
+//String scene = 'scenes/01_bowl_of_spheres.pbrt';
+//String scene = 'scenes/02_kin_tiki_directlighting.pbrt';
+//String scene = 'scenes/03_quadrics_directlighting.pbrt';
+//String scene = 'scenes/04_box.pbrt';
+//String scene = 'scenes/05_distant_light.pbrt';
+//String scene = 'scenes/05_distant_light2.pbrt';
+//String scene = 'scenes/07_area_light.pbrt';
+//String scene = 'scenes/08_whitted.pbrt';
+//String scene = 'scenes/09_quadrics.pbrt';
+//String scene = 'scenes/area_light.pbrt';
+//String scene = 'scenes/bunny.pbrt';
+String scene = 'scenes/cornell_path.pbrt';
+//String scene = 'scenes/room-path.pbrt';
+//String scene = 'scenes/spheres.pbrt';
+//String scene = 'scenes/teapot-area-light.pbrt';
 
 void main() {
   const int width = 256;
@@ -53,9 +53,9 @@ void main() {
 
   Stopwatch timer = new Stopwatch();
   timer.start();
-  new RenderManager().renderFile('scenes/' + scene,
+  new RenderManager().renderFile(scene,
       image: img,
-      isolate: 'web_isolate.dart', numThreads: 1,
+      isolate: 'web_isolate.dart',
       log: (int type, String msg) {
         print('$msg');
         var div = new Html.Element.html('<pre>$msg</pre>');
