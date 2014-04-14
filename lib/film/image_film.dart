@@ -205,12 +205,46 @@ class ImageFilm extends Film {
     _splatXYZ[pi3] += xyz[0];
     _splatXYZ[pi3 + 1] += xyz[1];
     _splatXYZ[pi3 + 2] += xyz[2];
+
+
+    // Update the image buffer so it can be visualized.
+    List<double> rgb = [0.0, 0.0, 0.0];
+    List<double> splatRGB = [0.0, 0.0, 0.0];
+    // Convert pixel XYZ color to RGB
+    Spectrum.XYZToRGB(_Lxyz[pi3], _Lxyz[pi3 + 1], _Lxyz[pi3 + 2], rgb);
+
+    // Normalize pixel with weight sum
+    double weightSum = _weightSum[pi];
+    if (weightSum != 0.0) {
+      double invWt = 1.0 / weightSum;
+      rgb[0] = max(0.0, rgb[0] * invWt);
+      rgb[1] = max(0.0, rgb[1] * invWt);
+      rgb[2] = max(0.0, rgb[2] * invWt);
+    }
+
+    // Add splat value at pixel
+    Spectrum.XYZToRGB(_splatXYZ[pi3], _splatXYZ[pi3 + 1], _splatXYZ[pi3 + 2],
+                      splatRGB);
+    rgb[0] += splatRGB[0];
+    rgb[1] += splatRGB[1];
+    rgb[2] += splatRGB[2];
+
+    Uint8List pixels = image.getBytes();
+    int oi = pi * 4;
+    pixels[oi] = _gamma[(rgb[0] * 255.0).floor().clamp(0, 255)];
+    pixels[oi + 1] = _gamma[(rgb[1] * 255.0).floor().clamp(0, 255)];
+    pixels[oi + 2] = _gamma[(rgb[2] * 255.0).floor().clamp(0, 255)];
+    pixels[oi + 3] = 255;
+
+    samplesProcessed++;
+    if (previewCallback != null && samplesProcessed % previewCount == 0) {
+      previewCallback(image);
+    }
   }
 
   void getSampleExtent(List<int> extent) {
     extent[0] = (xPixelStart + 0.5 - filter.xWidth).floor();
     extent[1] = (xPixelStart + 0.5 + xPixelCount + filter.xWidth).ceil();
-
     extent[2] = (yPixelStart + 0.5 - filter.yWidth).floor();
     extent[3] = (yPixelStart + 0.5 + yPixelCount + filter.yWidth).ceil();
   }

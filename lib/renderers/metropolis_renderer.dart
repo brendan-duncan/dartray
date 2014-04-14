@@ -1,7 +1,8 @@
 part of renderers;
 
 class MetropolisRenderer extends Renderer {
-  static MetropolisRenderer Create(ParamSet params, Camera camera) {
+  static MetropolisRenderer Create(ParamSet params, Camera camera,
+                                   [int taskNum = 0, int taskCount = 1]) {
     double largeStepProb = params.findOneFloat('largestepprobability', 0.25);
     int perPixelSamples = params.findOneInt('samplesperpixel', 100);
     int nBootstrap = params.findOneInt('bootstrapsamples', 100000);
@@ -11,22 +12,23 @@ class MetropolisRenderer extends Renderer {
     int md = params.findOneInt('maxdepth', 7);
     bool doBidirectional = params.findOneBool('bidirectional', true);
 
-    /*if (PbrtOptions.quickRender) {
-      perPixelSamples = max(1, perPixelSamples / 4);
-      nBootstrap = max(1, nBootstrap / 4);
-      nDirectPixelSamples = max(1, nDirectPixelSamples / 4);
+    /*if (quickRender) {
+      perPixelSamples = Math.max(1, perPixelSamples ~/ 4);
+      nBootstrap = Math.max(1, nBootstrap ~/ 4);
+      nDirectPixelSamples = Math.max(1, nDirectPixelSamples ~/ 4);
     }*/
 
     return new MetropolisRenderer(perPixelSamples, nBootstrap,
                                   nDirectPixelSamples, largeStepProb,
                                   doDirectSeparately, mr, md, camera,
-                                  doBidirectional);
+                                  doBidirectional, taskNum, taskCount);
   }
 
   MetropolisRenderer(this.nPixelSamples, this.nBootstrap,
                      this.nDirectPixelSamples, double lsp,
                      bool doDirectSeparately, this.maxConsecutiveRejects,
-                     this.maxDepth, this.camera, this.bidirectional) {
+                     this.maxDepth, this.camera, this.bidirectional,
+                     [this.taskNum = 0, this.taskCount = 1]) {
     largeStepsPerPixel = Math.max(1, RoundUpPow2((lsp * nPixelSamples).toInt()));
     if (largeStepsPerPixel >= nPixelSamples) {
       largeStepsPerPixel ~/= 2;
@@ -56,6 +58,8 @@ class MetropolisRenderer extends Renderer {
       Distribution1D lightDistribution = Integrator.ComputeLightSamplingCDF(scene);
 
       if (directLighting != null) {
+        Stopwatch t = new Stopwatch()..start();
+        LogInfo('Metropolis: Starting Direct Lighting Render');
         Stats.MLT_STARTED_DIRECTLIGHTING();
         // Compute direct lighting before Metropolis light transport
         if (nDirectPixelSamples > 0) {
@@ -66,14 +70,18 @@ class MetropolisRenderer extends Renderer {
           Sample sample = new Sample(sampler, directLighting, null, scene);
 
           var task = new _SamplerRendererTask(scene, this, camera,
-                                              sampler, sample, 0, 1);
+                                              sampler, sample,
+                                              taskNum, taskCount);
           task.run();
         }
 
         camera.film.writeImage();
         Stats.MLT_FINISHED_DIRECTLIGHTING();
+        LogInfo('Metropolis:Finished Direct Lighting Render: ${t.elapsed}');
       }
 
+      Stopwatch t = new Stopwatch()..start();
+      LogInfo('Metropolis: Starting Bootstrap: $nBootstrap');
       // Take initial set of samples to compute $b$
       Stats.MLT_STARTED_BOOTSTRAPPING(nBootstrap);
       RNG rng = new RNG(0);
@@ -108,6 +116,7 @@ class MetropolisRenderer extends Renderer {
 
       double b = sumI / nBootstrap;
 
+      LogInfo('Metropolis: Finished Bootstrap: ${t.elapsed}');
       Stats.MLT_FINISHED_BOOTSTRAPPING(b);
 
       LogInfo("MLT computed b = $b");
@@ -138,13 +147,19 @@ class MetropolisRenderer extends Renderer {
 
       List<int> scramble = [ rng.randomUInt(), rng.randomUInt() ];
 
-      List<double> d = [0.0, 0.0];
-      Sample02(0, scramble, d);
+      for (int i = 0; i < nTasks; ++i) {
+        Stopwatch t = new Stopwatch()..start();
+        LogInfo('Metropolis: Task $i');
+        List<double> d = [0.0, 0.0];
+        Sample02(0, scramble, d);
 
-      _MLTTask task = new _MLTTask(d[0], d[1], extent[0], extent[1],
-                                   extent[2], extent[3], t0, t1, b,
-                                   initialSample, scene, camera, this,
-                                   lightDistribution);
+        _MLTTask task = new _MLTTask(i, d[0], d[1], extent[0], extent[1],
+                                     extent[2], extent[3], t0, t1, b,
+                                     initialSample, scene, camera, this,
+                                     lightDistribution);
+        task.run();
+        LogInfo('Metropolis: Finished Task $i: ${t.elapsed}');
+      }
     }
 
     OutputImage out = camera.film.writeImage();
@@ -610,6 +625,8 @@ class MetropolisRenderer extends Renderer {
     return length;
   }
 
+  int taskNum;
+  int taskCount;
   Camera camera;
   bool bidirectional;
   int nDirectPixelSamples;
@@ -624,12 +641,21 @@ class MetropolisRenderer extends Renderer {
 class _PathSample {
   BSDFSample bsdfSample;
   double rrSample;
+
+  _PathSample() :
+    bsdfSample = new BSDFSample(),
+    rrSample = 0.0;
 }
 
 class _LightingSample {
   BSDFSample bsdfSample;
   double lightNum;
   LightSample lightSample;
+
+  _LightingSample() :
+    bsdfSample = new BSDFSample(),
+    lightNum = 0.0,
+    lightSample = new LightSample();
 }
 
 class _PathVertex {
@@ -640,13 +666,26 @@ class _PathVertex {
   bool specularBounce;
   int nSpecularComponents;
   Spectrum alpha;
+
+  _PathVertex() :
+    isect = new Intersection(),
+    wPrev = new Vector(),
+    wNext = new Vector(),
+    alpha = new Spectrum(0.0);
 }
 
 class _MLTSample {
-  _MLTSample(int maxLength) {
-    cameraPathSamples = new List<_PathSample>(maxLength);
-    lightPathSamples = new List<_PathSample>(maxLength);
-    lightingSamples = new List<_LightingSample>(maxLength);
+  _MLTSample(int maxLength) :
+    cameraSample = new CameraSample(),
+    lightNumSample = 0.0,
+    cameraPathSamples = new List<_PathSample>(maxLength),
+    lightPathSamples = new List<_PathSample>(maxLength),
+    lightingSamples = new List<_LightingSample>(maxLength) {
+    for (int i = 0; i < maxLength; ++i) {
+      cameraPathSamples[i] = new _PathSample();
+      lightPathSamples[i] = new _PathSample();
+      lightingSamples[i] = new _LightingSample();
+    }
   }
 
   CameraSample cameraSample;
@@ -658,7 +697,7 @@ class _MLTSample {
 }
 
 class _MLTTask {
-  _MLTTask(this.dx, this.dy, this.x0, this.x1, this.y0, this.y1,
+  _MLTTask(this.taskNum, this.dx, this.dy, this.x0, this.x1, this.y0, this.y1,
            this.t0, this.t1, this.b, this.initialSample,
            this.scene, this.camera, this.renderer,
            this.lightDistribution) {
@@ -677,7 +716,7 @@ class _MLTTask {
     int consecutiveRejects = 0;
 
     // Declare variables for storing and computing MLT samples
-    RNG rng = new RNG(0);
+    RNG rng = new RNG(taskNum);
     List<_PathVertex> cameraPath = new List<_PathVertex>(renderer.maxDepth);
     List<_PathVertex> lightPath = new List<_PathVertex>(renderer.maxDepth);
     for (int i = 0; i < renderer.maxDepth; ++i) {
@@ -782,7 +821,7 @@ class _MLTTask {
 
     // Update display for recently computed Metropolis samples
     Stats.MLT_STARTED_DISPLAY_UPDATE();
-    int ntf = 1;//renderer.nTasksFinished + 1;
+    int ntf = taskNum + 1;
     int totalSamples = nPixels * nPixelSamples;
     double splatScale = totalSamples / (ntf * nTaskSamples);
 
@@ -793,6 +832,7 @@ class _MLTTask {
     Stats.MLT_FINISHED_MLT_TASK(this);
   }
 
+  int taskNum;
   double dx, dy;
   int currentPixelSample;
   int x0, x1, y0, y1;

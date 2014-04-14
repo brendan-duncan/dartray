@@ -21,6 +21,9 @@
 part of core;
 
 class LightSample {
+  LightSample() {
+  }
+
   LightSample.sample(Sample sample, LightSampleOffsets offsets, int n) {
     assert(n < sample.n2D[offsets.posOffset]);
     assert(n < sample.n1D[offsets.componentOffset]);
