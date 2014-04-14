@@ -28,8 +28,6 @@ class ImageTexture extends Texture {
       Completer completer = new Completer();
       ResourceManager.RequestImage(filename, completer.future)
         .then((SpectrumImage img) {
-          Stopwatch timer = new Stopwatch();
-          timer.start();
           if (img != null) {
             if (!spectrum) {
               img = img.convert(SpectrumImage.FLOAT);
@@ -47,7 +45,6 @@ class ImageTexture extends Texture {
                                         doTri, maxAniso, wrap);
           }
 
-          LogDebug('ImageTexture $filename LOADED: ${timer.elapsed}');
           // Let the renderer know we're done processing the resource.
           completer.complete();
         });

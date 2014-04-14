@@ -154,12 +154,12 @@ class ParamSet {
 
   void addSpectrumFiles(String name, List<String> filenames,
                         List<Future> futures) {
-    if (futures == null) {
-      return;
-    }
+    Completer c;
 
-    Completer c = new Completer();
-    futures.add(c.future);
+    if (futures != null) {
+      c = new Completer();
+      futures.add(c.future);
+    }
 
     List<Spectrum> s = new List<Spectrum>(filenames.length);
 
@@ -167,8 +167,10 @@ class ParamSet {
     for (int fi = 0; fi < filenames.length; ++fi) {
       String path = filenames[fi];
 
-      Completer sc = new Completer();
-      ResourceManager.RequestTextFile(path).then((text) {
+      if (ResourceManager.HasResource(path)) {
+        LogDebug('USING SPECTRUM FILE $path');
+        String text = ResourceManager.GetResource(path);
+
         List<double> values = _readFloatFile(text);
         int numSamples = values.length ~/ 2;
         Float32List wls = new Float32List(numSamples);
@@ -177,16 +179,46 @@ class ParamSet {
           wls[i] = values[j++];
           v[i] = values[j++];
         }
+
         s[fi] = new Spectrum.fromSampled(wls, v);
-        sc.complete();
-      });
-      subFutures.add(sc.future);
+      } else {
+        if (futures == null) {
+          LogDebug('UNABLE TO LOAD SPECTRUM FILE $path');
+        } else {
+          LogDebug('LOADING SPECTRUM FILE $path');
+
+          Completer sc = new Completer();
+          ResourceManager.RequestTextFile(path).then((text) {
+            LogDebug('SPECTRUM FILE $path LOADED');
+            List<double> values = _readFloatFile(text);
+            int numSamples = values.length ~/ 2;
+            Float32List wls = new Float32List(numSamples);
+            Float32List v = new Float32List(numSamples);
+            for (int i = 0, j = 0; i < numSamples; ++i) {
+              wls[i] = values[j++];
+              v[i] = values[j++];
+            }
+            s[fi] = new Spectrum.fromSampled(wls, v);
+            sc.complete();
+          });
+
+          subFutures.add(sc.future);
+        }
+      }
     }
 
-    Future.wait(subFutures).then((e) {
+    if (futures == null) {
       spectra.add(new ParamSetItem<Spectrum>(name, s));
-      c.complete();
-    });
+    } else {
+      if (subFutures.isEmpty) {
+        spectra.add(new ParamSetItem<Spectrum>(name, s));
+      } else {
+        Future.wait(subFutures).then((e) {
+          spectra.add(new ParamSetItem<Spectrum>(name, s));
+          c.complete();
+        });
+      }
+    }
   }
 
   void addSampledSpectrum(String name, List<double> data) {
@@ -368,9 +400,17 @@ class ParamSet {
   Spectrum findOneSpectrum(String name, Spectrum d) {
     name = name.toLowerCase();
     for (int i = 0; i < spectra.length; ++i) {
-      if (spectra[i].name == name && spectra[i].data.length == 1) {
+      if (spectra[i].name == name) {
         spectra[i].lookedUp = true;
-        return spectra[i].data[0];
+
+        if (spectra[i].data == null) {
+          return d;
+        }
+
+        if (spectra[i].data.length == 1) {
+          spectra[i].lookedUp = true;
+          return spectra[i].data[0];
+        }
       }
     }
     return d;

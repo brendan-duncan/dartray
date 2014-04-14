@@ -13,47 +13,26 @@ class InfiniteAreaLight extends Light {
   InfiniteAreaLight(Transform light2world, Spectrum L, int ns,
                     String texmap) :
     super(light2world, ns) {
-    int width = 0;
-    int height = 0;
-    SpectrumImage texels;
-    // Read texel data from _texmap_ into _texels_
-    /*if (texmap.isNotEmpty) {
-      texels = ReadImage(texmap, &width, &height);
-      if (texels) {
-        for (int i = 0; i < width * height; ++i) {
-          texels[i] *= L.toRGB();
-        }
-      }
-    }*/
+    if (texmap.isNotEmpty) {
+      Completer completer = new Completer();
+      ResourceManager.RequestImage(texmap, completer.future)
+        .then((SpectrumImage img) {
+          SpectrumImage texels = new SpectrumImage.from(img);
+          int width = texels.width;
+          int height = texels.height;
+          for (int i = 0; i < width * height; ++i) {
+            texels[i] *= L.toRGB();
+          }
 
-    if (texels == null) {
-      width = 1;
-      height = 1;
-      texels = new SpectrumImage(1, 1);
-      texels[0] = L.toRGB();
+          _setRadianceMap(texels);
+
+          completer.complete();
+        });
     }
 
-    radianceMap = new MIPMap.texture(width, height, texels);
-
-    // Initialize sampling PDFs for infinite area light
-
-    // Compute scalar-valued image _img_ from environment map
-    double filter = 1.0 / Math.max(width, height);
-    Float32List img = new Float32List(width * height);
-
-    for (int v = 0; v < height; ++v) {
-      int vw = v * width;
-      double vp = v / height;
-      double sinTheta = Math.sin(Math.PI * (v + 0.5) / height);
-      for (int u = 0; u < width; ++u) {
-        double up = u / width;
-        img[u + vw] = radianceMap.lookup(up, vp, filter).y;
-        img[u + vw] *= sinTheta;
-      }
-    }
-
-    // Compute sampling distributions for rows and columns of image
-    distribution = new Distribution2D(img, width, height);
+    SpectrumImage texels = new SpectrumImage(1, 1);
+    texels[0] = L.toRGB();
+    _setRadianceMap(texels);
   }
 
   Spectrum power(Scene scene) {
@@ -252,6 +231,32 @@ class InfiniteAreaLight extends Light {
                                          pEpsilon),
                     p, 200, lmax, coeffs);
     }
+  }
+
+  void _setRadianceMap(SpectrumImage texels) {
+    int width = texels.width;
+    int height = texels.height;
+    radianceMap = new MIPMap.texture(width, height, texels);
+
+    // Initialize sampling PDFs for infinite area light
+
+    // Compute scalar-valued image _img_ from environment map
+    double filter = 1.0 / Math.max(width, height);
+    Float32List img = new Float32List(width * height);
+
+    for (int v = 0; v < height; ++v) {
+      int vw = v * width;
+      double vp = v / height;
+      double sinTheta = Math.sin(Math.PI * (v + 0.5) / height);
+      for (int u = 0; u < width; ++u) {
+        double up = u / width;
+        img[u + vw] = radianceMap.lookup(up, vp, filter).y;
+        img[u + vw] *= sinTheta;
+      }
+    }
+
+    // Compute sampling distributions for rows and columns of image
+    distribution = new Distribution2D(img, width, height);
   }
 
   MIPMap radianceMap;

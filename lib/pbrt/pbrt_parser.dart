@@ -28,12 +28,13 @@ class PbrtParser {
   Future parse(String input) {
     Stopwatch t = new Stopwatch();
     t.start();
-    LogInfo('Parsing Scene');
+    LogInfo('Loading Scene');
     Completer c = new Completer();
     _loadIncludes(input).then((x) {
+      LogDebug('Includes loaded. Parsing.');
       _parse(input).then((e) {
         t.stop();
-        LogInfo('Finished Parsing Scene: ${t.elapsed}');
+        LogInfo('Finished Loading Scene: ${t.elapsed}');
         c.complete();
       });
     });
@@ -50,7 +51,7 @@ class PbrtParser {
 
     int tk = _lexer.nextToken();
     while (!_lexer.isEof()) {
-      Map cmd = _parseCommand(_lexer, null);
+      Map cmd = _parseCommand(_lexer, futures);
       if (cmd == null) {
         _lexer.nextToken();
         continue;
@@ -67,7 +68,6 @@ class PbrtParser {
     }
 
     Future.wait(futures).then((List responses) {
-      LogDebug('Includes loaded');
       List<Future<String>> subFutures = [];
 
       if (responses.isNotEmpty) {
@@ -96,6 +96,7 @@ class PbrtParser {
   }
 
   Future _parse(String input) {
+    LogDebug('Parsing Input');
     Completer c = new Completer();
     List<Future> futures = [];
 
@@ -103,7 +104,13 @@ class PbrtParser {
 
     int tk = _lexer.nextToken();
     while (!_lexer.isEof()) {
-      Map cmd = _parseCommand(_lexer, futures);
+      List<Future> cmdFutures = [];
+
+      Map cmd = _parseCommand(_lexer, null);//cmdFutures);
+
+      if (cmdFutures.isNotEmpty) {
+        futures.addAll(cmdFutures);
+      }
 
       if (cmd == null) {
         _lexer.nextToken();
@@ -471,8 +478,9 @@ class PbrtParser {
                ps.addSpectrumFiles(p['name'], v, futures);
             } else {
               if ((v.length % 2) != 0) {
-                LogWarning("Non-even number of values given with sampled spectrum "
-                           "parameter \"${p['name']}\". Ignoring extra.");
+                LogWarning('Non-even number of values given with sampled '
+                           'spectrum parameter \"${p['name']}\". '
+                           'Ignoring extra.');
               }
               for (int i = 0, l = v.length; i < l; ++i) {
                 v[i] = double.parse(v[i]);

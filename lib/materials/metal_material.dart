@@ -60,7 +60,8 @@ class MetalMaterial extends Material {
     return bsdf;
   }
 
-  Texture eta, k;
+  Texture eta;
+  Texture k;
   Texture roughness;
   Texture bumpMap;
 

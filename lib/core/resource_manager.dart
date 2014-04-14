@@ -181,11 +181,13 @@ abstract class ResourceManager {
       return c.future;
     }
 
+    LogDebug('LOADING $path');
     Completer<SpectrumImage> c = new Completer<SpectrumImage>();
     resources[path] = c.future;
 
     loadFile(path).then((bytes) {
       if (bytes == null) {
+        LogInfo('UNABLE TO LOAD $path');
         c.complete(null);
         return;
       }
@@ -198,6 +200,7 @@ abstract class ResourceManager {
 
       Img.DecodeInfo info = decoder.startDecode(bytes);
       if (info == null) {
+        LogInfo('UNABLE TO DECODE $path');
         c.complete(null);
         return;
       }
@@ -220,16 +223,17 @@ abstract class ResourceManager {
           }
         }
 
-        LogDebug('HDR IMAGE $path LOADED');
+        LogDebug('HDR IMAGE LOADED $path');
         resources[path] = res;
         c.complete(res);
+
         return;
       }
 
       Img.Image img = decoder.decodeFrame(0);
       SpectrumImage res = new SpectrumImage.fromImage(img);
 
-      LogDebug('IMAGE $path LOADED');
+      LogDebug('IMAGE LOADED $path');
       resources[path] = res;
       c.complete(res);
     });
