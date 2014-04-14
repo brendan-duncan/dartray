@@ -4,7 +4,6 @@ Sampler "stratified"
 
 PixelFilter "mitchell"
 
-#Accelerator "none"
 Accelerator "grid"
 
 LookAt -4 3 -11.3  -4 3 0   0 1 0
