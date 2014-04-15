@@ -21,11 +21,8 @@
 part of dartray_io;
 
 class RenderManager extends RenderManagerInterface {
-  Future<OutputImage> renderFile(String path) {
-    File fp = new File(path);
-    addIncludePath(fp.parent.path);
-    return render(path);
-  }
+  RenderManager([String scenePath = '']) :
+    super(scenePath);
 
   Future<List<int>> loadFile(String file) {
     Completer<List<int>> c = new Completer<List<int>>();
@@ -51,11 +48,17 @@ class RenderManager extends RenderManagerInterface {
     if (FileSystemEntity.isFileSync(file)) {
       return file;
     }
+
+    if (FileSystemEntity.isFileSync(scenePath + '/' + file)) {
+      return scenePath + '/' + file;
+    }
+
     for (String p in includePaths) {
       if (FileSystemEntity.isFileSync(p + '/' + file)) {
         return p + '/' + file;
       }
     }
+
     return null;
   }
 

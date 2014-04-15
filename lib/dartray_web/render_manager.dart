@@ -26,22 +26,8 @@ part of dartray_web;
  * calls to load resources such as geometry and texture images.
  */
 class RenderManager extends RenderManagerInterface {
-  String scenePath;
-
-  RenderManager([this.scenePath = '']);
-
-  Future<OutputImage> renderFile(String path, {var image, String isolate,
-                  LogCallback log, PreviewCallback preview,
-                  int numThreads: 1}) {
-    if (path.contains('/')) {
-      int i = path.lastIndexOf('/');
-      scenePath = path.substring(0, i);
-      path = path.substring(i + 1);
-    }
-
-    return render(path, image: image, isolate: isolate, log: log,
-                  preview: preview, numThreads: numThreads);
-  }
+  RenderManager([String scenePath = '']) :
+    super(scenePath);
 
   Future<List<int>> loadFile(String path, [Future future]) {
     if (future != null) {

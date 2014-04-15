@@ -27,8 +27,9 @@ part of pbrt;
 abstract class RenderManagerInterface extends ResourceManager {
   Pbrt pbrt;
   RenderIsolate isolate;
+  String scenePath;
 
-  RenderManagerInterface() {
+  RenderManagerInterface(this.scenePath) {
     pbrt = new Pbrt(this);
   }
 
@@ -48,18 +49,24 @@ abstract class RenderManagerInterface extends ResourceManager {
    *   new RenderIsolate().start(port);
    * }
    */
-  Future<OutputImage> render(String file, {Image image, String isolate,
+  Future<OutputImage> render(String path, {Image image, String isolate,
               LogCallback log, PreviewCallback preview,
               int numThreads: 1}) {
     if (log != null) {
       Log = log;
     }
 
+    if (path.contains('/')) {
+      int i = path.lastIndexOf('/');
+      scenePath = path.substring(0, i);
+      path = path.substring(i + 1);
+    }
+
     Completer<OutputImage> completer = new Completer<OutputImage>();
 
     if (isolate == null) {
       LogInfo('STARTING RENDER');
-      pbrt.renderScene(file, image).then((output) {
+      pbrt.renderScene(path, image).then((output) {
         if (preview != null) {
           preview(image);
         }
@@ -74,7 +81,7 @@ abstract class RenderManagerInterface extends ResourceManager {
     List<RenderTask> jobs = new List<RenderTask>(numThreads);
     for (int i = 0; i < numThreads; ++i) {
       jobs[i] = new RenderTask(preview, i, numThreads);
-      jobs[i].render(file, image, isolate).then((task) {
+      jobs[i].render(path, image, isolate).then((task) {
         tasksRemaining--;
         if (tasksRemaining == 0) {
           completer.complete();

@@ -19,7 +19,7 @@ void main(List<String> argv) {
 
   Stopwatch timer = new Stopwatch();
   timer.start();
-  new RenderManager().renderFile(args.rest[0]).then((output) {
+  new RenderManager().render(args.rest[0]).then((output) {
     timer.stop();
     LogInfo('RENDER FINISHED: ${timer.elapsed}');
     if (output != null) {

@@ -52,7 +52,7 @@ void main() {
 
   Stopwatch timer = new Stopwatch();
   timer.start();
-  new RenderManager().renderFile(scene,
+  new RenderManager().render(scene,
       image: img,
       isolate: 'web_isolate.dart',
       log: (int type, String msg) {
