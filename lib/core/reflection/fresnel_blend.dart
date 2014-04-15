@@ -39,9 +39,12 @@ class FresnelBlend extends BxDF {
 
     wh = Vector.Normalize(wh);
 
-    Spectrum specular = new Spectrum(distribution.d(wh)) /
-        schlickFresnel(Vector.Dot(wi, wh)) * (4.0 * Vector.AbsDot(wi, wh) *
-            Math.max(Vector.AbsCosTheta(wi), Vector.AbsCosTheta(wo)));
+    var a = new Spectrum(distribution.d(wh));
+    var b = schlickFresnel(Vector.Dot(wi, wh));
+    var c =  (4.0 * Vector.AbsDot(wi, wh) *
+             Math.max(Vector.AbsCosTheta(wi), Vector.AbsCosTheta(wo)));
+
+    Spectrum specular = a / b * c;
 
     return diffuse + specular;
   }

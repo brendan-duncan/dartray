@@ -24,8 +24,9 @@ const double ONE_MINUS_EPSILON = 0.9999999403953552;
 
 class Distribution1D {
   Distribution1D(List<double> f, this.count) {
-    func = new List<double>.from(f);
-    cdf = new List<double>(count + 1);
+    func = new Float32List(count);
+    func.setRange(0, count, f);
+    cdf = new Float32List(count + 1);
 
     // Compute integral of step function at $x_i$
     cdf[0] = 0.0;
@@ -82,8 +83,8 @@ class Distribution1D {
     return offset;
   }
 
-  List<double> func;
-  List<double> cdf;
+  Float32List func;
+  Float32List cdf;
   double funcInt;
   int count;
 }

@@ -53,14 +53,15 @@ class MIPMap {
           for (int j = 0; j < 4; ++j) {
             int origS = sWeights[s].firstTexel + j;
             if (wrapMode == TEXTURE_REPEAT) {
-              origS = Mod(origS, yres);
+              origS = Mod(origS, xres);
             } else if (wrapMode == TEXTURE_CLAMP) {
               origS = origS.clamp(0, xres - 1);
             }
 
             if (origS >= 0 && origS < xres) {
-              resampledImage[t * sPow2 + s] += img[t * xres + origS] *
-                                               sWeights[s].weight[j];
+              var px = img[t * xres + origS] *
+                       sWeights[s].weight[j];
+              resampledImage[t * sPow2 + s] += px;
             }
           }
         }
@@ -82,8 +83,9 @@ class MIPMap {
             }
 
             if (offset >= 0 && offset < yres) {
-              workData[t] += resampledImage[offset * sPow2 + s] *
-                             tWeights[t].weight[j];
+              var px = resampledImage[offset * sPow2 + s] *
+                       tWeights[t].weight[j];
+              workData[t] += px;
             }
           }
         }
