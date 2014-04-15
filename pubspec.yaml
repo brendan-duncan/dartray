@@ -5,4 +5,4 @@ description: Dart port of the PBRT renderer
 dev_dependencies:
   args: any
   image:
-    path: ../image
+    git: https://github.com/brendan-duncan/image

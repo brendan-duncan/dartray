@@ -3,3 +3,4 @@ pubspec.lock
 build
 packages
 output.png
+web/pbrt/

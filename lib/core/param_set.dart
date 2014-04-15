@@ -147,7 +147,7 @@ class ParamSet {
       SampledSpectrum bs =
           new SampledSpectrum.fromSampled(Spectrum.CIE_lambda, bb);
 
-      s[i] = new Spectrum.from(bs) * data[di];
+      s[i] = new Spectrum.from(bs) * data[di + 1];
     }
     spectra.add(new ParamSetItem<Spectrum>(name, s));
   }
@@ -171,7 +171,7 @@ class ParamSet {
         LogDebug('USING SPECTRUM FILE $path');
         String text = ResourceManager.GetResource(path);
 
-        List<double> values = _readFloatFile(text);
+        List<double> values = _readFloatFile(text, path);
         int numSamples = values.length ~/ 2;
         Float32List wls = new Float32List(numSamples);
         Float32List v = new Float32List(numSamples);
@@ -190,7 +190,7 @@ class ParamSet {
           Completer sc = new Completer();
           ResourceManager.RequestTextFile(path).then((text) {
             LogDebug('SPECTRUM FILE $path LOADED');
-            List<double> values = _readFloatFile(text);
+            List<double> values = _readFloatFile(text, path);
             int numSamples = values.length ~/ 2;
             Float32List wls = new Float32List(numSamples);
             Float32List v = new Float32List(numSamples);
@@ -644,7 +644,7 @@ class ParamSet {
     return out;
   }
 
-  List<double> _readFloatFile(String text) {
+  List<double> _readFloatFile(String text, String path) {
     int len = text.length;
     int ci = 0;
 
@@ -656,7 +656,7 @@ class ParamSet {
     }
 
     bool _isspace(String c) {
-      return c == ' ' || c == '\t';
+      return c == ' ' || c == '\t' || c == '\n' || c == '\r';
     }
 
     List<double> values = [];
@@ -684,7 +684,7 @@ class ParamSet {
           while ((c = text[ci++]) != '\n' && ci < len) ;
           ++lineNumber;
         } else if (!_isspace(c)) {
-          LogWarning('Unexpected text found at line $lineNumber of float file');
+          LogWarning('Unexpected text found at line $lineNumber of float file $path: $c');
         }
       }
     }

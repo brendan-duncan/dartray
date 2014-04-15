@@ -24,7 +24,7 @@ class DiffusePRTIntegrator extends SurfaceIntegrator {
   DiffusePRTIntegrator(int lm, int ns) :
     lmax = lm,
     nSamples = RoundUpPow2(ns),
-    c_in = new List<Spectrum>(SHTerms(lm)) {
+    c_in = new List<Spectrum>(SphericalHarmonics.Terms(lm)) {
     for (int i = 0, len = c_in.length; i < len; ++i) {
       c_in[i] = new Spectrum(0.0);
     }
@@ -40,8 +40,9 @@ class DiffusePRTIntegrator extends SurfaceIntegrator {
     BBox bbox = scene.worldBound;
     Point p = bbox.pMin * 0.5 + bbox.pMax * 0.5;
     RNG rng = new RNG();
-    SHProjectIncidentDirectRadiance(p, 0.0, camera.shutterOpen,
-                                    scene, false, lmax, rng, c_in);
+    SphericalHarmonics.ProjectIncidentDirectRadiance(p, 0.0, camera.shutterOpen,
+                                                     scene, false, lmax, rng,
+                                                     c_in);
   }
 
   void requestSamples(Sampler sampler, Sample sample, Scene scene) {
@@ -62,18 +63,20 @@ class DiffusePRTIntegrator extends SurfaceIntegrator {
     // Compute reflected radiance using diffuse PRT
 
     // Project diffuse transfer function at point to SH
-    List<Spectrum> c_transfer = new List<Spectrum>(SHTerms(lmax));
+    List<Spectrum> c_transfer = new List<Spectrum>(SphericalHarmonics.Terms(lmax));
     for (int i = 0, len = c_transfer.length; i < len; ++i) {
       c_transfer[i] = new Spectrum(0.0);
     }
 
-    SHComputeDiffuseTransfer(p, Normal.FaceForward(n, wo), isect.rayEpsilon,
-                             scene, rng, nSamples, lmax, c_transfer);
+    SphericalHarmonics.ComputeDiffuseTransfer(p, Normal.FaceForward(n, wo),
+                                              isect.rayEpsilon,
+                                              scene, rng, nSamples, lmax,
+                                              c_transfer);
 
     // Compute integral of product of incident radiance and transfer function
     Spectrum Kd = bsdf.rho2(wo, rng, BSDF_ALL_REFLECTION) * INV_PI;
     Spectrum Lo = new Spectrum(0.0);
-    for (int i = 0, len = SHTerms(lmax); i < len; ++i) {
+    for (int i = 0, len = SphericalHarmonics.Terms(lmax); i < len; ++i) {
       Lo += c_in[i] * c_transfer[i];
     }
 

@@ -100,14 +100,14 @@ abstract class Light {
   void shProject(Point p, double pEpsilon, int lmax,
                  Scene scene, bool computeLightVisibility, double time,
                  RNG rng, List<Spectrum> coeffs) {
-    for (int i = 0; i < SHTerms(lmax); ++i) {
+    for (int i = 0, len = SphericalHarmonics.Terms(lmax); i < len; ++i) {
       coeffs[i] = new Spectrum(0.0);
     }
 
     int ns = RoundUpPow2(nSamples);
     int scramble1D = rng.randomUInt();
     List<int> scramble2D = [ rng.randomUInt(), rng.randomUInt() ];
-    Float32List Ylm = new Float32List(SHTerms(lmax));
+    Float32List Ylm = new Float32List(SphericalHarmonics.Terms(lmax));
 
     List<double> u = [0.0, 0.0];
     List<double> pdf = [0.0];
@@ -122,8 +122,8 @@ abstract class Light {
       if (!Li.isBlack() && pdf[0] > 0.0 &&
           (!computeLightVisibility || vis.unoccluded(scene))) {
         // Add light sample contribution to MC estimate of SH coefficients
-        SHEvaluate(wi, lmax, Ylm);
-        for (int j = 0; j < SHTerms(lmax); ++j) {
+        SphericalHarmonics.Evaluate(wi, lmax, Ylm);
+        for (int j = 0; j < SphericalHarmonics.Terms(lmax); ++j) {
           coeffs[j] += Li * Ylm[j] / (pdf[0] * ns);
         }
       }

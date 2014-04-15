@@ -1,3 +1,6 @@
+Film "image" "integer xresolution" [256 ] "integer yresolution" [256 ]
+    "string filename" "d:/temp/teapot-area-light.tga"
+    
 Sampler "stratified" 
   "integer xsamples" [5] "integer ysamples" [5]
   "bool jitter" ["false"]

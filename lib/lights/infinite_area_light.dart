@@ -175,7 +175,7 @@ class InfiniteAreaLight extends Light {
       return;
     }
 
-    for (int i = 0; i < SHTerms(lmax); ++i) {
+    for (int i = 0; i < SphericalHarmonics.Terms(lmax); ++i) {
       coeffs[i] = new Spectrum(0.0);
     }
 
@@ -207,7 +207,7 @@ class InfiniteAreaLight extends Light {
         buf[cosphi + phi] = Math.cos((phi + 0.5) / nphi * 2.0 * Math.PI);
       }
 
-      Float32List Ylm = new Float32List(SHTerms(lmax));
+      Float32List Ylm = new Float32List(SphericalHarmonics.Terms(lmax));
 
       for (int theta = 0; theta < ntheta; ++theta) {
         for (int phi = 0; phi < nphi; ++phi) {
@@ -218,8 +218,8 @@ class InfiniteAreaLight extends Light {
           w = Vector.Normalize(lightToWorld.transformVector(w));
           Spectrum Le = new Spectrum.from(radianceMap.texel(0, phi, theta),
                                           Spectrum.SPECTRUM_ILLUMINANT);
-          SHEvaluate(w, lmax, Ylm);
-          for (int i = 0; i < SHTerms(lmax); ++i) {
+          SphericalHarmonics.Evaluate(w, lmax, Ylm);
+          for (int i = 0; i < SphericalHarmonics.Terms(lmax); ++i) {
             coeffs[i] += Le * Ylm[i] * buf[sintheta + theta] *
                          (Math.PI / ntheta) * (2.0 * Math.PI / nphi);
           }
@@ -227,9 +227,10 @@ class InfiniteAreaLight extends Light {
       }
     } else {
       // Project _InfiniteAreaLight_ to SH from cube map sampling
-      SHProjectCube(new _InfiniteAreaCube(this, scene, time, computeLightVis,
-                                         pEpsilon),
-                    p, 200, lmax, coeffs);
+      SphericalHarmonics.ProjectCube(new _InfiniteAreaCube(this, scene, time,
+                                                           computeLightVis,
+                                                           pEpsilon),
+                                     p, 200, lmax, coeffs);
     }
   }
 

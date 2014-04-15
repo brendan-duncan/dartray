@@ -71,7 +71,7 @@ class PointLight extends Light {
   void shProject(Point p, double pEpsilon, int lmax, Scene scene,
         bool computeLightVisibility, double time, RNG rng,
         List<Spectrum> coeffs) {
-    for (int i = 0; i < SHTerms(lmax); ++i) {
+    for (int i = 0; i < SphericalHarmonics.Terms(lmax); ++i) {
       coeffs[i] = new Spectrum(0.0);
     }
     if (computeLightVisibility &&
@@ -82,11 +82,11 @@ class PointLight extends Light {
     }
 
     // Project point light source to SH
-    List<double> Ylm = new List<double>(SHTerms(lmax));
+    List<double> Ylm = new List<double>(SphericalHarmonics.Terms(lmax));
     Vector wi = Vector.Normalize(lightPos - p);
-    SHEvaluate(wi, lmax, Ylm);
+    SphericalHarmonics.Evaluate(wi, lmax, Ylm);
     Spectrum Li = intensity / Vector.DistanceSquared(lightPos, p);
-    for (int i = 0; i < SHTerms(lmax); ++i) {
+    for (int i = 0; i < SphericalHarmonics.Terms(lmax); ++i) {
       coeffs[i] = Li * Ylm[i];
     }
   }

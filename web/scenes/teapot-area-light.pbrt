@@ -2,8 +2,8 @@ ConcatTransform [ 0.828849 -0.295370 -0.475149 0.000000 -0.559473 -0.437585 -0.7
 Translate -4.860000 -7.200000 -5.400000
 #LookAt -7 10 3 0 0 0 0 0 1
 Camera "perspective" "float fov" [45.000000 ] 
-#Film "image" "integer xresolution" [256 ] "integer yresolution" [256 ]
-#    "string filename" "teapot-area-light.exr"
+Film "image" "integer xresolution" [256 ] "integer yresolution" [256 ]
+    "string filename" "teapot-area-light.exr"
 
 SurfaceIntegrator "directlighting" 
 Sampler "lowdiscrepancy" "integer pixelsamples" [8]

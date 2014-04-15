@@ -1,4 +1,4 @@
-Sampler "stratified" "integer xsamples" [4] "integer ysamples" [4] "bool jitter" ["true"]
+Sampler "stratified" "integer pixelsamples" [32] "bool jitter" ["true"]
 PixelFilter "mitchell"
 
 LookAt 0 0 -20   0 0 1   0 1 0
@@ -70,7 +70,7 @@ AttributeBegin # area light source
   Translate -3 6 0
   Rotate 90 1 0 0
   Material "matte" "color Kd" [1 0 1]
-  AreaLightSource "area" "color L" [3 3 3] "integer nsamples" [4]  
+  AreaLightSource "area" "color L" [3 3 3] "integer nsamples" [8]  
   Shape  "disk" "float radius" [5]
 AttributeEnd
 

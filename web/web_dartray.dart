@@ -27,7 +27,6 @@ import 'package:image/image.dart';
 //String scene = 'scenes/03_quadrics_directlighting.pbrt';
 //String scene = 'scenes/04_box.pbrt';
 //String scene = 'scenes/05_distant_light.pbrt';
-//String scene = 'scenes/05_distant_light2.pbrt';
 //String scene = 'scenes/07_area_light.pbrt';
 //String scene = 'scenes/08_whitted.pbrt';
 //String scene = 'scenes/09_quadrics.pbrt';

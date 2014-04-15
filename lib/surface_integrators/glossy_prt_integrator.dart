@@ -40,16 +40,19 @@ class GlossyPRTIntegrator extends SurfaceIntegrator {
     Point p = bbox.pMin * 0.5 + bbox.pMax * 0.5;
     RNG rng = new RNG();
 
-    c_in = new List<Spectrum>(SHTerms(lmax));
+    c_in = new List<Spectrum>(SphericalHarmonics.Terms(lmax));
     for (int i = 0, len = c_in.length; i < len; ++i) {
       c_in[i] = new Spectrum(0.0);
     }
-    SHProjectIncidentDirectRadiance(p, 0.0, camera.shutterOpen,
-                                    scene, false, lmax, rng, c_in);
+    SphericalHarmonics.ProjectIncidentDirectRadiance(p, 0.0, camera.shutterOpen,
+                                                     scene, false, lmax, rng,
+                                                     c_in);
 
     // Compute glossy BSDF matrix for PRT
-    B = new List<Spectrum>(SHTerms(lmax) * SHTerms(lmax));
-    SHComputeBSDFMatrix(Kd, Ks, roughness, rng, 1024, lmax, B);
+    B = new List<Spectrum>(SphericalHarmonics.Terms(lmax) *
+                           SphericalHarmonics.Terms(lmax));
+
+    SphericalHarmonics.ComputeBSDFMatrix(Kd, Ks, roughness, rng, 1024, lmax, B);
   }
 
   void requestSamples(Sampler sampler, Sample sample, Scene scene) {
@@ -70,11 +73,13 @@ class GlossyPRTIntegrator extends SurfaceIntegrator {
     // Compute reflected radiance with glossy PRT at point
 
     // Compute SH radiance transfer matrix at point and SH coefficients
-    List<Spectrum> c_t = new List<Spectrum>(SHTerms(lmax));
-    List<Spectrum> T = new List<Spectrum>(SHTerms(lmax) * SHTerms(lmax));
+    List<Spectrum> c_t = new List<Spectrum>(SphericalHarmonics.Terms(lmax));
+    List<Spectrum> T = new List<Spectrum>(SphericalHarmonics.Terms(lmax) *
+                                          SphericalHarmonics.Terms(lmax));
 
-    SHComputeTransferMatrix(p, isect.rayEpsilon, scene, rng, nSamples, lmax, T);
-    SHMatrixVectorMultiply(T, c_in, c_t, lmax);
+    SphericalHarmonics.ComputeTransferMatrix(p, isect.rayEpsilon, scene, rng,
+                                             nSamples, lmax, T);
+    SphericalHarmonics.MatrixVectorMultiply(T, c_in, c_t, lmax);
 
     // Rotate incident SH lighting to local coordinate frame
     Vector r1 = bsdf.localToWorld(new Vector(1.0, 0.0, 0.0));
@@ -85,23 +90,23 @@ class GlossyPRTIntegrator extends SurfaceIntegrator {
                   r1.y, r2.y, nl.y, 0.0,
                   r1.z, r2.z, nl.z, 0.0,
                   0.0,  0.0,  0.0,  1.0);
-    List<Spectrum> c_l = new List<Spectrum>(SHTerms(lmax));
+    List<Spectrum> c_l = new List<Spectrum>(SphericalHarmonics.Terms(lmax));
     for (int i = 0, len = c_l.length; i < len; ++i) {
       c_l[i] = new Spectrum(0.0);
     }
-    SHRotate(c_t, c_l, rot, lmax);
+    SphericalHarmonics.Rotate(c_t, c_l, rot, lmax);
 
     // Compute final coefficients _c\_o_ using BSDF matrix
-    List<Spectrum> c_o = new List<Spectrum>(SHTerms(lmax));
-    SHMatrixVectorMultiply(B, c_l, c_o, lmax);
+    List<Spectrum> c_o = new List<Spectrum>(SphericalHarmonics.Terms(lmax));
+    SphericalHarmonics.MatrixVectorMultiply(B, c_l, c_o, lmax);
 
     // Evaluate outgoing radiance function for $\wo$ and add to _L_
     Vector woLocal = bsdf.worldToLocal(wo);
-    Float32List Ylm = new Float32List(SHTerms(lmax));
-    SHEvaluate(woLocal, lmax, Ylm);
+    Float32List Ylm = new Float32List(SphericalHarmonics.Terms(lmax));
+    SphericalHarmonics.Evaluate(woLocal, lmax, Ylm);
     Spectrum Li = new Spectrum(0.0);
 
-    for (int i = 0; i < SHTerms(lmax); ++i) {
+    for (int i = 0; i < SphericalHarmonics.Terms(lmax); ++i) {
       Li += c_o[i] * Ylm[i];
     }
     L += Li.clamp();
