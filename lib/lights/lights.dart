@@ -27,6 +27,7 @@ import '../core/core.dart';
 
 part 'diffuse_area_light.dart';
 part 'distant_light.dart';
+part 'goniometric_light.dart';
 part 'infinite_area_light.dart';
 part 'point_light.dart';
 part 'spot_light.dart';

@@ -183,7 +183,6 @@ class Pbrt {
     registerSurfaceIntegrator('irradiancecache', IrradianceCacheIntegrator.Create);
     registerSurfaceIntegrator('path', PathIntegrator.Create);
     registerSurfaceIntegrator('photonmap', PhotonMapIntegrator.Create);
-    // alias for photonmap
     registerSurfaceIntegrator('exphotonmap', PhotonMapIntegrator.Create);
     registerSurfaceIntegrator('whitted', WhittedIntegrator.Create);
 
@@ -191,9 +190,9 @@ class Pbrt {
     registerLight('point', PointLight.Create);
     registerLight('spot', SpotLight.Create);
     registerLight('infinite', InfiniteAreaLight.Create);
+    registerLight('goniometric', GoniometricLight.Create);
 
     registerAreaLight('diffuse', DiffuseAreaLight.Create);
-    // alias for diffuse
     registerAreaLight('area', DiffuseAreaLight.Create);
 
     registerMaterial('glass', GlassMaterial.Create);

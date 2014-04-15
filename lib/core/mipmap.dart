@@ -30,9 +30,11 @@ class MIPMap {
     height = 0,
     levels = 0;
 
-  MIPMap.texture(int xres, int yres, SpectrumImage img,
+  MIPMap.texture(SpectrumImage img,
                  [this.doTrilinear = false,
                   this.maxAnisotropy = 8.0, this.wrapMode = TEXTURE_REPEAT]) {
+    int xres = img.width;
+    int yres = img.height;
     SpectrumImage resampledImage;
     if (!IsPowerOf2(xres) || !IsPowerOf2(yres)) {
       // Resample image to power-of-two resolution

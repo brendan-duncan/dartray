@@ -237,7 +237,7 @@ class InfiniteAreaLight extends Light {
   void _setRadianceMap(SpectrumImage texels) {
     int width = texels.width;
     int height = texels.height;
-    radianceMap = new MIPMap.texture(width, height, texels);
+    radianceMap = new MIPMap.texture(texels);
 
     // Initialize sampling PDFs for infinite area light
 
