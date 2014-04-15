@@ -41,8 +41,7 @@ class ImageTexture extends Texture {
               }
             }
 
-            mipmap = new MIPMap.texture(img.width, img.height, img,
-                                        doTri, maxAniso, wrap);
+            mipmap = new MIPMap.texture(img, doTri, maxAniso, wrap);
           }
 
           // Let the renderer know we're done processing the resource.
@@ -60,7 +59,7 @@ class ImageTexture extends Texture {
       img[0] = v;
     }
 
-    mipmap = new MIPMap.texture(1, 1, img);
+    mipmap = new MIPMap.texture(img);
   }
 
   static ImageTexture CreateFloat(Transform tex2world, TextureParams tp) {
