@@ -13,7 +13,7 @@ _Ambient Occlusion integrator._
 ![cornell_box](https://cloud.githubusercontent.com/assets/3642099/2703164/cf037684-c447-11e3-81d7-e2f2c6520fa1.jpg)<br>
 _Path Tracing integrator._
 
-![sibenik](https://cloud.githubusercontent.com/assets/3642099/2714425/b7baf812-c4f6-11e3-806b-d3d72f4b208b.jpg)<br>
+![sibenik](https://cloud.githubusercontent.com/assets/3642099/2714447/0e5122c8-c4f7-11e3-8436-a7c5b9011ab7.jpg)<br>
 
 ##Caveats
 DartRay provides a test-bed for various rendering algorithms. 
