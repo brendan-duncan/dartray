@@ -39,16 +39,16 @@ class MIPMap {
       int sPow2 = RoundUpPow2(xres);
       int tPow2 = RoundUpPow2(yres);
 
-      // Resample image in $s$ direction
+      // Resample image in s direction
       List<_ResampleWeight> sWeights = _resampleWeights(xres, sPow2);
       resampledImage = new SpectrumImage(sPow2, tPow2, img.samplesPerPixel);
 
       var zero = img.samplesPerPixel == 1 ? 0.0 : new Spectrum(0.0);
 
-      // Apply _sWeights_ to zoom in $s$ direction
+      // Apply _sWeights_ to zoom in s direction
       for (int t = 0, p = 0; t < yres; ++t) {
         for (int s = 0; s < sPow2; ++s, ++p) {
-          // Compute texel $(s,t)$ in $s$-zoomed image
+          // Compute texel (s,t) in s-zoomed image
           resampledImage[p] = zero;
           for (int j = 0; j < 4; ++j) {
             int origS = sWeights[s].firstTexel + j;
@@ -91,7 +91,7 @@ class MIPMap {
         }
 
         for (int t = 0; t < tPow2; ++t) {
-          resampledImage[t * sPow2 + s] = clamp(workData[t]);
+          resampledImage[t * sPow2 + s] = _clamp(workData[t]);
         }
       }
 
@@ -298,7 +298,7 @@ class MIPMap {
            texel(level, s0 + 1, t0 + 1) * (ds * dt);
   }
 
-  clamp(f) => f.clamp(0.0, INFINITY);
+  _clamp(f) => f.clamp(0.0, INFINITY);
 
   List<_ResampleWeight> _resampleWeights(int oldres, int newres) {
     assert(newres >= oldres);

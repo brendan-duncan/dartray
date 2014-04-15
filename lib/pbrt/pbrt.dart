@@ -161,7 +161,7 @@ class Pbrt {
     registerAccelerator('bvh', BVHAccel.Create);
     registerAccelerator('grid', GridAccel.Create);
     registerAccelerator('kdtree', KdTreeAccel.Create);
-    registerAccelerator('naive', NaiveAccel.Create);
+    registerAccelerator('bruteforce', BruteForceAccel.Create);
 
     registerCamera('environment', EnvironmentCamera.Create);
     registerCamera('orthographic', OrthographicCamera.Create);
@@ -503,6 +503,7 @@ class Pbrt {
     }
     _graphicsState = _pushedGraphicsStates.removeLast();
     _curTransform = _pushedTransforms.removeLast();
+    _activeTransformBits = _pushedActiveTransformBits.removeLast();
   }
 
   void transformBegin() {

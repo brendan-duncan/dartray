@@ -38,6 +38,7 @@ class KdTreeAccel extends Aggregate {
               [this.isectCost = 80, this.traversalCost = 1,
               this.emptyBonus = 0.5,
               this.maxPrims = 1, this.maxDepth = -1]) {
+    LogInfo('Building Kd-Tree Acceleration Structures.');
     for (int i = 0; i < p.length; ++i) {
       p[i].fullyRefine(primitives);
     }

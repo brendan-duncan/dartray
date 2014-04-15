@@ -29,6 +29,7 @@ class GridAccel extends Aggregate {
   }
 
   GridAccel(List<Primitive> p, bool refineImmediately) {
+    LogInfo('Building Hierarchical Grid Acceleration Structures.');
     Stats.GRID_STARTED_CONSTRUCTION(this, p.length);
     // Initialize _primitives_ with primitives for grid
     if (refineImmediately) {

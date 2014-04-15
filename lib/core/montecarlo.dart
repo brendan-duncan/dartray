@@ -28,7 +28,7 @@ class Distribution1D {
     func.setRange(0, count, f);
     cdf = new Float32List(count + 1);
 
-    // Compute integral of step function at $x_i$
+    // Compute integral of step function at x_i
     cdf[0] = 0.0;
     for (int i = 1; i < count + 1; ++i) {
       cdf[i] = cdf[i - 1] + func[i - 1] / count;
@@ -59,7 +59,7 @@ class Distribution1D {
     assert(u >= cdf[offset] && u < cdf[offset + 1]);
 
     // Compute offset along CDF segment
-    double du = (u - cdf[offset]) / (cdf[offset+1] - cdf[offset]);
+    double du = (u - cdf[offset]) / (cdf[offset + 1] - cdf[offset]);
     assert(!du.isNaN);
 
     // Compute PDF for sampled offset
@@ -240,11 +240,11 @@ class Distribution2D {
   }
 
   double pdf(double u, double v) {
-    int iu = (u * pConditionalV[0].count).toInt().clamp(0,
-              pConditionalV[0].count - 1);
+    int iu = (u * pConditionalV[0].count).toInt()
+             .clamp(0, pConditionalV[0].count - 1);
 
-    int iv = (v * pMarginal.count).toInt().clamp(0,
-                   pMarginal.count - 1);
+    int iv = (v * pMarginal.count).toInt()
+             .clamp(0, pMarginal.count - 1);
 
     if (pConditionalV[iv].funcInt * pMarginal.funcInt == 0.0) {
       return 0.0;
@@ -301,7 +301,7 @@ void LatinHypercube(List<double> samples, int nSamples, int nDim,
   for (int i = 0; i < nSamples; ++i) {
     for (int j = 0; j < nDim; ++j) {
       samples[nDim * i + j] = Math.min((i + (rng.randomFloat())) * delta,
-          ONE_MINUS_EPSILON);
+                                       ONE_MINUS_EPSILON);
     }
   }
 
@@ -465,7 +465,6 @@ void LDPixelSample(int xPos, int yPos, double shutterOpen,
 }
 
 
-// Monte Carlo Inline Functions
 double BalanceHeuristic(int nf, double fPdf, int ng, double gPdf) {
   return (nf * fPdf) / (nf * fPdf + ng * gPdf);
 }

@@ -26,4 +26,4 @@ import '../core/core.dart';
 part 'bvh_accel.dart';
 part 'grid_accel.dart';
 part 'kdtree_accel.dart';
-part 'naive_accel.dart';
+part 'brute_force_accel.dart';

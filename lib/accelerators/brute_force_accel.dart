@@ -19,12 +19,13 @@
  ****************************************************************************/
 part of accelerators;
 
-class NaiveAccel extends Aggregate {
-  static NaiveAccel Create(List<Primitive> prims, ParamSet ps) {
-    return new NaiveAccel(prims);
+class BruteForceAccel extends Aggregate {
+  static BruteForceAccel Create(List<Primitive> prims, ParamSet ps) {
+    return new BruteForceAccel(prims);
   }
 
-  NaiveAccel(List<Primitive> p) {
+  BruteForceAccel(List<Primitive> p) {
+    LogInfo('Building Brute Force Acceleration Structures.');
     for (int i = 0; i < p.length; ++i) {
       p[i].fullyRefine(primitives);
     }

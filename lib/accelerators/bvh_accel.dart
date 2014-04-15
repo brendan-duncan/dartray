@@ -29,6 +29,7 @@ class BVHAccel extends Aggregate {
 
   BVHAccel(List<Primitive> p, [int maxPrims = 1,
            this.splitMethod = SPLIT_SAH]) {
+    LogInfo('Building BVH Acceleration Structures.');
     maxPrimsInNode = Math.min(255, maxPrims);
     for (int i = 0; i < p.length; ++i) {
       p[i].fullyRefine(primitives);
