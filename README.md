@@ -10,6 +10,9 @@ DartRay port of the PBRT renderer (www.pbrt.org).
 ![bunny](https://cloud.githubusercontent.com/assets/3642099/2650559/0416dcb2-bf75-11e3-8c3e-fdb836e8146b.jpg)<br>
 _Rendered with the Ambient Occlusion integrator._
 
+![cornell_box](https://cloud.githubusercontent.com/assets/3642099/2703164/cf037684-c447-11e3-81d7-e2f2c6520fa1.jpg)<br>
+_Cornell Box Rendered with the Path Tracer integrator._
+
 ##Caveats
 DartRay provides a test-bed for various rendering algorithms. 
 The primary (and perhaps only) objectives of DartRay are experimentation, 
