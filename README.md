@@ -14,6 +14,7 @@ _Ambient Occlusion integrator._
 _Path Tracing integrator._
 
 ![sibenik](https://cloud.githubusercontent.com/assets/3642099/2714447/0e5122c8-c4f7-11e3-8436-a7c5b9011ab7.jpg)<br>
+_Environment camera._
 
 ##Caveats
 DartRay provides a test-bed for various rendering algorithms. 
