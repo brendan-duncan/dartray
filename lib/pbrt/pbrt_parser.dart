@@ -34,10 +34,10 @@ class PbrtParser {
     LogInfo('Loading Scene');
     Completer c = new Completer();
 
-    resourceManager.requestTextFile(file).then((input) {
-      _loadIncludes(input).then((x) {
+    resourceManager.requestFile(file).then((List<int> input) {
+      _loadIncludes(input).then((_) {
         LogDebug('Includes loaded. Parsing.');
-        _parse(input).then((e) {
+        _parse(input).then((_) {
           t.stop();
           LogInfo('Finished Loading Scene: ${t.elapsed}');
           c.complete();
@@ -48,7 +48,7 @@ class PbrtParser {
     return c.future;
   }
 
-  Future _loadIncludes(String input) {
+  Future _loadIncludes(List<int> input) {
     PbrtLexer _lexer = new PbrtLexer(input);
 
     List<Future> futures = [];
@@ -68,17 +68,17 @@ class PbrtParser {
       if (name == 'include') {
         if (!pbrt.resourceManager.hasResource(cmd['value'])) {
           LogDebug('Include ${cmd['value']}');
-          futures.add(pbrt.resourceManager.requestTextFile(cmd['value']));
+          futures.add(pbrt.resourceManager.requestFile(cmd['value']));
         }
       }
     }
 
     Future.wait(futures).then((List responses) {
-      List<Future<String>> subFutures = [];
+      List<Future<List<int>>> subFutures = [];
 
       if (responses.isNotEmpty) {
         for (int i = 0; i < responses.length; ++i) {
-          String inc = responses[i];
+          List<int> inc = responses[i];
           if (inc != null && inc.isNotEmpty) {
             subFutures.add(_loadIncludes(inc));
           }
@@ -101,7 +101,7 @@ class PbrtParser {
     return c.future;
   }
 
-  Future _parse(String input) {
+  Future _parse(List<int> input) {
     LogDebug('Parsing Input');
     Completer c = new Completer();
     List<Future> futures = [];
@@ -112,7 +112,7 @@ class PbrtParser {
     while (!_lexer.isEof()) {
       List<Future> cmdFutures = [];
 
-      Map cmd = _parseCommand(_lexer, null);//cmdFutures);
+      Map cmd = _parseCommand(_lexer, null);
 
       if (cmdFutures.isNotEmpty) {
         futures.addAll(cmdFutures);

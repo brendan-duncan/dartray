@@ -30,10 +30,14 @@ class PbrtLexer {
   static const int TOKEN_NUMBER = -5;
   static const int TOKEN_DOUBLE_EQUAL = -6; // ==
   static const int TOKEN_NOT_EQUAL = -7; // !=
-  static const int TOKEN_DOUBLE_BAR = -8; // ||
-  static const int TOKEN_DOUBLE_AMPERSAND = -9; // &&
+  static const int TOKEN_DOUBLE_OR = -8; // ||
+  static const int TOKEN_DOUBLE_AND = -9; // &&
   static const int TOKEN_STRING = -10;
 
+  static const int TOKEN_SPACE = 32; // ' '
+  static const int TOKEN_TAB = 9; // \t
+  static const int TOKEN_LINEFEED = 13; // \r
+  static const int TOKEN_NEWLINE = 10; // \n
   static const int TOKEN_GREATER = 62; // >
   static const int TOKEN_LESS = 60; // <
   static const int TOKEN_LEFT_PAREN = 40; // (
@@ -47,29 +51,33 @@ class PbrtLexer {
   static const int TOKEN_CARROT = 94; // ^
   static const int TOKEN_PERCENT = 37; // %
   static const int TOKEN_HASH = 35; // #
-  static const int TOKEN_BANG = 33; // !
-  static const int TOKEN_BAR = 124; // |
-  static const int TOKEN_AMPERSAND = 38; // &
+  static const int TOKEN_NOT = 33; // !
+  static const int TOKEN_OR = 124; // |
+  static const int TOKEN_AND = 38; // &
   static const int TOKEN_QUESTION = 63;// ?
   static const int TOKEN_COLON = 58; // :
   static const int TOKEN_DOT = 46; // .
   static const int TOKEN_DOUBLE_QUOTE = 34; // "
   static const int TOKEN_SINGLE_QUOTE = 39; // '
-  static const int TOKEN_LEFT_BRACKET = 91;
-  static const int TOKEN_RIGHT_BRACKET = 93;
+  static const int TOKEN_LEFT_BRACKET = 91; // [
+  static const int TOKEN_RIGHT_BRACKET = 93; // ]
+  static const int TOKEN_UNDERSCORE = 95; // _
+  static const int TOKEN_EQUAL = 61;
 
   static const int TOKEN_0 = 48; // 0
   static const int TOKEN_9 = 57; // 9
   static const int TOKEN_a = 97; // a
+  static const int TOKEN_e = 101; // e
   static const int TOKEN_z = 122; // z
   static const int TOKEN_A = 65; // A
+  static const int TOKEN_E = 96; // E
   static const int TOKEN_Z = 90; // Z
 
-  PbrtLexer(String input) {
+  PbrtLexer(List<int> input) {
     _inputStack.add(new _PbrtLexerInput(input));
   }
 
-  void addInclude(String input) {
+  void addInclude(List<int> input) {
     _inputStack.add(new _PbrtLexerInput(input));
   }
 
@@ -118,10 +126,10 @@ class PbrtLexer {
     }
 
     // Double-quote string: "*"
-    if (_lastChar == '"') {
+    if (_lastChar == TOKEN_DOUBLE_QUOTE) {
       _lastChar = _nextChar();
-      while (_lastChar != '"' && _lastChar != _EOF) {
-        _identifierStr += _lastChar;
+      while (_lastChar != TOKEN_DOUBLE_QUOTE && _lastChar != _EOF) {
+        _identifierStr += new String.fromCharCode(_lastChar);
         _lastChar = _nextChar();
       }
 
@@ -135,10 +143,10 @@ class PbrtLexer {
     }
 
     // Single-quote string: '*'
-    if (_lastChar == "'") {
+    if (_lastChar == TOKEN_SINGLE_QUOTE) {
       _lastChar = _nextChar();
-      while (_lastChar != "'" && _lastChar != _EOF) {
-        _identifierStr += _lastChar;
+      while (_lastChar != TOKEN_SINGLE_QUOTE && _lastChar != _EOF) {
+        _identifierStr += new String.fromCharCode(_lastChar);
         _lastChar = _nextChar();
       }
 
@@ -153,11 +161,12 @@ class PbrtLexer {
 
     // Identifier: [a-zA-Z][a-zA-Z0-9._]*
     if (_isAlpha(_lastChar)) {
-      _identifierStr = _lastChar;
-      while (_lastChar != _EOF &&
-             (_isAlphaNum((_lastChar = _nextChar())) || _lastChar == '.' ||
-              _lastChar == '_')) {
-        _identifierStr = _identifierStr += _lastChar;
+      _identifierStr = new String.fromCharCode(_lastChar);
+      _lastChar = _nextChar();
+      while (_lastChar != _EOF && _isAlphaNum(_lastChar) ||
+             _lastChar == TOKEN_DOT || _lastChar == TOKEN_UNDERSCORE) {
+        _identifierStr += new String.fromCharCode(_lastChar);
+        _lastChar = _nextChar();
       }
 
       _curTokenStr = _identifierStr;
@@ -166,27 +175,30 @@ class PbrtLexer {
       return _curToken;
     }
 
-    if (_lastChar == '-' && !_isDigit(_peekNext()) && _peekNext() != '.') {
+    if (_lastChar == TOKEN_MINUS &&
+        !_isDigit(_peekNext()) && _peekNext() != TOKEN_DOT) {
       _curToken = TOKEN_MINUS;
-      _curTokenStr = _lastChar;
+      _curTokenStr = new String.fromCharCode(_lastChar);
       return _curToken;
     }
 
     // Number: [-](0-9)+[e[+-](0-9)+]
-    if (_lastChar == '-' || _isDigit(_lastChar) || _lastChar == '.') {
+    if (_lastChar == TOKEN_MINUS || _isDigit(_lastChar) ||
+        _lastChar == TOKEN_DOT) {
       String numStr = '';
       do {
-        numStr += _lastChar.toString();
+        numStr += new String.fromCharCode(_lastChar);
         _lastChar = _nextChar();
-        if (_lastChar == 'e') {
-          numStr += _lastChar;
+        if (_lastChar == TOKEN_e || _lastChar == TOKEN_E) {
+          numStr += new String.fromCharCode(_lastChar);
           _lastChar = _nextChar();
-          if (_lastChar == '+' || _lastChar == '-') {
-            numStr += _lastChar;
+          if (_lastChar == TOKEN_PLUS || _lastChar == TOKEN_MINUS) {
+            numStr += new String.fromCharCode(_lastChar);
             _lastChar = _nextChar();
           }
         }
-      } while (_lastChar != _EOF && (_isDigit(_lastChar) || _lastChar == '.'));
+      } while (_lastChar != _EOF && (_isDigit(_lastChar) ||
+               _lastChar == TOKEN_DOT));
 
       _curTokenStr = numStr;
       _numValue = double.parse(numStr);
@@ -196,11 +208,12 @@ class PbrtLexer {
     }
 
     // Skip # end-of-line comments
-    if (_lastChar == '#') {
+    if (_lastChar == TOKEN_HASH) {
       // Comment until end of line.
       do {
         _lastChar = _nextChar();
-      } while (_lastChar != _EOF && _lastChar != '\n' && _lastChar != '\r');
+      } while (_lastChar != _EOF && _lastChar != TOKEN_NEWLINE &&
+               _lastChar != TOKEN_LINEFEED);
 
       if (_lastChar != _EOF) {
         _curToken = nextToken();
@@ -215,45 +228,41 @@ class PbrtLexer {
     }
 
     // Otherwise, just return the character as its ascii value.
-    String thisChar = _lastChar;
-    _curTokenStr = thisChar;
+    int thisChar = _lastChar;
+    _curTokenStr = new String.fromCharCode(thisChar);
     _lastChar = _nextChar();
 
     // Check for multi-charace operators.
-    if (thisChar == '=' && _lastChar == '=') {
+    if (thisChar == TOKEN_EQUAL && _lastChar == TOKEN_EQUAL) {
       _lastChar = _nextChar();
       _curTokenStr = '==';
       _curToken = TOKEN_DOUBLE_EQUAL;
       return _curToken;
-    } else if (thisChar == '!' && _lastChar == '=') {
+    } else if (thisChar == TOKEN_NOT && _lastChar == TOKEN_EQUAL) {
       _lastChar = _nextChar();
       _curTokenStr = '!=';
       _curToken = TOKEN_NOT_EQUAL;
       return _curToken;
-    } else if (thisChar == '|' && _lastChar == '|') {
+    } else if (thisChar == TOKEN_OR && _lastChar == TOKEN_OR) {
       _lastChar = _nextChar();
       _curTokenStr = '||';
-      _curToken = TOKEN_DOUBLE_BAR;
+      _curToken = TOKEN_DOUBLE_OR;
       return _curToken;
-    } else if (thisChar == '&' && _lastChar == '&') {
+    } else if (thisChar == TOKEN_AND && _lastChar == TOKEN_AND) {
       _lastChar = _nextChar();
       _curTokenStr = '&&';
-      _curToken = TOKEN_DOUBLE_AMPERSAND;
+      _curToken = TOKEN_DOUBLE_AND;
       return _curToken;
     }
 
-    _curToken = thisChar.codeUnitAt(0);
+    _curToken = thisChar;
     return _curToken;
   }
 
   /**
    * Get the next character from the input buffer.
-   * TODO use the ord of the character instead of a substring.
-   * _intput should be converted to a list of ord values...
-   * Then, all character tests can be done as ints and not string
-   * comparisons.
    */
-  String _nextChar() {
+  int _nextChar() {
     if (_inputStack.last.isEOF) {
       if (_inputStack.length == 1) {
         return _EOF;
@@ -263,7 +272,7 @@ class PbrtLexer {
     return _inputStack.last.nextChar();
   }
 
-  String _peekNext() {
+  int _peekNext() {
     int len = _inputStack.length;
     while (len > 0) {
       if (!_inputStack[len - 1].isEOF) {
@@ -276,56 +285,48 @@ class PbrtLexer {
   /**
    * Is the character in the range [a, z] or [A, Z]?
    */
-  bool _isAlpha(String c) {
-    if (c.isEmpty) {
-      return false;
-    }
-    int cc = c.codeUnitAt(0);
-    return ((cc >= TOKEN_a) && (cc <= TOKEN_z)) ||
-           ((cc >= TOKEN_A) && (cc <= TOKEN_Z));
+  bool _isAlpha(int c) {
+    return ((c >= TOKEN_a) && (c <= TOKEN_z)) ||
+           ((c >= TOKEN_A) && (c <= TOKEN_Z));
   }
 
   /**
    * Is the character in the range [0, 9]
    */
-  bool _isDigit(String c) {
-    if (c.isEmpty) {
-      return false;
-    }
-    int cc = c.codeUnitAt(0);
-    return (cc >= TOKEN_0) && (cc <= TOKEN_9);
+  bool _isDigit(int c) {
+    return (c >= TOKEN_0) && (c <= TOKEN_9);
   }
 
   /**
    * Is the character an letter or a number?
    */
-  bool _isAlphaNum(String c) => _isAlpha(c) || _isDigit(c);
+  bool _isAlphaNum(int c) => _isAlpha(c) || _isDigit(c);
 
   /**
    * Is the character a space or tab?
    */
-  bool _isWhitespace(String c) => (c == ' ' || c == '\t' ||
-                                   c == '\n' || c == '\r');
+  bool _isWhitespace(int c) => (c == TOKEN_SPACE || c == TOKEN_TAB ||
+                                c == TOKEN_NEWLINE || c == TOKEN_LINEFEED);
 
-  static const String _EOF = '';
+  static const int _EOF = 0;
 
   List<_PbrtLexerInput> _inputStack = [];
   String _identifierStr;
   double _numValue;
-  String _lastChar = ' ';
+  int _lastChar = TOKEN_SPACE;
   int _curToken;
   String _curTokenStr;
 }
 
 class _PbrtLexerInput {
-  String input;
+  List<int> input;
   int position = 0;
 
   _PbrtLexerInput(this.input);
 
   bool get isEOF => position >= input.length;
 
-  String nextChar() => input[position++];
+  int nextChar() => input[position++];
 
-  String peekNext() => input[position];
+  int peekNext() => input[position];
 }

@@ -169,9 +169,9 @@ class ParamSet {
 
       if (ResourceManager.HasResource(path)) {
         LogDebug('USING SPECTRUM FILE $path');
-        String text = ResourceManager.GetResource(path);
+        List<int> bytes = ResourceManager.GetResource(path);
 
-        List<double> values = _readFloatFile(text, path);
+        List<double> values = _readFloatFile(bytes, path);
         int numSamples = values.length ~/ 2;
         Float32List wls = new Float32List(numSamples);
         Float32List v = new Float32List(numSamples);
@@ -188,9 +188,9 @@ class ParamSet {
           LogDebug('LOADING SPECTRUM FILE $path');
 
           Completer sc = new Completer();
-          ResourceManager.RequestTextFile(path).then((text) {
+          ResourceManager.RequestFile(path).then((bytes) {
             LogDebug('SPECTRUM FILE $path LOADED');
-            List<double> values = _readFloatFile(text, path);
+            List<double> values = _readFloatFile(bytes, path);
             int numSamples = values.length ~/ 2;
             Float32List wls = new Float32List(numSamples);
             Float32List v = new Float32List(numSamples);
@@ -644,7 +644,8 @@ class ParamSet {
     return out;
   }
 
-  List<double> _readFloatFile(String text, String path) {
+  List<double> _readFloatFile(List<int> bytes, String path) {
+    String text = new String.fromCharCodes(bytes);
     int len = text.length;
     int ci = 0;
 

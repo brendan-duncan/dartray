@@ -29,12 +29,8 @@ abstract class ResourceManager {
     global = this;
   }
 
-  static Future<String> RequestTextFile(String path, [Future future]) {
-    return global.requestTextFile(path, future);
-  }
-
-  static Future<List<int>> RequestBinaryFile(String path, [Future future]) {
-    return global.requestBinaryFile(path, future);
+  static Future<List<int>> RequestFile(String path, [Future future]) {
+    return global.requestFile(path, future);
   }
 
   static Future<SpectrumImage> RequestImage(String path, [Future future]) {
@@ -80,7 +76,7 @@ abstract class ResourceManager {
    * came from. When all requesters of data have completed, the render will
    * continue.
    */
-  Future<List<int>> requestBinaryFile(String path, [Future future]) {
+  Future<List<int>> requestFile(String path, [Future future]) {
     if (future != null) {
       futures.add(future);
     }
@@ -106,50 +102,6 @@ abstract class ResourceManager {
 
       resources[path] = bytes;
       c.complete(bytes);
-    });
-
-    return c.future;
-  }
-
-  /**
-   * Request a text file (read from disk as a string).
-   *
-   * Requesting the same file multiple times will only load the file once.
-   * If the requester wants to process the contents of the file prior to
-   * rendering starting, they must pass a [future] to the request. Once the
-   * requester recieves the response from the request, it can then process
-   * the data and, once finished, complete the [Completer] that the [future]
-   * came from. When all requesters of data have completed, the render will
-   * continue.
-   */
-  Future<String> requestTextFile(String path, [Future future]) {
-    if (future != null) {
-      futures.add(future);
-    }
-
-    if (resources.containsKey(path)) {
-      if (resources[path] is Future) {
-        return resources[path];
-      }
-
-      Completer<List<int>> c = new Completer<List<int>>();
-      c.complete(resources[path]);
-      return c.future;
-    }
-
-    Completer<String> c = new Completer<String>();
-    resources[path] = c.future;
-
-    loadFile(path).then((bytes) {
-      if (bytes == null) {
-        c.complete(null);
-        return;
-      }
-
-      String s = new String.fromCharCodes(bytes);
-
-      resources[path] = s;
-      c.complete(s);
     });
 
     return c.future;

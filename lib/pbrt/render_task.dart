@@ -64,7 +64,7 @@ class RenderTask {
               var subCmd = subMsg['cmd'];
               if (subCmd == 'file') {
                 String path = subMsg['path'];
-                ResourceManager.RequestBinaryFile(path).then((bytes) {
+                ResourceManager.RequestFile(path).then((bytes) {
                   var data = {'cmd': 'request',
                              'id': id,
                              'data': bytes};

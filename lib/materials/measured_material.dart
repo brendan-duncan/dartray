@@ -64,7 +64,7 @@ class MeasuredMaterial extends Material {
       }
 
       Completer c = new Completer();
-      ResourceManager.RequestBinaryFile(filename, c.future).then((bytes) {
+      ResourceManager.RequestFile(filename, c.future).then((bytes) {
         Uint8List b = new Uint8List.fromList(bytes);
         Float32List values = new Float32List.view(b.buffer);
 
@@ -115,7 +115,7 @@ class MeasuredMaterial extends Material {
       }
 
       Completer c = new Completer();
-      ResourceManager.RequestBinaryFile(filename, c.future).then((bytes) {
+      ResourceManager.RequestFile(filename, c.future).then((bytes) {
         InputBuffer fp = new InputBuffer(bytes, bigEndian: false);
         int dims0 = fp.readInt32();
         int dims1 = fp.readInt32();
