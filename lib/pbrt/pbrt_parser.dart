@@ -22,20 +22,26 @@ part of pbrt;
 
 class PbrtParser {
   Pbrt pbrt;
+  ResourceManager resourceManager;
 
-  PbrtParser(this.pbrt);
+  PbrtParser(Pbrt pbrt) :
+    this.pbrt = pbrt,
+    resourceManager = pbrt.resourceManager;
 
-  Future parse(String input) {
+  Future parse(String file) {
     Stopwatch t = new Stopwatch();
     t.start();
     LogInfo('Loading Scene');
     Completer c = new Completer();
-    _loadIncludes(input).then((x) {
-      LogDebug('Includes loaded. Parsing.');
-      _parse(input).then((e) {
-        t.stop();
-        LogInfo('Finished Loading Scene: ${t.elapsed}');
-        c.complete();
+
+    resourceManager.requestTextFile(file).then((input) {
+      _loadIncludes(input).then((x) {
+        LogDebug('Includes loaded. Parsing.');
+        _parse(input).then((e) {
+          t.stop();
+          LogInfo('Finished Loading Scene: ${t.elapsed}');
+          c.complete();
+        });
       });
     });
 

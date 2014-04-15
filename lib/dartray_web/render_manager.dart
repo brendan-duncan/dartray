@@ -39,15 +39,8 @@ class RenderManager extends RenderManagerInterface {
       path = path.substring(i + 1);
     }
 
-    Completer<OutputImage> c = new Completer<OutputImage>();
-    requestTextFile(path).then((scene) {
-      render(scene, image: image, isolate: isolate, log: log,
-             preview: preview, numThreads: numThreads).then((output) {
-        c.complete(output);
-      });
-    });
-
-    return c.future;
+    return render(path, image: image, isolate: isolate, log: log,
+                  preview: preview, numThreads: numThreads);
   }
 
   Future<List<int>> loadFile(String path, [Future future]) {

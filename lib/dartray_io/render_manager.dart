@@ -24,8 +24,7 @@ class RenderManager extends RenderManagerInterface {
   Future<OutputImage> renderFile(String path) {
     File fp = new File(path);
     addIncludePath(fp.parent.path);
-    String scene = fp.readAsStringSync();
-    return render(scene);
+    return render(path);
   }
 
   Future<List<int>> loadFile(String file) {
