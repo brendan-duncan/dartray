@@ -191,6 +191,7 @@ class Pbrt {
     registerLight('spot', SpotLight.Create);
     registerLight('infinite', InfiniteAreaLight.Create);
     registerLight('goniometric', GoniometricLight.Create);
+    registerLight('projection', ProjectionLight.Create);
 
     registerAreaLight('diffuse', DiffuseAreaLight.Create);
     registerAreaLight('area', DiffuseAreaLight.Create);
