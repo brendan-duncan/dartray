@@ -22,8 +22,8 @@ part of samplers;
 
 class RandomSampler extends Sampler {
   static RandomSampler Create(ParamSet params, Film film, Camera camera) {
-    int ns = params.findOneInt('pixelsamples', 4);
-    bool continuous = params.findOneBool('continuous', false);
+    int ns = params.findOneInt('pixelsamples', 1);
+    bool continuous = params.findOneBool('continuous', true);
     List<int> extents = [0, 0, 0, 0];
     film.getSampleExtent(extents);
     return new RandomSampler(extents[0], extents[1], extents[2], extents[3],

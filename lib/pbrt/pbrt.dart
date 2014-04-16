@@ -733,9 +733,10 @@ class Pbrt {
 
     List<Primitive> inst = _renderOptions.instances[name];
 
-    if (inst.length == 0) {
+    if (inst.isEmpty) {
       return;
     }
+
     if (inst.length > 1 || !inst[0].canIntersect()) {
       // Refine instance _Primitive_s and create aggregate
       Primitive accel = _makeAccelerator(_renderOptions.acceleratorName,
@@ -810,7 +811,9 @@ class Pbrt {
     }
 
     Primitive accelerator = _makeAccelerator(_renderOptions.acceleratorName,
-        _renderOptions.primitives, _renderOptions.acceleratorParams);
+                                             _renderOptions.primitives,
+                                             _renderOptions.acceleratorParams);
+
     if (accelerator == null) {
       accelerator = _makeAccelerator('bvh', _renderOptions.primitives,
                                      new ParamSet());
