@@ -5,7 +5,7 @@
 DartRay is a free, open-source physically based ray tracer, providing a variety
 of rendering, lighting and material algorithms.
 
-DartRay port of the PBRT renderer (www.pbrt.org).
+DartRay port of the PBRT renderer (www.pbrt.org) writen in the ![Dart](http://www.dartlang.org) programming language.
 
 ![bunny](https://cloud.githubusercontent.com/assets/3642099/2650559/0416dcb2-bf75-11e3-8c3e-fdb836e8146b.jpg)<br>
 _Ambient Occlusion integrator._
