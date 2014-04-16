@@ -16,15 +16,6 @@ _Path Tracing integrator._
 ![sibenik](https://cloud.githubusercontent.com/assets/3642099/2714447/0e5122c8-c4f7-11e3-8436-a7c5b9011ab7.jpg)<br>
 _IGI integrator, environment camera._
 
-##Caveats
-DartRay provides a test-bed for various rendering algorithms. 
-The primary (and perhaps only) objectives of DartRay are experimentation, 
-learning, and most important, fun. While it is perfectly capable of producing 
-incredible images, it has a lot of things going against it to be thought of as 
-anything remotely close to production worthy. On the positive side, Dart is
-a great environment for experimentation and learning about rendering techniques.
-It provides a reasonably fast and flexible, cross-platform environment for
-experimentation and learning. And, most importantly, it's fun!
 
 ##License
 Copyright (C) 2014 Brendan Duncan
