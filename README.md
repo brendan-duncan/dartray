@@ -7,14 +7,9 @@ DartRay is a free, open-source physically based ray tracer, written in the [Dart
 DartRay is a [Dart](http://www.dartlang.org) port of the [PBRT](http://www.pbrt.org) renderer.
 
 ##Test Renders
-![bunny](https://cloud.githubusercontent.com/assets/3642099/2650559/0416dcb2-bf75-11e3-8c3e-fdb836e8146b.jpg)<br>
-_Ambient Occlusion surface integrator._
-
-![cornell_box](https://cloud.githubusercontent.com/assets/3642099/2703164/cf037684-c447-11e3-81d7-e2f2c6520fa1.jpg)<br>
-_Path Tracing surface integrator._
-
-![sibenik](https://cloud.githubusercontent.com/assets/3642099/2714447/0e5122c8-c4f7-11e3-8436-a7c5b9011ab7.jpg)<br>
-_IGI (Instant Global Illumination) surface integrator, environment camera._
+![Ambient Occlusion surface integrator](https://cloud.githubusercontent.com/assets/3642099/2650559/0416dcb2-bf75-11e3-8c3e-fdb836e8146b.jpg)
+![Path Tracing surface integrator](https://cloud.githubusercontent.com/assets/3642099/2703164/cf037684-c447-11e3-81d7-e2f2c6520fa1.jpg)
+![IGI (Instant Global Illumination) surface integrator, environment camera](https://cloud.githubusercontent.com/assets/3642099/2714447/0e5122c8-c4f7-11e3-8436-a7c5b9011ab7.jpg)
 
 
 ##License
