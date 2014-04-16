@@ -31,15 +31,16 @@ class PbrtParser {
   Future parse(String file) {
     Stopwatch t = new Stopwatch();
     t.start();
-    LogInfo('Loading Scene');
+    LogInfo('LOADING Scene $file');
     Completer c = new Completer();
 
     resourceManager.requestFile(file).then((List<int> input) {
-      _loadIncludes(input).then((_) {
-        LogDebug('Includes loaded. Parsing.');
-        _parse(input).then((_) {
+      LogDebug('FINISHED $file. Scanning for includes.');
+      _loadIncludes(input, file).then((_) {
+        LogDebug('FINISHED Includes. Parsing.');
+        _parse(input, file).then((_) {
           t.stop();
-          LogInfo('Finished Loading Scene: ${t.elapsed}');
+          LogInfo('FINISHED Parsing Scene: ${t.elapsed}');
           c.complete();
         });
       });
@@ -48,13 +49,13 @@ class PbrtParser {
     return c.future;
   }
 
-  Future _loadIncludes(List<int> input) {
-    PbrtLexer _lexer = new PbrtLexer(input);
+  Future _loadIncludes(List<int> input, String path) {
+    PbrtLexer _lexer = new PbrtLexer(input, path);
 
     List<Future> futures = [];
+    List<String> paths = [];
 
     Completer c = new Completer();
-
     int tk = _lexer.nextToken();
     while (!_lexer.isEof()) {
       Map cmd = _parseCommand(_lexer, futures);
@@ -67,24 +68,31 @@ class PbrtParser {
 
       if (name == 'include') {
         if (!pbrt.resourceManager.hasResource(cmd['value'])) {
-          LogDebug('Include ${cmd['value']}');
-          futures.add(pbrt.resourceManager.requestFile(cmd['value']));
+          LogDebug('LOADING INCLUDE ${cmd['value']}');
+          Future f = pbrt.resourceManager.requestFile(cmd['value']);
+          futures.add(f);
+          paths.add(cmd['value']);
+          f.then((_) {
+            LogDebug('FINISHED INCLUDE ${cmd['value']}');
+          });
         }
       }
     }
 
     Future.wait(futures).then((List responses) {
+      LogDebug('LOADING SUB-INCLUDES');
       List<Future<List<int>>> subFutures = [];
 
       if (responses.isNotEmpty) {
         for (int i = 0; i < responses.length; ++i) {
           List<int> inc = responses[i];
           if (inc != null && inc.isNotEmpty) {
-            subFutures.add(_loadIncludes(inc));
+            subFutures.add(_loadIncludes(inc, '@'/*paths[i]*/));
           }
         }
 
         Future.wait(subFutures).then((List subResponses) {
+          LogDebug('FINISHED SUB-INCLUDES');
           c.complete();
         }).catchError((e) {
           LogError(e);
@@ -94,19 +102,19 @@ class PbrtParser {
         c.complete();
       }
     }).catchError((e) {
-      LogError(e);
+      LogError(e.toString());
       c.completeError(e);
     });
 
     return c.future;
   }
 
-  Future _parse(List<int> input) {
-    LogDebug('Parsing Input');
+  Future _parse(List<int> input, String path) {
+    LogDebug('PARSING INPUT $path');
     Completer c = new Completer();
     List<Future> futures = [];
 
-    PbrtLexer _lexer = new PbrtLexer(input);
+    PbrtLexer _lexer = new PbrtLexer(input, path);
 
     int tk = _lexer.nextToken();
     while (!_lexer.isEof()) {
@@ -284,14 +292,14 @@ class PbrtParser {
           break;
         case 'include':
           var inc = pbrt.resourceManager.getResource(cmd['value']);
-          if (inc is String) {
-            _lexer.addInclude(inc);
+          if (inc is List<int>) {
+            _lexer.addInclude(inc, cmd['value']);
           } else {
-            LogWarning('Missing include: ${cmd['value']}');
+            LogWarning('MISSING include: ${cmd['value']}');
           }
           break;
         default:
-          LogWarning('Unhandled command ${cmd['name']}');
+          LogWarning('UNHANDLED command ${cmd['name']}');
           break;
       }
     }
@@ -347,11 +355,6 @@ class PbrtParser {
       cmd['id'] = _lexer.currentTokenString;
 
       tk = _lexer.nextToken();
-      params.add({'type': 'string',
-                  'name': 'type',
-                  'value': [_lexer.currentTokenString]});
-
-      tk = _lexer.nextToken();
     } else {
       tk = _lexer.nextToken();
       if (tk == PbrtLexer.TOKEN_IDENTIFIER) {
@@ -403,7 +406,7 @@ class PbrtParser {
       List<String> paramTk = paramTypeName.split(' ');
       paramTk.removeWhere((e) => e.isEmpty);
       if (paramTk.length != 2) {
-        LogWarning('Expected Parameter "Type Name", found: "$paramTypeName"');
+        LogWarning('${_lexer.path} [${_lexer.line}]: Expected Parameter "Type Name", found: "$paramTypeName"');
         return cmd;
       }
 

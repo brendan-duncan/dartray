@@ -87,7 +87,7 @@ class RenderManager extends RenderManagerInterface {
           LogError('Unknown HttpRequest response type');
         }
       }).catchError((e) {
-        LogError('Error Loading Resource: $path');
+        LogError('Error Loading Resource $path: $e');
       });
     }
 

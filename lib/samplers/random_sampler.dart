@@ -23,14 +23,16 @@ part of samplers;
 class RandomSampler extends Sampler {
   static RandomSampler Create(ParamSet params, Film film, Camera camera) {
     int ns = params.findOneInt('pixelsamples', 4);
+    bool continuous = params.findOneBool('continuous', false);
     List<int> extents = [0, 0, 0, 0];
     film.getSampleExtent(extents);
-    return new RandomSampler(extents[0], extents[1], extents[2], extents[3], ns,
+    return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
+                             ns, continuous,
                              camera.shutterOpen, camera.shutterClose);
   }
 
   RandomSampler(int xstart, int xend, int ystart,
-      int yend, int ns, double sopen, double sclose) :
+      int yend, int ns, this.continuous, double sopen, double sclose) :
     super(xstart, xend, ystart, yend, ns, sopen, sclose) {
     //pixels = new RandomImageSampler(xstart, xend, ystart, yend);
     pixels = new TileImageSampler(xstart, xend, ystart, yend);
@@ -48,7 +50,10 @@ class RandomSampler extends Sampler {
 
   int getMoreSamples(List<Sample> sample, RNG rng) {
     if (pixelIndex >= pixels.numPixels()) {
-      return 0;
+      if (!continuous) {
+        return 0;
+      }
+      pixelIndex = 0;
     }
 
     if (samplePos == samplesPerPixel) {
@@ -111,9 +116,10 @@ class RandomSampler extends Sampler {
     }
 
     return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
-        samplesPerPixel, shutterOpen, shutterClose);
+        samplesPerPixel, continuous, shutterOpen, shutterClose);
   }
 
+  bool continuous;
   ImageSampler pixels;
   Int32List pixel = new Int32List(2);
   int pixelIndex;

@@ -32,11 +32,12 @@ import 'package:image/image.dart';
 //String scene = 'scenes/09_quadrics.pbrt';
 //String scene = 'scenes/area_light.pbrt';
 //String scene = 'scenes/bunny.pbrt';
-//String scene = 'scenes/cornell_path.pbrt';
+String scene = 'scenes/cornell_path.pbrt';
 //String scene = 'scenes/room-path.pbrt';
 //String scene = 'scenes/spheres.pbrt';
-String scene = 'scenes/teapot-area-light.pbrt';
+//String scene = 'scenes/teapot-area-light.pbrt';
 //String scene = 'pbrt/caustic-proj.pbrt';
+//String scene = 'pbrt/sibenik-igi.pbrt';
 
 void main() {
   const int width = 256;

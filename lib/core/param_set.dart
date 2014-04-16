@@ -154,13 +154,6 @@ class ParamSet {
 
   void addSpectrumFiles(String name, List<String> filenames,
                         List<Future> futures) {
-    Completer c;
-
-    if (futures != null) {
-      c = new Completer();
-      futures.add(c.future);
-    }
-
     List<Spectrum> s = new List<Spectrum>(filenames.length);
 
     List<Future> subFutures = [];
@@ -168,8 +161,10 @@ class ParamSet {
       String path = filenames[fi];
 
       if (ResourceManager.HasResource(path)) {
-        LogDebug('USING SPECTRUM FILE $path');
-        List<int> bytes = ResourceManager.GetResource(path);
+        var bytes = ResourceManager.GetResource(path);
+        if (bytes is! List<int>) {
+          continue;
+        }
 
         List<double> values = _readFloatFile(bytes, path);
         int numSamples = values.length ~/ 2;
@@ -189,7 +184,7 @@ class ParamSet {
 
           Completer sc = new Completer();
           ResourceManager.RequestFile(path).then((bytes) {
-            LogDebug('SPECTRUM FILE $path LOADED');
+            LogDebug('FINISHED SPECTRUM FILE $path');
             List<double> values = _readFloatFile(bytes, path);
             int numSamples = values.length ~/ 2;
             Float32List wls = new Float32List(numSamples);
@@ -213,6 +208,9 @@ class ParamSet {
       if (subFutures.isEmpty) {
         spectra.add(new ParamSetItem<Spectrum>(name, s));
       } else {
+        Completer c = new Completer();
+        futures.add(c.future);
+
         Future.wait(subFutures).then((e) {
           spectra.add(new ParamSetItem<Spectrum>(name, s));
           c.complete();

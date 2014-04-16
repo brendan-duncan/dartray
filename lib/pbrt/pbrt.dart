@@ -263,6 +263,7 @@ class Pbrt {
   }
 
   Future<OutputImage> renderScene(String scene, [Image output]) {
+    Stopwatch t = new Stopwatch()..start();
     if (output != null) {
       setOutputImage(output);
     }
@@ -274,7 +275,8 @@ class Pbrt {
         c.complete(null);
       }
 
-      resourceManager.waitUntilReady().then((e) {
+      resourceManager.waitUntilReady().then((_) {
+        LogInfo('FINISHED Preparing Scene: ${t.elapsed}');
         OutputImage output = _renderer.render(_scene);
         c.complete(output);
       });

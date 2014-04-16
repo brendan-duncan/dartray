@@ -80,7 +80,8 @@ class TriangleShape extends Shape {
     }
 
     // Compute triangle partial derivatives
-    Vector dpdu, dpdv;
+    Vector dpdu = new Vector();
+    Vector dpdv = new Vector();
     List<double> uvs = new List<double>(6);
     getUVs(uvs);
 

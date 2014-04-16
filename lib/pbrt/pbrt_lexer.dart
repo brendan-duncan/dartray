@@ -73,13 +73,17 @@ class PbrtLexer {
   static const int TOKEN_E = 96; // E
   static const int TOKEN_Z = 90; // Z
 
-  PbrtLexer(List<int> input) {
-    _inputStack.add(new _PbrtLexerInput(input));
+  PbrtLexer(List<int> input, String path) {
+    _inputStack.add(new _PbrtLexerInput(input, path));
   }
 
-  void addInclude(List<int> input) {
-    _inputStack.add(new _PbrtLexerInput(input));
+  void addInclude(List<int> input, String path) {
+    _inputStack.add(new _PbrtLexerInput(input, path));
   }
+
+  String get path => _inputStack.last.path;
+
+  int get line => _inputStack.last.line;
 
   /**
    * Returns true if the parse position is at the end of the input.
@@ -116,6 +120,9 @@ class PbrtLexer {
 
     // Ignore white-space (space, tabs, new-lines).
     while (_isWhitespace(_lastChar)) {
+      if (_lastChar == TOKEN_NEWLINE) {
+        _inputStack.last.line++;
+      }
       _lastChar = _nextChar();
     }
 
@@ -320,9 +327,11 @@ class PbrtLexer {
 
 class _PbrtLexerInput {
   List<int> input;
+  String path;
+  int line = 0;
   int position = 0;
 
-  _PbrtLexerInput(this.input);
+  _PbrtLexerInput(this.input, this.path);
 
   bool get isEOF => position >= input.length;
 
