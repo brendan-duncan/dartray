@@ -29,6 +29,7 @@ part 'cylinder_shape.dart';
 part 'disk_shape.dart';
 part 'hyperboloid_shape.dart';
 part 'loop_subdivision.dart';
+part 'nurbs_shape.dart';
 part 'paraboloid_shape.dart';
 part 'sphere_shape.dart';
 part 'triangle_mesh_shape.dart';

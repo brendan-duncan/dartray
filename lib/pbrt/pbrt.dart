@@ -221,6 +221,7 @@ class Pbrt {
     registerShape('disk', DiskShape.Create);
     registerShape('hyperboloid', HyperboloidShape.Create);
     registerShape('loopsubdiv', LoopSubdivisionShape.Create);
+    registerShape('nurbs', NurbsShape.Create);
     registerShape('paraboloid', ParaboloidShape.Create);
     registerShape('sphere', SphereShape.Create);
     registerShape('trianglemesh', TriangleMeshShape.Create);
