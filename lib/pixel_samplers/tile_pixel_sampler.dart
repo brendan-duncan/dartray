@@ -1,15 +1,24 @@
-part of image_samplers;
+part of pixel_samplers;
 
-class TileImageSampler extends ImageSampler {
+class TilePixelSampler extends PixelSampler {
   final int tileSize;
+  final bool randomize;
 
-  TileImageSampler(int xPixelStart, int xPixelEnd, int yPixelStart,
-                   int yPixelEnd, {this.tileSize: 32, bool randomize: true}) :
-    super(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd),
+  static TilePixelSampler Create(ParamSet params, Film film) {
+    int tileSize = params.findOneInt('tilesize', 32);
+    bool randomize = params.findOneBool('randomize', true);
+
+    return new TilePixelSampler(tileSize: tileSize, randomize: randomize);
+  }
+
+  TilePixelSampler({this.tileSize: 32, this.randomize: true});
+
+  void setup(int xPixelStart, int xPixelEnd, int yPixelStart, int yPixelEnd) {
+    super.setup(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd);
     _numSamples = (xPixelEnd - xPixelStart) *
-                  (yPixelEnd - yPixelStart),
+                  (yPixelEnd - yPixelStart);
     _samples = new Int32List((xPixelEnd - xPixelStart) *
-                             (yPixelEnd - yPixelStart) * 2) {
+                             (yPixelEnd - yPixelStart) * 2);
     int width = xPixelEnd - xPixelStart;
     int height = yPixelEnd - yPixelStart;
     int numXTiles = width ~/ tileSize + ((width % tileSize == 0) ? 0 : 1);
@@ -82,6 +91,6 @@ class TileImageSampler extends ImageSampler {
     pixel[1] = _samples[index + 1];
   }
 
-  final int _numSamples;
-  final Int32List _samples;
+  int _numSamples;
+  Int32List _samples;
 }

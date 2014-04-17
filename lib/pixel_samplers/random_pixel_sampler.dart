@@ -1,14 +1,20 @@
-part of image_samplers;
+part of pixel_samplers;
 
 /**
  * Sample the image pixels in a random order.
  */
-class RandomImageSampler extends ImageSampler {
-  RandomImageSampler(int xPixelStart, int xPixelEnd, int yPixelStart,
-                     int yPixelEnd) :
-    super(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd),
+class RandomPixelSampler extends PixelSampler {
+  static RandomPixelSampler Create(ParamSet params, Film film) {
+    return new RandomPixelSampler();
+  }
+
+  void setup(int xPixelStart, int xPixelEnd, int yPixelStart,
+             int yPixelEnd) {
+    super.setup(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd);
+
     _samples = new Int32List((xPixelEnd - xPixelStart) *
-                             (yPixelEnd - yPixelStart) * 2) {
+                             (yPixelEnd - yPixelStart) * 2);
+
     for (int y = yPixelStart, si = 0; y < yPixelEnd; ++y) {
       for (int x = xPixelStart; x < xPixelEnd; ++x) {
         _samples[si++] = x;
@@ -49,5 +55,5 @@ class RandomImageSampler extends ImageSampler {
   }
 
   int _numSamples;
-  final Int32List _samples;
+  Int32List _samples;
 }

@@ -26,9 +26,13 @@ part of core;
  * This allows the separation of calculating what pixels to render vs what
  * sample within pixels to sample (as done by [Sampler]).
  */
-abstract class ImageSampler {
-  ImageSampler(this.xPixelStart, this.xPixelEnd, this.yPixelStart,
-               this.yPixelEnd);
+abstract class PixelSampler {
+  void setup(int xPixelStart, int xPixelEnd, int yPixelStart, int yPixelEnd) {
+    this.xPixelStart = xPixelStart;
+    this.xPixelEnd = xPixelEnd;
+    this.yPixelStart = yPixelStart;
+    this.yPixelEnd = yPixelEnd;
+  }
 
   int numPixels();
 

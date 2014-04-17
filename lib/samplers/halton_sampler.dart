@@ -30,7 +30,8 @@ class HaltonSampler extends Sampler {
     currentSample = 0;
   }
 
-  static HaltonSampler Create(ParamSet params, Film film, Camera camera) {
+  static HaltonSampler Create(ParamSet params, Film film, Camera camera,
+                              PixelSampler pixels) {
     // Initialize common sampler parameters
     List<int> range = [0, 0, 0, 0];
     film.getSampleExtent(range);

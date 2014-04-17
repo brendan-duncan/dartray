@@ -21,12 +21,27 @@
 part of samplers;
 
 class LowDiscrepancySampler extends Sampler {
+  static LowDiscrepancySampler Create(ParamSet params, Film film,
+                                      Camera camera, PixelSampler pixels) {
+    // Initialize common sampler parameters
+    List<int> extents = [0, 0, 0, 0];
+    film.getSampleExtent(extents);
+    int nsamp = params.findOneInt('pixelsamples', 4);
+
+    return new LowDiscrepancySampler(extents[0], extents[1], extents[2],
+                                     extents[3], nsamp,
+                                     camera.shutterOpen, camera.shutterClose,
+                                     pixels);
+  }
+
   LowDiscrepancySampler(int xstart, int xend, int ystart, int yend,
-                        int nsamp, double sopen, double sclose) :
+                        int nsamp, double sopen, double sclose,
+                        this.pixels) :
     super(xstart, xend, ystart, yend, RoundUpPow2(nsamp), sopen, sclose) {
-    //pixels = new LinearImageSampler(xstart, xend, ystart, yend);
-    pixels = new RandomImageSampler(xstart, xend, ystart, yend);
-    //pixels = new TileImageSampler(xstart, xend, ystart, yend);
+    if (pixels == null) {
+      LogSevere('Pixel sampler is required by LowDiscrepencySampler');
+    }
+    pixels.setup(xstart, xend, ystart, yend);
     pixelIndex = 0;
     if (!IsPowerOf2(nsamp)) {
       LogWarning('Pixel samples being rounded up to power of 2');
@@ -35,18 +50,6 @@ class LowDiscrepancySampler extends Sampler {
       nPixelSamples = nsamp;
     }
     sampleBuf = null;
-  }
-
-  static LowDiscrepancySampler Create(ParamSet params, Film film,
-                                      Camera camera) {
-    // Initialize common sampler parameters
-    List<int> extents = [0, 0, 0, 0];
-    film.getSampleExtent(extents);
-    int nsamp = params.findOneInt('pixelsamples', 4);
-
-    return new LowDiscrepancySampler(extents[0], extents[1], extents[2],
-                                     extents[3], nsamp,
-                                     camera.shutterOpen, camera.shutterClose);
   }
 
   Sampler getSubSampler(int num, int count) {
@@ -59,7 +62,8 @@ class LowDiscrepancySampler extends Sampler {
     return new LowDiscrepancySampler(extents[0], extents[1],
                                      extents[2], extents[3],
                                      nPixelSamples,
-                                     shutterOpen, shutterClose);
+                                     shutterOpen, shutterClose,
+                                     pixels);
   }
 
   int roundSize(int size) {
@@ -89,7 +93,7 @@ class LowDiscrepancySampler extends Sampler {
   }
 
 
-  ImageSampler pixels;
+  PixelSampler pixels;
   Int32List pixel = new Int32List(2);
   int pixelIndex;
   int nPixelSamples;

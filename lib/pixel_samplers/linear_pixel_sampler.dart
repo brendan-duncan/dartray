@@ -1,14 +1,17 @@
-part of image_samplers;
+part of pixel_samplers;
 
 /**
  * Sample the image pixels in a linear order.
  */
-class LinearImageSampler extends ImageSampler {
-  LinearImageSampler(int xPixelStart, int xPixelEnd, int yPixelStart,
-                     int yPixelEnd) :
-    super(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd),
+class LinearPixelSampler extends PixelSampler {
+  static LinearPixelSampler Create(ParamSet params, Film film) {
+    return new LinearPixelSampler();
+  }
+
+  void setup(int xPixelStart, int xPixelEnd, int yPixelStart, int yPixelEnd) {
+    super.setup(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd);
     _samples = new Int32List((xPixelEnd - xPixelStart) *
-                             (yPixelEnd - yPixelStart) * 2) {
+                             (yPixelEnd - yPixelStart) * 2);
     for (int y = yPixelStart, si = 0; y < yPixelEnd; ++y) {
       for (int x = xPixelStart; x < xPixelEnd; ++x) {
         _samples[si++] = x;
@@ -31,5 +34,5 @@ class LinearImageSampler extends ImageSampler {
   }
 
   int _numSamples;
-  final Int32List _samples;
+  Int32List _samples;
 }

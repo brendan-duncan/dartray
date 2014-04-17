@@ -24,7 +24,8 @@ class AdaptiveSampler extends Sampler {
   static const int ADAPTIVE_COMPARE_SHAPE_ID = 0;
   static const int ADAPTIVE_CONTRAST_THRESHOLD = 1;
 
-  static AdaptiveSampler Create(ParamSet params, Film film, Camera camera) {
+  static AdaptiveSampler Create(ParamSet params, Film film, Camera camera,
+                                PixelSampler pixels) {
     // Initialize common sampler parameters
     List<int> extent = [0, 0, 0, 0];
     film.getSampleExtent(extent);
@@ -43,18 +44,19 @@ class AdaptiveSampler extends Sampler {
 
     return new AdaptiveSampler(extent[0], extent[1], extent[2], extent[3],
                                minsamp, maxsamp, method,
-                               camera.shutterOpen, camera.shutterClose);
+                               camera.shutterOpen, camera.shutterClose,
+                               pixels);
   }
 
   AdaptiveSampler(int xstart, int xend, int ystart, int yend,
-      int mins, int maxs, int method,
-      double sopen, double sclose) :
-    super(xstart, xend, ystart, yend,
-          RoundUpPow2(Math.max(mins, maxs)),
+                  int mins, int maxs, int method,
+                  double sopen, double sclose, this.pixels) :
+    super(xstart, xend, ystart, yend, RoundUpPow2(Math.max(mins, maxs)),
           sopen, sclose) {
-    //pixels = new LinearImageSampler(xstart, xend, ystart, yend);
-    //pixels = new RandomImageSampler(xstart, xend, ystart, yend);
-    pixels = new TileImageSampler(xstart, xend, ystart, yend);
+    if (pixels == null) {
+      LogSevere('Pixel sampler is required by LowDiscrepencySampler');
+    }
+    pixels.setup(xstart, xend, ystart, yend);
     pixelIndex = 0;
     supersamplePixel = false;
 
@@ -102,7 +104,7 @@ class AdaptiveSampler extends Sampler {
 
     return new AdaptiveSampler(extent[0], extent[1], extent[2], extent[3],
                                minSamples, maxSamples, method,
-                               shutterOpen, shutterClose);
+                               shutterOpen, shutterClose, pixels);
   }
 
   int roundSize(int size) {
@@ -189,7 +191,7 @@ class AdaptiveSampler extends Sampler {
     return false;
   }
 
-  ImageSampler pixels;
+  PixelSampler pixels;
   Int32List pixel = new Int32List(2);
   int pixelIndex;
   int minSamples;

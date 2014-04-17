@@ -33,6 +33,7 @@ import '../film/film.dart';
 import '../filters/filters.dart';
 import '../lights/lights.dart';
 import '../materials/materials.dart';
+import '../pixel_samplers/pixel_samplers.dart';
 import '../renderers/renderers.dart';
 import '../samplers/samplers.dart';
 import '../shapes/shapes.dart';
@@ -71,7 +72,10 @@ typedef Light AreaLightCreator(Transform light2world, ParamSet paramSet,
 
 typedef Material MaterialCreator(Transform xform, TextureParams mp);
 
-typedef Sampler SamplerCreator(ParamSet params, Film film, Camera camera);
+typedef PixelSampler PixelSamplerCreator(ParamSet params, Film film);
+
+typedef Sampler SamplerCreator(ParamSet params, Film film, Camera camera,
+                               PixelSampler pixels);
 
 typedef Shape ShapeCreator(Transform o2w, Transform w2o,
                            bool reverseOrientation, ParamSet params);
@@ -99,6 +103,7 @@ class Pbrt {
   static Map<String, AreaLightCreator> _areaLights = {};
   static Map<String, MaterialCreator> _materials = {};
   static Map<String, SamplerCreator> _samplers = {};
+  static Map<String, PixelSamplerCreator> _pixelSamplers = {};
   static Map<String, ShapeCreator> _shapes = {};
   static Map<String, TextureCreator> _floatTextures = {};
   static Map<String, TextureCreator> _spectrumTextures = {};
@@ -137,6 +142,9 @@ class Pbrt {
   static void registerSampler(String name, SamplerCreator func) {
     _samplers[name] = func;
   }
+  static void registerPixelSampler(String name, PixelSamplerCreator func) {
+    _pixelSamplers[name] = func;
+  }
   static void registerShape(String name, ShapeCreator func) {
     _shapes[name] = func;
   }
@@ -153,7 +161,9 @@ class Pbrt {
     _renderers[name] = func;
   }
 
-  static void _registerStandardNodes() {
+  static void _registerStandardPlugins() {
+    // If 'sphere' has been registered, we can assume the rest of the standard
+    // plugins have been registered too.
     if (_shapes.containsKey('sphere')) {
       return;
     }
@@ -209,6 +219,10 @@ class Pbrt {
     registerMaterial('translucent', TranslucentMaterial.Create);
     registerMaterial('uber', UberMaterial.Create);
 
+    registerPixelSampler('linear', LinearPixelSampler.Create);
+    registerPixelSampler('random', RandomPixelSampler.Create);
+    registerPixelSampler('tile', TilePixelSampler.Create);
+
     registerSampler('adaptive', AdaptiveSampler.Create);
     registerSampler('bestcandidate', BestCandidateSampler.Create);
     registerSampler('halton', HaltonSampler.Create);
@@ -261,7 +275,7 @@ class Pbrt {
   ResourceManager resourceManager;
 
   Pbrt(this.resourceManager) {
-    _registerStandardNodes();
+    _registerStandardPlugins();
   }
 
   Future<OutputImage> renderScene(String scene, [Image output]) {
@@ -452,6 +466,11 @@ class Pbrt {
     _renderOptions.previewCallback = cb;
   }
 
+  void pixels(String name, ParamSet params) {
+    _renderOptions.pixelSamplerName = name;
+    _renderOptions.pixelSamplerParams = params;
+  }
+
   void sampler(String name, ParamSet params) {
     _renderOptions.samplerName = name;
     _renderOptions.samplerParams = params;
@@ -502,7 +521,7 @@ class Pbrt {
   void attributeEnd() {
     if (_pushedGraphicsStates.isEmpty) {
       LogWarning('Unmatched attributeEnd() encountered. '
-              'Ignoring it.');
+                 'Ignoring it.');
       return;
     }
     _graphicsState = _pushedGraphicsStates.removeLast();
@@ -518,7 +537,7 @@ class Pbrt {
   void transformEnd() {
     if (_pushedTransforms.isEmpty) {
       LogWarning('Unmatched pbrtTransformEnd() encountered. '
-          'Ignoring it.');
+                 'Ignoring it.');
       return;
     }
 
@@ -903,9 +922,13 @@ class Pbrt {
 
       _renderOptions.rendererParams.reportUnused();
 
+      PixelSampler pixels = _makePixelSampler(_renderOptions.pixelSamplerName,
+                                           _renderOptions.pixelSamplerParams,
+                                           camera.film);
+
       Sampler sampler = _makeSampler(_renderOptions.samplerName,
                                      _renderOptions.samplerParams,
-                                     camera.film, camera);
+                                     camera.film, camera, pixels);
       if (sampler == null) {
         LogSevere('Unable to create sampler.');
       }
@@ -1132,14 +1155,27 @@ class Pbrt {
     return c;
   }
 
+  PixelSampler _makePixelSampler(String name, ParamSet paramSet, Film film) {
+    if (!_pixelSamplers.containsKey(name)) {
+      LogWarning('PixelSampler \'${name}\' unknown.');
+      return null;
+    }
+
+    PixelSampler s = _pixelSamplers[name](paramSet, film);
+    paramSet.reportUnused();
+
+    return s;
+  }
+
   Sampler _makeSampler(String name,
-          ParamSet paramSet, Film film, Camera camera) {
+                       ParamSet paramSet, Film film, Camera camera,
+                       PixelSampler pixels) {
     if (!_samplers.containsKey(name)) {
       LogWarning('Sampler \'${name}\' unknown.');
       return null;
     }
 
-    Sampler s = _samplers[name](paramSet, film, camera);
+    Sampler s = _samplers[name](paramSet, film, camera, pixels);
     paramSet.reportUnused();
 
     return s;

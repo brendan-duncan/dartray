@@ -21,23 +21,8 @@
 part of samplers;
 
 class StratifiedSampler extends Sampler {
-  StratifiedSampler(int xstart, int xend, int ystart, int yend,
-                    int xs, int ys, this.jitterSamples,
-                    double sopen, double sclose) :
-    super(xstart, xend, ystart, yend, xs * ys, sopen, sclose) {
-    //pixels = new LinearImageSampler(xstart, xend, ystart, yend);
-    pixels = new RandomImageSampler(xstart, xend, ystart, yend);
-    //pixels = new TileImageSampler(xstart, xend, ystart, yend);
-    pixelIndex = 0;
-    xPixelSamples = xs;
-    yPixelSamples = ys;
-    nPixelSamples = xPixelSamples * yPixelSamples;
-    imageSamples = new Float32List(2 * nPixelSamples);
-    lensSamples = new Float32List(2 * nPixelSamples);
-    timeSamples = new Float32List(xPixelSamples * yPixelSamples);
-  }
-
-  static StratifiedSampler Create(ParamSet params, Film film, Camera camera) {
+  static StratifiedSampler Create(ParamSet params, Film film, Camera camera,
+                                  PixelSampler pixels) {
     bool jitter = params.findOneBool('jitter', true);
     // Initialize common sampler parameters
     List<int> extents = [0, 0, 0, 0];
@@ -56,7 +41,26 @@ class StratifiedSampler extends Sampler {
 
     return new StratifiedSampler(extents[0], extents[1], extents[2],
                                  extents[3], xsamp, ysamp, jitter,
-                                 camera.shutterOpen, camera.shutterClose);
+                                 camera.shutterOpen, camera.shutterClose,
+                                 pixels);
+  }
+
+  StratifiedSampler(int xstart, int xend, int ystart, int yend,
+                    int xs, int ys, this.jitterSamples,
+                    double sopen, double sclose,
+                    this.pixels) :
+    super(xstart, xend, ystart, yend, xs * ys, sopen, sclose) {
+    if (pixels == null) {
+      LogSevere('Pixel sampler is required by StratifiedSampler');
+    }
+    pixels.setup(xstart, xend, ystart, yend);
+    pixelIndex = 0;
+    xPixelSamples = xs;
+    yPixelSamples = ys;
+    nPixelSamples = xPixelSamples * yPixelSamples;
+    imageSamples = new Float32List(2 * nPixelSamples);
+    lensSamples = new Float32List(2 * nPixelSamples);
+    timeSamples = new Float32List(xPixelSamples * yPixelSamples);
   }
 
   int roundSize(int size) {
@@ -71,7 +75,7 @@ class StratifiedSampler extends Sampler {
     }
     return new StratifiedSampler(range[0], range[1], range[2], range[3],
                                  xPixelSamples, yPixelSamples, jitterSamples,
-                                 shutterOpen, shutterClose);
+                                 shutterOpen, shutterClose, pixels);
   }
 
   int getMoreSamples(List<Sample> samples, RNG rng) {
@@ -133,7 +137,7 @@ class StratifiedSampler extends Sampler {
   int yPixelSamples;
   int nPixelSamples;
   bool jitterSamples;
-  ImageSampler pixels;
+  PixelSampler pixels;
   Int32List pixel = new Int32List(2);
   int pixelIndex;
   Float32List imageSamples;

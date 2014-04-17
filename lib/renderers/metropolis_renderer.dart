@@ -66,7 +66,8 @@ class MetropolisRenderer extends Renderer {
           LowDiscrepancySampler sampler =
               new LowDiscrepancySampler(extent[0], extent[1],
                                         extent[2], extent[3],
-                                        nDirectPixelSamples, t0, t1);
+                                        nDirectPixelSamples, t0, t1,
+                                        new TilePixelSampler());
           Sample sample = new Sample(sampler, directLighting, null, scene);
 
           var task = new _SamplerRendererTask(scene, this, camera,

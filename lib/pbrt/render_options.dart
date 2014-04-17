@@ -26,6 +26,7 @@ class RenderOptions {
     transformEndTime = 1.0;
     filterName = 'box';
     filmName = 'image';
+    pixelSamplerName = 'tile';
     samplerName = 'lowdiscrepancy';
     acceleratorName = 'bvh';
     rendererName = 'sampler';
@@ -45,6 +46,8 @@ class RenderOptions {
   ParamSet filmParams = new ParamSet();
   Image outputImage;
   PreviewCallback previewCallback;
+  String pixelSamplerName;
+  ParamSet pixelSamplerParams = new ParamSet();
   String samplerName;
   ParamSet samplerParams = new ParamSet();
   String acceleratorName;
@@ -62,7 +65,7 @@ class RenderOptions {
   List<Primitive> primitives = [];
   List<VolumeRegion> volumeRegions = [];
   Map<String, List<Primitive>> instances = {};
-  List<Primitive> currentInstance;
+  List<Primitive> currentInstance = [];
   int taskNum;
   int taskCount;
 }

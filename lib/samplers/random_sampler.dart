@@ -21,21 +21,26 @@
 part of samplers;
 
 class RandomSampler extends Sampler {
-  static RandomSampler Create(ParamSet params, Film film, Camera camera) {
+  static RandomSampler Create(ParamSet params, Film film, Camera camera,
+                              PixelSampler pixels) {
     int ns = params.findOneInt('pixelsamples', 1);
     bool continuous = params.findOneBool('continuous', true);
     List<int> extents = [0, 0, 0, 0];
     film.getSampleExtent(extents);
     return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
                              ns, continuous,
-                             camera.shutterOpen, camera.shutterClose);
+                             camera.shutterOpen, camera.shutterClose,
+                             pixels);
   }
 
   RandomSampler(int xstart, int xend, int ystart,
-      int yend, int ns, this.continuous, double sopen, double sclose) :
+      int yend, int ns, this.continuous, double sopen, double sclose,
+      this.pixels) :
     super(xstart, xend, ystart, yend, ns, sopen, sclose) {
-    //pixels = new RandomImageSampler(xstart, xend, ystart, yend);
-    pixels = new TileImageSampler(xstart, xend, ystart, yend);
+    if (pixels == null) {
+      LogSevere('Pixel sampler is required by LowDiscrepencySampler');
+    }
+    pixels.setup(xstart, xend, ystart, yend);
     pixelIndex = 0;
     // Get storage for a pixel's worth of stratified samples
     imageSamples = new Float32List(2 * samplesPerPixel);
@@ -116,11 +121,12 @@ class RandomSampler extends Sampler {
     }
 
     return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
-        samplesPerPixel, continuous, shutterOpen, shutterClose);
+                             samplesPerPixel, continuous, shutterOpen,
+                             shutterClose, pixels);
   }
 
   bool continuous;
-  ImageSampler pixels;
+  PixelSampler pixels;
   Int32List pixel = new Int32List(2);
   int pixelIndex;
   Float32List imageSamples;

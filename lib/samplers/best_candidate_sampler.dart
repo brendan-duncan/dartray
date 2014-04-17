@@ -26,7 +26,7 @@ class BestCandidateSampler extends Sampler {
                                        SQRT_SAMPLE_TABLE_SIZE;
 
   static BestCandidateSampler Create(ParamSet params, Film film,
-                                     Camera camera) {
+                                     Camera camera, PixelSampler pixels) {
     // Initialize common sampler parameters
     List<int> extent = [0, 0, 0, 0];
     film.getSampleExtent(extent);
