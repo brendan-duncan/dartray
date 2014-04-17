@@ -105,8 +105,17 @@ class RenderTask {
     return completer.future;
   }
 
-  void _updatePreviewImage(Image image, Uint8List bytes) {
-    Uint32List src = new Uint32List.view(bytes.buffer);
+  void _updatePreviewImage(Image image, List<int> bytes) {
+    Uint32List src;
+    if (bytes is Uint8List) {
+      src = new Uint32List.view(bytes.buffer);
+    } else if (bytes is List<int>) {
+      Uint8List b = new Uint8List.fromList(bytes);
+      src = new Uint32List.view(b.buffer);
+    } else {
+      assert(false);
+      return;
+    }
     Uint32List dst = image.data;
     int w = extents[1] - extents[0];
     int dsti = extents[2] * image.width + extents[0];
