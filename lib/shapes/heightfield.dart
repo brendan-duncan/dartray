@@ -54,7 +54,7 @@ class Heightfield extends Shape {
     paramSet.addInt('indices', verts);
     paramSet.addFloat('uv', uvs);
     paramSet.addPoint('P', P);
-    refined.add(TriangleMeshShape.Create(objectToWorld, worldToObject,
+    refined.add(TriangleMesh.Create(objectToWorld, worldToObject,
                                          reverseOrientation, paramSet));
   }
 

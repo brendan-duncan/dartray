@@ -3,14 +3,14 @@
  *                                                                          *
  *  This file is part of DartRay.                                           *
  *                                                                          *
- *  Licensed under the Apache License, Version 2.0 (the "License");         *
+ *  Licensed under the Apache License, Version 2.0 (the 'License');         *
  *  you may not use this file except in compliance with the License.        *
  *  You may obtain a copy of the License at                                 *
  *                                                                          *
  *  http://www.apache.org/licenses/LICENSE-2.0                              *
  *                                                                          *
  *  Unless required by applicable law or agreed to in writing, software     *
- *  distributed under the License is distributed on an "AS IS" BASIS,       *
+ *  distributed under the License is distributed on an 'AS IS' BASIS,       *
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.*
  *  See the License for the specific language governing permissions and     *
  *  limitations under the License.                                          *
@@ -20,12 +20,12 @@
  ****************************************************************************/
 part of shapes;
 
-class HyperboloidShape extends Shape {
-  HyperboloidShape(Transform o2w, Transform w2o, bool ro,
+class Hyperboloid extends Shape {
+  Hyperboloid(Transform o2w, Transform w2o, bool ro,
                    this.p1, this.p2, double tm) :
     super(o2w, w2o, ro) {
-    double radius1 = Math.sqrt(p1.x*p1.x + p1.y*p1.y);
-    double radius2 = Math.sqrt(p2.x*p2.x + p2.y*p2.y);
+    double radius1 = Math.sqrt(p1.x * p1.x + p1.y * p1.y);
+    double radius2 = Math.sqrt(p2.x * p2.x + p2.y * p2.y);
     rmax = Math.max(radius1, radius2);
     zmin = Math.min(p1.z, p2.z);
     zmax = Math.max(p1.z, p2.z);
@@ -51,12 +51,12 @@ class HyperboloidShape extends Shape {
      } while (a.isInfinite || a.isNaN);
   }
 
-  static HyperboloidShape Create(Transform o2w, Transform w2o,
-                                bool reverseOrientation, ParamSet params) {
-    Point p1 = params.findOnePoint("p1", new Point(0.0, 0.0, 0.0));
-    Point p2 = params.findOnePoint("p2", new Point(1.0, 1.0, 1.0));
-    double phimax = params.findOneFloat("phimax", 360.0);
-    return new HyperboloidShape(o2w, w2o, reverseOrientation, p1, p2, phimax);
+  static Hyperboloid Create(Transform o2w, Transform w2o,
+                            bool reverseOrientation, ParamSet params) {
+    Point p1 = params.findOnePoint('p1', new Point(0.0, 0.0, 0.0));
+    Point p2 = params.findOnePoint('p2', new Point(1.0, 1.0, 1.0));
+    double phimax = params.findOneFloat('phimax', 360.0);
+    return new Hyperboloid(o2w, w2o, reverseOrientation, p1, p2, phimax);
   }
 
   BBox objectBound() {

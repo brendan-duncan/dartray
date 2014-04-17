@@ -3,14 +3,14 @@
  *                                                                          *
  *  This file is part of DartRay.                                           *
  *                                                                          *
- *  Licensed under the Apache License, Version 2.0 (the "License");         *
+ *  Licensed under the Apache License, Version 2.0 (the 'License');         *
  *  you may not use this file except in compliance with the License.        *
  *  You may obtain a copy of the License at                                 *
  *                                                                          *
  *  http://www.apache.org/licenses/LICENSE-2.0                              *
  *                                                                          *
  *  Unless required by applicable law or agreed to in writing, software     *
- *  distributed under the License is distributed on an "AS IS" BASIS,       *
+ *  distributed under the License is distributed on an 'AS IS' BASIS,       *
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.*
  *  See the License for the specific language governing permissions and     *
  *  limitations under the License.                                          *
@@ -20,22 +20,22 @@
  ****************************************************************************/
 part of shapes;
 
-class LoopSubdivisionShape extends Shape {
-  static LoopSubdivisionShape Create(Transform o2w, Transform w2o,
+class LoopSubdivision extends Shape {
+  static LoopSubdivision Create(Transform o2w, Transform w2o,
           bool reverseOrientation, ParamSet params) {
-      int nlevels = params.findOneInt("nlevels", 1);
-      List<int> vi = params.findInt("indices");
-      List<Point> P = params.findPoint("P");
+      int nlevels = params.findOneInt('nlevels', 1);
+      List<int> vi = params.findInt('indices');
+      List<Point> P = params.findPoint('P');
       if (vi == null || P == null) {
         return null;
       }
 
-      return new LoopSubdivisionShape(o2w, w2o, reverseOrientation,
-                                      vi.length ~/ 3, P.length, vi,
-                                      P, nlevels);
+      return new LoopSubdivision(o2w, w2o, reverseOrientation,
+                                 vi.length ~/ 3, P.length, vi,
+                                 P, nlevels);
   }
 
-  LoopSubdivisionShape(Transform o2w, Transform w2o, bool ro,
+  LoopSubdivision(Transform o2w, Transform w2o, bool ro,
              int nfaces, int nvertices, List<int> vertexIndices,
              List<Point> P, this.nLevels) :
     super(o2w, w2o, ro),
@@ -314,11 +314,11 @@ class LoopSubdivisionShape extends Shape {
     }
 
     ParamSet paramSet = new ParamSet();
-    paramSet.addInt("indices", verts);
-    paramSet.addPoint("P", Plimit);
-    paramSet.addNormal("N", Ns);
+    paramSet.addInt('indices', verts);
+    paramSet.addPoint('P', Plimit);
+    paramSet.addNormal('N', Ns);
 
-    refined.add(TriangleMeshShape.Create(objectToWorld,
+    refined.add(TriangleMesh.Create(objectToWorld,
                 worldToObject, reverseOrientation, paramSet));
   }
 
@@ -467,7 +467,7 @@ class _SDFace {
         return i;
       }
     }
-    LogSevere("Basic logic error in SDFace::vnum()");
+    LogSevere('Basic logic error in SDFace::vnum()');
     return -1;
   }
 
@@ -493,7 +493,7 @@ class _SDFace {
         return v[i];
       }
     }
-    LogSevere("Basic logic error in SDVertex::otherVert()");
+    LogSevere('Basic logic error in SDVertex::otherVert()');
     return null;
   }
 

@@ -20,8 +20,8 @@
  ****************************************************************************/
 part of shapes;
 
-class SphereShape extends Shape {
-  SphereShape(Transform o2w, Transform w2o, bool ro, this.radius,
+class Sphere extends Shape {
+  Sphere(Transform o2w, Transform w2o, bool ro, this.radius,
          double z0, double z1, double pm) :
     super(o2w, w2o, ro) {
     zmin = Math.min(z0, z1).clamp(-radius, radius);
@@ -31,13 +31,13 @@ class SphereShape extends Shape {
     phiMax = Radians(pm.clamp(0.0, 360.0));
   }
 
-  static SphereShape Create(Transform o2w, Transform w2o,
+  static Sphere Create(Transform o2w, Transform w2o,
           bool reverseOrientation, ParamSet params) {
     double radius = params.findOneFloat('radius', 1.0);
     double zmin = params.findOneFloat('zmin', -radius);
     double zmax = params.findOneFloat('zmax', radius);
     double phimax = params.findOneFloat('phimax', 360.0);
-    return new SphereShape(o2w, w2o, reverseOrientation, radius,
+    return new Sphere(o2w, w2o, reverseOrientation, radius,
                       zmin, zmax, phimax);
   }
 

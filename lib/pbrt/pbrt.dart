@@ -216,16 +216,16 @@ class Pbrt {
     registerSampler('random', RandomSampler.Create);
     registerSampler('stratified', StratifiedSampler.Create);
 
-    registerShape('cone', ConeShape.Create);
-    registerShape('cylinder', CylinderShape.Create);
-    registerShape('disk', DiskShape.Create);
+    registerShape('cone', Cone.Create);
+    registerShape('cylinder', Cylinder.Create);
+    registerShape('disk', Disk.Create);
     registerShape('heightfield', Heightfield.Create);
-    registerShape('hyperboloid', HyperboloidShape.Create);
-    registerShape('loopsubdiv', LoopSubdivisionShape.Create);
-    registerShape('nurbs', NurbsShape.Create);
-    registerShape('paraboloid', ParaboloidShape.Create);
-    registerShape('sphere', SphereShape.Create);
-    registerShape('trianglemesh', TriangleMeshShape.Create);
+    registerShape('hyperboloid', Hyperboloid.Create);
+    registerShape('loopsubdiv', LoopSubdivision.Create);
+    registerShape('nurbs', Nurbs.Create);
+    registerShape('paraboloid', Paraboloid.Create);
+    registerShape('sphere', Sphere.Create);
+    registerShape('trianglemesh', TriangleMesh.Create);
 
     registerFloatTexture('bilerp', BilerpTexture.CreateFloat);
     registerSpectrumTexture('bilerp', BilerpTexture.CreateSpectrum);

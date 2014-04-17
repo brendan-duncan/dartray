@@ -20,8 +20,8 @@
  ****************************************************************************/
 part of shapes;
 
-class TriangleMeshShape extends Shape {
-  TriangleMeshShape(Transform o2w, Transform w2o, bool ro,
+class TriangleMesh extends Shape {
+  TriangleMesh(Transform o2w, Transform w2o, bool ro,
                this.ntris, this.nverts, this.vertexIndex,
                List<Point> P, this.n, this.s,
                this.uvs, this.alphaTexture) :
@@ -33,9 +33,9 @@ class TriangleMeshShape extends Shape {
     }
   }
 
-  static TriangleMeshShape Create(Transform o2w, Transform w2o,
-                                  bool reverseOrientation, ParamSet params,
-                                  [Map<String, Texture> floatTextures = null]) {
+  static TriangleMesh Create(Transform o2w, Transform w2o,
+                             bool reverseOrientation, ParamSet params,
+                             [Map<String, Texture> floatTextures = null]) {
     List<int> vi = params.findInt('indices');
     List<Point> P = params.findPoint('P');
     List<double> uvs = params.findFloat('uv');
@@ -125,7 +125,7 @@ class TriangleMeshShape extends Shape {
       alphaTex = new ConstantTexture(0.0);
     }
 
-    return new TriangleMeshShape(o2w, w2o, reverseOrientation,
+    return new TriangleMesh(o2w, w2o, reverseOrientation,
                                  vi.length ~/ 3, P.length, vi, P, N, S, uvs,
                                  alphaTex);
   }
@@ -153,9 +153,9 @@ class TriangleMeshShape extends Shape {
 
   void refine(List<Shape> refined) {
     for (int i = 0; i < ntris; ++i) {
-      refined.add(new TriangleShape(objectToWorld,
-                                    worldToObject, reverseOrientation,
-                                    this, i));
+      refined.add(new Triangle(objectToWorld,
+                               worldToObject, reverseOrientation,
+                               this, i));
     }
   }
 
@@ -165,5 +165,5 @@ class TriangleMeshShape extends Shape {
   List<Normal> n;
   List<Vector> s;
   List<double> uvs;
-  Texture alphaTexture; // Texture<float>
+  Texture alphaTexture;
 }

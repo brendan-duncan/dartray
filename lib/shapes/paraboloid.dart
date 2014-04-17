@@ -20,8 +20,8 @@
  ****************************************************************************/
 part of shapes;
 
-class ParaboloidShape extends Shape {
-  ParaboloidShape(Transform o2w, Transform w2o, bool ro, this.radius,
+class Paraboloid extends Shape {
+  Paraboloid(Transform o2w, Transform w2o, bool ro, this.radius,
              double z0, double z1, double tm) :
     super(o2w, w2o, ro) {
     zmin = Math.min(z0, z1);
@@ -29,13 +29,13 @@ class ParaboloidShape extends Shape {
     phiMax = Radians(tm.clamp(0.0, 360.0));
   }
 
-  static ParaboloidShape Create(Transform o2w, Transform w2o,
+  static Paraboloid Create(Transform o2w, Transform w2o,
                                 bool reverseOrientation, ParamSet params) {
       double radius = params.findOneFloat("radius", 1.0);
       double zmin = params.findOneFloat("zmin", 0.0);
       double zmax = params.findOneFloat("zmax", 1.0);
       double phimax = params.findOneFloat("phimax", 360.0);
-      return new ParaboloidShape(o2w, w2o, reverseOrientation,
+      return new Paraboloid(o2w, w2o, reverseOrientation,
                                  radius, zmin, zmax, phimax);
   }
 

@@ -20,14 +20,14 @@
  ****************************************************************************/
 part of shapes;
 
-class NurbsShape extends Shape {
-  NurbsShape(Transform o2w, Transform w2o, bool reverseOrientation,
+class Nurbs extends Shape {
+  Nurbs(Transform o2w, Transform w2o, bool reverseOrientation,
              this.nu, this.uorder, this.uknot, this.umin, this.umax,
              this.nv, this.vorder, this.vknot, this.vmin, this.vmax,
              this.P, this.isHomogeneous) :
     super(o2w, w2o, reverseOrientation);
 
-  static NurbsShape Create(Transform o2w, Transform w2o,
+  static Nurbs Create(Transform o2w, Transform w2o,
                            bool ReverseOrientation, ParamSet params) {
     int nu = params.findOneInt('nu', -1);
     int uorder = params.findOneInt('uorder', -1);
@@ -80,7 +80,7 @@ class NurbsShape extends Shape {
       return null;
     }
 
-    return new NurbsShape(o2w, w2o, ReverseOrientation, nu, uorder, uknots,
+    return new Nurbs(o2w, w2o, ReverseOrientation, nu, uorder, uknots,
                           u0, u1, nv, vorder, vknots, v0, v1, P,
                           isHomogeneous);
   }
@@ -207,7 +207,7 @@ class NurbsShape extends Shape {
     paramSet.addFloat('uv', uvs);
     paramSet.addNormal('N', evalNs);
 
-    refined.add(TriangleMeshShape.Create(objectToWorld, worldToObject,
+    refined.add(TriangleMesh.Create(objectToWorld, worldToObject,
                                          reverseOrientation, paramSet));
   }
 

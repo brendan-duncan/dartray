@@ -20,8 +20,8 @@
  ****************************************************************************/
 part of shapes;
 
-class TriangleShape extends Shape {
-  TriangleShape(Transform o2w, Transform w2o, bool ro, this.mesh, this.index) :
+class Triangle extends Shape {
+  Triangle(Transform o2w, Transform w2o, bool ro, this.mesh, this.index) :
     super(o2w, w2o, ro) {
     index *= 3;
   }
@@ -354,6 +354,6 @@ class TriangleShape extends Shape {
     return p;
   }
 
-  TriangleMeshShape mesh;
+  TriangleMesh mesh;
   int index;
 }
