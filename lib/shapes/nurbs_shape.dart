@@ -48,6 +48,7 @@ class NurbsShape extends Shape {
     bool isHomogeneous = false;
     List<double> P;
     List<Point> p = params.findPoint('P');
+    int npt;
     if (p != null)  {
       P = new Float32List(p.length * 3);
       for (int i = 0, j = 0; i < p.length; ++i) {
@@ -55,6 +56,7 @@ class NurbsShape extends Shape {
         P[j++] = p[i].y;
         P[j++] = p[i].z;
       }
+      npt = P.length ~/ 3;
     } else {
       P = params.findFloat('Pw');
       if (P == null) {
@@ -68,10 +70,11 @@ class NurbsShape extends Shape {
         return null;
       }
 
+      npt = P.length ~/ 4;
       isHomogeneous = true;
     }
 
-    if (P.length != nu * nv) {
+    if (npt != nu * nv) {
       LogError('NURBS shape was expecting $nu*$nv=${nu*nv} control points, '
                'was given ${P.length}');
       return null;
