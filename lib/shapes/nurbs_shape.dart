@@ -215,14 +215,18 @@ class NurbsShape extends Shape {
                                     double u, int vOrder, List<double> vKnot,
                                     int vcp, double v, List<double> cp,
                                     [Vector dPdu, Vector dPdv]) {
-    List iso = new List(Math.max(uOrder, vOrder));
+    Float32List iso = new Float32List(Math.max(uOrder, vOrder) * 4);
     int uOffset = KnotOffset(uKnot, uOrder, ucp, u);
     int uFirstCp = uOffset - uOrder + 1;
     assert(uFirstCp >= 0 && uFirstCp + uOrder - 1 < ucp);
 
-    for (int i = 0; i < uOrder; ++i) {
-      iso[i] = NurbsEvaluate(vOrder, vKnot, cp, (uFirstCp + i) * 4,
-                             vcp, ucp, v);
+    for (int i = 0, j = 0; i < uOrder; ++i) {
+      List pt = NurbsEvaluate(vOrder, vKnot, cp, (uFirstCp + i) * 4,
+                              vcp, ucp, v);
+      iso[j++] = pt[0];
+      iso[j++] = pt[1];
+      iso[j++] = pt[2];
+      iso[j++] = pt[3];
     }
 
     int vOffset = KnotOffset(vKnot, vOrder, vcp, v);
@@ -233,9 +237,13 @@ class NurbsShape extends Shape {
                                    u, dPdu);
 
     if (dPdv != null) {
-      for (int i = 0; i < vOrder; ++i) {
-        iso[i] = NurbsEvaluate(uOrder, uKnot, cp, ((vFirstCp + i) * ucp) * 4,
-                               ucp, 1, u);
+      for (int i = 0, j = 0; i < vOrder; ++i) {
+        List pt = NurbsEvaluate(uOrder, uKnot, cp, ((vFirstCp + i) * ucp) * 4,
+                                ucp, 1, u);
+        iso[j++] = pt[0];
+        iso[j++] = pt[1];
+        iso[j++] = pt[2];
+        iso[j++] = pt[3];
       }
 
       NurbsEvaluate(vOrder, vKnot, iso, -vFirstCp * 4, vcp, 1, v, dPdv);
