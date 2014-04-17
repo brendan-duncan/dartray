@@ -27,6 +27,7 @@ import '../core/core.dart';
 part 'cone_shape.dart';
 part 'cylinder_shape.dart';
 part 'disk_shape.dart';
+part 'heightfield.dart';
 part 'hyperboloid_shape.dart';
 part 'loop_subdivision.dart';
 part 'nurbs_shape.dart';

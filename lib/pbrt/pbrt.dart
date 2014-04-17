@@ -219,6 +219,7 @@ class Pbrt {
     registerShape('cone', ConeShape.Create);
     registerShape('cylinder', CylinderShape.Create);
     registerShape('disk', DiskShape.Create);
+    registerShape('heightfield', Heightfield.Create);
     registerShape('hyperboloid', HyperboloidShape.Create);
     registerShape('loopsubdiv', LoopSubdivisionShape.Create);
     registerShape('nurbs', NurbsShape.Create);
