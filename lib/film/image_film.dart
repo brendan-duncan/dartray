@@ -21,6 +21,26 @@
 part of film;
 
 class ImageFilm extends Film {
+  static ImageFilm Create(ParamSet params, Filter filter,
+                          [Image image, PreviewCallback previewCallback]) {
+    int xres = params.findOneInt('xresolution', 640);
+    int yres = params.findOneInt('yresolution', 480);
+    String filename = params.findOneString('filename', '');
+
+    List<double> crop = params.findFloat('cropWindow');
+    if (crop == null) {
+      crop = [ 0.0, 1.0, 0.0, 1.0 ];
+    }
+
+    if (image != null) {
+      xres = image.width;
+      yres = image.height;
+    }
+
+    return new ImageFilm(xres, yres, filter, crop, filename,
+                         image, previewCallback);
+  }
+
   List<double> cropWindow;
   Image image;
   String filename;
@@ -69,30 +89,11 @@ class ImageFilm extends Film {
 
     if (image == null) {
       image = new Image(xPixelCount, yPixelCount);
+      image.fill(0xff888888);
     }
 
     output = new OutputImage(xPixelStart, yPixelStart,
                              xPixelCount, yPixelCount);
-  }
-
-  static ImageFilm Create(ParamSet params, Filter filter,
-                          [Image image, PreviewCallback previewCallback]) {
-    int xres = params.findOneInt('xresolution', 640);
-    int yres = params.findOneInt('yresolution', 480);
-    String filename = params.findOneString('filename', '');
-
-    List<double> crop = params.findFloat('cropWindow');
-    if (crop == null) {
-      crop = [ 0.0, 1.0, 0.0, 1.0 ];
-    }
-
-    if (image != null) {
-      xres = image.width;
-      yres = image.height;
-    }
-
-    return new ImageFilm(xres, yres, filter, crop, filename,
-                         image, previewCallback);
   }
 
   void addSample(CameraSample sample, Spectrum L) {

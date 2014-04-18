@@ -29,7 +29,8 @@ class SamplerRenderer extends Renderer {
    * Render the [scene] from the viewpoint of the [camera].
    */
   OutputImage render(Scene scene) {
-    LogInfo('Starting Render');
+    LogInfo('Starting Render: '
+            '${camera.film.xResolution}x${camera.film.yResolution}');
 
     // Allow integrators to do preprocessing for the scene
     Stats.STARTED_PREPROCESSING();

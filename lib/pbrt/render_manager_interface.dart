@@ -49,7 +49,7 @@ abstract class RenderManagerInterface extends ResourceManager {
    *   new RenderIsolate().start(port);
    * }
    */
-  Future<OutputImage> render(String path, {Image image, String isolate,
+  Future<OutputImage> render(String path, {String isolate,
               LogCallback log, PreviewCallback preview,
               int numThreads: 1}) {
     if (log != null) {
@@ -66,10 +66,10 @@ abstract class RenderManagerInterface extends ResourceManager {
 
     if (isolate == null) {
       LogInfo('STARTING RENDER');
-      pbrt.renderScene(path, image).then((output) {
-        if (preview != null) {
-          preview(image);
-        }
+      pbrt.renderScene(path).then((output) {
+        /*if (preview != null) {
+          preview();
+        }*/
 
         completer.complete(output);
       });
@@ -81,7 +81,7 @@ abstract class RenderManagerInterface extends ResourceManager {
     List<RenderTask> jobs = new List<RenderTask>(numThreads);
     for (int i = 0; i < numThreads; ++i) {
       jobs[i] = new RenderTask(preview, i, numThreads);
-      jobs[i].render(path, image, isolate).then((task) {
+      jobs[i].render(path, isolate).then((task) {
         tasksRemaining--;
         if (tasksRemaining == 0) {
           completer.complete();

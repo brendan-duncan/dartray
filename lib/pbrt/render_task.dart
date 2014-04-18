@@ -35,24 +35,19 @@ class RenderTask {
   int taskNum;
   int taskCount;
   Image threadImage;
-  List<int> extents = [0, 0, 0, 0];
 
   RenderTask(this.previewCallback, this.taskNum, this.taskCount);
 
-  Future<OutputImage> render(String scene, Image image, String isolateUri) {
+  Future<OutputImage> render(String scene, String isolateUri) {
     Completer<OutputImage> completer = new Completer<OutputImage>();
 
-    Sampler.ComputeSubWindow(image.width, image.height, taskNum, taskCount,
-                             extents);
-
-    threadImage = new Image.from(image);
     Isolate.spawnUri(Uri.parse(isolateUri), ['_'],
                      receivePort.sendPort).then((iso) {
     });
 
     receivePort.listen((msg) {
       if (status == CONNECTING) {
-        _linkEstablish(msg, image, scene);
+        _linkEstablish(msg, scene);
       } else if (status == CONNECTED) {
         if (msg is Map && msg.containsKey('cmd')) {
           var cmd = msg['cmd'];
@@ -75,13 +70,23 @@ class RenderTask {
             return;
           } else if (cmd == 'preview' && msg.containsKey('image')) {
             var bytes = msg['image'];
+            var extents = msg['extents'];
+            var res = msg['res'];
+            if (res == null) {
+              return;
+            }
+            if (threadImage == null || threadImage.width != res[0] ||
+                threadImage.height != res[1]) {
+              threadImage = new Image(res[0], res[1]);
+              threadImage.fill(getColor(128, 128, 128));
+            }
             if (taskCount > 1) {
-              _updatePreviewImage(image, bytes);
+              _updatePreviewImage(extents, bytes);
             } else {
-              image.getBytes().setRange(0, bytes.length, bytes);
+              threadImage.getBytes().setRange(0, bytes.length, bytes);
             }
             if (previewCallback != null) {
-              previewCallback(image);
+              previewCallback(threadImage);
             }
             return;
           } else if (cmd == 'error') {
@@ -90,6 +95,7 @@ class RenderTask {
             return;
           } else if (cmd == 'final' && msg.containsKey('output')) {
             Float32List rgb = msg['output'];
+            List<int> extents = msg['extents'];
             OutputImage output = new OutputImage(extents[0], extents[2],
                                                  extents[1], extents[3],
                                                  rgb);
@@ -105,7 +111,7 @@ class RenderTask {
     return completer.future;
   }
 
-  void _updatePreviewImage(Image image, List<int> bytes) {
+  void _updatePreviewImage(List<int> extents, List<int> bytes) {
     Uint32List src;
     if (bytes is Uint8List) {
       src = new Uint32List.view(bytes.buffer);
@@ -116,28 +122,29 @@ class RenderTask {
       assert(false);
       return;
     }
-    Uint32List dst = image.data;
+    Uint32List dst = threadImage.data;
     int w = extents[1] - extents[0];
-    int dsti = extents[2] * image.width + extents[0];
-    for (int y = extents[2]; y < extents[3]; ++y, dsti += image.width) {
+    int dsti = extents[2] * threadImage.width + extents[0];
+    for (int y = extents[2]; y < extents[3]; ++y, dsti += threadImage.width) {
       dst.setRange(dsti, dsti + w, src, dsti);
     }
   }
 
-  void _linkEstablish(msg, [Image image, String scene]) {
+  void _linkEstablish(msg, [String scene]) {
     if (msg is SendPort) {
       sendPort = msg;
       sendPort.send('ping');
     } else if (msg == 'pong') {
       status = CONNECTED;
-      _startIsolateRender(image, scene);
+      _startIsolateRender(scene);
     }
   }
 
-  void _startIsolateRender(Image image, String scene) {
-    sendPort.send({'cmd': 'render', 'width': image.width,
-                   'height': image.height, 'scene': scene,
-                   'taskNum': taskNum, 'taskCount': taskCount,
+  void _startIsolateRender(String scene) {
+    sendPort.send({'cmd': 'render',
+                   'scene': scene,
+                   'taskNum': taskNum,
+                   'taskCount': taskCount,
                    'preview': previewCallback != null ? true : false});
   }
 }

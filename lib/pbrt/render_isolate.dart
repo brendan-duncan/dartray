@@ -102,12 +102,10 @@ class RenderIsolate {
         } else if (cmd == 'render') {
           taskNum = msg.containsKey('taskNum') ? msg['taskNum'] : 0;
           taskCount = msg.containsKey('taskCount') ? msg['taskCount'] : 1;
-          int w = msg.containsKey('width') ? msg['width'] : 256;
-          int h = msg.containsKey('height') ? msg['height'] : 256;
           String scene = msg.containsKey('scene') ? msg['scene'] : '';
           bool doPreview = msg.containsKey('preview') ? msg['preview'] : false;
 
-          _render(w, h, scene, taskNum, taskCount, doPreview);
+          _render(scene, taskNum, taskCount, doPreview);
         }
       }
     } else if (msg == 'quit') {
@@ -122,30 +120,34 @@ class RenderIsolate {
                   '$timestamp : $msg');
   }
 
-  bool _render(int w, int h, String scene, int taskNum, int taskCount,
+  bool _render(String scene, int taskNum, int taskCount,
                bool doPreview) {
-    _log(LOG_INFO, 'RENDER ${w}x${h}');
+    _log(LOG_INFO, 'RENDER THREAD STARTED');
     Stopwatch timer = new Stopwatch()..start();
-
-    Image img = new Image(w, h);
-    img.fill(0xff000000);
 
     Pbrt pbrt = new Pbrt(manager);
 
     if (doPreview) {
       pbrt.setPreviewCallback((Image img) {
-        sendPort.send({'cmd': 'preview', 'image': img.getBytes()});
+        sendPort.send({'cmd': 'preview',
+                       'res': [img.width, img.height],
+                       'extents': [0, img.width - 1, 0, img.height - 1],
+                       'image': img.getBytes()});
       });
     }
 
     try {
       OutputImage output;
       pbrt.setTask(taskNum, taskCount);
-      pbrt.renderScene(scene, img).then((output) {
+      pbrt.renderScene(scene).then((output) {
         _log(LOG_INFO, 'FINISHED: ${timer.elapsed}');
         LogInfo('[$taskNum] STATS:\n${Stats.getString()}');
 
-        sendPort.send({'cmd': 'final', 'output': output.rgb});
+        sendPort.send({'cmd': 'final',
+                       'output': output.rgb,
+                       'res': [output.width, output.height],
+                       'extents': [0, output.width - 1,
+                                   0, output.height - 1]});
       });
     } catch (e) {
       sendPort.send({'cmd': 'error', 'msg': e.toString()});
