@@ -59,7 +59,8 @@ class AnimatedTransform {
     // Compute new transformation matrix _M_ without translation
     Matrix4x4 M = new Matrix4x4.from(m);
     for (int i = 0; i < 3; ++i) {
-      M.m[i * 3 + 3] = M.m[12 + i] = 0.0;
+      M.m[i * 4 + 3] = 0.0;
+      M.m[12 + i] = 0.0;
     }
     M.m[15] = 1.0;
 
