@@ -23,8 +23,8 @@ part of samplers;
 class RandomSampler extends Sampler {
   static RandomSampler Create(ParamSet params, Film film, Camera camera,
                               PixelSampler pixels) {
-    int ns = params.findOneInt('pixelsamples', 1);
-    bool continuous = params.findOneBool('continuous', true);
+    int ns = params.findOneInt('pixelsamples', 10);
+    bool continuous = params.findOneBool('continuous', false);
     List<int> extents = [0, 0, 0, 0];
     film.getSampleExtent(extents);
     return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
@@ -42,11 +42,11 @@ class RandomSampler extends Sampler {
     }
     pixels.setup(xstart, xend, ystart, yend);
     pixelIndex = 0;
+    sampleCount = 0;
     // Get storage for a pixel's worth of stratified samples
-    imageSamples = new Float32List(2 * samplesPerPixel);
-    lensSamples = new Float32List(2 * samplesPerPixel);
-    timeSamples = new Float32List(samplesPerPixel);
-    samplePos = samplesPerPixel;
+    imageSamples = new Float32List(2);
+    lensSamples = new Float32List(2);
+    timeSamples = new Float32List(1);
   }
 
   int maximumSampleCount() {
@@ -55,42 +55,34 @@ class RandomSampler extends Sampler {
 
   int getMoreSamples(List<Sample> sample, RNG rng) {
     if (pixelIndex >= pixels.numPixels()) {
+      sampleCount++;
       if (!continuous) {
-        return 0;
+        if (sampleCount >= samplesPerPixel) {
+          return 0;
+        }
       }
       pixelIndex = 0;
     }
 
-    if (samplePos == samplesPerPixel) {
-      pixels.getPixel(pixelIndex++, pixel);
+    pixels.getPixel(pixelIndex++, pixel);
 
-      int i = 0;
-      for (; i < samplesPerPixel; ++i) {
-        timeSamples[i] = rng.randomFloat();
-        imageSamples[i] = rng.randomFloat();
-        lensSamples[i] = rng.randomFloat();
-      }
+    timeSamples[0] = rng.randomFloat();
+    imageSamples[0] = rng.randomFloat();
+    lensSamples[0] = rng.randomFloat();
 
-      for (; i < 2 * samplesPerPixel; ++i) {
-        imageSamples[i] = rng.randomFloat();
-        lensSamples[i] = rng.randomFloat();
-      }
+    imageSamples[1] = rng.randomFloat();
+    lensSamples[1] = rng.randomFloat();
 
-      // Shift image samples to pixel coordinates
-      for (int o = 0; o < 2 * samplesPerPixel; o += 2) {
-        imageSamples[o] += pixel[0];
-        imageSamples[o + 1] += pixel[1];
-      }
-
-      samplePos = 0;
-    }
+    // Shift image samples to pixel coordinates
+    imageSamples[0] += pixel[0];
+    imageSamples[1] += pixel[1];
 
     // Return next sample point
-    sample[0].imageX = imageSamples[2 * samplePos];
-    sample[0].imageY = imageSamples[2 * samplePos + 1];
-    sample[0].lensU = lensSamples[2 * samplePos];
-    sample[0].lensV = lensSamples[2 * samplePos + 1];
-    sample[0].time = Lerp(timeSamples[samplePos], shutterOpen, shutterClose);
+    sample[0].imageX = imageSamples[0];
+    sample[0].imageY = imageSamples[1];
+    sample[0].lensU = lensSamples[0];
+    sample[0].lensV = lensSamples[1];
+    sample[0].time = Lerp(timeSamples[0], shutterOpen, shutterClose);
 
     // Generate stratified samples for integrators
     for (int i = 0; i < sample[0].n1D.length; ++i) {
@@ -105,7 +97,6 @@ class RandomSampler extends Sampler {
       }
     }
 
-    ++samplePos;
     return 1;
   }
 
@@ -132,5 +123,5 @@ class RandomSampler extends Sampler {
   Float32List imageSamples;
   Float32List lensSamples;
   Float32List timeSamples;
-  int samplePos;
+  int sampleCount;
 }
