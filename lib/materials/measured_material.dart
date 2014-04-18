@@ -65,8 +65,7 @@ class MeasuredMaterial extends Material {
 
       Completer c = new Completer();
       ResourceManager.RequestFile(filename, c.future).then((bytes) {
-        Uint8List b = new Uint8List.fromList(bytes);
-        Float32List values = new Float32List.view(b.buffer);
+        List<double> values = ReadFloatFile(bytes, filename);
 
         int pos = 0;
         int numWls = values[pos++].toInt();

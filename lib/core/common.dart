@@ -99,6 +99,57 @@ bool Quadratic(double A, double B, double C, List<double> t0,
   return true;
 }
 
+
+List<double> ReadFloatFile(List<int> bytes, String path) {
+  String text = new String.fromCharCodes(bytes);
+  int len = text.length;
+  int ci = 0;
+
+  final int ZERO = '0'.codeUnits[0];
+  final int NINE = '9'.codeUnits[0];
+  bool _isdigit(String c) {
+    int cu = c.codeUnits[0];
+    return cu >= ZERO && cu <= NINE;
+  }
+
+  bool _isspace(String c) {
+    return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+  }
+
+  List<double> values = [];
+  bool inNumber = false;
+  String curNumber = '';
+  int lineNumber = 0;
+  while (ci < len) {
+    String c = text[ci++];
+    if (c == '\n') {
+      ++lineNumber;
+    }
+    if (inNumber) {
+      if (_isdigit(c) || c == '.' || c == 'e' || c == '-' || c == '+') {
+        curNumber += c;
+      } else {
+        values.add(double.parse(curNumber));
+        inNumber = false;
+        curNumber = '';
+      }
+    } else {
+      if (_isdigit(c) || c == '.' || c == '-' || c == '+') {
+        inNumber = true;
+        curNumber += c;
+      } else if (c == '#') {
+        while ((c = text[ci++]) != '\n' && ci < len) ;
+        ++lineNumber;
+      } else if (!_isspace(c)) {
+        LogWarning('Unexpected text found at line $lineNumber of float file '
+                   '$path: $c');
+      }
+    }
+  }
+
+  return values;
+}
+
 /**
  * Standard compare function used for searches.
  */

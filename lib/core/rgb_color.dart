@@ -67,16 +67,16 @@ class RGBColor extends Spectrum {
     double x = 0.0;
     double y = 0.0;
     double z = 0.0;
-    double  yint = 0.0;
+    double yint = 0.0;
 
     for (int i = 0; i < Spectrum.NUM_CIE_SAMPLES; ++i) {
       yint += Spectrum.CIE_Y[i];
       double val = Spectrum.InterpolateSpectrumSamples(lambda, v,
                                                        Spectrum.CIE_lambda[i],
                                                        offset);
-      x += val * Spectrum.CIE_X[i];
-      y += val * Spectrum.CIE_Y[i];
-      z += val * Spectrum.CIE_Z[i];
+      x += (val * Spectrum.CIE_X[i]);
+      y += (val * Spectrum.CIE_Y[i]);
+      z += (val * Spectrum.CIE_Z[i]);
     }
 
     x /= yint;

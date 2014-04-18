@@ -166,7 +166,7 @@ class ParamSet {
           continue;
         }
 
-        List<double> values = _readFloatFile(bytes, path);
+        List<double> values = ReadFloatFile(bytes, path);
         int numSamples = values.length ~/ 2;
         Float32List wls = new Float32List(numSamples);
         Float32List v = new Float32List(numSamples);
@@ -185,7 +185,7 @@ class ParamSet {
           Completer sc = new Completer();
           ResourceManager.RequestFile(path).then((bytes) {
             LogDebug('FINISHED SPECTRUM FILE $path');
-            List<double> values = _readFloatFile(bytes, path);
+            List<double> values = ReadFloatFile(bytes, path);
             int numSamples = values.length ~/ 2;
             Float32List wls = new Float32List(numSamples);
             Float32List v = new Float32List(numSamples);
@@ -640,55 +640,6 @@ class ParamSet {
     }
     out += '] ';
     return out;
-  }
-
-  List<double> _readFloatFile(List<int> bytes, String path) {
-    String text = new String.fromCharCodes(bytes);
-    int len = text.length;
-    int ci = 0;
-
-    final int ZERO = '0'.codeUnits[0];
-    final int NINE = '9'.codeUnits[0];
-    bool _isdigit(String c) {
-      int cu = c.codeUnits[0];
-      return cu >= ZERO && cu <= NINE;
-    }
-
-    bool _isspace(String c) {
-      return c == ' ' || c == '\t' || c == '\n' || c == '\r';
-    }
-
-    List<double> values = [];
-    bool inNumber = false;
-    String curNumber = '';
-    int lineNumber = 0;
-    while (ci < len) {
-      String c = text[ci++];
-      if (c == '\n') {
-        ++lineNumber;
-      }
-      if (inNumber) {
-        if (_isdigit(c) || c == '.' || c == 'e' || c == '-' || c == '+') {
-          curNumber += c;
-        } else {
-          values.add(double.parse(curNumber));
-          inNumber = false;
-          curNumber = '';
-        }
-      } else {
-        if (_isdigit(c) || c == '.' || c == '-' || c == '+') {
-          inNumber = true;
-          curNumber += c;
-        } else if (c == '#') {
-          while ((c = text[ci++]) != '\n' && ci < len) ;
-          ++lineNumber;
-        } else if (!_isspace(c)) {
-          LogWarning('Unexpected text found at line $lineNumber of float file $path: $c');
-        }
-      }
-    }
-
-    return values;
   }
 
   List<ParamSetItem<bool>> bools = [];

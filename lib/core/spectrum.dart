@@ -379,8 +379,7 @@ abstract class Spectrum {
 
   static double InterpolateSpectrumSamples(List<double> lambda,
                                            List<double> vals,
-                                           num l,
-                                           [int offset = 0]) {
+                                           num l, [int offset = 0]) {
     final int n = lambda.length;
     //for (int i = 0; i < n-1; ++i) Assert(lambda[i+1] > lambda[i]);
 
@@ -395,7 +394,7 @@ abstract class Spectrum {
     for (int i = 0; i < n - 1; ++i) {
       if (l >= lambda[i] && l <= lambda[i + 1]) {
         double t = (l - lambda[i]) / (lambda[i + 1] - lambda[i]);
-        return Lerp(t, vals[offset + i], vals[i + 1]);
+        return Lerp(t, vals[offset + i], vals[offset + i + 1]);
       }
     }
 
