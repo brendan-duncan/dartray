@@ -30,11 +30,11 @@ class BestCandidateSampler extends Sampler {
     // Initialize common sampler parameters
     List<int> extent = [0, 0, 0, 0];
     film.getSampleExtent(extent);
-    int nsamp = params.findOneInt("pixelsamples", 4);
+    int nsamp = params.findOneInt('pixelsamples', 4);
 
     return new BestCandidateSampler(extent[0], extent[1], extent[2], extent[3],
                                     nsamp, camera.shutterOpen,
-                                        camera.shutterClose);
+                                    camera.shutterClose);
   }
 
   BestCandidateSampler(int xstart, int xend, int ystart, int yend,
@@ -76,9 +76,11 @@ class BestCandidateSampler extends Sampler {
 
   int getMoreSamples(List<Sample> samples, RNG rng) {
     Sample sample = samples[0];
+
     bool again = true;
     while (again) {
       again = false;
+
       if (tableOffset == SAMPLE_TABLE_SIZE) {
         // Advance to next best-candidate sample table position
         tableOffset = 0;
@@ -95,6 +97,7 @@ class BestCandidateSampler extends Sampler {
           sampleOffsets[i] = tileRng.randomFloat();
         }
       }
+
       // Compute raster sample from table
       WRAP(x) => x > 1 ? (x - 1) : x;
 

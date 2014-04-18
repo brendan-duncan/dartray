@@ -66,7 +66,7 @@ class BVHAccel extends Aggregate {
     // Compute representation of depth-first traversal of BVH tree
     nodes = new List<_LinearBVHNode>(totalNodes[0]);
     for (int i = 0, len = totalNodes[0]; i < len; ++i) {
-       nodes[i] = new _LinearBVHNode();
+      nodes[i] = new _LinearBVHNode();
     }
 
     List<int> offset = [0];
@@ -81,7 +81,7 @@ class BVHAccel extends Aggregate {
     int sm = (splitMethod == 'sah') ? SPLIT_SAH :
              (splitMethod == 'middle') ? SPLIT_MIDDLE :
              (splitMethod == 'equal') ? SPLIT_EQUAL_COUNTS :
-               SPLIT_SAH;
+             SPLIT_SAH;
     return new BVHAccel(prims, maxPrimsInNode, sm);
   }
 
