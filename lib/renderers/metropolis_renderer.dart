@@ -32,11 +32,12 @@ class MetropolisRenderer extends Renderer {
     int md = params.findOneInt('maxdepth', 7);
     bool doBidirectional = params.findOneBool('bidirectional', true);
 
-    /*if (quickRender) {
+    const bool quickRender = true;
+    if (quickRender) {
       perPixelSamples = Math.max(1, perPixelSamples ~/ 4);
       nBootstrap = Math.max(1, nBootstrap ~/ 4);
       nDirectPixelSamples = Math.max(1, nDirectPixelSamples ~/ 4);
-    }*/
+    }
 
     return new MetropolisRenderer(perPixelSamples, nBootstrap,
                                   nDirectPixelSamples, largeStepProb,
@@ -50,7 +51,7 @@ class MetropolisRenderer extends Renderer {
                      this.maxDepth, this.camera, this.bidirectional,
                      [this.taskNum = 0, this.taskCount = 1]) {
     largeStepsPerPixel = Math.max(1, RoundUpPow2((lsp * nPixelSamples).toInt()));
-    if (largeStepsPerPixel >= nPixelSamples) {
+    if (largeStepsPerPixel >= nPixelSamples && largeStepsPerPixel > 1) {
       largeStepsPerPixel ~/= 2;
     }
 

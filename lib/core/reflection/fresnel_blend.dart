@@ -52,7 +52,7 @@ class FresnelBlend extends BxDF {
     return Rs + (Spectrum.ONE - Rs) * (Math.pow(1.0 - costheta, 5.0));
   }
 
-  Spectrum sample_f(Vector wi, Vector wo, double u1, double u2,
+  Spectrum sample_f(Vector wo, Vector wi, double u1, double u2,
                     List<double> outPdf) {
     if (u1 < 0.5) {
       u1 = 2.0 * u1;
@@ -74,7 +74,7 @@ class FresnelBlend extends BxDF {
     return f(wo, wi);
   }
 
-  double pdf(Vector wi, Vector wo) {
+  double pdf(Vector wo, Vector wi) {
     if (!Vector.SameHemisphere(wo, wi)) {
       return 0.0;
     }

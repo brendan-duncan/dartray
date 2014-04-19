@@ -56,7 +56,7 @@ class Blinn extends MicrofacetDistribution {
     return blinn_pdf;
   }
 
-  double pdf(Vector wi, Vector wo) {
+  double pdf(Vector wo, Vector wi) {
     Vector wh = Vector.Normalize(wo + wi);
     double costheta = Vector.AbsCosTheta(wh);
     // Compute PDF for [wi] from Blinn distribution

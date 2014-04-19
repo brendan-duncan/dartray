@@ -78,14 +78,14 @@ class Anisotropic extends MicrofacetDistribution {
     wi.copy(-wo + wh * 2.0 * Vector.Dot(wo, wh));
 
     // Compute PDF for $\wi$ from anisotropic distribution
-    double costhetah = wh.z.abs();
+    double costhetah = Vector.AbsCosTheta(wh);
     double ds = 1.0 - costhetah * costhetah;
     double anisotropic_pdf = 0.0;
     if (ds > 0.0 && Vector.Dot(wo, wh) > 0.0) {
-         double e = (ex * wh.x * wh.x + ey * wh.y * wh.y) / ds;
-         double d = Math.sqrt((ex + 1.0) * (ey + 1.0)) * INV_TWOPI *
-                   Math.pow(costhetah, e);
-         anisotropic_pdf = d / (4.0 * Vector.Dot(wo, wh));
+       double e = (ex * wh.x * wh.x + ey * wh.y * wh.y) / ds;
+       double d = Math.sqrt((ex + 1.0) * (ey + 1.0)) * INV_TWOPI *
+                 Math.pow(costhetah, e);
+       anisotropic_pdf = d / (4.0 * Vector.Dot(wo, wh));
     }
 
     return anisotropic_pdf;
@@ -118,6 +118,6 @@ class Anisotropic extends MicrofacetDistribution {
     double sinphi = Math.sin(phi_costheta[0]);
 
     phi_costheta[1] = Math.pow(u2, 1.0 / (ex * cosphi * cosphi +
-                               ey * sinphi * sinphi + 1.0));
+                                          ey * sinphi * sinphi + 1.0));
   }
 }

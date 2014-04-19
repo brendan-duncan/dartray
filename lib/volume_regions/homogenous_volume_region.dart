@@ -75,7 +75,7 @@ class HomogeneousVolumeRegion extends VolumeRegion {
              new Spectrum(0.0);
   }
 
-  double p(Point p, Vector wi, Vector wo, double) {
+  double p(Point p, Vector wi, Vector wo, double time) {
     if (!extent.inside(worldToVolume.transformPoint(p))) {
       return 0.0;
     }
