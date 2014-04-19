@@ -24,6 +24,9 @@ part of core;
  * A base class for various types of colors such as XYZ and RGB.
  */
 abstract class Spectrum {
+  static final Spectrum ONE = new Spectrum(1.0);
+  static final Spectrum ZERO = new Spectrum(0.0);
+
   final Float32List c;
 
   static const int RGB = 0;
