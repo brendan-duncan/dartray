@@ -472,14 +472,14 @@ class MetropolisRenderer extends Renderer {
     sample.cameraSample.lensV = rng.randomFloat();
 
     for (int i = 0; i < maxDepth; ++i) {
-      // Apply large step to $i$th camera _PathSample_
+      // Apply large step to i'th camera PathSample
       _PathSample cps = sample.cameraPathSamples[i];
       cps.bsdfSample.uComponent = rng.randomFloat();
       cps.bsdfSample.uDir[0] = rng.randomFloat();
       cps.bsdfSample.uDir[1] = rng.randomFloat();
       cps.rrSample = rng.randomFloat();
 
-      // Apply large step to $i$th _LightingSample_
+      // Apply large step to i'th LightingSample
       _LightingSample ls = sample.lightingSamples[i];
       ls.bsdfSample.uComponent = rng.randomFloat();
       ls.bsdfSample.uDir[0] = rng.randomFloat();
@@ -499,7 +499,7 @@ class MetropolisRenderer extends Renderer {
       }
 
       for (int i = 0; i < maxDepth; ++i) {
-        // Apply large step to $i$th light _PathSample_
+        // Apply large step to i'th light PathSample
         _PathSample lps = sample.lightPathSamples[i];
         lps.bsdfSample.uComponent = rng.randomFloat();
         lps.bsdfSample.uDir[0] = rng.randomFloat();
