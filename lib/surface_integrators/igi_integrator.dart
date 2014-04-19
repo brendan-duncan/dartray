@@ -94,7 +94,7 @@ class IGIIntegrator extends SurfaceIntegrator {
       Llight *= renderer.transmittance(scene, connectRay, null, rng);
 
       // Possibly skip virtual light shadow ray with Russian roulette
-      if (Llight.y < rrThreshold) {
+      if (Llight.luminance() < rrThreshold) {
         double continueProbability = 0.1;
         if (rng.randomFloat() > continueProbability) {
           continue;
@@ -220,9 +220,9 @@ class IGIIntegrator extends SurfaceIntegrator {
         // Sample ray leaving light source for virtual light path
         RayDifferential ray = new RayDifferential();
 
-        LightSample ls = new LightSample.set(lightSampPos[2 * sampOffset],
-                                             lightSampPos[2 * sampOffset + 1],
-                                             lightSampComp[sampOffset]);
+        LightSample ls = new LightSample(lightSampPos[2 * sampOffset],
+                                         lightSampPos[2 * sampOffset + 1],
+                                         lightSampComp[sampOffset]);
 
         Normal Nl = new Normal();
         Spectrum alpha = light.sampleL(scene, ls, lightSampDir[2 * sampOffset],
@@ -264,7 +264,7 @@ class IGIIntegrator extends SurfaceIntegrator {
                                   pdf[0];
 
           // Possibly terminate virtual light path with Russian roulette
-          double rrProb = Math.min(1.0, contribScale.y);
+          double rrProb = Math.min(1.0, contribScale.luminance());
           if (rng.randomFloat() > rrProb) {
             break;
           }

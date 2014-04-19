@@ -96,7 +96,7 @@ abstract class Spectrum {
   /**
    * Get the luminance of the spectrum.
    */
-  double get y;
+  double luminance();
 
   void set(double v) {
     for (int i = 0, n = c.length; i < n; ++i) {

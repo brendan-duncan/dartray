@@ -291,7 +291,7 @@ abstract class Integrator {
     Float32List lightPower = new Float32List(nLights);
 
     for (int i = 0; i < nLights; ++i) {
-      lightPower[i] = scene.lights[i].power(scene).y;
+      lightPower[i] = scene.lights[i].power(scene).luminance();
     }
 
     return new Distribution1D(lightPower, nLights);

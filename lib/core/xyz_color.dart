@@ -64,6 +64,8 @@ class XYZColor extends Spectrum {
 
   set z(double v) => c[2] = v;
 
+  double luminance() => c[1];
+
   RGBColor toRGB() => new RGBColor.from(this);
 
   XYZColor toXYZ() => this;

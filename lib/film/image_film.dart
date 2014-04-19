@@ -149,7 +149,6 @@ class ImageFilm extends Film {
         _Lxyz[pi3 + 2] += filterWt * xyz[2];
         _weightSum[pi] += filterWt;
 
-
         // Update the image buffer so it can be visualized.
 
         // Convert pixel XYZ color to RGB
@@ -167,6 +166,7 @@ class ImageFilm extends Film {
         // Add splat value at pixel
         Spectrum.XYZToRGB(_splatXYZ[pi3], _splatXYZ[pi3 + 1], _splatXYZ[pi3 + 2],
                  splatRGB);
+
         rgb[0] += splatRGB[0];
         rgb[1] += splatRGB[1];
         rgb[2] += splatRGB[2];
@@ -265,6 +265,7 @@ class ImageFilm extends Film {
   }
 
   OutputImage writeImage([double splatScale = 1.0]) {
+    LogInfo('WRITE IMAGE $splatScale');
     // Convert image to RGB and compute final pixel values
     List<double> c = [0.0, 0.0, 0.0];
     List<double> splatRGB = [0.0, 0.0, 0.0];

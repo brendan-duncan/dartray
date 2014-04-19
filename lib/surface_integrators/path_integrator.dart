@@ -104,7 +104,7 @@ class PathIntegrator extends SurfaceIntegrator {
 
       // Possibly terminate the path
       if (bounces > 3) {
-        double continueProbability = Math.min(0.5, pathThroughput.y);
+        double continueProbability = Math.min(0.5, pathThroughput.luminance());
         if (rng.randomFloat() > continueProbability) {
           break;
         }

@@ -53,18 +53,18 @@ class AggregateTestRenderer extends Renderer {
       Point org = new Point(Lerp(rng.randomFloat(), bbox.pMin.x, bbox.pMax.x),
                             Lerp(rng.randomFloat(), bbox.pMin.y, bbox.pMax.y),
                             Lerp(rng.randomFloat(), bbox.pMin.z, bbox.pMax.z));
-      if ((rng.randomUInt() % 4) == 0) {
+      if ((rng.randomUint() % 4) == 0) {
         org = lastHit;
       }
 
       // Choose ray direction for testing accelerator
       Vector dir = UniformSampleSphere(rng.randomFloat(), rng.randomFloat());
 
-      if ((rng.randomUInt() % 32) == 0) {
+      if ((rng.randomUint() % 32) == 0) {
         dir.x = dir.y = 0.0;
-      } else if ((rng.randomUInt() % 32) == 0) {
+      } else if ((rng.randomUint() % 32) == 0) {
         dir.x = dir.z = 0.0;
-      } else if ((rng.randomUInt() % 32) == 0) {
+      } else if ((rng.randomUint() % 32) == 0) {
         dir.y = dir.z = 0.0;
       }
 

@@ -244,7 +244,7 @@ class SampledSpectrum extends Spectrum {
     return xyz;
   }
 
-  double get y {
+  double luminance() {
     double yy = 0.0;
     for (int i = 0; i < NUM_SAMPLES; ++i) {
       yy += _Spectrum.G.Y.c[i] * c[i];

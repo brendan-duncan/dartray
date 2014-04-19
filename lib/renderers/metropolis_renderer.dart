@@ -32,7 +32,7 @@ class MetropolisRenderer extends Renderer {
     int md = params.findOneInt('maxdepth', 7);
     bool doBidirectional = params.findOneBool('bidirectional', true);
 
-    const bool quickRender = true;
+    const bool quickRender = false;
     if (quickRender) {
       perPixelSamples = Math.max(1, perPixelSamples ~/ 4);
       nBootstrap = Math.max(1, nBootstrap ~/ 4);
@@ -71,9 +71,11 @@ class MetropolisRenderer extends Renderer {
 
   OutputImage render(Scene scene) {
     Stats.MLT_STARTED_RENDERING();
+
     if (scene.lights.length > 0) {
       List<int> extent = [0, 0, 0, 0];
       camera.film.getPixelExtent(extent);
+
       double t0 = camera.shutterOpen;
       double t1 = camera.shutterClose;
       Distribution1D lightDistribution = Integrator.ComputeLightSamplingCDF(scene);
@@ -104,6 +106,7 @@ class MetropolisRenderer extends Renderer {
 
       Stopwatch t = new Stopwatch()..start();
       LogInfo('Metropolis: Starting Bootstrap: $nBootstrap');
+
       // Take initial set of samples to compute $b$
       Stats.MLT_STARTED_BOOTSTRAPPING(nBootstrap);
       RNG rng = new RNG(0);
@@ -131,7 +134,7 @@ class MetropolisRenderer extends Renderer {
                            cameraPath, lightPath, rng);
 
         // Compute contribution for random sample for MLT bootstrapping
-        double I = L.y;
+        double I = L.luminance();
         sumI += I;
         bootstrapI[i] = I;
       }
@@ -167,7 +170,7 @@ class MetropolisRenderer extends Renderer {
       int largeStepRate = nPixelSamples ~/ largeStepsPerPixel;
       LogInfo("MLT running $nTasks tasks, large step rate $largeStepRate");
 
-      List<int> scramble = [ rng.randomUInt(), rng.randomUInt() ];
+      List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
 
       for (int i = 0; i < nTasks; ++i) {
         Stopwatch t = new Stopwatch()..start();
@@ -259,7 +262,7 @@ class MetropolisRenderer extends Renderer {
       Light light = scene.lights[lightNum];
       Ray lightRay = new Ray();
       Normal Nl = new Normal();
-      LightSample lrs = new LightSample.set(sample.lightRaySamples[0],
+      LightSample lrs = new LightSample(sample.lightRaySamples[0],
                                         sample.lightRaySamples[1],
                                         sample.lightRaySamples[2]);
 
@@ -631,7 +634,7 @@ class MetropolisRenderer extends Renderer {
       Point p = bsdf.dgShading.p;
       Normal n = bsdf.dgShading.nn;
       Spectrum pathScale = f * Vector.AbsDot(v.wNext, n) / pdf[0];
-      double rrSurviveProb = Math.min(1.0, pathScale.y);
+      double rrSurviveProb = Math.min(1.0, pathScale.luminance());
       if (samples[length].rrSample > rrSurviveProb) {
         Stats.MLT_FINISHED_GENERATE_PATH();
         return length+1;
@@ -667,6 +670,10 @@ class _PathSample {
   _PathSample() :
     bsdfSample = new BSDFSample(),
     rrSample = 0.0;
+
+  _PathSample.from(_PathSample other) :
+    bsdfSample = new BSDFSample.from(other.bsdfSample),
+    rrSample = other.rrSample;
 }
 
 class _LightingSample {
@@ -678,6 +685,11 @@ class _LightingSample {
     bsdfSample = new BSDFSample(),
     lightNum = 0.0,
     lightSample = new LightSample();
+
+  _LightingSample.from(_LightingSample other) :
+    bsdfSample = new BSDFSample.from(other.bsdfSample),
+    lightNum = other.lightNum,
+    lightSample = new LightSample.from(other.lightSample);
 }
 
 class _PathVertex {
@@ -707,6 +719,24 @@ class _MLTSample {
       cameraPathSamples[i] = new _PathSample();
       lightPathSamples[i] = new _PathSample();
       lightingSamples[i] = new _LightingSample();
+    }
+  }
+
+  _MLTSample.from(_MLTSample other) :
+    cameraSample = new CameraSample.from(other.cameraSample),
+    lightNumSample = other.lightNumSample,
+    lightRaySamples = new Float32List.fromList(other.lightRaySamples),
+    cameraPathSamples = new List<_PathSample>.from(other.cameraPathSamples),
+    lightPathSamples = new List<_PathSample>.from(other.lightPathSamples),
+    lightingSamples = new List<_LightingSample>.from(other.lightingSamples) {
+    for (int i = 0; i < cameraPathSamples.length; ++i) {
+      cameraPathSamples[i] = new _PathSample.from(cameraPathSamples[i]);
+    }
+    for (int i = 0; i < lightPathSamples.length; ++i) {
+      lightPathSamples[i] = new _PathSample.from(lightPathSamples[i]);
+    }
+    for (int i = 0; i < lightingSamples.length; ++i) {
+      lightingSamples[i] = new _LightingSample.from(lightingSamples[i]);
     }
   }
 
@@ -747,21 +777,21 @@ class _MLTTask {
     }
 
     List<_MLTSample> samples = new List<_MLTSample>(2);
-    List<Spectrum> L = new List<Spectrum>(2);
-    Float32List I = new Float32List(2);
     for (int i = 0; i < 2; ++i) {
       samples[i] = new _MLTSample(renderer.maxDepth);
     }
 
+    List<Spectrum> L = new List<Spectrum>(2);
+    Float32List I = new Float32List(2);
     int current = 0;
     int proposed = 1;
 
     // Compute _L[current]_ for initial sample
-    samples[current] = initialSample;
+    samples[current] = new _MLTSample.from(initialSample);
     L[current] = renderer.pathL(initialSample, scene, camera,
                                 lightDistribution, cameraPath, lightPath,
                                 rng);
-    I[current] = L[current].y;
+    I[current] = L[current].luminance();
 
     // Compute randomly permuted table of pixel indices for large steps
     int pixelNumOffset = 0;
@@ -778,7 +808,7 @@ class _MLTTask {
     for (int s = 0; s < nTaskSamples; ++s) {
       // Compute proposed mutation to current sample
       Stats.MLT_STARTED_MUTATION();
-      samples[proposed] = samples[current];
+      samples[proposed] = new _MLTSample.from(samples[current]);
       bool largeStep = ((s % largeStepRate) == 0);
 
       if (largeStep) {
@@ -802,7 +832,7 @@ class _MLTTask {
       L[proposed] = renderer.pathL(samples[proposed], scene, camera,
                                    lightDistribution, cameraPath, lightPath,
                                    rng);
-      I[proposed] = L[proposed].y;
+      I[proposed] = L[proposed].luminance();
 
       // Compute acceptance probability for proposed sample
       double a = Math.min(1.0, I[proposed] / I[current]);

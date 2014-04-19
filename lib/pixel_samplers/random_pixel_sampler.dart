@@ -47,7 +47,7 @@ class RandomPixelSampler extends PixelSampler {
     _numSamples = _samples.length ~/ 2;
     // Shuffle the samples
     for (int i = 0, r = 0; i < _numSamples; ++i, r += 2) {
-      int l = (rng.randomUInt() % _numSamples) * 2;
+      int l = (rng.randomUint() % _numSamples) * 2;
 
       // swap x coordinate
       int t = _samples[r];

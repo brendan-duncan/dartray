@@ -21,21 +21,28 @@
 part of core;
 
 class BSDFSample {
-  final List<double> uDir = new List<double>(2);
+  final Float32List uDir;
   double uComponent = 0.0;
 
-  BSDFSample([double up0 = 0.0, double up1 = 0.0, this.uComponent = 0.0]) {
+  BSDFSample([double up0 = 0.0, double up1 = 0.0, this.uComponent = 0.0]) :
+    uDir = new Float32List(2) {
     uDir[0] = up0;
     uDir[1] = up1;
   }
 
-  BSDFSample.random(RNG rng) {
+  BSDFSample.from(BSDFSample other) :
+    uDir = new Float32List.fromList(other.uDir),
+    uComponent = other.uComponent;
+
+  BSDFSample.random(RNG rng) :
+    uDir = new Float32List(2) {
     uDir[0] = rng.randomFloat();
     uDir[1] = rng.randomFloat();
     uComponent = rng.randomFloat();
   }
 
-  BSDFSample.sample(Sample sample, BSDFSampleOffsets offsets, int n) {
+  BSDFSample.sample(Sample sample, BSDFSampleOffsets offsets, int n) :
+    uDir = new Float32List(2) {
     uDir[0] = sample.twoD[offsets.dirOffset][2 * n];
     uDir[1] = sample.twoD[offsets.dirOffset][2 * n + 1];
     uComponent = sample.oneD[offsets.componentOffset][n];

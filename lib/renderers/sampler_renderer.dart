@@ -162,11 +162,11 @@ class _SamplerRendererTask {
           LogWarning('Not-a-number radiance value returned '
                      'for image sample. Setting to black.');
           Ls[i] = new Spectrum(0.0);
-        } else if (Ls[i].y < -1e-5) {
-          LogWarning('Negative luminance value, ${Ls[i].y}, returned'
+        } else if (Ls[i].luminance() < -1e-5) {
+          LogWarning('Negative luminance value, ${Ls[i].luminance()}, returned'
                      'for image sample. Setting to black.');
           Ls[i] = new Spectrum(0.0);
-        } else if (Ls[i].y.isInfinite) {
+        } else if (Ls[i].luminance().isInfinite) {
           LogWarning('Infinite luminance value returned'
                      'for image sample. Setting to black.');
           Ls[i] = new Spectrum(0.0);

@@ -271,7 +271,7 @@ class InfiniteAreaLight extends Light {
       double sinTheta = Math.sin(Math.PI * (v + 0.5) / height);
       for (int u = 0; u < width; ++u) {
         double up = u / width;
-        img[u + vw] = radianceMap.lookup(up, vp, filter).y;
+        img[u + vw] = radianceMap.lookup(up, vp, filter).luminance();
         img[u + vw] *= sinTheta;
       }
     }

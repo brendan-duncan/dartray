@@ -94,7 +94,7 @@ class SingleScatteringIntegrator extends VolumeIntegrator {
       Tr *= (-stepTau).exp();
 
       // Possibly terminate ray marching if transmittance is small
-      if (Tr.y < 1.0e-3) {
+      if (Tr.luminance() < 1.0e-3) {
         double continueProb = 0.5;
         if (rng.randomFloat() > continueProb) {
           Tr = new Spectrum(0.0);
@@ -116,9 +116,9 @@ class SingleScatteringIntegrator extends VolumeIntegrator {
         List<double> pdf = [0.0];
         VisibilityTester vis = new VisibilityTester();
         Vector wo = new Vector();
-        LightSample ls = new LightSample.set(lightComp[sampOffset],
-                                             lightPos[2 * sampOffset],
-                                             lightPos[2 * sampOffset + 1]);
+        LightSample ls = new LightSample(lightComp[sampOffset],
+                                         lightPos[2 * sampOffset],
+                                         lightPos[2 * sampOffset + 1]);
         Spectrum L = light.sampleLAtPoint(p, 0.0, ls, ray.time, wo, pdf, vis);
 
         if (!L.isBlack() && pdf[0] > 0.0 && vis.unoccluded(scene)) {

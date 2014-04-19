@@ -168,7 +168,7 @@ class SphericalHarmonics {
                                               List<Spectrum> c_i) {
 
     Sample sample = new Sample.from(origSample);
-    List<int> scramble = [ rng.randomUInt(), rng.randomUInt() ];
+    List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
     nSamples = RoundUpPow2(nSamples);
     List<double> Ylm = new List<double>(Terms(lmax));
     for (int i = 0; i < nSamples; ++i) {
@@ -521,7 +521,7 @@ class SphericalHarmonics {
   static void ComputeDiffuseTransfer(Point p, Normal n, double rayEpsilon,
                                      Scene scene, RNG rng, int nSamples,
                                      int lmax, List<Spectrum> c_transfer) {
-    List<int> scramble = [ rng.randomUInt(), rng.randomUInt() ];
+    List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
     List<double> Ylm = new List<double>(Terms(lmax));
     List<double> u = [0.0, 0.0];
     for (int i = 0; i < nSamples; ++i) {
@@ -546,7 +546,7 @@ class SphericalHarmonics {
     for (int i = 0, len = Terms(lmax) * Terms(lmax); i < len; ++i) {
       T[i] = new Spectrum(0.0);
     }
-    List<int> scramble = [ rng.randomUInt(), rng.randomUInt() ];
+    List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
     List<double> Ylm = new List<double>(Terms(lmax));
     List<double> u = [0.0, 0.0];
     for (int i = 0; i < nSamples; ++i) {
@@ -595,7 +595,7 @@ class SphericalHarmonics {
     Float32List Ylm = new Float32List(Terms(lmax) * nSamples);
     List<Vector> w = new List<Vector>(nSamples);
 
-    List<int> scramble = [ rng.randomUInt(), rng.randomUInt() ];
+    List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
     List<double> u = [0.0, 0.0];
     for (int i = 0; i < nSamples; ++i) {
       Sample02(i, scramble, u);

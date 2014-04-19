@@ -176,12 +176,12 @@ class AdaptiveSampler extends Sampler {
         // Compare contrast of sample differences to threshold
         double Lavg = 0.0;
         for (int i = 0; i < count; ++i) {
-          Lavg += Ls[i].y;
+          Lavg += Ls[i].luminance();
         }
         Lavg /= count;
         const double maxContrast = 0.5;
         for (int i = 0; i < count; ++i) {
-          if ((Ls[i].y - Lavg).abs() / Lavg > maxContrast) {
+          if ((Ls[i].luminance() - Lavg).abs() / Lavg > maxContrast) {
             return true;
           }
         }

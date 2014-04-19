@@ -164,9 +164,8 @@ class RGBColor extends Spectrum {
   RGBColor operator-() =>
         new RGBColor.rgb(-c[0], -c[1], -c[2]);
 
-  double get y {
-    const List<double> YWeight = const [ 0.212671, 0.715160, 0.072169 ];
-    return YWeight[0] * c[0] + YWeight[1] * c[1] + YWeight[2] * c[2];
+  double luminance() {
+    return 0.212671 * c[0] + 0.715160 * c[1] + 0.072169 * c[2];
   }
 
   bool isBlack() {

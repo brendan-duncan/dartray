@@ -105,8 +105,8 @@ abstract class Light {
     }
 
     int ns = RoundUpPow2(nSamples);
-    int scramble1D = rng.randomUInt();
-    List<int> scramble2D = [ rng.randomUInt(), rng.randomUInt() ];
+    int scramble1D = rng.randomUint();
+    List<int> scramble2D = [ rng.randomUint(), rng.randomUint() ];
     Float32List Ylm = new Float32List(SphericalHarmonics.Terms(lmax));
 
     List<double> u = [0.0, 0.0];
@@ -114,8 +114,8 @@ abstract class Light {
     for (int i = 0; i < ns; ++i) {
       // Compute incident radiance sample from _light_, update SH _coeffs_
       Sample02(i, scramble2D, u);
-      LightSample lightSample = new LightSample.set(u[0], u[1],
-                                                  VanDerCorput(i, scramble1D));
+      LightSample lightSample = new LightSample(u[0], u[1],
+                                                VanDerCorput(i, scramble1D));
       Vector wi = new Vector();
       VisibilityTester vis = new VisibilityTester();
       Spectrum Li = sampleLAtPoint(p, pEpsilon, lightSample, time, wi, pdf, vis);

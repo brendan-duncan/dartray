@@ -384,7 +384,7 @@ class PhotonShootingTask {
         // Generate _photonRay_ from light source and initialize _alpha_
         RayDifferential photonRay = new RayDifferential();
         List<double> pdf = [0.0];
-        LightSample ls = new LightSample.set(u[1], u[2], u[3]);
+        LightSample ls = new LightSample(u[1], u[2], u[3]);
         Normal Nl = new Normal();
 
         Spectrum Le = light.sampleL(scene, ls, u[4], u[5], time, photonRay,
@@ -474,7 +474,8 @@ class PhotonShootingTask {
                             Vector.AbsDot(wi, photonBSDF.dgShading.nn) / pdf[0];
 
             // Possibly terminate photon path with Russian roulette
-            double continueProb = Math.min(1.0, anew.y / alpha.y);
+            double continueProb = Math.min(1.0,
+                                          anew.luminance() / alpha.luminance());
             if (rng.randomFloat() > continueProb) {
               break;
             }

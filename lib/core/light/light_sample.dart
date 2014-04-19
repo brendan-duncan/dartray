@@ -21,10 +21,18 @@
 part of core;
 
 class LightSample {
-  LightSample() {
+  LightSample([double up0 = 0.0, double up1 = 0.0, this.uComponent = 0.0]) :
+    uPos = new Float32List(2) {
+    uPos[0] = up0;
+    uPos[1] = up1;
   }
 
-  LightSample.sample(Sample sample, LightSampleOffsets offsets, int n) {
+  LightSample.from(LightSample other) :
+    uPos = new Float32List.fromList(other.uPos),
+    uComponent = other.uComponent;
+
+  LightSample.sample(Sample sample, LightSampleOffsets offsets, int n) :
+    uPos = new Float32List(2) {
     assert(n < sample.n2D[offsets.posOffset]);
     assert(n < sample.n1D[offsets.componentOffset]);
     uPos[0] = sample.twoD[offsets.posOffset][2 * n];
@@ -35,18 +43,13 @@ class LightSample {
     assert(uComponent >= 0.0 && uComponent < 1.0);
   }
 
-  LightSample.random(RNG rng) {
+  LightSample.random(RNG rng) :
+    uPos = new Float32List(2) {
     uPos[0] = rng.randomFloat();
     uPos[1] = rng.randomFloat();
     uComponent = rng.randomFloat();
   }
 
-  LightSample.set(double up0, double up1, double ucomp) {
-    uPos[0] = up0;
-    uPos[1] = up1;
-    uComponent = ucomp;
-  }
-
-  List<double> uPos = new List<double>(2);
-  double uComponent = 0.0;
+  final Float32List uPos;
+  double uComponent;
 }

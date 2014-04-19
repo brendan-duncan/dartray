@@ -67,7 +67,7 @@ class EmissionIntegrator extends VolumeIntegrator {
       Tr *= (-stepTau).exp();
 
       // Possibly terminate ray marching if transmittance is small
-      if (Tr.y < 1.0e-3) {
+      if (Tr.luminance() < 1.0e-3) {
         const double continueProb = 0.5;
         if (rng.randomFloat() > continueProb) {
           Tr.set(0.0);

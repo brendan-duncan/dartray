@@ -46,12 +46,12 @@ class RNG {
 
   double randomFloat() {
     Stats.RNG_STARTED_RANDOM_FLOAT();
-    double v = (randomUInt() & 0xffffff) / 16777216.0;
+    double v = (randomUint() & 0xffffff) / 16777216.0;
     Stats.RNG_FINISHED_RANDOM_FLOAT();
     return v;
   }
 
-  int randomUInt() {
+  int randomUint() {
     int y;
     const int M = 397;
     const int MATRIX_A = 0x9908b0df; // constant vector a

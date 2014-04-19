@@ -144,7 +144,7 @@ class IrradianceCacheIntegrator extends SurfaceIntegrator {
     if (!interpolateE(scene, p, ng, E, wi)) {
       // Compute irradiance at current point
       Stats.IRRADIANCE_CACHE_STARTED_COMPUTING_IRRADIANCE(p, ng);
-      List<int> scramble = [ rng.randomUInt(), rng.randomUInt() ];
+      List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
       double minHitDistance = INFINITY;
       Vector wAvg = new Vector(0.0, 0.0, 0.0);
       Spectrum LiSum = new Spectrum(0.0);
@@ -164,7 +164,7 @@ class IrradianceCacheIntegrator extends SurfaceIntegrator {
         Stats.IRRADIANCE_CACHE_STARTED_RAY(r);
         Spectrum L = pathL(r, scene, renderer, rng);
         LiSum += L;
-        wAvg += r.direction * L.y;
+        wAvg += r.direction * L.luminance();
         minHitDistance = Math.min(minHitDistance, r.maxDistance);
         Stats.IRRADIANCE_CACHE_FINISHED_RAY(r, r.maxDistance, L);
       }
@@ -286,7 +286,7 @@ class IrradianceCacheIntegrator extends SurfaceIntegrator {
 
       // Possibly terminate the path
       if (pathLength > 2) {
-        double rrProb = Math.min(1.0, pathThroughput.y);
+        double rrProb = Math.min(1.0, pathThroughput.luminance());
 
         if (rng.randomFloat() > rrProb) {
           break;

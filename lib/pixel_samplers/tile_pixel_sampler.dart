@@ -61,7 +61,7 @@ class TilePixelSampler extends PixelSampler {
       for (int ti = 01; ti < numTiles; ++ti) {
         int lx = ti * 2;
         int ly = lx + 1;
-        int rx = (rng.randomUInt() % numTiles) * 2;
+        int rx = (rng.randomUint() % numTiles) * 2;
         int ry = rx + 1;
 
         int t = tiles[lx];

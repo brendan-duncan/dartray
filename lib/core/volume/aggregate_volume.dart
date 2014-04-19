@@ -76,7 +76,7 @@ class AggregateVolume extends VolumeRegion {
     double ph = 0.0;
     double sumWt = 0.0;
     for (int i = 0; i < regions.length; ++i) {
-      double wt = regions[i].sigma_s(p, w, time).y;
+      double wt = regions[i].sigma_s(p, w, time).luminance();
       sumWt += wt;
       ph += wt * regions[i].p(p, w, wp, time);
     }

@@ -285,7 +285,7 @@ void StratifiedSample2D(List<double> samples, int nx, int ny, RNG rng,
 
 void Shuffle(samples, int offset, int count, int dims, RNG rng) {
   for (int i = 0; i < count; ++i) {
-    int other = i + (rng.randomUInt() % (count - i));
+    int other = i + (rng.randomUint() % (count - i));
     for (int j = 0; j < dims; ++j) {
       var s = samples[offset + dims * i + j];
       samples[offset + dims * i + j] = samples[offset + dims * other + j];
@@ -308,7 +308,7 @@ void LatinHypercube(List<double> samples, int nSamples, int nDim,
   // Permute LHS samples in each dimension
   for (int i = 0; i < nDim; ++i) {
     for (int j = 0; j < nSamples; ++j) {
-      int other = j + (rng.randomUInt() % (nSamples - j));
+      int other = j + (rng.randomUint() % (nSamples - j));
       double t = samples[nDim * j + i];
       samples[nDim * j + i] = samples[nDim * other + i];
       samples[nDim * other + i] = t;
@@ -515,7 +515,7 @@ double LarcherPillichshammer2(int n, int scramble) {
 
 void LDShuffleScrambled1D(int nSamples, int nPixel,
                           List<double> samples, RNG rng) {
-  int scramble = rng.randomUInt();
+  int scramble = rng.randomUint();
   for (int i = 0; i < nSamples * nPixel; ++i) {
     samples[i] = VanDerCorput(i, scramble);
   }
@@ -530,7 +530,7 @@ void LDShuffleScrambled1D(int nSamples, int nPixel,
 
 void LDShuffleScrambled2D(int nSamples, int nPixel,
                           List<double> samples, RNG rng) {
-  List<int> scramble = [ rng.randomUInt(), rng.randomUInt() ];
+  List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
   for (int i = 0; i < nSamples * nPixel; ++i) {
     Sample02(i, scramble, samples, 2 * i);
   }
