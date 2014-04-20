@@ -47,8 +47,8 @@ class TransformedPrimitive extends Primitive {
       isect.dg.nn = Vector.Normalize(PrimitiveToWorld.transformNormal(isect.dg.nn));
       isect.dg.dpdu = PrimitiveToWorld.transformVector(isect.dg.dpdu);
       isect.dg.dpdv = PrimitiveToWorld.transformVector(isect.dg.dpdv);
-      isect.dg.dndu = PrimitiveToWorld.transformVector(isect.dg.dndu);
-      isect.dg.dndv = PrimitiveToWorld.transformVector(isect.dg.dndv);
+      isect.dg.dndu = PrimitiveToWorld.transformNormal(isect.dg.dndu);
+      isect.dg.dndv = PrimitiveToWorld.transformNormal(isect.dg.dndv);
     }
     return true;
   }
