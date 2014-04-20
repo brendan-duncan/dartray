@@ -50,14 +50,11 @@ class Distribution1D {
   double sampleContinuous(double u, List<double> pdf, [List<int> off]) {
     // Find surrounding CDF segments and offset
     int ptr = upper_bound(cdf, u, last: count + 1);
-    // Handle the edge case (u == cdf.last)
-    if (ptr == count + 1) {
-      if (u == cdf[ptr - 1]) {
-        ptr--;
-      }
+    int offset = Math.max(0, ptr - 1);
+    if (offset == count) {
+      offset = count - 1;
     }
 
-    int offset = Math.max(0, ptr - 1);
     if (off != null) {
       off[0] = offset;
     }

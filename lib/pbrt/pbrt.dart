@@ -906,7 +906,8 @@ class Pbrt {
       _renderOptions.rendererParams.reportUnused();
     } else if (_renderOptions.rendererName == 'metropolis') {
       renderer = MetropolisRenderer.Create(_renderOptions.rendererParams,
-                                           camera);
+                                           camera, _renderOptions.taskNum,
+                                           _renderOptions.taskCount);
       _renderOptions.rendererParams.reportUnused();
 
       // Warn if no light sources are defined

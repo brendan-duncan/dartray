@@ -115,6 +115,10 @@ class _SamplerRendererTask {
       return;
     }
 
+    LogInfo('SamplerRender $taskNum / $taskCount: '
+            'EXTENT: [${sampler.left} ${sampler.right} '
+            '${sampler.top} ${sampler.bottom}]');
+
     // Declare local variables used for rendering loop
     RNG rng = new RNG(taskNum);
 

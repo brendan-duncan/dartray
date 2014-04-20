@@ -122,16 +122,20 @@ class RenderIsolate {
 
   bool _render(String scene, int taskNum, int taskCount,
                bool doPreview) {
-    _log(LOG_INFO, 'RENDER THREAD STARTED');
+    _log(LOG_INFO, 'RENDER THREAD STARTED $taskNum / $taskCount');
     Stopwatch timer = new Stopwatch()..start();
 
     Pbrt pbrt = new Pbrt(manager);
 
+    List<int> extents = [0, 0, 0, 0];
+
     if (doPreview) {
       pbrt.setPreviewCallback((Image img) {
+        Sampler.ComputeSubWindow(img.width, img.height, taskNum, taskCount,
+                                 extents);
         sendPort.send({'cmd': 'preview',
                        'res': [img.width, img.height],
-                       'extents': [0, img.width - 1, 0, img.height - 1],
+                       'extents': extents,
                        'image': img.getBytes()});
       });
     }
@@ -143,11 +147,12 @@ class RenderIsolate {
         _log(LOG_INFO, 'FINISHED: ${timer.elapsed}');
         LogInfo('[$taskNum] STATS:\n${Stats.getString()}');
 
+        Sampler.ComputeSubWindow(output.width, output.height,
+                                 taskNum, taskCount, extents);
         sendPort.send({'cmd': 'final',
                        'output': output.rgb,
                        'res': [output.width, output.height],
-                       'extents': [0, output.width - 1,
-                                   0, output.height - 1]});
+                       'extents': extents});
       });
     } catch (e) {
       sendPort.send({'cmd': 'error', 'msg': e.toString()});

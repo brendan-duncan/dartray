@@ -20,12 +20,31 @@
  ****************************************************************************/
 part of core;
 
+
+class RNG {
+  Math.Random random;
+  RNG([int seed = 5489]) :
+    random = new Math.Random(seed);
+
+  void seed(int seed) {
+    random = new Math.Random(seed);
+  }
+
+  double randomFloat() {
+    return random.nextDouble();
+  }
+
+  int randomUint() {
+    return random.nextInt(0xffffffff);
+  }
+}
+
 /**
  * Generates random numbers using the Mersenne Twister algorithm.
  * This is used instead of Math.Random so that results can be verified against
  * the c++ implementation of PBRT.
  */
-class RNG {
+/*class RNG {
   RNG([int seed = 5489]) {
     mti = N + 1; // mti==N+1 means mt[N] is not initialized
     this.seed(seed);
@@ -59,7 +78,7 @@ class RNG {
     const int LOWER_MASK = 0x7fffffff; // least significant r bits
 
     const List<int> mag01 = const [0x0, MATRIX_A];
-    // mag01[x] = x * MATRIX_A  for x=0,1 */
+    // mag01[x] = x * MATRIX_A  for x=0,1
 
     if (mti >= N) { // generate N words at one time
       Stats.RNG_STARTED_TABLEGEN();
@@ -97,10 +116,8 @@ class RNG {
     return y;
   }
 
-  Math.Random random;
-
   static const int N = 624;
   /// the array for the state vector
   Uint32List mt = new Uint32List(N);
   int mti;
-}
+}*/

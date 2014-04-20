@@ -78,7 +78,8 @@ class MetropolisRenderer extends Renderer {
 
       double t0 = camera.shutterOpen;
       double t1 = camera.shutterClose;
-      Distribution1D lightDistribution = Integrator.ComputeLightSamplingCDF(scene);
+      Distribution1D lightDistribution =
+          Integrator.ComputeLightSamplingCDF(scene);
 
       if (directLighting != null) {
         Stopwatch t = new Stopwatch()..start();
@@ -109,7 +110,12 @@ class MetropolisRenderer extends Renderer {
 
       // Take initial set of samples to compute $b$
       Stats.MLT_STARTED_BOOTSTRAPPING(nBootstrap);
-      RNG rng = new RNG(0);
+      RNG rng = new RNG(taskNum);
+
+      Sampler.ComputeSubWindow((extent[1] - extent[0]) + 1,
+                               (extent[3] - extent[2]) + 1,
+                               taskNum, taskCount, extent);
+      LogInfo('RENDER EXTENT $extent');
 
       List<_PathVertex> cameraPath = new List<_PathVertex>(maxDepth);
       List<_PathVertex> lightPath = new List<_PathVertex>(maxDepth);

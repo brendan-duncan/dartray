@@ -34,7 +34,7 @@ class RenderTask {
   PreviewCallback previewCallback;
   int taskNum;
   int taskCount;
-  Image threadImage;
+  static Image previewImage;
 
   RenderTask(this.previewCallback, this.taskNum, this.taskCount);
 
@@ -75,18 +75,18 @@ class RenderTask {
             if (res == null) {
               return;
             }
-            if (threadImage == null || threadImage.width != res[0] ||
-                threadImage.height != res[1]) {
-              threadImage = new Image(res[0], res[1]);
-              threadImage.fill(getColor(128, 128, 128));
+            if (previewImage == null || previewImage.width != res[0] ||
+                previewImage.height != res[1]) {
+              previewImage = new Image(res[0], res[1]);
+              previewImage.fill(getColor(128, 128, 128));
             }
             if (taskCount > 1) {
               _updatePreviewImage(extents, bytes);
             } else {
-              threadImage.getBytes().setRange(0, bytes.length, bytes);
+              previewImage.getBytes().setRange(0, bytes.length, bytes);
             }
             if (previewCallback != null) {
-              previewCallback(threadImage);
+              previewCallback(previewImage);
             }
             return;
           } else if (cmd == 'error') {
@@ -122,10 +122,10 @@ class RenderTask {
       assert(false);
       return;
     }
-    Uint32List dst = threadImage.data;
+    Uint32List dst = previewImage.data;
     int w = extents[1] - extents[0];
-    int dsti = extents[2] * threadImage.width + extents[0];
-    for (int y = extents[2]; y < extents[3]; ++y, dsti += threadImage.width) {
+    int dsti = extents[2] * previewImage.width + extents[0];
+    for (int y = extents[2]; y < extents[3]; ++y, dsti += previewImage.width) {
       dst.setRange(dsti, dsti + w, src, dsti);
     }
   }
