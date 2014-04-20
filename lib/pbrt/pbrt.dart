@@ -427,7 +427,7 @@ class Pbrt {
 
   void coordSysTransform(String name) {
     if (_namedCoordinateSystems.containsKey(name)) {
-      _curTransform = _namedCoordinateSystems[name];
+      _curTransform = new TransformSet.from(_namedCoordinateSystems[name]);
     } else {
       LogWarning('Couldn\'t find named coordinate system \'$name\'');
     }
