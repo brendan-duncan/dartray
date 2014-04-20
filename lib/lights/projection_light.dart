@@ -38,7 +38,14 @@ class ProjectionLight extends Light {
       Completer completer = new Completer();
       ResourceManager.RequestImage(texname, completer.future)
         .then((SpectrumImage img) {
-          projectionMap = new MIPMap.texture(img);
+          String name = MIPMap.GetTextureName(texname);
+
+          if (ResourceManager.HasTexture(name)) {
+            projectionMap = ResourceManager.GetTexture(name);
+          } else {
+            projectionMap = new MIPMap.texture(img, texname);
+            ResourceManager.AddTexture(name, projectionMap);
+          }
 
           // Initialize projection matrix using the aspect ratio of the loaded
           // map.

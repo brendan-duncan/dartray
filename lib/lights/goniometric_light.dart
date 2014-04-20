@@ -36,7 +36,13 @@ class GoniometricLight extends Light {
       Completer completer = new Completer();
       ResourceManager.RequestImage(texname, completer.future)
         .then((SpectrumImage img) {
-          mipmap = new MIPMap.texture(img);
+          String name = MIPMap.GetTextureName(texname);
+          if (ResourceManager.HasTexture(name)) {
+            mipmap = ResourceManager.GetTexture(name);
+          } else {
+            mipmap = new MIPMap.texture(img, texname);
+            ResourceManager.AddTexture(name, mipmap);
+          }
           completer.complete();
         });
     }

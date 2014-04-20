@@ -21,44 +21,48 @@
 part of lights;
 
 class InfiniteAreaLight extends Light {
-  static InfiniteAreaLight Create(Transform light2world, ParamSet paramSet) {
-    Spectrum L = paramSet.findOneSpectrum('L', new Spectrum(1.0));
-    Spectrum sc = paramSet.findOneSpectrum('scale', new Spectrum(1.0));
-    String texmap = paramSet.findOneFilename('mapname', '');
-    int nSamples = paramSet.findOneInt('nsamples', 1);
-    //if (PbrtOptions.quickRender) nSamples = max(1, nSamples / 4);
-    return new InfiniteAreaLight(light2world, L * sc, nSamples, texmap);
-  }
+  Spectrum L;
+  MIPMap radianceMap;
+  Distribution2D distribution;
 
-  InfiniteAreaLight(Transform light2world, Spectrum L, int ns,
-                    String texmap) :
+  InfiniteAreaLight(Transform light2world, this.L, int ns, String texmap) :
     super(light2world, ns) {
     if (texmap.isNotEmpty) {
       Completer completer = new Completer();
       ResourceManager.RequestImage(texmap, completer.future)
         .then((SpectrumImage img) {
-          SpectrumImage texels = new SpectrumImage.from(img);
-          int width = texels.width;
-          int height = texels.height;
-          for (int i = 0; i < width * height; ++i) {
-            texels[i] *= L.toRGB();
-          }
+          String name = MIPMap.GetTextureName(texmap);
 
-          _setRadianceMap(texels);
+          if (ResourceManager.HasTexture(name)) {
+            MIPMap mipmap = ResourceManager.GetTexture(name);
+            _setRadianceMap(mipmap, texmap);
+          } else {
+            SpectrumImage texels = new SpectrumImage.from(img);
+            int width = texels.width;
+            int height = texels.height;
+            for (int i = 0; i < width * height; ++i) {
+              texels[i] *= L.toRGB();
+            }
+
+            MIPMap mipmap = new MIPMap.texture(texels, texmap);
+            ResourceManager.AddTexture(name, mipmap);
+
+            _setRadianceMap(mipmap, texmap);
+          }
 
           completer.complete();
         });
     }
 
     SpectrumImage texels = new SpectrumImage(1, 1);
-    texels[0] = L.toRGB();
-    _setRadianceMap(texels);
+    texels[0] = new Spectrum(1.0);
+    _setRadianceMap(new MIPMap.texture(texels, texmap), texmap);
   }
 
   Spectrum power(Scene scene) {
     Point worldCenter = new Point();
     double worldRadius = scene.worldBound.boundingSphere(worldCenter);
-    return new Spectrum.from(radianceMap.lookup(0.5, 0.5, 0.5),
+    return new Spectrum.from(_radiance(0.5, 0.5, 0.5),
                              Spectrum.SPECTRUM_ILLUMINANT) *
            (Math.PI * worldRadius * worldRadius);
   }
@@ -71,7 +75,7 @@ class InfiniteAreaLight extends Light {
     Vector wh = Vector.Normalize(worldToLight.transformVector(r.direction));
     double s = Vector.SphericalPhi(wh) * INV_TWOPI;
     double t = Vector.SphericalTheta(wh) * INV_PI;
-    return new Spectrum.from(radianceMap.lookup(s, t),
+    return new Spectrum.from(_radiance(s, t),
                              Spectrum.SPECTRUM_ILLUMINANT);
   }
 
@@ -108,7 +112,7 @@ class InfiniteAreaLight extends Light {
     // Return radiance value for infinite light direction
     visibility.setRay(p, pEpsilon, wi, time);
 
-    Spectrum Ls = new Spectrum.from(radianceMap.lookup(uv[0], uv[1]),
+    Spectrum Ls = new Spectrum.from(_radiance(uv[0], uv[1]),
                                     Spectrum.SPECTRUM_ILLUMINANT);
 
     Stats.INFINITE_LIGHT_FINISHED_SAMPLE();
@@ -161,11 +165,15 @@ class InfiniteAreaLight extends Light {
       pdf[0] = directionPdf * areaPdf;
     }
 
-    Spectrum Ls = new Spectrum.from(radianceMap.lookup(uv[0], uv[1]),
+    Spectrum Ls = new Spectrum.from(_radiance(uv[0], uv[1]),
                                     Spectrum.SPECTRUM_ILLUMINANT);
 
     Stats.INFINITE_LIGHT_FINISHED_SAMPLE();
     return Ls;
+  }
+
+  Spectrum _radiance(double u, double v, [double width]) {
+    return radianceMap.lookup(u, v, width) * L;
   }
 
   double pdf(Point p, Vector w) {
@@ -236,7 +244,7 @@ class InfiniteAreaLight extends Light {
                                 buf[sintheta + theta] * buf[sinphi + phi],
                                 buf[costheta + theta]);
           w = Vector.Normalize(lightToWorld.transformVector(w));
-          Spectrum Le = new Spectrum.from(radianceMap.texel(0, phi, theta),
+          Spectrum Le = new Spectrum.from(radianceMap.texel(0, phi, theta) * L,
                                           Spectrum.SPECTRUM_ILLUMINANT);
           SphericalHarmonics.Evaluate(w, lmax, Ylm);
           for (int i = 0; i < SphericalHarmonics.Terms(lmax); ++i) {
@@ -254,10 +262,10 @@ class InfiniteAreaLight extends Light {
     }
   }
 
-  void _setRadianceMap(SpectrumImage texels) {
-    int width = texels.width;
-    int height = texels.height;
-    radianceMap = new MIPMap.texture(texels);
+  void _setRadianceMap(MIPMap mipmap, String filename) {
+    int width = mipmap.width;
+    int height = mipmap.height;
+    radianceMap = mipmap;
 
     // Initialize sampling PDFs for infinite area light
 
@@ -271,7 +279,7 @@ class InfiniteAreaLight extends Light {
       double sinTheta = Math.sin(Math.PI * (v + 0.5) / height);
       for (int u = 0; u < width; ++u) {
         double up = u / width;
-        img[u + vw] = radianceMap.lookup(up, vp, filter).luminance();
+        img[u + vw] = _radiance(up, vp, filter).luminance();
         img[u + vw] *= sinTheta;
       }
     }
@@ -280,8 +288,14 @@ class InfiniteAreaLight extends Light {
     distribution = new Distribution2D(img, width, height);
   }
 
-  MIPMap radianceMap;
-  Distribution2D distribution;
+  static InfiniteAreaLight Create(Transform light2world, ParamSet paramSet) {
+    Spectrum L = paramSet.findOneSpectrum('L', new Spectrum(1.0));
+    Spectrum sc = paramSet.findOneSpectrum('scale', new Spectrum(1.0));
+    String texmap = paramSet.findOneFilename('mapname', '');
+    int nSamples = paramSet.findOneInt('nsamples', 1);
+    //if (PbrtOptions.quickRender) nSamples = max(1, nSamples / 4);
+    return new InfiniteAreaLight(light2world, L * sc, nSamples, texmap);
+  }
 }
 
 

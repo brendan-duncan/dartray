@@ -67,10 +67,6 @@ abstract class RenderManagerInterface extends ResourceManager {
     if (isolate == null) {
       LogInfo('STARTING RENDER');
       pbrt.renderScene(path).then((output) {
-        /*if (preview != null) {
-          preview();
-        }*/
-
         completer.complete(output);
       });
 

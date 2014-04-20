@@ -245,6 +245,8 @@ class Pbrt {
     registerSpectrumTexture('bilerp', BilerpTexture.CreateSpectrum);
     registerFloatTexture('checkerboard', CheckerboardTexture.CreateFloat);
     registerSpectrumTexture('checkerboard', CheckerboardTexture.CreateSpectrum);
+    registerFloatTexture('constant', ConstantTexture.CreateFloat);
+    registerSpectrumTexture('constant', ConstantTexture.CreateSpectrum);
     registerFloatTexture('dots', DotsTexture.CreateFloat);
     registerSpectrumTexture('dots', DotsTexture.CreateSpectrum);
     registerFloatTexture('fbm', FBmTexture.CreateFloat);

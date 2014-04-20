@@ -45,6 +45,18 @@ abstract class ResourceManager {
     return global.getResource(path);
   }
 
+  static bool HasTexture(String name) {
+    return global.hasTexture(name);
+  }
+
+  static MIPMap GetTexture(String name) {
+    return global.getTexture(name);
+  }
+
+  static void AddTexture(String name, MIPMap texture) {
+    global.addTexture(name, texture);
+  }
+
   /**
    * Add a path to look for resources in.
    */
@@ -150,42 +162,22 @@ abstract class ResourceManager {
         return;
       }
 
-      Img.DecodeInfo info = decoder.startDecode(bytes);
-      if (info == null) {
-        LogInfo('UNABLE TO DECODE $path');
-        c.complete(null);
-        return;
-      }
+      Img.HdrImage hdr = decoder.decodeHdrImage(bytes);
+      SpectrumImage res = new SpectrumImage(hdr.width, hdr.height);
 
-      if (info is Img.ExrImage) {
-        Img.ExrImage exr = info;
-        Img.HdrImage hdr = info.parts[0].framebuffer;
-
-        SpectrumImage res = new SpectrumImage(hdr.width, hdr.height);
-
-        int ri = 0;
-        for (int y = 0; y < hdr.height; ++y) {
-          for (int x = 0; x < hdr.width; ++x) {
-            double r = hdr.getRed(x, y);
-            double g = hdr.getGreen(x, y);
-            double b = hdr.getBlue(x, y);
-            res.data[ri++] = r;
-            res.data[ri++] = g;
-            res.data[ri++] = b;
-          }
+      int ri = 0;
+      for (int y = 0; y < hdr.height; ++y) {
+        for (int x = 0; x < hdr.width; ++x) {
+          double r = hdr.getRed(x, y);
+          double g = hdr.getGreen(x, y);
+          double b = hdr.getBlue(x, y);
+          res.data[ri++] = r;
+          res.data[ri++] = g;
+          res.data[ri++] = b;
         }
-
-        LogDebug('HDR IMAGE LOADED $path');
-        resources[path] = res;
-        c.complete(res);
-
-        return;
       }
 
-      Img.Image img = decoder.decodeFrame(0);
-      SpectrumImage res = new SpectrumImage.fromImage(img);
-
-      LogDebug('IMAGE LOADED $path');
+      LogDebug('HDR IMAGE LOADED $path');
       resources[path] = res;
       c.complete(res);
     });
@@ -215,6 +207,20 @@ abstract class ResourceManager {
     return resources[path];
   }
 
+  bool hasTexture(String name) => textures.containsKey(name);
+
+  MIPMap getTexture(String name) {
+    if (textures.containsKey(name)) {
+      return textures[name];
+    }
+    return null;
+  }
+
+  void addTexture(String name, MIPMap texture) {
+    textures[name] = texture;
+  }
+
   List<Future> futures = [];
   Map<String, dynamic> resources = {};
+  Map<String, MIPMap> textures = {};
 }

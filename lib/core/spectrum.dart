@@ -255,6 +255,14 @@ abstract class Spectrum {
     return s;
   }
 
+  String toString() {
+    String s = '${c[0]}';
+    for (int i = 1; i < c.length; ++i) {
+      s += ' ${c[i]}';
+    }
+    return s;
+  }
+
   static List<Spectrum> AllocateList(int count) {
     List<Spectrum> r = new List<Spectrum>(count);
     for (int i = 0; i < count; ++i) {

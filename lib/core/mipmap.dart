@@ -25,21 +25,57 @@ class MIPMap {
   static const int TEXTURE_BLACK = 1;
   static const int TEXTURE_CLAMP = 2;
 
+  static String GetTextureName(String filename,
+                               {bool doTri: false, double maxAniso: 8.0,
+                                int wrap: TEXTURE_REPEAT,
+                                scale: 1.0,
+                                double gamma: 1.0,
+                                bool spectrum: true}) {
+    String name = filename;
+    if (doTri) {
+      name += '_TRI:$doTri';
+    }
+    if (maxAniso != 8.0) {
+      name += '_ANI:$maxAniso';
+    }
+    if (wrap != TEXTURE_REPEAT) {
+      name += '_WRAP:$wrap';
+    }
+    if (scale is num && scale != 1.0) {
+      name += '_SCALE:$scale';
+    }
+    if (scale is Spectrum && !scale.isValue(1.0)) {
+      name += '_SCALE:$scale';
+    }
+    if (gamma != 1.0) {
+      name += '_GAMMA:$gamma';
+    }
+    if (!spectrum) {
+      name += '_SPECTRUM:$spectrum';
+    }
+    return name;
+  }
+
   MIPMap() :
     width = 0,
     height = 0,
     levels = 0;
 
-  MIPMap.texture(SpectrumImage img,
+  MIPMap.texture(SpectrumImage img, String filename,
                  [this.doTrilinear = false,
-                  this.maxAnisotropy = 8.0, this.wrapMode = TEXTURE_REPEAT]) {
+                  this.maxAnisotropy = 8.0,
+                  this.wrapMode = TEXTURE_REPEAT]) {
     int xres = img.width;
     int yres = img.height;
+
     SpectrumImage resampledImage;
     if (!IsPowerOf2(xres) || !IsPowerOf2(yres)) {
       // Resample image to power-of-two resolution
       int sPow2 = RoundUpPow2(xres);
       int tPow2 = RoundUpPow2(yres);
+      if (filename.isNotEmpty) {
+        LogInfo('Resizing Image $filename to $sPow2 $tPow2');
+      }
 
       // Resample image in s direction
       List<_ResampleWeight> sWeights = _resampleWeights(xres, sPow2);
@@ -107,6 +143,9 @@ class MIPMap {
     // Initialize levels of MIPMap from image
     levels = 1 + Log2(Math.max(xres, yres)).toInt();
     pyramid = new List<SpectrumImage>(levels);
+    if (filename.isNotEmpty) {
+      LogInfo('$filename: Generating $levels MIPMap Levels');
+    }
 
     // Initialize most detailed level of MIPMap
     pyramid[0] = new SpectrumImage.from(img);
@@ -136,6 +175,9 @@ class MIPMap {
         double r2 = i / (WEIGHT_LUT_SIZE - 1);
         weightLut[i] = Math.exp(-alpha * r2) - Math.exp(-alpha);
       }
+    }
+    if (filename.isNotEmpty) {
+      LogInfo('Finished generating MIPMap for $filename');
     }
   }
 
