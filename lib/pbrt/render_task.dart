@@ -96,9 +96,10 @@ class RenderTask {
           } else if (cmd == 'final' && msg.containsKey('output')) {
             Float32List rgb = msg['output'];
             List<int> extents = msg['extents'];
+            int w = (extents[1] - extents[0]) + 1;
+            int h = (extents[3] - extents[2]) + 1;
             OutputImage output = new OutputImage(extents[0], extents[2],
-                                                 extents[1], extents[3],
-                                                 rgb);
+                                                 w, h, rgb);
             completer.complete(output);
             return;
           }

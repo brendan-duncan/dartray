@@ -30,26 +30,30 @@ class TransformedPrimitive extends Primitive {
   bool intersect(Ray r, Intersection isect) {
     Transform w2p = new Transform();
     worldToPrimitive.interpolate(r.time, w2p);
+
     Ray ray = w2p.transformRay(r);
     if (!primitive.intersect(ray, isect)) {
       return false;
     }
+
     r.maxDistance = ray.maxDistance;
     isect.primitiveId = primitiveId;
+
     if (!w2p.isIdentity()) {
       // Compute world-to-object transformation for instance
       isect.worldToObject = isect.worldToObject * w2p;
       isect.objectToWorld = Transform.Inverse(isect.worldToObject);
 
       // Transform instance's differential geometry to world space
-      Transform PrimitiveToWorld = Transform.Inverse(w2p);
-      isect.dg.p = PrimitiveToWorld.transformPoint(isect.dg.p);
-      isect.dg.nn = Vector.Normalize(PrimitiveToWorld.transformNormal(isect.dg.nn));
-      isect.dg.dpdu = PrimitiveToWorld.transformVector(isect.dg.dpdu);
-      isect.dg.dpdv = PrimitiveToWorld.transformVector(isect.dg.dpdv);
-      isect.dg.dndu = PrimitiveToWorld.transformNormal(isect.dg.dndu);
-      isect.dg.dndv = PrimitiveToWorld.transformNormal(isect.dg.dndv);
+      Transform p2w = Transform.Inverse(w2p);
+      isect.dg.p = p2w.transformPoint(isect.dg.p);
+      isect.dg.nn = Vector.Normalize(p2w.transformNormal(isect.dg.nn));
+      isect.dg.dpdu = p2w.transformVector(isect.dg.dpdu);
+      isect.dg.dpdv = p2w.transformVector(isect.dg.dpdv);
+      isect.dg.dndu = p2w.transformNormal(isect.dg.dndu);
+      isect.dg.dndv = p2w.transformNormal(isect.dg.dndv);
     }
+
     return true;
   }
 

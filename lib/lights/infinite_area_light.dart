@@ -172,7 +172,7 @@ class InfiniteAreaLight extends Light {
     return Ls;
   }
 
-  Spectrum _radiance(double u, double v, [double width]) {
+  Spectrum _radiance(double u, double v, [double width = 0.0]) {
     return radianceMap.lookup(u, v, width) * L;
   }
 

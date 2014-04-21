@@ -763,7 +763,8 @@ class Pbrt {
     if (inst.length > 1 || !inst[0].canIntersect()) {
       // Refine instance _Primitive_s and create aggregate
       Primitive accel = _makeAccelerator(_renderOptions.acceleratorName,
-                           inst, _renderOptions.acceleratorParams);
+                                         inst,
+                                         _renderOptions.acceleratorParams);
 
       if (accel == null) {
         accel = _makeAccelerator('bvh', inst, new ParamSet());

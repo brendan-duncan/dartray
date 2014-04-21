@@ -77,17 +77,17 @@ abstract class RenderManagerInterface extends ResourceManager {
     List<RenderTask> jobs = new List<RenderTask>(numThreads);
     for (int i = 0; i < numThreads; ++i) {
       jobs[i] = new RenderTask(preview, i, numThreads);
-      jobs[i].render(path, isolate).then((task) {
+      jobs[i].render(path, isolate).then((output) {
         tasksRemaining--;
         if (tasksRemaining == 0) {
-          completer.complete();
+          completer.complete(output);
         }
       }, onError: (msg) {
-        LogError('Error Thread $i: $msg');
+        LogError('ERROR Thread $i: $msg');
         tasksRemaining--;
-        if (!completer.isCompleted) {
-          completer.complete(null);
-        }
+        /*if (!completer.isCompleted) {
+          completer.complete(output);
+        }*/
       });
     }
 
