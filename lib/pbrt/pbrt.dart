@@ -57,7 +57,7 @@ typedef Camera CameraCreator(ParamSet params, AnimatedTransform cam2world,
                              Film film);
 
 typedef Film FilmCreator(ParamSet params, Filter filter,
-                         [Image image, PreviewCallback previewCallback]);
+                         [PreviewCallback previewCallback]);
 
 typedef Filter FilterCreator(ParamSet ps);
 
@@ -463,10 +463,6 @@ class Pbrt {
     _renderOptions.filmName = type;
   }
 
-  void setOutputImage(Image output) {
-    _renderOptions.outputImage = output;
-  }
-
   void setPreviewCallback(PreviewCallback cb) {
     _renderOptions.previewCallback = cb;
   }
@@ -869,7 +865,6 @@ class Pbrt {
     Film film = _makeFilm(_renderOptions.filmName,
                           _renderOptions.filmParams,
                           filter,
-                          _renderOptions.outputImage,
                           _renderOptions.previewCallback);
     if (film == null) {
       LogSevere('Unable to create film.');
@@ -889,9 +884,9 @@ class Pbrt {
     String name = _renderOptions.rendererName;
     ParamSet paramSet = _renderOptions.rendererParams;
 
-    if (overrides != null && overrides.volumeIntegratorName != null) {
-      name = overrides.volumeIntegratorName;
-      paramSet = overrides.volumeIntegratorParams;
+    if (overrides != null && overrides.rendererName != null) {
+      name = overrides.rendererName;
+      paramSet = overrides.rendererParams;
     }
 
     /*if (name == 'createprobes') {
@@ -1247,7 +1242,7 @@ class Pbrt {
   }
 
   Film _makeFilm(String name, ParamSet paramSet, Filter filter,
-                [Image outputImage, PreviewCallback previewCallback]) {
+                [PreviewCallback previewCallback]) {
     if (overrides != null && overrides.filmName != null) {
       name = overrides.filmName;
       paramSet = overrides.filmParams;
@@ -1258,7 +1253,7 @@ class Pbrt {
       return null;
     }
 
-    Film f = _films[name](paramSet, filter, outputImage, previewCallback);
+    Film f = _films[name](paramSet, filter, previewCallback);
 
     paramSet.reportUnused();
 

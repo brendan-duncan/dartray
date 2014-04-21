@@ -21,31 +21,7 @@
 part of film;
 
 class ImageFilm extends Film {
-  static ImageFilm Create(ParamSet params, Filter filter,
-                          [Image image, PreviewCallback previewCallback]) {
-    int xres = params.findOneInt('xresolution', 640);
-    int yres = params.findOneInt('yresolution', 480);
-    String filename = params.findOneString('filename', '');
-
-    List<double> crop = params.findFloat('cropWindow');
-    if (crop == null) {
-      crop = [ 0.0, 1.0, 0.0, 1.0 ];
-    }
-
-    if (image != null) {
-      xres = image.width;
-      yres = image.height;
-    }
-
-    xres = (xres * RenderOverrides.GetResolutionScale()).toInt();
-    yres = (yres * RenderOverrides.GetResolutionScale()).toInt();
-
-    return new ImageFilm(xres, yres, filter, crop, filename,
-                         image, previewCallback);
-  }
-
   List<double> cropWindow;
-  Image image;
   String filename;
   PreviewCallback previewCallback;
   OutputImage output;
@@ -56,9 +32,10 @@ class ImageFilm extends Film {
   int yPixelStart;
   int xPixelCount;
   int yPixelCount;
+  Image image;
 
   ImageFilm(int xres, int yres, this.filter, this.cropWindow, this.filename,
-            [this.image, this.previewCallback]) :
+            [this.previewCallback]) :
     super(xres, yres),
     _gamma = new Uint8List(256) {
     double gamma = 1.0 / 2.2;
@@ -90,10 +67,8 @@ class ImageFilm extends Film {
       }
     }
 
-    if (image == null) {
-      image = new Image(xPixelCount, yPixelCount);
-      image.fill(0xff888888);
-    }
+    image = new Image(xPixelCount, yPixelCount);
+    image.fill(0xff888888);
 
     output = new OutputImage(xPixelStart, yPixelStart,
                              xPixelCount, yPixelCount);
@@ -308,5 +283,22 @@ class ImageFilm extends Film {
   final Uint8List _gamma;
 
   static const int FILTER_TABLE_SIZE = 16;
+
+  static ImageFilm Create(ParamSet params, Filter filter,
+                          [PreviewCallback previewCallback]) {
+    int xres = params.findOneInt('xresolution', 640);
+    int yres = params.findOneInt('yresolution', 480);
+    String filename = params.findOneString('filename', '');
+
+    List<double> crop = params.findFloat('cropWindow');
+    if (crop == null) {
+      crop = [ 0.0, 1.0, 0.0, 1.0 ];
+    }
+
+    xres = (xres * RenderOverrides.GetResolutionScale()).toInt();
+    yres = (yres * RenderOverrides.GetResolutionScale()).toInt();
+
+    return new ImageFilm(xres, yres, filter, crop, filename, previewCallback);
+  }
 }
 

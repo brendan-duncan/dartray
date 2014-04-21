@@ -44,7 +44,6 @@ class RenderOptions {
   ParamSet filterParams = new ParamSet();
   String filmName;
   ParamSet filmParams = new ParamSet();
-  Image outputImage;
   PreviewCallback previewCallback;
   String pixelSamplerName;
   ParamSet pixelSamplerParams = new ParamSet();

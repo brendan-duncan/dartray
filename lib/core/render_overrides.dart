@@ -2,7 +2,7 @@ part of core;
 
 class RenderOverrides {
   bool quickRender = false;
-  double resolutionScale;
+  double resolutionScale = 1.0;
   String filterName;
   ParamSet filterParams;
   String filmName;
