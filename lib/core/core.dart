@@ -97,6 +97,7 @@ part 'quaternion.dart';
 part 'ray.dart';
 part 'ray_differential.dart';
 part 'renderer.dart';
+part 'render_overrides.dart';
 part 'resource_manager.dart';
 part 'rgb_color.dart';
 part 'rng.dart';

@@ -32,8 +32,7 @@ class MetropolisRenderer extends Renderer {
     int md = params.findOneInt('maxdepth', 7);
     bool doBidirectional = params.findOneBool('bidirectional', true);
 
-    const bool quickRender = false;
-    if (quickRender) {
+    if (RenderOverrides.GetQuickRender()) {
       perPixelSamples = Math.max(1, perPixelSamples ~/ 4);
       nBootstrap = Math.max(1, nBootstrap ~/ 4);
       nDirectPixelSamples = Math.max(1, nDirectPixelSamples ~/ 4);

@@ -21,20 +21,6 @@
 part of shapes;
 
 class LoopSubdivision extends Shape {
-  static LoopSubdivision Create(Transform o2w, Transform w2o,
-          bool reverseOrientation, ParamSet params) {
-      int nlevels = params.findOneInt('nlevels', 1);
-      List<int> vi = params.findInt('indices');
-      List<Point> P = params.findPoint('P');
-      if (vi == null || P == null) {
-        return null;
-      }
-
-      return new LoopSubdivision(o2w, w2o, reverseOrientation,
-                                 vi.length ~/ 3, P.length, vi,
-                                 P, nlevels);
-  }
-
   LoopSubdivision(Transform o2w, Transform w2o, bool ro,
              int nfaces, int nvertices, List<int> vertexIndices,
              List<Point> P, this.nLevels) :
@@ -375,6 +361,20 @@ class LoopSubdivision extends Shape {
   int nLevels;
   final List<_SDVertex> vertices;
   final List<_SDFace> faces;
+
+  static LoopSubdivision Create(Transform o2w, Transform w2o,
+                                bool reverseOrientation, ParamSet params) {
+      int nlevels = params.findOneInt('nlevels', 1);
+      List<int> vi = params.findInt('indices');
+      List<Point> P = params.findPoint('P');
+      if (vi == null || P == null) {
+        return null;
+      }
+
+      return new LoopSubdivision(o2w, w2o, reverseOrientation,
+                                 vi.length ~/ 3, P.length, vi,
+                                 P, nlevels);
+  }
 }
 
 class _SDEdgeMap {

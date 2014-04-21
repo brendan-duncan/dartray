@@ -51,14 +51,6 @@ class Hyperboloid extends Shape {
      } while (a.isInfinite || a.isNaN);
   }
 
-  static Hyperboloid Create(Transform o2w, Transform w2o,
-                            bool reverseOrientation, ParamSet params) {
-    Point p1 = params.findOnePoint('p1', new Point(0.0, 0.0, 0.0));
-    Point p2 = params.findOnePoint('p2', new Point(1.0, 1.0, 1.0));
-    double phimax = params.findOneFloat('phimax', 360.0);
-    return new Hyperboloid(o2w, w2o, reverseOrientation, p1, p2, phimax);
-  }
-
   BBox objectBound() {
     Point p1 = new Point(-rmax, -rmax, zmin);
     Point p2 = new Point(rmax,  rmax, zmax);
@@ -281,5 +273,14 @@ class Hyperboloid extends Shape {
   double zmax;
   double phiMax;
   double rmax;
-  double a, c;
+  double a;
+  double c;
+
+  static Hyperboloid Create(Transform o2w, Transform w2o,
+                            bool reverseOrientation, ParamSet params) {
+    Point p1 = params.findOnePoint('p1', new Point(0.0, 0.0, 0.0));
+    Point p2 = params.findOnePoint('p2', new Point(1.0, 1.0, 1.0));
+    double phimax = params.findOneFloat('phimax', 360.0);
+    return new Hyperboloid(o2w, w2o, reverseOrientation, p1, p2, phimax);
+  }
 }

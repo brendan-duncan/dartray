@@ -21,20 +21,8 @@
 part of samplers;
 
 class RandomSampler extends Sampler {
-  static RandomSampler Create(ParamSet params, Film film, Camera camera,
-                              PixelSampler pixels) {
-    int ns = params.findOneInt('pixelsamples', 10);
-    bool continuous = params.findOneBool('continuous', false);
-    List<int> extents = [0, 0, 0, 0];
-    film.getSampleExtent(extents);
-    return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
-                             ns, continuous,
-                             camera.shutterOpen, camera.shutterClose,
-                             pixels);
-  }
-
   RandomSampler(int xstart, int xend, int ystart,
-      int yend, int ns, this.continuous, double sopen, double sclose,
+      int yend, int ns, double sopen, double sclose,
       this.pixels) :
     super(xstart, xend, ystart, yend, ns, sopen, sclose) {
     if (pixels == null) {
@@ -56,10 +44,8 @@ class RandomSampler extends Sampler {
   int getMoreSamples(List<Sample> sample, RNG rng) {
     if (pixelIndex >= pixels.numPixels()) {
       sampleCount++;
-      if (!continuous) {
-        if (sampleCount >= samplesPerPixel) {
-          return 0;
-        }
+      if (sampleCount >= samplesPerPixel) {
+        return 0;
       }
       pixelIndex = 0;
     }
@@ -112,11 +98,10 @@ class RandomSampler extends Sampler {
     }
 
     return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
-                             samplesPerPixel, continuous, shutterOpen,
+                             samplesPerPixel, shutterOpen,
                              shutterClose, pixels);
   }
 
-  bool continuous;
   PixelSampler pixels;
   Int32List pixel = new Int32List(2);
   int pixelIndex;
@@ -124,4 +109,15 @@ class RandomSampler extends Sampler {
   Float32List lensSamples;
   Float32List timeSamples;
   int sampleCount;
+
+
+  static RandomSampler Create(ParamSet params, Film film, Camera camera,
+                                PixelSampler pixels) {
+    int ns = params.findOneInt('pixelsamples', 32);
+    List<int> extents = [0, 0, 0, 0];
+    film.getSampleExtent(extents);
+    return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
+                             ns, camera.shutterOpen, camera.shutterClose,
+                             pixels);
+  }
 }

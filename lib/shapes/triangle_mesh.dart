@@ -33,6 +33,44 @@ class TriangleMesh extends Shape {
     }
   }
 
+  BBox objectBound() {
+    BBox objectBounds = new BBox();
+    for (int i = 0; i < nverts; i++) {
+      objectBounds = BBox.UnionPoint(objectBounds,
+                                     worldToObject.transformPoint(p[i]));
+    }
+    return objectBounds;
+  }
+
+  BBox worldBound() {
+    BBox worldBounds = new BBox();
+    for (int i = 0; i < nverts; i++) {
+      worldBounds = BBox.UnionPoint(worldBounds, p[i]);
+    }
+    return worldBounds;
+  }
+
+  bool canIntersect() {
+    return false;
+  }
+
+  void refine(List<Shape> refined) {
+    for (int i = 0; i < ntris; ++i) {
+      refined.add(new Triangle(objectToWorld,
+                               worldToObject, reverseOrientation,
+                               this, i));
+    }
+  }
+
+  int ntris, nverts;
+  List<int> vertexIndex;
+  List<Point> p;
+  List<Normal> n;
+  List<Vector> s;
+  List<double> uvs;
+  Texture alphaTexture;
+
+
   static TriangleMesh Create(Transform o2w, Transform w2o,
                              bool reverseOrientation, ParamSet params,
                              [Map<String, Texture> floatTextures = null]) {
@@ -129,41 +167,4 @@ class TriangleMesh extends Shape {
                                  vi.length ~/ 3, P.length, vi, P, N, S, uvs,
                                  alphaTex);
   }
-
-  BBox objectBound() {
-    BBox objectBounds = new BBox();
-    for (int i = 0; i < nverts; i++) {
-      objectBounds = BBox.UnionPoint(objectBounds,
-                                     worldToObject.transformPoint(p[i]));
-    }
-    return objectBounds;
-  }
-
-  BBox worldBound() {
-    BBox worldBounds = new BBox();
-    for (int i = 0; i < nverts; i++) {
-      worldBounds = BBox.UnionPoint(worldBounds, p[i]);
-    }
-    return worldBounds;
-  }
-
-  bool canIntersect() {
-    return false;
-  }
-
-  void refine(List<Shape> refined) {
-    for (int i = 0; i < ntris; ++i) {
-      refined.add(new Triangle(objectToWorld,
-                               worldToObject, reverseOrientation,
-                               this, i));
-    }
-  }
-
-  int ntris, nverts;
-  List<int> vertexIndex;
-  List<Point> p;
-  List<Normal> n;
-  List<Vector> s;
-  List<double> uvs;
-  Texture alphaTexture;
 }

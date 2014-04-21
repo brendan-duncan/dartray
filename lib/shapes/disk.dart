@@ -27,16 +27,6 @@ class Disk extends Shape {
     phiMax = Radians(phiMax.clamp(0.0, 360.0));
   }
 
-  static Disk Create(Transform o2w, Transform w2o,
-                          bool reverseOrientation, ParamSet params) {
-    double height = params.findOneFloat('height', 0.0);
-    double radius = params.findOneFloat('radius', 1.0);
-    double inner_radius = params.findOneFloat('innerradius', 0.0);
-    double phimax = params.findOneFloat('phimax', 360.0);
-    return new Disk(o2w, w2o, reverseOrientation, height, radius,
-                         inner_radius, phimax);
-  }
-
   BBox objectBound() {
     return new BBox(new Point(-radius, -radius, height),
                     new Point( radius,  radius, height));
@@ -161,4 +151,14 @@ class Disk extends Shape {
   double radius;
   double innerRadius;
   double phiMax;
+
+  static Disk Create(Transform o2w, Transform w2o,
+                     bool reverseOrientation, ParamSet params) {
+    double height = params.findOneFloat('height', 0.0);
+    double radius = params.findOneFloat('radius', 1.0);
+    double inner_radius = params.findOneFloat('innerradius', 0.0);
+    double phimax = params.findOneFloat('phimax', 360.0);
+    return new Disk(o2w, w2o, reverseOrientation, height, radius,
+                         inner_radius, phimax);
+  }
 }

@@ -35,6 +35,91 @@ class ParamSet {
     strings = new List.from(other.strings),
     textures = new List.from(other.textures);
 
+  ParamSet.fromJson(Map json) {
+    for (String type_name in json.keys) {
+      var value = json[type_name];
+      List tk = type_name.split(' ');
+      if (tk.length != 2) {
+        LogError('Invalid parameter declaration: \'$type_name\'. '
+                 'Should be \'type name\'.');
+        continue;
+      }
+
+      String type = tk[0];
+      String name = tk[1];
+
+      if (type == 'float') {
+        if (value is num) {
+          value = [value.toDouble()];
+        }
+        addFloat(name, value);
+      } else if (type == 'int' || type == 'integer') {
+        if (value is num) {
+          value = [value.toInt()];
+        }
+        addInt(name, value);
+      } else if (type == 'bool' || type == 'boolean') {
+        if (value is bool) {
+          value = [value];
+        }
+        addBool(name, value);
+      } else if (type == 'point') {
+        addPoint(name, value);
+      } else if (type == 'vector') {
+        addVector(name, value);
+      } else if (type == 'normal') {
+        addNormal(name, value);
+      } else if (type == 'string') {
+        addString(name, value);
+      } else if (type == 'string') {
+        addString(name, value);
+      } else if (type == 'rgb' || type == 'color') {
+        addRGBSpectrum(name, value);
+      } else if (type == 'xyz') {
+        addXYZSpectrum(name, value);
+      } else {
+        LogError('Unhandled parameter type: $type');
+      }
+    }
+  }
+
+  Map toJson() {
+    Map json = {};
+    for (var p in bools) {
+      json['bool ${p.name}'] = p.data;
+    }
+
+    for (var p in ints) {
+      json['int ${p.name}'] = p.data;
+    }
+
+    for (var p in floats) {
+      json['float ${p.name}'] = p.data;
+    }
+
+    for (var p in points) {
+      json['point ${p.name}'] = p.data;
+    }
+
+    for (var p in vectors) {
+      json['vector ${p.name}'] = p.data;
+    }
+
+    for (var p in normals) {
+      json['normal ${p.name}'] = p.data;
+    }
+
+    for (var p in spectra) {
+      json['color ${p.name}'] = p.data;
+    }
+
+    for (var p in strings) {
+      json['string ${p.name}'] = p.data;
+    }
+
+    return json;
+  }
+
   void addFloat(String name, List<double> data) {
     name = name.toLowerCase();
     eraseFloat(name);

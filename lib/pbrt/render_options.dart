@@ -30,8 +30,8 @@ class RenderOptions {
     samplerName = 'lowdiscrepancy';
     acceleratorName = 'bvh';
     rendererName = 'sampler';
-    surfIntegratorName = 'directlighting';
-    volIntegratorName = 'emission';
+    surfaceIntegratorName = 'directlighting';
+    volumeIntegratorName = 'emission';
     cameraName = 'perspective';
     currentInstance = null;
     taskNum = 0;
@@ -53,11 +53,11 @@ class RenderOptions {
   String acceleratorName;
   ParamSet acceleratorParams = new ParamSet();
   String rendererName;
-  String surfIntegratorName;
-  String volIntegratorName;
   ParamSet rendererParams = new ParamSet();
-  ParamSet surfIntegratorParams = new ParamSet();
-  ParamSet volIntegratorParams = new ParamSet();
+  String surfaceIntegratorName;
+  ParamSet surfaceIntegratorParams = new ParamSet();
+  String volumeIntegratorName;
+  ParamSet volumeIntegratorParams = new ParamSet();
   String cameraName;
   ParamSet cameraParams = new ParamSet();
   TransformSet cameraToWorld;

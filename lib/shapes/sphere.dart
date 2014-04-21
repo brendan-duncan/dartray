@@ -31,16 +31,6 @@ class Sphere extends Shape {
     phiMax = Radians(pm.clamp(0.0, 360.0));
   }
 
-  static Sphere Create(Transform o2w, Transform w2o,
-          bool reverseOrientation, ParamSet params) {
-    double radius = params.findOneFloat('radius', 1.0);
-    double zmin = params.findOneFloat('zmin', -radius);
-    double zmax = params.findOneFloat('zmax', radius);
-    double phimax = params.findOneFloat('phimax', 360.0);
-    return new Sphere(o2w, w2o, reverseOrientation, radius,
-                      zmin, zmax, phimax);
-  }
-
   BBox objectBound() {
     return new BBox(new Point(-radius, -radius, zmin),
                     new Point( radius,  radius, zmax));
@@ -320,4 +310,14 @@ class Sphere extends Shape {
   double phiMax;
   double zmin, zmax;
   double thetaMin, thetaMax;
+
+  static Sphere Create(Transform o2w, Transform w2o,
+                       bool reverseOrientation, ParamSet params) {
+    double radius = params.findOneFloat('radius', 1.0);
+    double zmin = params.findOneFloat('zmin', -radius);
+    double zmax = params.findOneFloat('zmax', radius);
+    double phimax = params.findOneFloat('phimax', 360.0);
+    return new Sphere(o2w, w2o, reverseOrientation, radius,
+                      zmin, zmax, phimax);
+  }
 }

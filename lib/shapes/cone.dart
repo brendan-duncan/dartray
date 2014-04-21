@@ -21,14 +21,6 @@
 part of shapes;
 
 class Cone extends Shape {
-  static Cone Create(Transform o2w, Transform w2o,
-                          bool reverseOrientation, ParamSet params) {
-    double radius = params.findOneFloat('radius', 1.0);
-    double height = params.findOneFloat('height', 1.0);
-    double phimax = params.findOneFloat('phimax', 360.0);
-    return new Cone(o2w, w2o, reverseOrientation, height, radius, phimax);
-  }
-
   Cone(Transform o2w, Transform w2o, bool ro,
        this.height, this.radius, double tm) :
     super(o2w, w2o, ro) {
@@ -233,4 +225,12 @@ class Cone extends Shape {
   double radius;
   double height;
   double phiMax;
+
+  static Cone Create(Transform o2w, Transform w2o,
+                     bool reverseOrientation, ParamSet params) {
+    double radius = params.findOneFloat('radius', 1.0);
+    double height = params.findOneFloat('height', 1.0);
+    double phimax = params.findOneFloat('phimax', 360.0);
+    return new Cone(o2w, w2o, reverseOrientation, height, radius, phimax);
+  }
 }

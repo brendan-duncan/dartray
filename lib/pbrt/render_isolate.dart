@@ -105,7 +105,16 @@ class RenderIsolate {
           String scene = msg.containsKey('scene') ? msg['scene'] : '';
           bool doPreview = msg.containsKey('preview') ? msg['preview'] : false;
 
-          _render(scene, taskNum, taskCount, doPreview);
+          RenderOverrides overrides;
+          try {
+            overrides = msg.containsKey('overrides') ?
+                        new RenderOverrides.fromJson(msg['overrides']) :
+                        null;
+          } catch (e) {
+            overrides = null;
+          }
+
+          _render(scene, taskNum, taskCount, doPreview, overrides);
         }
       }
     } else if (msg == 'quit') {
@@ -121,7 +130,7 @@ class RenderIsolate {
   }
 
   bool _render(String scene, int taskNum, int taskCount,
-               bool doPreview) {
+               bool doPreview, RenderOverrides overrides) {
     _log(LOG_INFO, 'RENDER THREAD STARTED $taskNum / $taskCount');
     Stopwatch timer = new Stopwatch()..start();
 
@@ -143,7 +152,7 @@ class RenderIsolate {
     try {
       OutputImage output;
       pbrt.setTask(taskNum, taskCount);
-      pbrt.renderScene(scene).then((output) {
+      pbrt.renderScene(scene, overrides: overrides).then((output) {
         _log(LOG_INFO, 'FINISHED: ${timer.elapsed}');
         LogInfo('[$taskNum] STATS:\n${Stats.getString()}');
 

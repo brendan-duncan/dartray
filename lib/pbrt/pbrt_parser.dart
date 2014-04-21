@@ -412,7 +412,9 @@ class PbrtParser {
       List<String> paramTk = paramTypeName.split(' ');
       paramTk.removeWhere((e) => e.isEmpty);
       if (paramTk.length != 2) {
-        LogWarning('${_lexer.path} [${_lexer.line}]: Expected Parameter "Type Name", found: "$paramTypeName"');
+        LogWarning('${_lexer.path} [${_lexer.line}]: '
+                   'Expected Parameter "Type Name", found: '
+                   '"$paramTypeName"');
         return cmd;
       }
 

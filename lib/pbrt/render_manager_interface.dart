@@ -51,7 +51,7 @@ abstract class RenderManagerInterface extends ResourceManager {
    */
   Future<OutputImage> render(String path, {String isolate,
               LogCallback log, PreviewCallback preview,
-              int numThreads: 1}) {
+              RenderOverrides overrides, int numThreads: 1}) {
     if (log != null) {
       Log = log;
     }
@@ -66,7 +66,7 @@ abstract class RenderManagerInterface extends ResourceManager {
 
     if (isolate == null) {
       LogInfo('STARTING RENDER');
-      pbrt.renderScene(path).then((output) {
+      pbrt.renderScene(path, overrides: overrides).then((output) {
         completer.complete(output);
       });
 
@@ -77,7 +77,7 @@ abstract class RenderManagerInterface extends ResourceManager {
     List<RenderTask> jobs = new List<RenderTask>(numThreads);
     for (int i = 0; i < numThreads; ++i) {
       jobs[i] = new RenderTask(preview, i, numThreads);
-      jobs[i].render(path, isolate).then((output) {
+      jobs[i].render(path, isolate, overrides: overrides).then((output) {
         tasksRemaining--;
         if (tasksRemaining == 0) {
           completer.complete(output);

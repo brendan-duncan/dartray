@@ -275,18 +275,21 @@ class Pbrt {
   }
 
   ResourceManager resourceManager;
+  RenderOverrides overrides;
 
   Pbrt(this.resourceManager) {
     _registerStandardPlugins();
   }
 
-  Future<OutputImage> renderScene(String scene, [Image output]) {
+  Future<OutputImage> renderScene(String scene, {RenderOverrides overrides}) {
     Stopwatch t = new Stopwatch()..start();
-    if (output != null) {
-      setOutputImage(output);
-    }
-
     Completer<OutputImage> c = new Completer<OutputImage>();
+
+    this.overrides = overrides;
+
+    if (this.overrides != null) {
+      LogDebug('OVERRIDES: ${this.overrides.toJson()}');
+    }
 
     loadScene(scene).then((x) {
       if (_scene == null) {
@@ -484,13 +487,13 @@ class Pbrt {
   }
 
   void surfaceIntegrator(String name, ParamSet params) {
-    _renderOptions.surfIntegratorName = name;
-    _renderOptions.surfIntegratorParams = params;
+    _renderOptions.surfaceIntegratorName = name;
+    _renderOptions.surfaceIntegratorParams = params;
   }
 
   void volumeIntegrator(String name, ParamSet params) {
-    _renderOptions.volIntegratorName = name;
-    _renderOptions.volIntegratorParams = params;
+    _renderOptions.volumeIntegratorName = name;
+    _renderOptions.volumeIntegratorParams = params;
   }
 
   void renderer(String name, ParamSet params) {
@@ -883,7 +886,15 @@ class Pbrt {
       LogSevere('Unable to create camera.');
     }
 
-    /*if (_renderOptions.rendererName == 'createprobes') {
+    String name = _renderOptions.rendererName;
+    ParamSet paramSet = _renderOptions.rendererParams;
+
+    if (overrides != null && overrides.volumeIntegratorName != null) {
+      name = overrides.volumeIntegratorName;
+      paramSet = overrides.volumeIntegratorParams;
+    }
+
+    /*if (name == 'createprobes') {
       // Create surface and volume integrators
       SurfaceIntegrator *surfaceIntegrator = MakeSurfaceIntegrator(SurfIntegratorName,
           SurfIntegratorParams);
@@ -897,21 +908,21 @@ class Pbrt {
       if (lights.size() == 0)
           Warning('No light sources defined in scene; '
               'possibly rendering a black image.');
-    } else if (_renderOptions.rendererName == 'surfacepoints') {
+    } else if (name == 'surfacepoints') {
       Point pCamera = camera.CameraToWorld(camera.shutterOpen, Point(0, 0, 0));
       renderer = CreateSurfacePointsRenderer(RendererParams, pCamera, camera.shutterOpen);
       RendererParams.ReportUnused();
     } else*/
 
-    if (_renderOptions.rendererName == 'aggregatetest') {
-      renderer = AggregateTestRenderer.Create(_renderOptions.rendererParams,
+    if (name == 'aggregatetest') {
+      renderer = AggregateTestRenderer.Create(paramSet,
                                               _renderOptions.primitives);
-      _renderOptions.rendererParams.reportUnused();
-    } else if (_renderOptions.rendererName == 'metropolis') {
-      renderer = MetropolisRenderer.Create(_renderOptions.rendererParams,
+      paramSet.reportUnused();
+    } else if (name == 'metropolis') {
+      renderer = MetropolisRenderer.Create(paramSet,
                                            camera, _renderOptions.taskNum,
                                            _renderOptions.taskCount);
-      _renderOptions.rendererParams.reportUnused();
+      paramSet.reportUnused();
 
       // Warn if no light sources are defined
       if (_renderOptions.lights.length == 0) {
@@ -919,16 +930,16 @@ class Pbrt {
               'possibly rendering a black image.');
       }
     } else {
-      if (_renderOptions.rendererName != 'sampler') {
-        LogWarning('Renderer type \'${_renderOptions.rendererName}\' unknown. '
+      if (name != 'sampler') {
+        LogWarning('Renderer type \'${name}\' unknown. '
                    'Using \'sampler\'.');
       }
 
-      _renderOptions.rendererParams.reportUnused();
+      paramSet.reportUnused();
 
       PixelSampler pixels = _makePixelSampler(_renderOptions.pixelSamplerName,
-                                           _renderOptions.pixelSamplerParams,
-                                           camera.film);
+                                              _renderOptions.pixelSamplerParams,
+                                              camera.film);
 
       Sampler sampler = _makeSampler(_renderOptions.samplerName,
                                      _renderOptions.samplerParams,
@@ -939,15 +950,15 @@ class Pbrt {
 
       // Create surface and volume integrators
       SurfaceIntegrator surfaceIntegrator =
-          _makeSurfaceIntegrator(_renderOptions.surfIntegratorName,
-                                 _renderOptions.surfIntegratorParams);
+          _makeSurfaceIntegrator(_renderOptions.surfaceIntegratorName,
+                                 _renderOptions.surfaceIntegratorParams);
       if (surfaceIntegrator == null) {
         LogSevere('Unable to create surface integrator.');
       }
 
       VolumeIntegrator volumeIntegrator =
-          _makeVolumeIntegrator(_renderOptions.volIntegratorName,
-                                _renderOptions.volIntegratorParams);
+          _makeVolumeIntegrator(_renderOptions.volumeIntegratorName,
+                                _renderOptions.volumeIntegratorParams);
       if (volumeIntegrator == null) {
         LogSevere('Unable to create volume integrator.');
       }
@@ -1039,7 +1050,8 @@ class Pbrt {
     return material;
   }
 
-  Texture _makeFloatTexture(String name, Transform tex2world, TextureParams tp) {
+  Texture _makeFloatTexture(String name, Transform tex2world,
+                            TextureParams tp) {
     if (!_floatTextures.containsKey(name)) {
       LogWarning('Texture \'${name}\' unknown.');
       return ConstantTexture.CreateFloat(tex2world, tp);
@@ -1076,8 +1088,8 @@ class Pbrt {
     return l;
   }
 
-  AreaLight _makeAreaLight(String name, Transform light2world, ParamSet paramSet,
-                          Shape shape) {
+  AreaLight _makeAreaLight(String name, Transform light2world,
+                           ParamSet paramSet, Shape shape) {
     if (!_areaLights.containsKey(name)) {
       LogWarning('Area Light \'${name}\' unknown.');
       return null;
@@ -1103,6 +1115,11 @@ class Pbrt {
   }
 
   SurfaceIntegrator _makeSurfaceIntegrator(String name, ParamSet paramSet) {
+    if (overrides != null && overrides.volumeIntegratorName != null) {
+      name = overrides.surfaceIntegratorName;
+      paramSet = overrides.surfaceIntegratorParams;
+    }
+
     if (!_surfaceIntegrators.containsKey(name)) {
       LogWarning('Surface Integrator \'${name}\' unknown.');
       return null;
@@ -1115,6 +1132,11 @@ class Pbrt {
   }
 
   VolumeIntegrator _makeVolumeIntegrator(String name, ParamSet paramSet) {
+    if (overrides != null && overrides.volumeIntegratorName != null) {
+      name = overrides.volumeIntegratorName;
+      paramSet = overrides.volumeIntegratorParams;
+    }
+
     if (!_volumeIntegrators.containsKey(name)) {
       LogWarning('Volume Integrator \'${name}\' unknown.');
       return null;
@@ -1128,6 +1150,11 @@ class Pbrt {
 
   Primitive _makeAccelerator(String name, List<Primitive> prims,
                             ParamSet paramSet) {
+    if (overrides != null && overrides.acceleratorName != null) {
+      name = overrides.acceleratorName;
+      paramSet = overrides.acceleratorParams;
+    }
+
     if (!_accelerators.containsKey(name)) {
       LogWarning('Accelerator \'${name}\' unknown.');
       return null;
@@ -1142,6 +1169,11 @@ class Pbrt {
   Camera _makeCamera(String name, ParamSet paramSet,
           TransformSet cam2worldSet, double transformStart,
           double transformEnd, Film film) {
+    if (overrides != null && overrides.cameraName != null) {
+      name = overrides.cameraName;
+      paramSet = overrides.cameraParams;
+    }
+
     if (!_cameras.containsKey(name)) {
       LogWarning('Camera \'${name}\' unknown.');
       return null;
@@ -1160,6 +1192,11 @@ class Pbrt {
   }
 
   PixelSampler _makePixelSampler(String name, ParamSet paramSet, Film film) {
+    if (overrides != null && overrides.pixelSamplerName != null) {
+      name = overrides.pixelSamplerName;
+      paramSet = overrides.pixelSamplerParams;
+    }
+
     if (!_pixelSamplers.containsKey(name)) {
       LogWarning('PixelSampler \'${name}\' unknown.');
       return null;
@@ -1174,10 +1211,17 @@ class Pbrt {
   Sampler _makeSampler(String name,
                        ParamSet paramSet, Film film, Camera camera,
                        PixelSampler pixels) {
+    if (overrides != null && overrides.samplerName != null) {
+      name = overrides.samplerName;
+      paramSet = overrides.samplerParams;
+    }
+
     if (!_samplers.containsKey(name)) {
       LogWarning('Sampler \'${name}\' unknown.');
       return null;
     }
+
+    LogInfo('SAMPLER: $name');
 
     Sampler s = _samplers[name](paramSet, film, camera, pixels);
     paramSet.reportUnused();
@@ -1186,6 +1230,11 @@ class Pbrt {
   }
 
   Filter _makeFilter(String name, ParamSet paramSet) {
+    if (overrides != null && overrides.filterName != null) {
+      name = overrides.filterName;
+      paramSet = overrides.filterParams;
+    }
+
     if (!_filters.containsKey(name)) {
       LogWarning('Filter \'${name}\' unknown.');
       return null;
@@ -1199,6 +1248,11 @@ class Pbrt {
 
   Film _makeFilm(String name, ParamSet paramSet, Filter filter,
                 [Image outputImage, PreviewCallback previewCallback]) {
+    if (overrides != null && overrides.filmName != null) {
+      name = overrides.filmName;
+      paramSet = overrides.filmParams;
+    }
+
     if (!_films.containsKey(name)) {
       LogWarning('Film \'${name}\' unknown.');
       return null;

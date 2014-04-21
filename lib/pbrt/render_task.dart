@@ -32,14 +32,18 @@ class RenderTask {
   ReceivePort receivePort = new ReceivePort();
   SendPort sendPort;
   PreviewCallback previewCallback;
+  RenderOverrides overrides;
   int taskNum;
   int taskCount;
   static Image previewImage;
 
   RenderTask(this.previewCallback, this.taskNum, this.taskCount);
 
-  Future<OutputImage> render(String scene, String isolateUri) {
+  Future<OutputImage> render(String scene, String isolateUri,
+                             {RenderOverrides overrides}) {
     Completer<OutputImage> completer = new Completer<OutputImage>();
+
+    this.overrides = overrides;
 
     Isolate.spawnUri(Uri.parse(isolateUri), ['_'],
                      receivePort.sendPort).then((iso) {
@@ -142,10 +146,14 @@ class RenderTask {
   }
 
   void _startIsolateRender(String scene) {
-    sendPort.send({'cmd': 'render',
-                   'scene': scene,
-                   'taskNum': taskNum,
-                   'taskCount': taskCount,
-                   'preview': previewCallback != null ? true : false});
+    Map cmd = {'cmd': 'render',
+               'scene': scene,
+               'taskNum': taskNum,
+               'taskCount': taskCount,
+               'preview': previewCallback != null ? true : false};
+    if (overrides != null) {
+      cmd['overrides'] = overrides.toJson();
+    }
+    sendPort.send(cmd);
   }
 }

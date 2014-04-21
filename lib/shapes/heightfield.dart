@@ -25,16 +25,6 @@ class Heightfield extends Shape {
               this.z) :
     super(o2w, w2o, ro);
 
-  static Heightfield Create(Transform o2w, Transform w2o,
-                            bool reverseOrientation, ParamSet params) {
-    int nu = params.findOneInt('nu', -1);
-    int nv = params.findOneInt('nv', -1);
-    List<double> Pz = params.findFloat('Pz');
-    assert(Pz.length == nu * nv);
-    assert(nu != -1 && nv != -1 && Pz != null);
-    return new Heightfield(o2w, w2o, reverseOrientation, nu, nv, Pz);
-  }
-
   bool canIntersect() {
     return false;
   }
@@ -96,4 +86,14 @@ class Heightfield extends Shape {
   List<double> z;
   int nx;
   int ny;
+
+  static Heightfield Create(Transform o2w, Transform w2o,
+                            bool reverseOrientation, ParamSet params) {
+    int nu = params.findOneInt('nu', -1);
+    int nv = params.findOneInt('nv', -1);
+    List<double> Pz = params.findFloat('Pz');
+    assert(Pz.length == nu * nv);
+    assert(nu != -1 && nv != -1 && Pz != null);
+    return new Heightfield(o2w, w2o, reverseOrientation, nu, nv, Pz);
+  }
 }

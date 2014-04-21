@@ -71,8 +71,8 @@ abstract class Shape {
   }
 
   void getShadingGeometry(Transform obj2world,
-          DifferentialGeometry dg,
-          DifferentialGeometry dgShading) {
+                          DifferentialGeometry dg,
+                          DifferentialGeometry dgShading) {
     dgShading.copy(dg);
   }
 
@@ -103,8 +103,8 @@ abstract class Shape {
     Ray ray = new Ray(p, wi, 1.0e-3);
     ray.depth = -1; // temporary hack to ignore alpha mask
 
-    List<double> thit = [0.0],
-                 rayEpsilon = [0.0];
+    List<double> thit = [0.0];
+    List<double> rayEpsilon = [0.0];
     if (!intersect(ray, thit, rayEpsilon, dgLight)) {
       return 0.0;
     }

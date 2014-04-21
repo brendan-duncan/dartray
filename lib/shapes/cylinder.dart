@@ -21,16 +21,6 @@
 part of shapes;
 
 class Cylinder extends Shape {
-  static Cylinder Create(Transform o2w, Transform w2o,
-                              bool reverseOrientation, ParamSet params) {
-    double radius = params.findOneFloat('radius', 1.0);
-    double zmin = params.findOneFloat('zmin', -1.0);
-    double zmax = params.findOneFloat('zmax', 1.0);
-    double phimax = params.findOneFloat('phimax', 360.0);
-    return new Cylinder(o2w, w2o, reverseOrientation,
-                             radius, zmin, zmax, phimax);
-  }
-
   Cylinder(Transform o2w, Transform w2o, bool ro, this.radius,
            double z0, double z1, double phimax) :
     super(o2w, w2o, ro) {
@@ -253,4 +243,14 @@ class Cylinder extends Shape {
   double zmin;
   double zmax;
   double phiMax;
+
+  static Cylinder Create(Transform o2w, Transform w2o,
+                         bool reverseOrientation, ParamSet params) {
+    double radius = params.findOneFloat('radius', 1.0);
+    double zmin = params.findOneFloat('zmin', -1.0);
+    double zmax = params.findOneFloat('zmax', 1.0);
+    double phimax = params.findOneFloat('phimax', 360.0);
+    return new Cylinder(o2w, w2o, reverseOrientation,
+                             radius, zmin, zmax, phimax);
+  }
 }

@@ -29,16 +29,6 @@ class Paraboloid extends Shape {
     phiMax = Radians(tm.clamp(0.0, 360.0));
   }
 
-  static Paraboloid Create(Transform o2w, Transform w2o,
-                                bool reverseOrientation, ParamSet params) {
-      double radius = params.findOneFloat("radius", 1.0);
-      double zmin = params.findOneFloat("zmin", 0.0);
-      double zmax = params.findOneFloat("zmax", 1.0);
-      double phimax = params.findOneFloat("phimax", 360.0);
-      return new Paraboloid(o2w, w2o, reverseOrientation,
-                                 radius, zmin, zmax, phimax);
-  }
-
   BBox objectBound() {
     Point p1 = new Point(-radius, -radius, zmin);
     Point p2 = new Point(radius,  radius, zmax);
@@ -235,6 +225,17 @@ class Paraboloid extends Shape {
   }
 
   double radius;
-  double zmin, zmax;
+  double zmin;
+  double zmax;
   double phiMax;
+
+  static Paraboloid Create(Transform o2w, Transform w2o,
+                                bool reverseOrientation, ParamSet params) {
+      double radius = params.findOneFloat("radius", 1.0);
+      double zmin = params.findOneFloat("zmin", 0.0);
+      double zmax = params.findOneFloat("zmax", 1.0);
+      double phimax = params.findOneFloat("phimax", 360.0);
+      return new Paraboloid(o2w, w2o, reverseOrientation,
+                                 radius, zmin, zmax, phimax);
+  }
 }
