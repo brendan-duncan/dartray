@@ -22,26 +22,24 @@ part of samplers;
 
 class RandomSampler extends Sampler {
   RandomSampler(int xstart, int xend, int ystart,
-      int yend, int ns, double sopen, double sclose,
-      this.pixels) :
-    super(xstart, xend, ystart, yend, ns, sopen, sclose) {
+      int yend, double sopen, double sclose, this.pixels,
+      int ns, int samplingMode) :
+    super(xstart, xend, ystart, yend, sopen, sclose, ns, samplingMode) {
     if (pixels == null) {
-      LogSevere('Pixel sampler is required by LowDiscrepencySampler');
+      LogSevere('A PixelSampler is required by RandomSampler');
     }
     pixels.setup(xstart, xend, ystart, yend);
     pixelIndex = 0;
     sampleCount = 0;
-    // Get storage for a pixel's worth of stratified samples
-    imageSamples = new Float32List(2);
-    lensSamples = new Float32List(2);
-    timeSamples = new Float32List(1);
   }
 
   int maximumSampleCount() {
-    return 1;
+    return samplesPerPixel;
   }
 
   int getMoreSamples(List<Sample> sample, RNG rng) {
+    PixelSampler pixels = this.pixels;
+
     if (pixelIndex >= pixels.numPixels()) {
       sampleCount++;
       if (sampleCount >= samplesPerPixel) {
@@ -53,38 +51,33 @@ class RandomSampler extends Sampler {
 
     pixels.getPixel(pixelIndex++, pixel);
 
-    timeSamples[0] = rng.randomFloat();
-    imageSamples[0] = rng.randomFloat();
-    lensSamples[0] = rng.randomFloat();
+    int numSamples = samplingMode == Sampler.ITERATIVE_SAMPLING ? 1 :
+                     samplingMode == Sampler.FULL_SAMPLING ? samplesPerPixel :
+                     (sampleCount == 0) ? 1 : samplesPerPixel - 1;
 
-    imageSamples[1] = rng.randomFloat();
-    lensSamples[1] = rng.randomFloat();
+    for (int si = 0; si < numSamples; ++si) {
+      // Return next sample point
+      sample[si].imageX = rng.randomFloat() + pixel[0];
+      sample[si].imageY = rng.randomFloat() + pixel[1];
+      sample[si].lensU = rng.randomFloat();
+      sample[si].lensV = rng.randomFloat();
+      sample[si].time = Lerp(rng.randomFloat(), shutterOpen, shutterClose);
 
-    // Shift image samples to pixel coordinates
-    imageSamples[0] += pixel[0];
-    imageSamples[1] += pixel[1];
+      // Generate stratified samples for integrators
+      for (int i = 0; i < sample[si].n1D.length; ++i) {
+        for (int j = 0; j < sample[si].n1D[i]; ++j) {
+          sample[si].oneD[i][j] = rng.randomFloat();
+        }
+      }
 
-    // Return next sample point
-    sample[0].imageX = imageSamples[0];
-    sample[0].imageY = imageSamples[1];
-    sample[0].lensU = lensSamples[0];
-    sample[0].lensV = lensSamples[1];
-    sample[0].time = Lerp(timeSamples[0], shutterOpen, shutterClose);
-
-    // Generate stratified samples for integrators
-    for (int i = 0; i < sample[0].n1D.length; ++i) {
-      for (int j = 0; j < sample[0].n1D[i]; ++j) {
-        sample[0].oneD[i][j] = rng.randomFloat();
+      for (int i = 0; i < sample[si].n2D.length; ++i) {
+        for (int j = 0; j < 2 * sample[si].n2D[i]; ++j) {
+          sample[si].twoD[i][j] = rng.randomFloat();
+        }
       }
     }
 
-    for (int i = 0; i < sample[0].n2D.length; ++i) {
-      for (int j = 0; j < 2 * sample[0].n2D[i]; ++j) {
-        sample[0].twoD[i][j] = rng.randomFloat();
-      }
-    }
-
-    return 1;
+    return numSamples;
   }
 
   int roundSize(int sz) {
@@ -99,26 +92,35 @@ class RandomSampler extends Sampler {
     }
 
     return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
-                             samplesPerPixel, shutterOpen,
-                             shutterClose, pixels);
+                             shutterOpen, shutterClose, pixels,
+                             samplesPerPixel, samplingMode);
+  }
+
+  static RandomSampler Create(ParamSet params, Film film, Camera camera,
+                              PixelSampler pixels) {
+    int ns = params.findOneInt('pixelsamples', 32);
+
+    List<int> extents = [0, 0, 0, 0];
+    film.getSampleExtent(extents);
+
+    String mode = params.findOneString('mode', 'twopass');
+    int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
+                       (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
+                       (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
+                       -1;
+    if (samplingMode == -1) {
+      LogWarning('Invalid sampling mode: $mode. Using \'twopass\'.');
+      samplingMode = Sampler.TWO_PASS_SAMPLING;
+    }
+    LogInfo(mode);
+
+    return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
+                             camera.shutterOpen, camera.shutterClose,
+                             pixels, ns, samplingMode);
   }
 
   PixelSampler pixels;
   Int32List pixel = new Int32List(2);
   int pixelIndex;
-  Float32List imageSamples;
-  Float32List lensSamples;
-  Float32List timeSamples;
   int sampleCount;
-
-
-  static RandomSampler Create(ParamSet params, Film film, Camera camera,
-                                PixelSampler pixels) {
-    int ns = params.findOneInt('pixelsamples', 32);
-    List<int> extents = [0, 0, 0, 0];
-    film.getSampleExtent(extents);
-    return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
-                             ns, camera.shutterOpen, camera.shutterClose,
-                             pixels);
-  }
 }

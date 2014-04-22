@@ -21,25 +21,13 @@
 part of samplers;
 
 class LowDiscrepancySampler extends Sampler {
-  static LowDiscrepancySampler Create(ParamSet params, Film film,
-                                      Camera camera, PixelSampler pixels) {
-    // Initialize common sampler parameters
-    List<int> extents = [0, 0, 0, 0];
-    film.getSampleExtent(extents);
-    int nsamp = params.findOneInt('pixelsamples', 4);
-
-    return new LowDiscrepancySampler(extents[0], extents[1], extents[2],
-                                     extents[3], nsamp,
-                                     camera.shutterOpen, camera.shutterClose,
-                                     pixels);
-  }
-
   LowDiscrepancySampler(int xstart, int xend, int ystart, int yend,
-                        int nsamp, double sopen, double sclose,
-                        this.pixels) :
-    super(xstart, xend, ystart, yend, RoundUpPow2(nsamp), sopen, sclose) {
+                        double sopen, double sclose, this.pixels,
+                        int nsamp, int samplingMode) :
+    super(xstart, xend, ystart, yend, sopen, sclose,
+          RoundUpPow2(nsamp), samplingMode) {
     if (pixels == null) {
-      LogSevere('Pixel sampler is required by LowDiscrepencySampler');
+      LogSevere('A PixelSampler is required by LowDiscrepencySampler');
     }
     pixels.setup(xstart, xend, ystart, yend);
     pixelIndex = 0;
@@ -61,9 +49,8 @@ class LowDiscrepancySampler extends Sampler {
 
     return new LowDiscrepancySampler(extents[0], extents[1],
                                      extents[2], extents[3],
-                                     nPixelSamples,
                                      shutterOpen, shutterClose,
-                                     pixels);
+                                     pixels, nPixelSamples, samplingMode);
   }
 
   int roundSize(int size) {
@@ -92,6 +79,28 @@ class LowDiscrepancySampler extends Sampler {
     return nPixelSamples;
   }
 
+  static LowDiscrepancySampler Create(ParamSet params, Film film,
+                                      Camera camera, PixelSampler pixels) {
+    // Initialize common sampler parameters
+    List<int> extents = [0, 0, 0, 0];
+    film.getSampleExtent(extents);
+    int nsamp = params.findOneInt('pixelsamples', 4);
+
+    String mode = params.findOneString('mode', 'twopass');
+    int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
+                       (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
+                       (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
+                       -1;
+    if (samplingMode == -1) {
+      LogWarning('Invalid sampling mode: $mode. Using \'twopass\'.');
+      samplingMode = Sampler.TWO_PASS_SAMPLING;
+    }
+
+    return new LowDiscrepancySampler(extents[0], extents[1], extents[2],
+                                     extents[3], camera.shutterOpen,
+                                     camera.shutterClose, pixels,
+                                     nsamp, samplingMode);
+  }
 
   PixelSampler pixels;
   Int32List pixel = new Int32List(2);

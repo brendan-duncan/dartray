@@ -24,35 +24,12 @@ class AdaptiveSampler extends Sampler {
   static const int ADAPTIVE_COMPARE_SHAPE_ID = 0;
   static const int ADAPTIVE_CONTRAST_THRESHOLD = 1;
 
-  static AdaptiveSampler Create(ParamSet params, Film film, Camera camera,
-                                PixelSampler pixels) {
-    // Initialize common sampler parameters
-    List<int> extent = [0, 0, 0, 0];
-    film.getSampleExtent(extent);
-    int minsamp = params.findOneInt('minsamples', 4);
-    int maxsamp = params.findOneInt('maxsamples', 32);
-
-    String m = params.findOneString('method', 'contrast');
-    int method = (m == 'contrast') ? ADAPTIVE_CONTRAST_THRESHOLD :
-                 (m == 'shapeid') ? ADAPTIVE_COMPARE_SHAPE_ID :
-                 -1;
-
-    if (method == -1) {
-      LogWarning('Adaptive sampling metric \'$m\' unknown. Using \'contrast\'.');
-      method = ADAPTIVE_CONTRAST_THRESHOLD;
-    }
-
-    return new AdaptiveSampler(extent[0], extent[1], extent[2], extent[3],
-                               minsamp, maxsamp, method,
-                               camera.shutterOpen, camera.shutterClose,
-                               pixels);
-  }
-
   AdaptiveSampler(int xstart, int xend, int ystart, int yend,
                   int mins, int maxs, int method,
-                  double sopen, double sclose, this.pixels) :
-    super(xstart, xend, ystart, yend, RoundUpPow2(Math.max(mins, maxs)),
-          sopen, sclose) {
+                  double sopen, double sclose, this.pixels,
+                  int samplingMode) :
+    super(xstart, xend, ystart, yend, sopen, sclose,
+          RoundUpPow2(Math.max(mins, maxs)), samplingMode) {
     if (pixels == null) {
       LogSevere('Pixel sampler is required by LowDiscrepencySampler');
     }
@@ -104,7 +81,8 @@ class AdaptiveSampler extends Sampler {
 
     return new AdaptiveSampler(extent[0], extent[1], extent[2], extent[3],
                                minSamples, maxSamples, method,
-                               shutterOpen, shutterClose, pixels);
+                               shutterOpen, shutterClose, pixels,
+                               samplingMode);
   }
 
   int roundSize(int size) {
@@ -200,4 +178,37 @@ class AdaptiveSampler extends Sampler {
 
   int method;
   bool supersamplePixel;
+
+  static AdaptiveSampler Create(ParamSet params, Film film, Camera camera,
+                                  PixelSampler pixels) {
+    // Initialize common sampler parameters
+    List<int> extent = [0, 0, 0, 0];
+    film.getSampleExtent(extent);
+    int minsamp = params.findOneInt('minsamples', 4);
+    int maxsamp = params.findOneInt('maxsamples', 32);
+
+    String m = params.findOneString('method', 'contrast');
+    int method = (m == 'contrast') ? ADAPTIVE_CONTRAST_THRESHOLD :
+                 (m == 'shapeid') ? ADAPTIVE_COMPARE_SHAPE_ID :
+                 -1;
+    if (method == -1) {
+      LogWarning('Adaptive sampling metric \'$m\' unknown. Using \'contrast\'.');
+      method = ADAPTIVE_CONTRAST_THRESHOLD;
+    }
+
+    String mode = params.findOneString('mode', 'twopass');
+    int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
+                       (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
+                       (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
+                       -1;
+    if (samplingMode == -1) {
+      LogWarning('Invalid sampling mode: $mode. Using \'twopass\'.');
+      samplingMode = Sampler.TWO_PASS_SAMPLING;
+    }
+
+    return new AdaptiveSampler(extent[0], extent[1], extent[2], extent[3],
+                               minsamp, maxsamp, method,
+                               camera.shutterOpen, camera.shutterClose,
+                               pixels, samplingMode);
+  }
 }

@@ -24,10 +24,6 @@ part of pixel_samplers;
  * Sample the image pixels in a random order.
  */
 class RandomPixelSampler extends PixelSampler {
-  static RandomPixelSampler Create(ParamSet params, Film film) {
-    return new RandomPixelSampler();
-  }
-
   void setup(int xPixelStart, int xPixelEnd, int yPixelStart,
              int yPixelEnd) {
     super.setup(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd);
@@ -72,6 +68,10 @@ class RandomPixelSampler extends PixelSampler {
     }
     pixel[0] = _samples[index];
     pixel[1] = _samples[index + 1];
+  }
+
+  static RandomPixelSampler Create(ParamSet params, Film film) {
+    return new RandomPixelSampler();
   }
 
   int _numSamples;

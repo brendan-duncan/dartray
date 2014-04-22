@@ -21,37 +21,12 @@
 part of samplers;
 
 class StratifiedSampler extends Sampler {
-  static StratifiedSampler Create(ParamSet params, Film film, Camera camera,
-                                  PixelSampler pixels) {
-    bool jitter = params.findOneBool('jitter', true);
-    // Initialize common sampler parameters
-    List<int> extents = [0, 0, 0, 0];
-    film.getSampleExtent(extents);
-
-    int pixelsamples = params.findOneInt('pixelsamples', null);
-    int xsamp;
-    int ysamp;
-    if (pixelsamples != null) {
-      xsamp = pixelsamples;
-      ysamp = pixelsamples;
-    } else {
-      xsamp = params.findOneInt('xsamples', 2);
-      ysamp = params.findOneInt('ysamples', 2);
-    }
-
-    return new StratifiedSampler(extents[0], extents[1], extents[2],
-                                 extents[3], xsamp, ysamp, jitter,
-                                 camera.shutterOpen, camera.shutterClose,
-                                 pixels);
-  }
-
   StratifiedSampler(int xstart, int xend, int ystart, int yend,
-                    int xs, int ys, this.jitterSamples,
-                    double sopen, double sclose,
-                    this.pixels) :
-    super(xstart, xend, ystart, yend, xs * ys, sopen, sclose) {
+                    this.jitterSamples, double sopen, double sclose,
+                    this.pixels, int xs, int ys, int samplingMode) :
+    super(xstart, xend, ystart, yend, sopen, sclose, xs * ys, samplingMode) {
     if (pixels == null) {
-      LogSevere('Pixel sampler is required by StratifiedSampler');
+      LogSevere('A PixelSampler is required by StratifiedSampler');
     }
     pixels.setup(xstart, xend, ystart, yend);
     pixelIndex = 0;
@@ -74,8 +49,9 @@ class StratifiedSampler extends Sampler {
       return null;
     }
     return new StratifiedSampler(range[0], range[1], range[2], range[3],
-                                 xPixelSamples, yPixelSamples, jitterSamples,
-                                 shutterOpen, shutterClose, pixels);
+                                 jitterSamples, shutterOpen, shutterClose,
+                                 pixels, xPixelSamples, yPixelSamples,
+                                 samplingMode);
   }
 
   int getMoreSamples(List<Sample> samples, RNG rng) {
@@ -131,6 +107,40 @@ class StratifiedSampler extends Sampler {
 
   int maximumSampleCount() {
     return nPixelSamples;
+  }
+
+  static StratifiedSampler Create(ParamSet params, Film film, Camera camera,
+                                  PixelSampler pixels) {
+    bool jitter = params.findOneBool('jitter', true);
+    // Initialize common sampler parameters
+    List<int> extents = [0, 0, 0, 0];
+    film.getSampleExtent(extents);
+
+    int pixelsamples = params.findOneInt('pixelsamples', null);
+    int xsamp;
+    int ysamp;
+    if (pixelsamples != null) {
+      xsamp = pixelsamples;
+      ysamp = pixelsamples;
+    } else {
+      xsamp = params.findOneInt('xsamples', 2);
+      ysamp = params.findOneInt('ysamples', 2);
+    }
+
+    String mode = params.findOneString('mode', 'twopass');
+    int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
+                       (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
+                       (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
+                       -1;
+    if (samplingMode == -1) {
+      LogWarning('Invalid sampling mode: $mode. Using \'twopass\'.');
+      samplingMode = Sampler.TWO_PASS_SAMPLING;
+    }
+
+    return new StratifiedSampler(extents[0], extents[1], extents[2],
+                                 extents[3], jitter,
+                                 camera.shutterOpen, camera.shutterClose,
+                                 pixels, xsamp, ysamp, samplingMode);
   }
 
   int xPixelSamples;

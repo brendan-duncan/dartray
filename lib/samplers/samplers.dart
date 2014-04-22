@@ -23,6 +23,7 @@ library samplers;
 import 'dart:math' as Math;
 import 'dart:typed_data';
 import '../core/core.dart';
+import '../pixel_samplers/pixel_samplers.dart';
 
 part 'adaptive_sampler.dart';
 part 'best_candidate_sampler.dart';

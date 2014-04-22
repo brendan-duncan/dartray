@@ -25,21 +25,11 @@ class BestCandidateSampler extends Sampler {
   static const int SAMPLE_TABLE_SIZE = SQRT_SAMPLE_TABLE_SIZE *
                                        SQRT_SAMPLE_TABLE_SIZE;
 
-  static BestCandidateSampler Create(ParamSet params, Film film,
-                                     Camera camera, PixelSampler pixels) {
-    // Initialize common sampler parameters
-    List<int> extent = [0, 0, 0, 0];
-    film.getSampleExtent(extent);
-    int nsamp = params.findOneInt('pixelsamples', 4);
-
-    return new BestCandidateSampler(extent[0], extent[1], extent[2], extent[3],
-                                    nsamp, camera.shutterOpen,
-                                    camera.shutterClose);
-  }
-
   BestCandidateSampler(int xstart, int xend, int ystart, int yend,
-                       int nPixelSamples, double sopen, double sclose)
-    : super(xstart, xend, ystart, yend, nPixelSamples, sopen, sclose) {
+                       double sopen, double sclose, int nPixelSamples,
+                       int samplingMode)
+    : super(xstart, xend, ystart, yend, sopen, sclose, nPixelSamples,
+            samplingMode) {
     tableWidth = SQRT_SAMPLE_TABLE_SIZE / Math.sqrt(nPixelSamples);
     xTileStart = (xstart / tableWidth).floor();
     xTileEnd = (xend / tableWidth).floor();
@@ -63,7 +53,8 @@ class BestCandidateSampler extends Sampler {
     }
 
     return new BestCandidateSampler(extent[0], extent[1], extent[2], extent[3],
-                                    samplesPerPixel, shutterOpen, shutterClose);
+                                    shutterOpen, shutterClose, samplesPerPixel,
+                                    samplingMode);
   }
 
   int roundSize(int size) {
@@ -140,6 +131,28 @@ class BestCandidateSampler extends Sampler {
   int xTile;
   int yTile;
   List<double> sampleOffsets = [0.0, 0.0, 0.0];
+
+  static BestCandidateSampler Create(ParamSet params, Film film,
+                                     Camera camera, PixelSampler pixels) {
+    // Initialize common sampler parameters
+    List<int> extent = [0, 0, 0, 0];
+    film.getSampleExtent(extent);
+    int nsamp = params.findOneInt('pixelsamples', 4);
+
+    String mode = params.findOneString('mode', 'twopass');
+    int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
+                       (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
+                       (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
+                       -1;
+    if (samplingMode == -1) {
+      LogWarning('Invalid sampling mode: $mode. Using \'twopass\'.');
+      samplingMode = Sampler.TWO_PASS_SAMPLING;
+    }
+
+    return new BestCandidateSampler(extent[0], extent[1], extent[2], extent[3],
+                                    camera.shutterOpen, camera.shutterClose,
+                                    nsamp, samplingMode);
+  }
 }
 
 const List<double> _SAMPLE_TABLE = const [

@@ -24,9 +24,32 @@ part of core;
  * Determines the points on the film plane for tracing rays.
  */
 abstract class Sampler {
+  static const int FULL_SAMPLING = 0;
+  static const int TWO_PASS_SAMPLING = 1;
+  static const int ITERATIVE_SAMPLING = 2;
+
+  int xPixelStart;
+  int xPixelEnd;
+  int yPixelStart;
+  int yPixelEnd;
+  double shutterOpen;
+  double shutterClose;
+  /// How many samples should be generated for each pixel.
+  int samplesPerPixel;
+  /// [samplingMode] defines how samples are generated for each pixel.
+  /// [FULL_SAMPLING] will generate all samples for a pixel before moving on
+  /// to the next pixel.
+  /// [TWO_PASS_SAMPLING] will generate a single sample for every pixel, and
+  /// then come back and do the rest of the samples on the second pass. This
+  /// will allow the initial image to be displayed more quickly.
+  /// [ITERATIVE_SAMPLING] will generate a single sample for every pixel for
+  /// each pass, until the [samplesPerPixel] has been reached. This will more
+  /// gradually refine the image.
+  int samplingMode;
+
   Sampler(this.xPixelStart, this.xPixelEnd, this.yPixelStart,
-          this.yPixelEnd, this.samplesPerPixel, this.shutterOpen,
-          this.shutterClose);
+          this.yPixelEnd, this.shutterOpen, this.shutterClose,
+          this.samplesPerPixel, this.samplingMode);
 
   int get width => (xPixelEnd - xPixelStart);
 
@@ -81,13 +104,5 @@ abstract class Sampler {
     extents[2] = Lerp(ty0, 0, h).floor();
     extents[3] = Math.min(Lerp(ty1, 0, h).floor(), h - 1);
   }
-
-  int xPixelStart;
-  int xPixelEnd;
-  int yPixelStart;
-  int yPixelEnd;
-  int samplesPerPixel;
-  double shutterOpen;
-  double shutterClose;
 }
 

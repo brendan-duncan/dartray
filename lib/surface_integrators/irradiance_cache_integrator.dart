@@ -117,9 +117,9 @@ class IrradianceCacheIntegrator extends SurfaceIntegrator {
 
     HaltonSampler sampler = new HaltonSampler(extent[0], extent[1],
                                               extent[2], extent[3],
-                                              1,
                                               camera.shutterOpen,
-                                              camera.shutterClose);
+                                              camera.shutterClose,
+                                              1, Sampler.FULL_SAMPLING);
 
     Sample sample = new Sample(sampler, this, null, scene);
 
