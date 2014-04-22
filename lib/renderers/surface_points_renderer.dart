@@ -59,7 +59,7 @@ class SurfacePointsRenderer extends Renderer {
          data[di++] = sp.rayEpsilon;
        }
 
-       ResourceManager.AddResource(filename, data);
+       ResourceManager.WriteFile(filename, data);
     }
 
     return null;

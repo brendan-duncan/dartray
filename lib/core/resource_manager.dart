@@ -45,8 +45,8 @@ abstract class ResourceManager {
     return global.getResource(path);
   }
 
-  static void AddResource(String path, data) {
-    global.addResource(path, data);
+  static void WriteFile(String path, data) {
+    global.writeFile(path, data);
   }
 
   static bool HasTexture(String name) {
@@ -214,7 +214,7 @@ abstract class ResourceManager {
   /**
    * Add a resource so it can be accessed later.
    */
-  void addResource(String path, data) {
+  void writeFile(String path, data) {
     resources[path] = data;
   }
 
