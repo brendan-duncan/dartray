@@ -26,10 +26,8 @@ class BestCandidateSampler extends Sampler {
                                        SQRT_SAMPLE_TABLE_SIZE;
 
   BestCandidateSampler(int xstart, int xend, int ystart, int yend,
-                       double sopen, double sclose, int nPixelSamples,
-                       int samplingMode)
-    : super(xstart, xend, ystart, yend, sopen, sclose, nPixelSamples,
-            samplingMode) {
+                       double sopen, double sclose, int nPixelSamples)
+    : super(xstart, xend, ystart, yend, sopen, sclose, nPixelSamples) {
     tableWidth = SQRT_SAMPLE_TABLE_SIZE / Math.sqrt(nPixelSamples);
     xTileStart = (xstart / tableWidth).floor();
     xTileEnd = (xend / tableWidth).floor();
@@ -44,14 +42,13 @@ class BestCandidateSampler extends Sampler {
       sampleOffsets[i] = tileRng.randomFloat();
     }
 
-    if (samplingMode == Sampler.TWO_PASS_SAMPLING ||
-        samplingMode == Sampler.ITERATIVE_SAMPLING) {
+    if (RenderOverrides.SamplingMode() == Sampler.TWO_PASS_SAMPLING ||
+        RenderOverrides.SamplingMode() == Sampler.ITERATIVE_SAMPLING) {
       PixelSampler pixels = new TilePixelSampler();
       pixels.setup(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd);
 
       randomSampler = new RandomSampler(xstart, xend, ystart, yend,
-                                        sopen, sclose, pixels, 1,
-                                        Sampler.ITERATIVE_SAMPLING);
+                                        sopen, sclose, pixels, 1);
     }
 
     pass = 0;
@@ -65,8 +62,7 @@ class BestCandidateSampler extends Sampler {
     }
 
     return new BestCandidateSampler(extent[0], extent[1], extent[2], extent[3],
-                                    shutterOpen, shutterClose, samplesPerPixel,
-                                    samplingMode);
+                                    shutterOpen, shutterClose, samplesPerPixel);
   }
 
   int roundSize(int size) {
@@ -149,19 +145,9 @@ class BestCandidateSampler extends Sampler {
     film.getSampleExtent(extent);
     int nsamp = params.findOneInt('pixelsamples', 4);
 
-    String mode = params.findOneString('mode', 'full');
-    int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
-                       (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
-                       (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
-                       -1;
-    if (samplingMode == -1) {
-      LogWarning('Invalid sampling mode: $mode. Using \'full\'.');
-      samplingMode = Sampler.FULL_SAMPLING;
-    }
-
     return new BestCandidateSampler(extent[0], extent[1], extent[2], extent[3],
                                     camera.shutterOpen, camera.shutterClose,
-                                    nsamp, samplingMode);
+                                    nsamp);
   }
 
   double tableWidth;

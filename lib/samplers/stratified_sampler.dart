@@ -23,8 +23,8 @@ part of samplers;
 class StratifiedSampler extends Sampler {
   StratifiedSampler(int xstart, int xend, int ystart, int yend,
                     this.jitterSamples, double sopen, double sclose,
-                    this.pixels, int xs, int ys, int samplingMode) :
-    super(xstart, xend, ystart, yend, sopen, sclose, xs * ys, samplingMode) {
+                    this.pixels, int xs, int ys) :
+    super(xstart, xend, ystart, yend, sopen, sclose, xs * ys) {
     if (pixels == null) {
       LogSevere('A PixelSampler is required by StratifiedSampler');
     }
@@ -37,11 +37,10 @@ class StratifiedSampler extends Sampler {
     lensSamples = new Float32List(2 * nPixelSamples);
     timeSamples = new Float32List(xPixelSamples * yPixelSamples);
 
-    if (samplingMode == Sampler.TWO_PASS_SAMPLING ||
-        samplingMode == Sampler.ITERATIVE_SAMPLING) {
+    if (RenderOverrides.SamplingMode() == Sampler.TWO_PASS_SAMPLING ||
+        RenderOverrides.SamplingMode() == Sampler.ITERATIVE_SAMPLING) {
       randomSampler = new RandomSampler(xstart, xend, ystart, yend,
-                                        sopen, sclose, pixels, 1,
-                                        Sampler.ITERATIVE_SAMPLING);
+                                        sopen, sclose, pixels, 1);
     }
 
     pass = 0;
@@ -59,8 +58,7 @@ class StratifiedSampler extends Sampler {
     }
     return new StratifiedSampler(range[0], range[1], range[2], range[3],
                                  jitterSamples, shutterOpen, shutterClose,
-                                 pixels, xPixelSamples, yPixelSamples,
-                                 samplingMode);
+                                 pixels, xPixelSamples, yPixelSamples);
   }
 
   int getMoreSamples(List<Sample> samples, RNG rng) {
@@ -144,20 +142,10 @@ class StratifiedSampler extends Sampler {
       ysamp = params.findOneInt('ysamples', 2);
     }
 
-    String mode = params.findOneString('mode', 'full');
-    int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
-                       (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
-                       (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
-                       -1;
-    if (samplingMode == -1) {
-      LogWarning('Invalid sampling mode: $mode. Using \'full\'.');
-      samplingMode = Sampler.FULL_SAMPLING;
-    }
-
     return new StratifiedSampler(extents[0], extents[1], extents[2],
                                  extents[3], jitter,
                                  camera.shutterOpen, camera.shutterClose,
-                                 pixels, xsamp, ysamp, samplingMode);
+                                 pixels, xsamp, ysamp);
   }
 
   int xPixelSamples;

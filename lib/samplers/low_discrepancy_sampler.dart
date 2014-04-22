@@ -23,9 +23,8 @@ part of samplers;
 class LowDiscrepancySampler extends Sampler {
   LowDiscrepancySampler(int xstart, int xend, int ystart, int yend,
                         double sopen, double sclose, this.pixels,
-                        int nsamp, int samplingMode) :
-    super(xstart, xend, ystart, yend, sopen, sclose,
-          RoundUpPow2(nsamp), samplingMode) {
+                        int nsamp) :
+    super(xstart, xend, ystart, yend, sopen, sclose, RoundUpPow2(nsamp)) {
     if (pixels == null) {
       LogSevere('A PixelSampler is required by LowDiscrepencySampler');
     }
@@ -39,11 +38,10 @@ class LowDiscrepancySampler extends Sampler {
     }
     sampleBuf = null;
 
-    if (samplingMode == Sampler.TWO_PASS_SAMPLING ||
-        samplingMode == Sampler.ITERATIVE_SAMPLING) {
+    if (RenderOverrides.SamplingMode() == Sampler.TWO_PASS_SAMPLING ||
+        RenderOverrides.SamplingMode() == Sampler.ITERATIVE_SAMPLING) {
       randomSampler = new RandomSampler(xstart, xend, ystart, yend,
-                                        sopen, sclose, pixels, 1,
-                                        Sampler.ITERATIVE_SAMPLING);
+                                        sopen, sclose, pixels, 1);
     }
 
     pass = 0;
@@ -59,7 +57,7 @@ class LowDiscrepancySampler extends Sampler {
     return new LowDiscrepancySampler(extents[0], extents[1],
                                      extents[2], extents[3],
                                      shutterOpen, shutterClose,
-                                     pixels, nPixelSamples, samplingMode);
+                                     pixels, nPixelSamples);
   }
 
   int roundSize(int size) {
@@ -103,20 +101,9 @@ class LowDiscrepancySampler extends Sampler {
     film.getSampleExtent(extents);
     int nsamp = params.findOneInt('pixelsamples', 4);
 
-    String mode = params.findOneString('mode', 'full');
-    int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
-                       (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
-                       (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
-                       -1;
-    if (samplingMode == -1) {
-      LogWarning('Invalid sampling mode: $mode. Using \'full\'.');
-      samplingMode = Sampler.FULL_SAMPLING;
-    }
-
     return new LowDiscrepancySampler(extents[0], extents[1], extents[2],
                                      extents[3], camera.shutterOpen,
-                                     camera.shutterClose, pixels,
-                                     nsamp, samplingMode);
+                                     camera.shutterClose, pixels, nsamp);
   }
 
   PixelSampler pixels;

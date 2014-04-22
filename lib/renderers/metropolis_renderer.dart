@@ -32,7 +32,7 @@ class MetropolisRenderer extends Renderer {
     int md = params.findOneInt('maxdepth', 7);
     bool doBidirectional = params.findOneBool('bidirectional', true);
 
-    if (RenderOverrides.GetQuickRender()) {
+    if (RenderOverrides.QuickRender()) {
       perPixelSamples = Math.max(1, perPixelSamples ~/ 4);
       nBootstrap = Math.max(1, nBootstrap ~/ 4);
       nDirectPixelSamples = Math.max(1, nDirectPixelSamples ~/ 4);
@@ -92,8 +92,7 @@ class MetropolisRenderer extends Renderer {
               new LowDiscrepancySampler(extent[0], extent[1],
                                         extent[2], extent[3],
                                         t0, t1, new TilePixelSampler(),
-                                        nDirectPixelSamples,
-                                        Sampler.TWO_PASS_SAMPLING);
+                                        nDirectPixelSamples);
           Sample sample = new Sample(sampler, directLighting, null, scene);
 
           var task = new _SamplerRendererTask(scene, this, camera,

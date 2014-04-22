@@ -22,20 +22,19 @@ part of samplers;
 
 class HaltonSampler extends Sampler {
   HaltonSampler(int xs, int xe, int ys, int ye, double sopen, double sclose,
-                int ps, int samplingMode) :
-    super(xs, xe, ys, ye, sopen, sclose, ps, samplingMode) {
+                int ps) :
+    super(xs, xe, ys, ye, sopen, sclose, ps) {
     int delta = Math.max(xPixelEnd - xPixelStart,
                          yPixelEnd - yPixelStart);
     wantedSamples = samplesPerPixel * delta * delta;
     currentSample = 0;
-    if (samplingMode == Sampler.TWO_PASS_SAMPLING ||
-        samplingMode == Sampler.ITERATIVE_SAMPLING) {
+    if (RenderOverrides.SamplingMode() == Sampler.TWO_PASS_SAMPLING ||
+        RenderOverrides.SamplingMode() == Sampler.ITERATIVE_SAMPLING) {
       PixelSampler pixels = new TilePixelSampler();
       pixels.setup(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd);
 
       randomSampler = new RandomSampler(xs, xe, ys, ye,
-                                        sopen, sclose, pixels, 1,
-                                        Sampler.ITERATIVE_SAMPLING);
+                                        sopen, sclose, pixels, 1);
     }
 
     pass = 0;
@@ -101,8 +100,7 @@ class HaltonSampler extends Sampler {
       return null;
     }
     return new HaltonSampler(range[0], range[1], range[2], range[3],
-                             shutterOpen, shutterClose, samplesPerPixel,
-                             samplingMode);
+                             shutterOpen, shutterClose, samplesPerPixel);
   }
 
   int roundSize(int size) {
@@ -116,19 +114,8 @@ class HaltonSampler extends Sampler {
     film.getSampleExtent(range);
     int nsamp = params.findOneInt('pixelsamples', 4);
 
-    String mode = params.findOneString('mode', 'full');
-    int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
-                       (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
-                       (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
-                       -1;
-    if (samplingMode == -1) {
-      LogWarning('Invalid sampling mode: $mode. Using \'full\'.');
-      samplingMode = Sampler.FULL_SAMPLING;
-    }
-
     return new HaltonSampler(range[0], range[1], range[2], range[3],
-                             camera.shutterOpen, camera.shutterClose,
-                             nsamp, samplingMode);
+                             camera.shutterOpen, camera.shutterClose, nsamp);
   }
 
   int wantedSamples;

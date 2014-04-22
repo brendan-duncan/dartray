@@ -217,7 +217,7 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
     double maxError = params.findOneFloat('maxerror', 0.05);
     double minDist = params.findOneFloat('minsampledistance', 0.25);
     String pointsfile = params.findOneFilename('pointsfile', '');
-    if (RenderOverrides.GetQuickRender()) {
+    if (RenderOverrides.QuickRender()) {
       maxError *= 4.0;
       minDist *= 4.0;
     }

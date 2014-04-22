@@ -26,10 +26,9 @@ class AdaptiveSampler extends Sampler {
 
   AdaptiveSampler(int xstart, int xend, int ystart, int yend,
                   int mins, int maxs, int method,
-                  double sopen, double sclose, this.pixels,
-                  int samplingMode) :
+                  double sopen, double sclose, this.pixels) :
     super(xstart, xend, ystart, yend, sopen, sclose,
-          RoundUpPow2(Math.max(mins, maxs)), samplingMode) {
+          RoundUpPow2(Math.max(mins, maxs))) {
     if (pixels == null) {
       LogSevere('Pixel sampler is required by LowDiscrepencySampler');
     }
@@ -71,11 +70,10 @@ class AdaptiveSampler extends Sampler {
                  'minimum. Using $minSamples - $maxSamples');
     }
 
-    if (samplingMode == Sampler.TWO_PASS_SAMPLING ||
-        samplingMode == Sampler.ITERATIVE_SAMPLING) {
+    if (RenderOverrides.SamplingMode() == Sampler.TWO_PASS_SAMPLING ||
+        RenderOverrides.SamplingMode() == Sampler.ITERATIVE_SAMPLING) {
       randomSampler = new RandomSampler(xstart, xend, ystart, yend,
-                                        sopen, sclose, pixels, 1,
-                                        Sampler.ITERATIVE_SAMPLING);
+                                        sopen, sclose, pixels, 1);
     }
 
     pass = 0;
@@ -90,8 +88,7 @@ class AdaptiveSampler extends Sampler {
 
     return new AdaptiveSampler(extent[0], extent[1], extent[2], extent[3],
                                minSamples, maxSamples, method,
-                               shutterOpen, shutterClose, pixels,
-                               samplingMode);
+                               shutterOpen, shutterClose, pixels);
   }
 
   int roundSize(int size) {
@@ -207,20 +204,10 @@ class AdaptiveSampler extends Sampler {
       method = ADAPTIVE_CONTRAST_THRESHOLD;
     }
 
-    String mode = params.findOneString('mode', 'full');
-    int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
-                       (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
-                       (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
-                       -1;
-    if (samplingMode == -1) {
-      LogWarning('Invalid sampling mode: $mode. Using \'full\'.');
-      samplingMode = Sampler.FULL_SAMPLING;
-    }
-
     return new AdaptiveSampler(extent[0], extent[1], extent[2], extent[3],
                                minsamp, maxsamp, method,
                                camera.shutterOpen, camera.shutterClose,
-                               pixels, samplingMode);
+                               pixels);
   }
 
   PixelSampler pixels;

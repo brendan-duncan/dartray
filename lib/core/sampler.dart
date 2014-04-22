@@ -24,6 +24,16 @@ part of core;
  * Determines the points on the film plane for tracing rays.
  */
 abstract class Sampler {
+  /// [RenderOverrides.samplingMode] defines how samples are generated for each
+  /// pixel.
+  /// [FULL_SAMPLING] will generate all samples for a pixel before moving on
+  /// to the next pixel.
+  /// [TWO_PASS_SAMPLING] will generate a single sample for every pixel, and
+  /// then come back and do the rest of the samples on the second pass. This
+  /// will allow the initial image to be displayed more quickly.
+  /// [ITERATIVE_SAMPLING] will generate a single sample for every pixel for
+  /// each pass, until the [samplesPerPixel] has been reached. This will more
+  /// gradually refine the image.
   static const int FULL_SAMPLING = 0;
   static const int TWO_PASS_SAMPLING = 1;
   static const int ITERATIVE_SAMPLING = 2;
@@ -36,20 +46,10 @@ abstract class Sampler {
   double shutterClose;
   /// How many samples should be generated for each pixel.
   int samplesPerPixel;
-  /// [samplingMode] defines how samples are generated for each pixel.
-  /// [FULL_SAMPLING] will generate all samples for a pixel before moving on
-  /// to the next pixel.
-  /// [TWO_PASS_SAMPLING] will generate a single sample for every pixel, and
-  /// then come back and do the rest of the samples on the second pass. This
-  /// will allow the initial image to be displayed more quickly.
-  /// [ITERATIVE_SAMPLING] will generate a single sample for every pixel for
-  /// each pass, until the [samplesPerPixel] has been reached. This will more
-  /// gradually refine the image.
-  int samplingMode;
 
   Sampler(this.xPixelStart, this.xPixelEnd, this.yPixelStart,
           this.yPixelEnd, this.shutterOpen, this.shutterClose,
-          this.samplesPerPixel, this.samplingMode);
+          this.samplesPerPixel);
 
   int get width => (xPixelEnd - xPixelStart);
 

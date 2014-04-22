@@ -25,7 +25,7 @@ class SurfacePointsRenderer extends Renderer {
      _SurfacePointStats stats = new _SurfacePointStats();
      int maxFails = 2000;
 
-     if (RenderOverrides.GetQuickRender()) {
+     if (RenderOverrides.QuickRender()) {
        maxFails = Math.max(10, maxFails ~/ 10);
      }
 
@@ -95,7 +95,7 @@ class SurfacePointsRenderer extends Renderer {
                                       double time) {
     double minDist = params.findOneFloat('minsampledistance', 0.25);
     String filename = params.findOneFilename('filename', '');
-    if (RenderOverrides.GetQuickRender()) {
+    if (RenderOverrides.QuickRender()) {
       minDist *= 4.0;
     }
     return new SurfacePointsRenderer(minDist, pCamera, time, filename);

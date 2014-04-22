@@ -295,8 +295,8 @@ class ImageFilm extends Film {
       crop = [ 0.0, 1.0, 0.0, 1.0 ];
     }
 
-    xres = (xres * RenderOverrides.GetResolutionScale()).toInt();
-    yres = (yres * RenderOverrides.GetResolutionScale()).toInt();
+    xres = (xres * RenderOverrides.ResolutionScale()).toInt();
+    yres = (yres * RenderOverrides.ResolutionScale()).toInt();
 
     return new ImageFilm(xres, yres, filter, crop, filename, previewCallback);
   }

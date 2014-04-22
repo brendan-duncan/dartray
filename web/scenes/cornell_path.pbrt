@@ -1,7 +1,6 @@
 
 SurfaceIntegrator "path"
-#Sampler "lowdiscrepancy" "integer pixelsamples" [16]
-Sampler "random" "integer pixelsamples" [1] "bool continuous" [true] 
+Sampler "lowdiscrepancy" "integer pixelsamples" [16]
 
 LookAt 0 0 -35 0 0 0 0 1 0 
 Camera "perspective" "float fov" [35]

@@ -3,6 +3,7 @@ part of core;
 class RenderOverrides {
   bool quickRender = false;
   double resolutionScale = 1.0;
+  int samplingMode = Sampler.FULL_SAMPLING;
   String filterName;
   ParamSet filterParams;
   String filmName;
@@ -28,18 +29,25 @@ class RenderOverrides {
     return global != null;
   }
 
-  static bool GetQuickRender() {
+  static bool QuickRender() {
     if (global != null) {
       return global.quickRender;
     }
     return false;
   }
 
-  static double GetResolutionScale() {
+  static double ResolutionScale() {
     if (global != null) {
       return global.resolutionScale;
     }
     return 1.0;
+  }
+
+  static int SamplingMode() {
+    if (global != null) {
+      return global.samplingMode;
+    }
+    return Sampler.FULL_SAMPLING;
   }
 
   RenderOverrides() {
@@ -53,6 +61,9 @@ class RenderOverrides {
     }
     if (json.containsKey('resolutionScale')) {
       resolutionScale = json['resolutionScale'];
+    }
+    if (json.containsKey('samplingMode')) {
+      samplingMode = json['samplingMode'];
     }
     if (json.containsKey('filter')) {
       filterName = json['filter']['name'];
@@ -101,6 +112,9 @@ class RenderOverrides {
     }
     if (resolutionScale != null) {
       m['resolutionScale'] = resolutionScale;
+    }
+    if (samplingMode != null) {
+      m['samplingMode'] = samplingMode;
     }
     if (filterName != null) {
       m['filter'] = {'name': filterName, 'params': filterParams.toJson()};

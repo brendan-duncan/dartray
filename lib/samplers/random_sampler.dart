@@ -22,9 +22,8 @@ part of samplers;
 
 class RandomSampler extends Sampler {
   RandomSampler(int xstart, int xend, int ystart,
-      int yend, double sopen, double sclose, this.pixels,
-      int ns, int samplingMode) :
-    super(xstart, xend, ystart, yend, sopen, sclose, ns, samplingMode) {
+      int yend, double sopen, double sclose, this.pixels, int ns) :
+    super(xstart, xend, ystart, yend, sopen, sclose, ns) {
     if (pixels == null) {
       LogSevere('A PixelSampler is required by RandomSampler');
     }
@@ -43,6 +42,7 @@ class RandomSampler extends Sampler {
     if (pixelIndex >= pixels.numPixels()) {
       sampleCount++;
       if (sampleCount >= samplesPerPixel) {
+        LogInfo('Random Sampler Finished: $samplesPerPixel : ${RenderOverrides.SamplingMode()}');
         return 0;
       }
       pixelIndex = 0;
@@ -51,8 +51,9 @@ class RandomSampler extends Sampler {
 
     pixels.getPixel(pixelIndex++, pixel);
 
-    int numSamples = samplingMode == Sampler.ITERATIVE_SAMPLING ? 1 :
-                     samplingMode == Sampler.FULL_SAMPLING ? samplesPerPixel :
+    int mode = RenderOverrides.SamplingMode();
+    int numSamples = mode == Sampler.ITERATIVE_SAMPLING ? 1 :
+                     mode == Sampler.FULL_SAMPLING ? samplesPerPixel :
                      (sampleCount == 0) ? 1 : samplesPerPixel - 1;
 
     for (int si = 0; si < numSamples; ++si) {
@@ -93,30 +94,19 @@ class RandomSampler extends Sampler {
 
     return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
                              shutterOpen, shutterClose, pixels,
-                             samplesPerPixel, samplingMode);
+                             samplesPerPixel);
   }
 
   static RandomSampler Create(ParamSet params, Film film, Camera camera,
                               PixelSampler pixels) {
-    int ns = params.findOneInt('pixelsamples', 32);
+    int ns = params.findOneInt('pixelsamples', 10);
 
     List<int> extents = [0, 0, 0, 0];
     film.getSampleExtent(extents);
 
-    String mode = params.findOneString('mode', 'full');
-    int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
-                       (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
-                       (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
-                       -1;
-    if (samplingMode == -1) {
-      LogWarning('Invalid sampling mode: $mode. Using \'full\'.');
-      samplingMode = Sampler.FULL_SAMPLING;
-    }
-    LogInfo(mode);
-
     return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
                              camera.shutterOpen, camera.shutterClose,
-                             pixels, ns, samplingMode);
+                             pixels, ns);
   }
 
   PixelSampler pixels;
