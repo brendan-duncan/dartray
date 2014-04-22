@@ -45,6 +45,10 @@ abstract class ResourceManager {
     return global.getResource(path);
   }
 
+  static void AddResource(String path, data) {
+    global.addResource(path, data);
+  }
+
   static bool HasTexture(String name) {
     return global.hasTexture(name);
   }
@@ -205,6 +209,13 @@ abstract class ResourceManager {
       return null;
     }
     return resources[path];
+  }
+
+  /**
+   * Add a resource so it can be accessed later.
+   */
+  void addResource(String path, data) {
+    resources[path] = data;
   }
 
   bool hasTexture(String name) => textures.containsKey(name);

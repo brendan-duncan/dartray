@@ -111,6 +111,7 @@ part 'spectrum_image.dart';
 part 'spherical_harmonics.dart';
 part 'stats.dart';
 part 'surface_integrator.dart';
+part 'surface_point.dart';
 part 'texture.dart';
 part 'texture_params.dart';
 part 'transform.dart';

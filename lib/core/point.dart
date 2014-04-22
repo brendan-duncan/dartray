@@ -24,6 +24,8 @@ part of core;
  * A 3-dimensional point in space.
  */
 class Point extends Vector {
+  static final Point ZERO = new Point(0.0, 0.0, 0.0);
+
   Point([double x = 0.0, double y = 0.0, double z = 0.0]) :
     super(x, y, z);
 

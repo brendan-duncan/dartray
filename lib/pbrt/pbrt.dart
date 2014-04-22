@@ -195,6 +195,7 @@ class Pbrt {
     registerSurfaceIntegrator('photonmap', PhotonMapIntegrator.Create);
     registerSurfaceIntegrator('exphotonmap', PhotonMapIntegrator.Create);
     registerSurfaceIntegrator('whitted', WhittedIntegrator.Create);
+    registerSurfaceIntegrator('dipolesubsurface', DipoleSubsurfaceIntegrator.Create);
 
     registerLight('distant', DistantLight.Create);
     registerLight('point', PointLight.Create);
@@ -903,13 +904,17 @@ class Pbrt {
       if (lights.size() == 0)
           Warning('No light sources defined in scene; '
               'possibly rendering a black image.');
-    } else if (name == 'surfacepoints') {
-      Point pCamera = camera.CameraToWorld(camera.shutterOpen, Point(0, 0, 0));
-      renderer = CreateSurfacePointsRenderer(RendererParams, pCamera, camera.shutterOpen);
-      RendererParams.ReportUnused();
-    } else*/
+    }*/
 
-    if (name == 'aggregatetest') {
+    if (name == 'surfacepoints') {
+      Point pCamera = camera.cameraToWorld.transformPoint(camera.shutterOpen,
+                                                          Point.ZERO);
+
+      renderer = SurfacePointsRenderer.Create(paramSet, pCamera,
+                                              camera.shutterOpen);
+
+      paramSet.reportUnused();
+    } else if (name == 'aggregatetest') {
       renderer = AggregateTestRenderer.Create(paramSet,
                                               _renderOptions.primitives);
       paramSet.reportUnused();

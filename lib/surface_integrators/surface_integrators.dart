@@ -20,6 +20,7 @@
  ****************************************************************************/
 library surface_integrators;
 
+import 'dart:async';
 import 'dart:math' as Math;
 import 'dart:typed_data';
 import '../core/core.dart';
@@ -27,6 +28,7 @@ import '../samplers/samplers.dart';
 
 part 'ambient_occlusion_integrator.dart';
 part 'diffuse_prt_integrator.dart';
+part 'dipole_subsurface_integrator.dart';
 part 'direct_lighting_integrator.dart';
 part 'glossy_prt_integrator.dart';
 part 'igi_integrator.dart';

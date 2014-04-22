@@ -69,7 +69,7 @@ class Octree {
         node.children[child] = new _OctreeNode();
       }
 
-      BBox childBound = octreeChildBound(child, nodeBound, pMid);
+      BBox childBound = OctreeChildBound(child, nodeBound, pMid);
 
       _add(node.children[child], childBound,
            dataItem, dataBound, diag2, depth + 1);
@@ -93,12 +93,12 @@ class Octree {
       return true;
     }
 
-    BBox childBound = octreeChildBound(child, nodeBound, pMid);
+    BBox childBound = OctreeChildBound(child, nodeBound, pMid);
 
     return _lookup(node.children[child], childBound, p, process);
   }
 
-  static BBox octreeChildBound(int child, BBox nodeBound, Point pMid) {
+  static BBox OctreeChildBound(int child, BBox nodeBound, Point pMid) {
      BBox childBound = new BBox();
      childBound.pMin.x = (child & 4) != 0 ? pMid.x : nodeBound.pMin.x;
      childBound.pMax.x = (child & 4) != 0 ? nodeBound.pMax.x : pMid.x;
