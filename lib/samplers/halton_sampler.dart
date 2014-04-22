@@ -28,6 +28,17 @@ class HaltonSampler extends Sampler {
                          yPixelEnd - yPixelStart);
     wantedSamples = samplesPerPixel * delta * delta;
     currentSample = 0;
+    if (samplingMode == Sampler.TWO_PASS_SAMPLING ||
+        samplingMode == Sampler.ITERATIVE_SAMPLING) {
+      PixelSampler pixels = new TilePixelSampler();
+      pixels.setup(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd);
+
+      randomSampler = new RandomSampler(xs, xe, ys, ye,
+                                        sopen, sclose, pixels, 1,
+                                        Sampler.ITERATIVE_SAMPLING);
+    }
+
+    pass = 0;
   }
 
   int maximumSampleCount() {
@@ -35,6 +46,14 @@ class HaltonSampler extends Sampler {
   }
 
   int getMoreSamples(List<Sample> samples, RNG rng) {
+    if (pass == 0 && randomSampler != null) {
+      int count = randomSampler.getMoreSamples(samples, rng);
+      if (count != 0) {
+        return count;
+      }
+      pass++;
+    }
+
     while (true) {
       if (currentSample >= wantedSamples) {
         return 0;
@@ -97,14 +116,14 @@ class HaltonSampler extends Sampler {
     film.getSampleExtent(range);
     int nsamp = params.findOneInt('pixelsamples', 4);
 
-    String mode = params.findOneString('mode', 'twopass');
+    String mode = params.findOneString('mode', 'full');
     int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
                        (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
                        (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
                        -1;
     if (samplingMode == -1) {
-      LogWarning('Invalid sampling mode: $mode. Using \'twopass\'.');
-      samplingMode = Sampler.TWO_PASS_SAMPLING;
+      LogWarning('Invalid sampling mode: $mode. Using \'full\'.');
+      samplingMode = Sampler.FULL_SAMPLING;
     }
 
     return new HaltonSampler(range[0], range[1], range[2], range[3],
@@ -114,4 +133,6 @@ class HaltonSampler extends Sampler {
 
   int wantedSamples;
   int currentSample;
+  Sampler randomSampler;
+  int pass;
 }

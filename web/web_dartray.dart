@@ -46,7 +46,7 @@ void main() {
   var imageData = c.context2D.getImageData(0, 0, c.width, c.height);
 
   RenderOverrides overrides = new RenderOverrides();
-  overrides.setSampler('random');
+  overrides.setSampler('random', {'string mode': ['twopass']});
 
   Stopwatch timer = new Stopwatch();
   timer.start();

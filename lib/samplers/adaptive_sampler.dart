@@ -70,6 +70,15 @@ class AdaptiveSampler extends Sampler {
       LogWarning('Adaptive sampler must have more maximum samples than '
                  'minimum. Using $minSamples - $maxSamples');
     }
+
+    if (samplingMode == Sampler.TWO_PASS_SAMPLING ||
+        samplingMode == Sampler.ITERATIVE_SAMPLING) {
+      randomSampler = new RandomSampler(xstart, xend, ystart, yend,
+                                        sopen, sclose, pixels, 1,
+                                        Sampler.ITERATIVE_SAMPLING);
+    }
+
+    pass = 0;
   }
 
   Sampler getSubSampler(int num, int count) {
@@ -94,6 +103,14 @@ class AdaptiveSampler extends Sampler {
   }
 
   int getMoreSamples(List<Sample> samples, RNG rng) {
+    if (pass == 0 && randomSampler != null) {
+      int count = randomSampler.getMoreSamples(samples, rng);
+      if (count != 0) {
+        return count;
+      }
+      pass++;
+    }
+
     if (sampleBuf == null) {
       sampleBuf = new Float32List(LDPixelSampleFloatsNeeded(samples[0],
                                                             maxSamples));
@@ -117,6 +134,10 @@ class AdaptiveSampler extends Sampler {
 
   bool reportResults(List<Sample> samples, List<RayDifferential> rays,
                      List<Spectrum> Ls, List<Intersection> isects, int count) {
+    if (pass == 0 && randomSampler != null) {
+      return true;
+    }
+
     if (supersamplePixel) {
       supersamplePixel = false;
       // Advance to next pixel for sampling
@@ -169,16 +190,6 @@ class AdaptiveSampler extends Sampler {
     return false;
   }
 
-  PixelSampler pixels;
-  Int32List pixel = new Int32List(2);
-  int pixelIndex;
-  int minSamples;
-  int maxSamples;
-  Float32List sampleBuf;
-
-  int method;
-  bool supersamplePixel;
-
   static AdaptiveSampler Create(ParamSet params, Film film, Camera camera,
                                   PixelSampler pixels) {
     // Initialize common sampler parameters
@@ -196,14 +207,14 @@ class AdaptiveSampler extends Sampler {
       method = ADAPTIVE_CONTRAST_THRESHOLD;
     }
 
-    String mode = params.findOneString('mode', 'twopass');
+    String mode = params.findOneString('mode', 'full');
     int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
                        (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
                        (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
                        -1;
     if (samplingMode == -1) {
-      LogWarning('Invalid sampling mode: $mode. Using \'twopass\'.');
-      samplingMode = Sampler.TWO_PASS_SAMPLING;
+      LogWarning('Invalid sampling mode: $mode. Using \'full\'.');
+      samplingMode = Sampler.FULL_SAMPLING;
     }
 
     return new AdaptiveSampler(extent[0], extent[1], extent[2], extent[3],
@@ -211,4 +222,15 @@ class AdaptiveSampler extends Sampler {
                                camera.shutterOpen, camera.shutterClose,
                                pixels, samplingMode);
   }
+
+  PixelSampler pixels;
+  Int32List pixel = new Int32List(2);
+  int pixelIndex;
+  int minSamples;
+  int maxSamples;
+  Float32List sampleBuf;
+  int method;
+  bool supersamplePixel;
+  Sampler randomSampler;
+  int pass;
 }

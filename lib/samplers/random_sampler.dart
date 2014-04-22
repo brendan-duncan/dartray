@@ -103,14 +103,14 @@ class RandomSampler extends Sampler {
     List<int> extents = [0, 0, 0, 0];
     film.getSampleExtent(extents);
 
-    String mode = params.findOneString('mode', 'twopass');
+    String mode = params.findOneString('mode', 'full');
     int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
                        (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
                        (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
                        -1;
     if (samplingMode == -1) {
-      LogWarning('Invalid sampling mode: $mode. Using \'twopass\'.');
-      samplingMode = Sampler.TWO_PASS_SAMPLING;
+      LogWarning('Invalid sampling mode: $mode. Using \'full\'.');
+      samplingMode = Sampler.FULL_SAMPLING;
     }
     LogInfo(mode);
 

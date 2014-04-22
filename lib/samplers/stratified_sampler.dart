@@ -36,6 +36,15 @@ class StratifiedSampler extends Sampler {
     imageSamples = new Float32List(2 * nPixelSamples);
     lensSamples = new Float32List(2 * nPixelSamples);
     timeSamples = new Float32List(xPixelSamples * yPixelSamples);
+
+    if (samplingMode == Sampler.TWO_PASS_SAMPLING ||
+        samplingMode == Sampler.ITERATIVE_SAMPLING) {
+      randomSampler = new RandomSampler(xstart, xend, ystart, yend,
+                                        sopen, sclose, pixels, 1,
+                                        Sampler.ITERATIVE_SAMPLING);
+    }
+
+    pass = 0;
   }
 
   int roundSize(int size) {
@@ -55,6 +64,14 @@ class StratifiedSampler extends Sampler {
   }
 
   int getMoreSamples(List<Sample> samples, RNG rng) {
+    if (pass == 0 && randomSampler != null) {
+      int count = randomSampler.getMoreSamples(samples, rng);
+      if (count != 0) {
+        return count;
+      }
+      pass++;
+    }
+
     if (pixelIndex >= pixels.numPixels()) {
       return 0;
     }
@@ -112,7 +129,7 @@ class StratifiedSampler extends Sampler {
   static StratifiedSampler Create(ParamSet params, Film film, Camera camera,
                                   PixelSampler pixels) {
     bool jitter = params.findOneBool('jitter', true);
-    // Initialize common sampler parameters
+
     List<int> extents = [0, 0, 0, 0];
     film.getSampleExtent(extents);
 
@@ -127,14 +144,14 @@ class StratifiedSampler extends Sampler {
       ysamp = params.findOneInt('ysamples', 2);
     }
 
-    String mode = params.findOneString('mode', 'twopass');
+    String mode = params.findOneString('mode', 'full');
     int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
                        (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
                        (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
                        -1;
     if (samplingMode == -1) {
-      LogWarning('Invalid sampling mode: $mode. Using \'twopass\'.');
-      samplingMode = Sampler.TWO_PASS_SAMPLING;
+      LogWarning('Invalid sampling mode: $mode. Using \'full\'.');
+      samplingMode = Sampler.FULL_SAMPLING;
     }
 
     return new StratifiedSampler(extents[0], extents[1], extents[2],
@@ -153,4 +170,6 @@ class StratifiedSampler extends Sampler {
   Float32List imageSamples;
   Float32List lensSamples;
   Float32List timeSamples;
+  Sampler randomSampler;
+  int pass;
 }

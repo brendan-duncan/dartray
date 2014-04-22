@@ -38,6 +38,15 @@ class LowDiscrepancySampler extends Sampler {
       nPixelSamples = nsamp;
     }
     sampleBuf = null;
+
+    if (samplingMode == Sampler.TWO_PASS_SAMPLING ||
+        samplingMode == Sampler.ITERATIVE_SAMPLING) {
+      randomSampler = new RandomSampler(xstart, xend, ystart, yend,
+                                        sopen, sclose, pixels, 1,
+                                        Sampler.ITERATIVE_SAMPLING);
+    }
+
+    pass = 0;
   }
 
   Sampler getSubSampler(int num, int count) {
@@ -58,6 +67,14 @@ class LowDiscrepancySampler extends Sampler {
   }
 
   int getMoreSamples(List<Sample> samples, RNG rng) {
+    if (pass == 0 && randomSampler != null) {
+      int count = randomSampler.getMoreSamples(samples, rng);
+      if (count != 0) {
+        return count;
+      }
+      pass++;
+    }
+
     if (pixelIndex >= pixels.numPixels()) {
       return 0;
     }
@@ -86,14 +103,14 @@ class LowDiscrepancySampler extends Sampler {
     film.getSampleExtent(extents);
     int nsamp = params.findOneInt('pixelsamples', 4);
 
-    String mode = params.findOneString('mode', 'twopass');
+    String mode = params.findOneString('mode', 'full');
     int samplingMode = (mode == 'full') ? Sampler.FULL_SAMPLING :
                        (mode == 'twopass') ? Sampler.TWO_PASS_SAMPLING :
                        (mode == 'iterative') ? Sampler.ITERATIVE_SAMPLING :
                        -1;
     if (samplingMode == -1) {
-      LogWarning('Invalid sampling mode: $mode. Using \'twopass\'.');
-      samplingMode = Sampler.TWO_PASS_SAMPLING;
+      LogWarning('Invalid sampling mode: $mode. Using \'full\'.');
+      samplingMode = Sampler.FULL_SAMPLING;
     }
 
     return new LowDiscrepancySampler(extents[0], extents[1], extents[2],
@@ -107,4 +124,6 @@ class LowDiscrepancySampler extends Sampler {
   int pixelIndex;
   int nPixelSamples;
   Float32List sampleBuf;
+  Sampler randomSampler;
+  int pass;
 }
