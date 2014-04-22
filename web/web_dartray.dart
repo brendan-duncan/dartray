@@ -39,6 +39,8 @@ String scene = 'scenes/cornell_path.pbrt';
 //String scene = 'scenes/nurbs.pbrt';
 
 void main() {
+  RenderManager renderManager = new RenderManager();
+
   var c = new Html.CanvasElement();
   c.style.boxShadow = '4px 4px 8px #888';
   Html.document.body.append(c);
@@ -50,7 +52,7 @@ void main() {
 
   Stopwatch timer = new Stopwatch();
   timer.start();
-  new RenderManager().render(scene,
+  renderManager.render(scene,
       isolate: 'web_isolate.dart', //numThreads: 4,
       overrides: overrides,
       log: (int type, String msg) {
@@ -70,18 +72,22 @@ void main() {
       }).then((OutputImage output) {
         timer.stop();
         LogInfo('RENDER FINISHED: ${timer.elapsed}');
+
         String s = Stats.getString();
         if (s.isNotEmpty) {
           LogInfo('STATS....\n${Stats.getString()}');
         }
-        Image img = output.toImage(gamma: 2.2);
-        if (img.width != c.width || img.height != c.height) {
-          c.width = img.width;
-          c.height = img.height;
-          imageData = c.context2D.getImageData(0, 0, c.width, c.height);
+
+        if (output != null) {
+          Image img = output.toImage(gamma: 2.2);
+          if (img.width != c.width || img.height != c.height) {
+            c.width = img.width;
+            c.height = img.height;
+            imageData = c.context2D.getImageData(0, 0, c.width, c.height);
+          }
+          var bytes = img.getBytes();
+          imageData.data.setRange(0, bytes.length, bytes);
+          c.context2D.putImageData(imageData, 0, 0);
         }
-        var bytes = img.getBytes();
-        imageData.data.setRange(0, bytes.length, bytes);
-        c.context2D.putImageData(imageData, 0, 0);
       });
 }

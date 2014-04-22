@@ -70,7 +70,7 @@ class MetropolisRenderer extends Renderer {
         null;
   }
 
-  OutputImage render(Scene scene) {
+  Future<OutputImage> render(Scene scene) {
     Stats.MLT_STARTED_RENDERING();
 
     if (scene.lights.length > 0) {
@@ -197,8 +197,10 @@ class MetropolisRenderer extends Renderer {
     OutputImage out = camera.film.writeImage();
 
     Stats.MLT_FINISHED_RENDERING();
+    Completer<OutputImage> c = new Completer<OutputImage>();
+    c.complete(out);
 
-    return out;
+    return c.future;
   }
 
   Spectrum Li(Scene scene, RayDifferential ray,

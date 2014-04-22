@@ -148,10 +148,34 @@ abstract class RenderManagerInterface extends ResourceManager {
     Plugin.registerVolumeRegion('volumegrid', VolumeGridDensity.Create);
   }
 
+  /**
+   * This is called from an Isolate to initialize the RenderManager for the
+   * Isolate.
+   */
   void startIsolate([SendPort port]) {
     if (port != null) {
       isolate = new RenderIsolate(this);
       isolate.start(port);
+    }
+  }
+
+  void pause() {
+    if (isolates == null) {
+      return;
+    }
+
+    for (RenderTask task in isolates) {
+      task.pause();
+    }
+  }
+
+  void resume() {
+    if (isolates == null) {
+      return;
+    }
+
+    for (RenderTask task in isolates) {
+      task.resume;
     }
   }
 
@@ -189,10 +213,10 @@ abstract class RenderManagerInterface extends ResourceManager {
     }
 
     int tasksRemaining = numThreads;
-    List<RenderTask> jobs = new List<RenderTask>(numThreads);
+    isolates = new List<RenderTask>(numThreads);
     for (int i = 0; i < numThreads; ++i) {
-      jobs[i] = new RenderTask(preview, i, numThreads);
-      jobs[i].render(path, isolate, overrides: overrides).then((output) {
+      isolates[i] = new RenderTask(preview, i, numThreads);
+      isolates[i].render(path, isolate, overrides: overrides).then((output) {
         tasksRemaining--;
         if (tasksRemaining == 0) {
           completer.complete(output);
@@ -208,5 +232,7 @@ abstract class RenderManagerInterface extends ResourceManager {
 
     return completer.future;
   }
+
+  List<RenderTask> isolates;
 }
 

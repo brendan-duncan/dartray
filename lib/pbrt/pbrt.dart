@@ -79,8 +79,12 @@ class Pbrt {
 
       resourceManager.waitUntilReady().then((_) {
         LogInfo('FINISHED Preparing Scene: ${t.elapsed}');
-        OutputImage output = _renderer.render(_scene);
-        c.complete(output);
+        _renderer.render(_scene).then((OutputImage output) {
+          LogInfo('FINISHED Render');
+          c.complete(output);
+        }).catchError((e) {
+          LogInfo('ERROR: $e');
+        });
       });
     });
 
@@ -96,9 +100,11 @@ class Pbrt {
     return parser.parse(file);
   }
 
-  OutputImage render() {
+  Future<OutputImage> render() {
     if (_renderer == null || _scene == null) {
-      return null;
+      Completer<OutputImage> completer = new Completer<OutputImage>();
+      completer.complete(null);
+      return completer.future;
     }
     return _renderer.render(_scene);
   }
@@ -121,7 +127,6 @@ class Pbrt {
   List<GraphicsState> _pushedGraphicsStates = [];
   List<TransformSet> _pushedTransforms = [];
   List<int> _pushedActiveTransformBits = [];
-
 
   // API Initialization
   void init() {

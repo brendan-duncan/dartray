@@ -39,6 +39,19 @@ class RenderTask {
 
   RenderTask(this.previewCallback, this.taskNum, this.taskCount);
 
+  void pause() {
+    LogInfo('Sending PAUSE');
+    sendPort.send('pause');
+  }
+
+  void resume() {
+    sendPort.send('resume');
+  }
+
+  void stop() {
+    sendPort.send('stop');
+  }
+
   Future<OutputImage> render(String scene, String isolateUri,
                              {RenderOverrides overrides}) {
     Completer<OutputImage> completer = new Completer<OutputImage>();
@@ -51,7 +64,11 @@ class RenderTask {
 
     receivePort.listen((msg) {
       if (status == CONNECTING) {
-        _linkEstablish(msg, scene);
+        if (msg is SendPort) {
+          sendPort = msg;
+          status = CONNECTED;
+          _startIsolateRender(scene);
+        }
       } else if (status == CONNECTED) {
         if (msg is Map && msg.containsKey('cmd')) {
           var cmd = msg['cmd'];
@@ -132,16 +149,6 @@ class RenderTask {
     int dsti = extents[2] * previewImage.width + extents[0];
     for (int y = extents[2]; y < extents[3]; ++y, dsti += previewImage.width) {
       dst.setRange(dsti, dsti + w, src, dsti);
-    }
-  }
-
-  void _linkEstablish(msg, [String scene]) {
-    if (msg is SendPort) {
-      sendPort = msg;
-      sendPort.send('ping');
-    } else if (msg == 'pong') {
-      status = CONNECTED;
-      _startIsolateRender(scene);
     }
   }
 

@@ -3,7 +3,7 @@ part of renderers;
 class SurfacePointsRenderer extends Renderer {
   SurfacePointsRenderer(this.minDist, this.pCamera, this.time, this.filename);
 
-  OutputImage render(Scene scene) {
+  Future<OutputImage> render(Scene scene) {
     // Declare shared variables for Poisson point generation
     BBox octBounds = scene.worldBound;
     octBounds.expand(0.001 * Math.pow(octBounds.volume(), 1.0 / 3.0));
@@ -62,7 +62,9 @@ class SurfacePointsRenderer extends Renderer {
        ResourceManager.WriteFile(filename, data);
     }
 
-    return null;
+    Completer<OutputImage> c = new Completer<OutputImage>();
+    c.complete(null);
+    return c.future;
   }
 
   Spectrum Li(Scene scene, RayDifferential ray, Sample sample, RNG rng,

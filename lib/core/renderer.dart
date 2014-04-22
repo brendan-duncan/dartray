@@ -25,7 +25,7 @@ part of core;
  * viewpoint of a [Camera].
  */
 abstract class Renderer {
-  OutputImage render(Scene scene);
+  Future<OutputImage> render(Scene scene);
 
   Spectrum Li(Scene scene, RayDifferential ray, Sample sample,
               RNG rng, [Intersection isect, Spectrum T]);

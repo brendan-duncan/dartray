@@ -28,7 +28,7 @@ class SamplerRenderer extends Renderer {
   /**
    * Render the [scene] from the viewpoint of the [camera].
    */
-  OutputImage render(Scene scene) {
+  Future<OutputImage> render(Scene scene) {
     LogInfo('Starting Render: '
             '${camera.film.xResolution}x${camera.film.yResolution}');
 
@@ -48,12 +48,15 @@ class SamplerRenderer extends Renderer {
                                                          sampler, sample,
                                                          taskNum, taskCount);
 
-    task.run();
+    Completer<OutputImage> completer = new Completer<OutputImage>();
 
-    OutputImage out = camera.film.writeImage();
-    Stats.FINISHED_RENDERING();
+    task.run().then((_) {
+      OutputImage out = camera.film.writeImage();
+      Stats.FINISHED_RENDERING();
+      completer.complete(out);
+    });
 
-    return out;
+    return completer.future;
   }
 
   Spectrum Li(Scene scene, RayDifferential ray,
@@ -106,14 +109,19 @@ class _SamplerRendererTask {
                        this.mainSampler, this.origSample,
                        this.taskNum, this.taskCount);
 
-  void run() {
+  Future run() {
+    Completer completer = new Completer();
+
     Stats.STARTED_RENDERTASK(taskNum);
     // Get sub-_Sampler_ for _SamplerRendererTask_
     Sampler sampler = mainSampler.getSubSampler(taskNum, taskCount);
     if (sampler == null) {
       Stats.FINISHED_RENDERTASK(taskNum);
-      return;
+      completer.complete();
+      return completer.future;
     }
+
+    Completer renderCompleter = new Completer();
 
     LogInfo('SamplerRender $taskNum / $taskCount: '
             'EXTENT: [${sampler.left} ${sampler.right} '
@@ -137,9 +145,11 @@ class _SamplerRendererTask {
     }
 
     // Get samples from [Sampler] and update image
+
     while (true) {
       int sampleCount = sampler.getMoreSamples(samples, rng);
       if (sampleCount == 0) {
+        renderCompleter.complete();
         break;
       }
       // Generate camera rays and compute radiance along rays
@@ -189,11 +199,16 @@ class _SamplerRendererTask {
       }
     }
 
-    // Clean up after [SamplerRenderer] is done with its image region
-    camera.film.updateDisplay(sampler.xPixelStart, sampler.yPixelStart,
-                              sampler.xPixelEnd + 1, sampler.yPixelEnd + 1);
+    renderCompleter.future.then((_) {
+      // Clean up after [SamplerRenderer] is done with its image region
+      camera.film.updateDisplay(sampler.xPixelStart, sampler.yPixelStart,
+                                sampler.xPixelEnd + 1, sampler.yPixelEnd + 1);
 
-    Stats.FINISHED_RENDERTASK(taskNum);
+      Stats.FINISHED_RENDERTASK(taskNum);
+      completer.complete();
+    });
+
+    return completer.future;
   }
 
   Scene scene;

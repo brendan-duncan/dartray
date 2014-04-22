@@ -37,7 +37,7 @@ class AggregateTestRenderer extends Renderer {
     return new AggregateTestRenderer(niters, primitives);
   }
 
-  OutputImage render(Scene scene) {
+  Future<OutputImage> render(Scene scene) {
     RNG rng = new RNG();
     // Compute bounding box of region used to generate random rays
     BBox bbox = new BBox.from(scene.worldBound);
@@ -110,7 +110,9 @@ class AggregateTestRenderer extends Renderer {
       }
     }
 
-    return null;
+    Completer<OutputImage> c = new Completer<OutputImage>();
+    c.complete(null);
+    return c.future;
   }
 
   Spectrum Li(Scene scene, RayDifferential ray,

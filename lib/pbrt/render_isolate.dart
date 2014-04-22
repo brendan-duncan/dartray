@@ -62,13 +62,10 @@ class RenderIsolate {
     sendPort = port;
 
     sendPort.send(receivePort.sendPort);
+    status = CONNECTED;
 
     receivePort.listen((msg) {
-      if (status == CONNECTING) {
-        _linkEstablish(msg);
-      } else if (status == CONNECTED) {
-        _run(msg);
-      }
+      _message(msg);
     });
   }
 
@@ -81,14 +78,8 @@ class RenderIsolate {
     return c.future;
   }
 
-  void _linkEstablish(msg) {
-    if (msg == 'ping') {
-      sendPort.send('pong');
-      status = CONNECTED;
-    }
-  }
-
-  void _run([msg = null]) {
+  void _message([msg = null]) {
+    _log(LOG_INFO, msg);
     if (msg is Map) {
       if (msg.containsKey('cmd')) {
         var cmd = msg['cmd'];
@@ -117,7 +108,12 @@ class RenderIsolate {
           _render(scene, taskNum, taskCount, doPreview, overrides);
         }
       }
-    } else if (msg == 'quit') {
+    } else if (msg == 'pause') {
+      LogInfo('Isolate $taskNum/$taskCount PAUSE');
+    } else if (msg == 'resume') {
+      LogInfo('Isolate $taskNum/$taskCount RESUME');
+    } else if (msg == 'stop') {
+      LogInfo('Isolate $taskNum/$taskCount STOP');
       status = STOPPED;
       receivePort.close();
     }
@@ -129,9 +125,10 @@ class RenderIsolate {
                   '$timestamp : $msg');
   }
 
-  bool _render(String scene, int taskNum, int taskCount,
+  void _render(String scene, int taskNum, int taskCount,
                bool doPreview, RenderOverrides overrides) {
-    _log(LOG_INFO, 'RENDER THREAD STARTED $taskNum / $taskCount');
+    LogInfo('RENDER THREAD STARTED $taskNum / $taskCount');
+
     Stopwatch timer = new Stopwatch()..start();
 
     Pbrt pbrt = new Pbrt(manager);
@@ -142,6 +139,7 @@ class RenderIsolate {
       pbrt.setPreviewCallback((Image img) {
         Sampler.ComputeSubWindow(img.width, img.height, taskNum, taskCount,
                                  extents);
+
         sendPort.send({'cmd': 'preview',
                        'res': [img.width, img.height],
                        'extents': extents,
@@ -164,11 +162,9 @@ class RenderIsolate {
                        'extents': extents});
       });
     } catch (e) {
+      LogError('ERROR: ${e}');
       sendPort.send({'cmd': 'error', 'msg': e.toString()});
-      return false;
     }
-
-    return true;
   }
 
   Map<int, Completer> requests = {};
