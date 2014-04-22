@@ -38,9 +38,9 @@ class LightSample {
     uPos[0] = sample.twoD[offsets.posOffset][2 * n];
     uPos[1] = sample.twoD[offsets.posOffset][2 * n + 1];
     uComponent = sample.oneD[offsets.componentOffset][n];
-    assert(uPos[0] >= 0.0 && uPos[0] < 1.0);
-    assert(uPos[1] >= 0.0 && uPos[1] < 1.0);
-    assert(uComponent >= 0.0 && uComponent < 1.0);
+    assert(uPos[0] >= 0.0 && uPos[0] <= 1.0);
+    assert(uPos[1] >= 0.0 && uPos[1] <= 1.0);
+    assert(uComponent >= 0.0 && uComponent <= 1.0);
   }
 
   LightSample.random(RNG rng) :

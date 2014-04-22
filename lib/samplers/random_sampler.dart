@@ -48,6 +48,7 @@ class RandomSampler extends Sampler {
         return 0;
       }
       pixelIndex = 0;
+      LogInfo('Random Sampler PASS $sampleCount');
     }
 
     pixels.getPixel(pixelIndex++, pixel);

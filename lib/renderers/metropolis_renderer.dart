@@ -64,8 +64,10 @@ class MetropolisRenderer extends Renderer {
     }
 
     directLighting = doDirectSeparately ?
-        new DirectLightingIntegrator(DirectLightingIntegrator.SAMPLE_ALL_UNIFORM,
-                                     maxDepth) : null;
+        Plugin.surfaceIntegrator('directlighting')(new ParamSet.fromJson({
+          'int maxdepth': [maxDepth],
+          'string strategy': ['all'] })) :
+        null;
   }
 
   OutputImage render(Scene scene) {
@@ -647,7 +649,7 @@ class MetropolisRenderer extends Renderer {
 
       alpha *= pathScale / rrSurviveProb;
 
-      //alpha *= renderer->Transmittance(scene, ray, NULL, rng, arena);
+      //alpha *= renderer->Transmittance(scene, ray, null, rng);
       ray = new RayDifferential.child(p, v.wNext, ray, v.isect.rayEpsilon);
     }
 
@@ -665,7 +667,7 @@ class MetropolisRenderer extends Renderer {
   int largeStepsPerPixel;
   int nBootstrap;
   int maxConsecutiveRejects;
-  DirectLightingIntegrator directLighting;
+  SurfaceIntegrator directLighting;
 }
 
 class _PathSample {

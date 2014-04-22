@@ -27,7 +27,7 @@ import '../core/core.dart';
 import '../pixel_samplers/pixel_samplers.dart';
 import '../samplers/samplers.dart';
 import '../shapes/shapes.dart';
-import '../surface_integrators/surface_integrators.dart';
+//import '../surface_integrators/surface_integrators.dart';
 
 part 'aggregate_test_renderer.dart';
 part 'metropolis_renderer.dart';

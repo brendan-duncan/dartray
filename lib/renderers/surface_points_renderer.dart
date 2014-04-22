@@ -79,7 +79,7 @@ class SurfacePointsRenderer extends Renderer {
   double time;
   Point pCamera;
   String filename;
-  List<SurfacePoint> points;
+  List<SurfacePoint> points = [];
 
   static void FindPoissonPointDistribution(Point pCamera, double time,
                                              double minDist, Scene scene,
@@ -88,7 +88,7 @@ class SurfacePointsRenderer extends Renderer {
                                                          time, '');
     sp.render(scene);
     points.clear();
-    points.insertAll(0, points);
+    points.insertAll(0, sp.points);
   }
 
   static SurfacePointsRenderer Create(ParamSet params, Point pCamera,
@@ -250,5 +250,5 @@ class _SurfacePointTask {
   _SurfacePointStats stats;
   GeometricPrimitive sphere;
   Octree octree;
-  List<SurfacePoint> surfacePoints;
+  List<SurfacePoint> surfacePoints = [];
 }

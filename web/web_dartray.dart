@@ -45,10 +45,14 @@ void main() {
 
   var imageData = c.context2D.getImageData(0, 0, c.width, c.height);
 
+  RenderOverrides overrides = new RenderOverrides();
+  overrides.setSampler('random');
+
   Stopwatch timer = new Stopwatch();
   timer.start();
   new RenderManager().render(scene,
-      isolate: 'web_isolate.dart',
+      isolate: 'web_isolate.dart', //numThreads: 4,
+      overrides: overrides,
       log: (int type, String msg) {
         print('$msg');
         var div = new Html.Element.html('<pre>$msg</pre>');
@@ -70,8 +74,14 @@ void main() {
         if (s.isNotEmpty) {
           LogInfo('STATS....\n${Stats.getString()}');
         }
-        /*var bytes = img.getBytes();
+        Image img = output.toImage(gamma: 2.2);
+        if (img.width != c.width || img.height != c.height) {
+          c.width = img.width;
+          c.height = img.height;
+          imageData = c.context2D.getImageData(0, 0, c.width, c.height);
+        }
+        var bytes = img.getBytes();
         imageData.data.setRange(0, bytes.length, bytes);
-        c.context2D.putImageData(imageData, 0, 0);*/
+        c.context2D.putImageData(imageData, 0, 0);
       });
 }

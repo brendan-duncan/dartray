@@ -24,6 +24,7 @@ import 'dart:async';
 import 'dart:math' as Math;
 import 'dart:typed_data';
 import '../core/core.dart';
+import '../renderers/renderers.dart';
 import '../samplers/samplers.dart';
 
 part 'ambient_occlusion_integrator.dart';

@@ -25,7 +25,58 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
   Spectrum Li(Scene scene, Renderer renderer,
               RayDifferential ray, Intersection isect, Sample sample,
               RNG rng) {
-    return new Spectrum(0.0);
+    Spectrum L = new Spectrum(0.0);
+    Vector wo = -ray.direction;
+    // Compute emitted light if ray hit an area light source
+    L += isect.Le(wo);
+
+    // Evaluate BSDF at hit point
+    BSDF bsdf = isect.getBSDF(ray);
+    Point p = bsdf.dgShading.p;
+    Normal n = bsdf.dgShading.nn;
+
+    // Evaluate BSSRDF and possibly compute subsurface scattering
+    BSSRDF bssrdf = isect.getBSSRDF(ray);
+
+    if (bssrdf != null && octree != null) {
+      Spectrum sigma_a  = bssrdf.sigma_a;
+      Spectrum sigmap_s = bssrdf.sigma_prime_s;
+      Spectrum sigmap_t = sigmap_s + sigma_a;
+
+      if (!sigmap_t.isBlack()) {
+        // Use hierarchical integration to evaluate reflection from dipole model
+        Stats.SUBSURFACE_STARTED_OCTREE_LOOKUP(p);
+        _DiffusionReflectance Rd = new _DiffusionReflectance(sigma_a, sigmap_s,
+                                                             bssrdf.eta);
+        Spectrum Mo = octree.Mo(octreeBounds, p, Rd, maxError);
+
+        FresnelDielectric fresnel = new FresnelDielectric(1.0, bssrdf.eta);
+
+        Spectrum Ft = Spectrum.ONE - fresnel.evaluate(Vector.AbsDot(wo, n));
+        double Fdt = 1.0 - Fdr(bssrdf.eta);
+
+        L += (Ft * INV_PI) * (Mo * Fdt);
+
+        Stats.SUBSURFACE_FINISHED_OCTREE_LOOKUP();
+      }
+    }
+
+    L += Integrator.UniformSampleAllLights(scene, renderer, p, n,
+                                           wo, isect.rayEpsilon, ray.time,
+                                           bsdf, sample, rng,
+                                           lightSampleOffsets,
+                                           bsdfSampleOffsets);
+
+    if (ray.depth < maxSpecularDepth) {
+      // Trace rays for specular reflection and refraction
+      L += Integrator.SpecularReflect(ray, bsdf, rng, isect, renderer, scene,
+                                      sample);
+
+      L += Integrator.SpecularTransmit(ray, bsdf, rng, isect, renderer, scene,
+                                       sample);
+    }
+
+    return L;
   }
 
   void requestSamples(Sampler sampler, Sample sample, Scene scene) {
@@ -49,6 +100,9 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
       return;
     }
 
+    Stopwatch timer = new Stopwatch()..start();
+    LogInfo('STARTING DipoleSubsurface Preprocessing');
+
     List<SurfacePoint> pts = [];
 
     // Get _SurfacePoint_s for translucent objects in scene
@@ -69,7 +123,7 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
       }
     }
 
-    /*if (pts.isEmpty) {
+    if (pts.isEmpty) {
       Point pCamera = camera.cameraToWorld.transformPoint(camera.shutterOpen,
                                                           Point.ZERO);
 
@@ -83,49 +137,67 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
     RNG rng = new RNG();
     Stats.SUBSURFACE_STARTED_COMPUTING_IRRADIANCE_VALUES();
 
-    for (int i = 0; i < pts.size(); ++i) {
-        SurfacePoint &sp = pts[i];
-        Spectrum E(0.f);
-        for (uint32_t j = 0; j < scene->lights.size(); ++j) {
-            // Add irradiance from light at point
-            const Light *light = scene->lights[j];
-            Spectrum Elight = 0.f;
-            int nSamples = RoundUpPow2(light->nSamples);
-            uint32_t scramble[2] = { rng.RandomUInt(), rng.RandomUInt() };
-            uint32_t compScramble = rng.RandomUInt();
-            for (int s = 0; s < nSamples; ++s) {
-                float lpos[2];
-                Sample02(s, scramble, lpos);
-                float lcomp = VanDerCorput(s, compScramble);
-                LightSample ls(lpos[0], lpos[1], lcomp);
-                Vector wi;
-                float lightPdf;
-                VisibilityTester visibility;
-                Spectrum Li = light->Sample_L(sp.p, sp.rayEpsilon,
-                    ls, camera->shutterOpen, &wi, &lightPdf, &visibility);
-                if (Dot(wi, sp.n) <= 0.) continue;
-                if (Li.IsBlack() || lightPdf == 0.f) continue;
-                Li *= visibility.Transmittance(scene, renderer, NULL, rng, arena);
-                if (visibility.Unoccluded(scene))
-                    Elight += Li * AbsDot(wi, sp.n) / lightPdf;
-            }
-            E += Elight / nSamples;
+    List<double> lpos = [0.0, 0.0];
+
+    for (int i = 0; i < pts.length; ++i) {
+      SurfacePoint sp = pts[i];
+      Spectrum E = new Spectrum(0.0);
+
+      for (int j = 0; j < scene.lights.length; ++j) {
+        // Add irradiance from light at point
+        Light light = scene.lights[j];
+        Spectrum Elight = new Spectrum(0.0);
+        int nSamples = RoundUpPow2(light.nSamples);
+        List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
+        int compScramble = rng.randomUint();
+        for (int s = 0; s < nSamples; ++s) {
+          Sample02(s, scramble, lpos);
+          double lcomp = VanDerCorput(s, compScramble);
+          LightSample ls = new LightSample(lpos[0], lpos[1], lcomp);
+          Vector wi = new Vector();
+          List<double> lightPdf = [0.0];
+          VisibilityTester visibility = new VisibilityTester();
+          Spectrum Li = light.sampleLAtPoint(sp.p, sp.rayEpsilon, ls,
+                                             camera.shutterOpen, wi, lightPdf,
+                                             visibility);
+          if (Vector.Dot(wi, sp.n) <= 0.0) {
+            continue;
+          }
+
+          if (Li.isBlack() || lightPdf[0] == 0.0) {
+            continue;
+          }
+
+          Li *= visibility.transmittance(scene, renderer, null, rng);
+          if (visibility.unoccluded(scene)) {
+            Elight += (Li * Vector.AbsDot(wi, sp.n) / lightPdf[0]);
+          }
         }
-        irradiancePoints.push_back(IrradiancePoint(sp, E));
-        PBRT_SUBSURFACE_COMPUTED_IRRADIANCE_AT_POINT(&sp, &E);
-        arena.FreeAll();
-        progress.Update();
+
+        E += Elight / nSamples;
+      }
+
+      irradiancePoints.add(new _IrradiancePoint(sp, E));
+
+      Stats.SUBSURFACE_COMPUTED_IRRADIANCE_AT_POINT(sp, E);
     }
-    progress.Done();
-    PBRT_SUBSURFACE_FINISHED_COMPUTING_IRRADIANCE_VALUES();
+
+    Stats.SUBSURFACE_FINISHED_COMPUTING_IRRADIANCE_VALUES();
 
     // Create octree of clustered irradiance samples
-    octree = octreeArena.Alloc<SubsurfaceOctreeNode>();
-    for (uint32_t i = 0; i < irradiancePoints.size(); ++i)
-        octreeBounds = Union(octreeBounds, irradiancePoints[i].p);
-    for (uint32_t i = 0; i < irradiancePoints.size(); ++i)
-        octree->Insert(octreeBounds, &irradiancePoints[i], octreeArena);
-    octree->InitHierarchy();*/
+    octree = new _SubsurfaceOctreeNode();
+
+    octreeBounds = new BBox();
+    for (int i = 0; i < irradiancePoints.length; ++i) {
+      octreeBounds = BBox.UnionPoint(octreeBounds, irradiancePoints[i].p);
+    }
+
+    for (int i = 0; i < irradiancePoints.length; ++i) {
+      octree.insert(octreeBounds, irradiancePoints[i]);
+    }
+
+    octree.initHierarchy();
+    LogInfo('FINISHED DipoleSubsurface Preprocessing: ${timer.elapsed}');
   }
 
   int maxSpecularDepth;
@@ -169,7 +241,7 @@ class _SubsurfaceOctreeNode {
     if (isLeaf) {
       // Add _IrradiancePoint_ to leaf octree node
       for (int i = 0; i < 8; ++i) {
-        if (!ips[i]) {
+        if (ips[i] == null) {
           ips[i] = ip;
           return;
         }
@@ -189,7 +261,7 @@ class _SubsurfaceOctreeNode {
         int child = (ip.p.x > pMid.x ? 4 : 0) +
                     (ip.p.y > pMid.y ? 2 : 0) +
                     (ip.p.z > pMid.z ? 1 : 0);
-        if (!children[child]) {
+        if (children[child] == null) {
           children[child] = new _SubsurfaceOctreeNode();
         }
 
@@ -205,7 +277,7 @@ class _SubsurfaceOctreeNode {
                 (ip.p.y > pMid.y ? 2 : 0) +
                 (ip.p.z > pMid.z ? 1 : 0);
 
-    if (!children[child]) {
+    if (children[child] == null) {
       children[child] = new _SubsurfaceOctreeNode();
     }
 
@@ -223,7 +295,7 @@ class _SubsurfaceOctreeNode {
         if (ips[i] == null) {
           break;
         }
-        double wt = ips[i].E.y();
+        double wt = ips[i].E.luminance();
         E += ips[i].E;
         p += ips[i].p * wt;
         sumWt += wt;
@@ -234,7 +306,9 @@ class _SubsurfaceOctreeNode {
         p /= sumWt;
       }
 
-      E /= i;
+      if (i != 0) {
+        E /= i;
+      }
     } else {
       // Init interior _SubsurfaceOctreeNode_
       double sumWt = 0.0;
@@ -245,7 +319,7 @@ class _SubsurfaceOctreeNode {
         }
         ++nChildren;
         children[i].initHierarchy();
-        double wt = children[i].E.y();
+        double wt = children[i].E.luminance();
         E += children[i].E;
         p += children[i].p * wt;
         sumWt += wt;
@@ -269,22 +343,22 @@ class _SubsurfaceOctreeNode {
       return Rd(Vector.DistanceSquared(pt, p)) * E * sumArea;
     }
 
-    // Otherwise compute $M_\roman{o}$ from points in leaf or recursively visit children
+    // Otherwise compute Mo from points in leaf or recursively visit children
     Spectrum Mo = new Spectrum(0.0);
     if (isLeaf) {
-      // Accumulate $M_\roman{o}$ from leaf node
+      // Accumulate Mo from leaf node
       for (int i = 0; i < 8; ++i) {
-        if (!ips[i]) {
+        if (ips[i] == null) {
           break;
         }
         Stats.SUBSURFACE_ADDED_POINT_CONTRIBUTION(ips[i]);
         Mo += Rd(Vector.DistanceSquared(pt, ips[i].p)) * ips[i].E * ips[i].area;
       }
     } else {
-      // Recursively visit children nodes to compute $M_\roman{o}$
+      // Recursively visit children nodes to compute Mo
       Point pMid = (nodeBound.pMin + nodeBound.pMax) * 0.5;
       for (int child = 0; child < 8; ++child) {
-        if (!children[child]) {
+        if (children[child] == null) {
           continue;
         }
         BBox childBound = Octree.OctreeChildBound(child, nodeBound, pMid);
@@ -295,9 +369,9 @@ class _SubsurfaceOctreeNode {
     return Mo;
   }
 
-  Point p;
+  Point p = new Point(0.0);
   bool isLeaf;
-  Spectrum E;
+  Spectrum E = new Spectrum(0.0);
   double sumArea;
   List children = new List(8);
   List ips;

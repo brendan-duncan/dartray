@@ -90,6 +90,7 @@ part 'octree.dart';
 part 'output_image.dart';
 part 'param_set.dart';
 part 'pixel_sampler.dart';
+part 'plugin.dart';
 part 'point.dart';
 part 'primitive.dart';
 part 'projective_camera.dart';

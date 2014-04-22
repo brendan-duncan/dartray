@@ -51,236 +51,16 @@ part 'render_options.dart';
 part 'render_task.dart';
 part 'transform_set.dart';
 
-typedef Aggregate AcceleratorCreator(List<Primitive> prims, ParamSet ps);
-
-typedef Camera CameraCreator(ParamSet params, AnimatedTransform cam2world,
-                             Film film);
-
-typedef Film FilmCreator(ParamSet params, Filter filter,
-                         [PreviewCallback previewCallback]);
-
-typedef Filter FilterCreator(ParamSet ps);
-
-typedef SurfaceIntegrator SurfaceIntegratorCreator(ParamSet ps);
-
-typedef VolumeIntegrator VolumeIntegratorCreator(ParamSet ps);
-
-typedef Light LightCreator(Transform light2world, ParamSet paramSet);
-
-typedef Light AreaLightCreator(Transform light2world, ParamSet paramSet,
-                               Shape shape);
-
-typedef Material MaterialCreator(Transform xform, TextureParams mp);
-
-typedef PixelSampler PixelSamplerCreator(ParamSet params, Film film);
-
-typedef Sampler SamplerCreator(ParamSet params, Film film, Camera camera,
-                               PixelSampler pixels);
-
-typedef Shape ShapeCreator(Transform o2w, Transform w2o,
-                           bool reverseOrientation, ParamSet params);
-
-typedef Texture TextureCreator(Transform tex2world, TextureParams tp);
-
-typedef VolumeRegion VolumeRegionCreator(Transform volume2world,
-                                         ParamSet params);
-
-typedef Renderer RendererCreator(ParamSet params);
-
 
 /**
  * Pbrt provides an API and file format compatible with the PBRT
  * rendering system API and format.
  */
 class Pbrt {
-  static Map<String, AcceleratorCreator> _accelerators = {};
-  static Map<String, CameraCreator> _cameras = {};
-  static Map<String, FilmCreator> _films = {};
-  static Map<String, FilterCreator> _filters = {};
-  static Map<String, SurfaceIntegratorCreator> _surfaceIntegrators = {};
-  static Map<String, VolumeIntegratorCreator> _volumeIntegrators = {};
-  static Map<String, LightCreator> _lights = {};
-  static Map<String, AreaLightCreator> _areaLights = {};
-  static Map<String, MaterialCreator> _materials = {};
-  static Map<String, SamplerCreator> _samplers = {};
-  static Map<String, PixelSamplerCreator> _pixelSamplers = {};
-  static Map<String, ShapeCreator> _shapes = {};
-  static Map<String, TextureCreator> _floatTextures = {};
-  static Map<String, TextureCreator> _spectrumTextures = {};
-  static Map<String, VolumeRegionCreator> _volumeRegions = {};
-  static Map<String, RendererCreator> _renderers = {};
-
-  static void registerAccelerator(String name, AcceleratorCreator func) {
-    _accelerators[name] = func;
-  }
-  static void registerCamera(String name, CameraCreator func) {
-    _cameras[name] = func;
-  }
-  static void registerFilm(String name, FilmCreator func) {
-    _films[name] = func;
-  }
-  static void registerFilter(String name, FilterCreator func) {
-    _filters[name] = func;
-  }
-  static void registerSurfaceIntegrator(String name,
-                                        SurfaceIntegratorCreator func) {
-    _surfaceIntegrators[name] = func;
-  }
-  static void registerVolumeIntegrator(String name,
-                                        VolumeIntegratorCreator func) {
-    _volumeIntegrators[name] = func;
-  }
-  static void registerLight(String name, LightCreator func) {
-    _lights[name] = func;
-  }
-  static void registerAreaLight(String name, AreaLightCreator func) {
-    _areaLights[name] = func;
-  }
-  static void registerMaterial(String name, MaterialCreator func) {
-    _materials[name] = func;
-  }
-  static void registerSampler(String name, SamplerCreator func) {
-    _samplers[name] = func;
-  }
-  static void registerPixelSampler(String name, PixelSamplerCreator func) {
-    _pixelSamplers[name] = func;
-  }
-  static void registerShape(String name, ShapeCreator func) {
-    _shapes[name] = func;
-  }
-  static void registerFloatTexture(String name, TextureCreator func) {
-    _floatTextures[name] = func;
-  }
-  static void registerSpectrumTexture(String name, TextureCreator func) {
-    _spectrumTextures[name] = func;
-  }
-  static void registerVolumeRegion(String name, VolumeRegionCreator func) {
-    _volumeRegions[name] = func;
-  }
-  static void registerRenderer(String name, RendererCreator func) {
-    _renderers[name] = func;
-  }
-
-  static void _registerStandardPlugins() {
-    // If 'sphere' has been registered, we can assume the rest of the standard
-    // plugins have been registered too.
-    if (_shapes.containsKey('sphere')) {
-      return;
-    }
-
-    registerAccelerator('bvh', BVHAccel.Create);
-    registerAccelerator('grid', GridAccel.Create);
-    registerAccelerator('kdtree', KdTreeAccel.Create);
-    registerAccelerator('bruteforce', BruteForceAccel.Create);
-
-    registerCamera('environment', EnvironmentCamera.Create);
-    registerCamera('orthographic', OrthographicCamera.Create);
-    registerCamera('perspective', PerspectiveCamera.Create);
-
-    registerFilm('image', ImageFilm.Create);
-
-    registerFilter('box', BoxFilter.Create);
-    registerFilter('gaussian', GaussianFilter.Create);
-    registerFilter('sinc', LanczosSincFilter.Create);
-    registerFilter('mitchell', MitchellFilter.Create);
-    registerFilter('triangle', TriangleFilter.Create);
-
-    registerSurfaceIntegrator('ambientocclusion', AmbientOcclusionIntegrator.Create);
-    registerSurfaceIntegrator('diffuseprt', DiffusePRTIntegrator.Create);
-    registerSurfaceIntegrator('directlighting', DirectLightingIntegrator.Create);
-    registerSurfaceIntegrator('glossyprt', GlossyPRTIntegrator.Create);
-    registerSurfaceIntegrator('igi', IGIIntegrator.Create);
-    registerSurfaceIntegrator('irradiancecache', IrradianceCacheIntegrator.Create);
-    registerSurfaceIntegrator('path', PathIntegrator.Create);
-    registerSurfaceIntegrator('photonmap', PhotonMapIntegrator.Create);
-    registerSurfaceIntegrator('exphotonmap', PhotonMapIntegrator.Create);
-    registerSurfaceIntegrator('whitted', WhittedIntegrator.Create);
-    registerSurfaceIntegrator('dipolesubsurface', DipoleSubsurfaceIntegrator.Create);
-
-    registerLight('distant', DistantLight.Create);
-    registerLight('point', PointLight.Create);
-    registerLight('spot', SpotLight.Create);
-    registerLight('infinite', InfiniteAreaLight.Create);
-    registerLight('goniometric', GoniometricLight.Create);
-    registerLight('projection', ProjectionLight.Create);
-
-    registerAreaLight('diffuse', DiffuseAreaLight.Create);
-    registerAreaLight('area', DiffuseAreaLight.Create);
-
-    registerMaterial('glass', GlassMaterial.Create);
-    registerMaterial('kdsubsurface', KdSubsurfaceMaterial.Create);
-    registerMaterial('matte', MatteMaterial.Create);
-    registerMaterial('measured', MeasuredMaterial.Create);
-    registerMaterial('metal', MetalMaterial.Create);
-    registerMaterial('mirror', MirrorMaterial.Create);
-    registerMaterial('plastic', PlasticMaterial.Create);
-    registerMaterial('shinymetal', ShinyMetalMaterial.Create);
-    registerMaterial('substrate', SubstrateMaterial.Create);
-    registerMaterial('subsurface', SubsurfaceMaterial.Create);
-    registerMaterial('translucent', TranslucentMaterial.Create);
-    registerMaterial('uber', UberMaterial.Create);
-
-    registerPixelSampler('linear', LinearPixelSampler.Create);
-    registerPixelSampler('random', RandomPixelSampler.Create);
-    registerPixelSampler('tile', TilePixelSampler.Create);
-
-    registerSampler('adaptive', AdaptiveSampler.Create);
-    registerSampler('bestcandidate', BestCandidateSampler.Create);
-    registerSampler('halton', HaltonSampler.Create);
-    registerSampler('lowdiscrepancy', LowDiscrepancySampler.Create);
-    registerSampler('random', RandomSampler.Create);
-    registerSampler('stratified', StratifiedSampler.Create);
-
-    registerShape('cone', Cone.Create);
-    registerShape('cylinder', Cylinder.Create);
-    registerShape('disk', Disk.Create);
-    registerShape('heightfield', Heightfield.Create);
-    registerShape('hyperboloid', Hyperboloid.Create);
-    registerShape('loopsubdiv', LoopSubdivision.Create);
-    registerShape('nurbs', Nurbs.Create);
-    registerShape('paraboloid', Paraboloid.Create);
-    registerShape('sphere', Sphere.Create);
-    registerShape('trianglemesh', TriangleMesh.Create);
-
-    registerFloatTexture('bilerp', BilerpTexture.CreateFloat);
-    registerSpectrumTexture('bilerp', BilerpTexture.CreateSpectrum);
-    registerFloatTexture('checkerboard', CheckerboardTexture.CreateFloat);
-    registerSpectrumTexture('checkerboard', CheckerboardTexture.CreateSpectrum);
-    registerFloatTexture('constant', ConstantTexture.CreateFloat);
-    registerSpectrumTexture('constant', ConstantTexture.CreateSpectrum);
-    registerFloatTexture('dots', DotsTexture.CreateFloat);
-    registerSpectrumTexture('dots', DotsTexture.CreateSpectrum);
-    registerFloatTexture('fbm', FBmTexture.CreateFloat);
-    registerSpectrumTexture('fbm', FBmTexture.CreateSpectrum);
-    registerFloatTexture('imagemap', ImageTexture.CreateFloat);
-    registerSpectrumTexture('imagemap', ImageTexture.CreateSpectrum);
-    registerFloatTexture('marble', MarbleTexture.CreateFloat);
-    registerSpectrumTexture('marble', MarbleTexture.CreateSpectrum);
-    registerFloatTexture('mix', MixTexture.CreateFloat);
-    registerSpectrumTexture('mix', MixTexture.CreateSpectrum);
-    registerFloatTexture('scale', ScaleTexture.CreateFloat);
-    registerSpectrumTexture('scale', ScaleTexture.CreateSpectrum);
-    registerFloatTexture('uv', UVTexture.CreateFloat);
-    registerSpectrumTexture('uv', UVTexture.CreateSpectrum);
-    registerFloatTexture('windy', WindyTexture.CreateFloat);
-    registerSpectrumTexture('windy', WindyTexture.CreateSpectrum);
-    registerFloatTexture('wrinkled', WrinkledTexture.CreateFloat);
-    registerSpectrumTexture('wrinkled', WrinkledTexture.CreateSpectrum);
-
-    registerVolumeIntegrator('emission', EmissionIntegrator.Create);
-    registerVolumeIntegrator('single', SingleScatteringIntegrator.Create);
-
-    registerVolumeRegion('exponential', ExponentialDensityRegion.Create);
-    registerVolumeRegion('homogeneous', HomogeneousVolumeRegion.Create);
-    registerVolumeRegion('volumegrid', VolumeGridDensity.Create);
-  }
-
   ResourceManager resourceManager;
   RenderOverrides overrides;
 
-  Pbrt(this.resourceManager) {
-    _registerStandardPlugins();
-  }
+  Pbrt(this.resourceManager);
 
   Future<OutputImage> renderScene(String scene, {RenderOverrides overrides}) {
     Stopwatch t = new Stopwatch()..start();
@@ -979,13 +759,13 @@ class Pbrt {
 
   Shape _makeShape(String name, Transform object2world, Transform world2object,
                   bool reverseOrientation, ParamSet paramSet) {
-    if (!_shapes.containsKey(name)) {
+    ShapeCreator sh = Plugin.shape(name);
+    if (sh == null) {
       LogWarning('Shape \'${name}\' unknown.');
       return null;
     }
 
-    Shape s = _shapes[name](object2world, world2object, reverseOrientation,
-                            paramSet);
+    Shape s = sh(object2world, world2object, reverseOrientation, paramSet);
     paramSet.reportUnused();
 
     return s;
@@ -1039,12 +819,12 @@ class Pbrt {
       return m;
     }
 
-    if (!_materials.containsKey(name)) {
+    if (Plugin.material(name) == null) {
       LogWarning('Material \'$name\' unknown.');
       return null;
     }
 
-    Material material = _materials[name](mtl2world, mp);
+    Material material = Plugin.material(name)(mtl2world, mp);
     mp.reportUnused();
 
     return material;
@@ -1052,12 +832,12 @@ class Pbrt {
 
   Texture _makeFloatTexture(String name, Transform tex2world,
                             TextureParams tp) {
-    if (!_floatTextures.containsKey(name)) {
+    if (Plugin.floatTexture(name) == null) {
       LogWarning('Texture \'${name}\' unknown.');
       return ConstantTexture.CreateFloat(tex2world, tp);
     }
 
-    Texture t = _floatTextures[name](tex2world, tp);
+    Texture t = Plugin.floatTexture(name)(tex2world, tp);
     tp.reportUnused();
 
     return t;
@@ -1065,24 +845,24 @@ class Pbrt {
 
   Texture _makeSpectrumTexture(String name, Transform tex2world,
                               TextureParams tp) {
-    if (!_spectrumTextures.containsKey(name)) {
+    if (Plugin.spectrumTexture(name) == null) {
       LogWarning('Texture \'${name}\' unknown.');
       return ConstantTexture.CreateSpectrum(tex2world, tp);
     }
 
-    Texture t = _spectrumTextures[name](tex2world, tp);
+    Texture t = Plugin.spectrumTexture(name)(tex2world, tp);
     tp.reportUnused();
 
     return t;
   }
 
   Light _makeLight(String name, Transform light2world, ParamSet paramSet) {
-    if (!_lights.containsKey(name)) {
+    if (Plugin.light(name) == null) {
       LogWarning('Light \'${name}\' unknown.');
       return null;
     }
 
-    Light l = _lights[name](light2world, paramSet);
+    Light l = Plugin.light(name)(light2world, paramSet);
     paramSet.reportUnused();
 
     return l;
@@ -1090,12 +870,12 @@ class Pbrt {
 
   AreaLight _makeAreaLight(String name, Transform light2world,
                            ParamSet paramSet, Shape shape) {
-    if (!_areaLights.containsKey(name)) {
+    if (Plugin.areaLight(name) == null) {
       LogWarning('Area Light \'${name}\' unknown.');
       return null;
     }
 
-    Light l = _areaLights[name](light2world, paramSet, shape);
+    Light l = Plugin.areaLight(name)(light2world, paramSet, shape);
     paramSet.reportUnused();
 
     return l;
@@ -1103,12 +883,12 @@ class Pbrt {
 
   VolumeRegion _makeVolumeRegion(String name, Transform volume2world,
                                 ParamSet paramSet) {
-    if (!_volumeRegions.containsKey(name)) {
+    if (Plugin.volumeRegion(name) == null) {
       LogWarning('Volume Region \'${name}\' unknown.');
       return null;
     }
 
-    VolumeRegion v = _volumeRegions[name](volume2world, paramSet);
+    VolumeRegion v = Plugin.volumeRegion(name)(volume2world, paramSet);
     paramSet.reportUnused();
 
     return v;
@@ -1120,12 +900,12 @@ class Pbrt {
       paramSet = overrides.surfaceIntegratorParams;
     }
 
-    if (!_surfaceIntegrators.containsKey(name)) {
+    if (Plugin.surfaceIntegrator(name) == null) {
       LogWarning('Surface Integrator \'${name}\' unknown.');
       return null;
     }
 
-    SurfaceIntegrator si = _surfaceIntegrators[name](paramSet);
+    SurfaceIntegrator si = Plugin.surfaceIntegrator(name)(paramSet);
     paramSet.reportUnused();
 
     return si;
@@ -1137,12 +917,12 @@ class Pbrt {
       paramSet = overrides.volumeIntegratorParams;
     }
 
-    if (!_volumeIntegrators.containsKey(name)) {
+    if (Plugin.volumeIntegrator(name) == null) {
       LogWarning('Volume Integrator \'${name}\' unknown.');
       return null;
     }
 
-    VolumeIntegrator vi = _volumeIntegrators[name](paramSet);
+    VolumeIntegrator vi = Plugin.volumeIntegrator(name)(paramSet);
     paramSet.reportUnused();
 
     return vi;
@@ -1155,12 +935,12 @@ class Pbrt {
       paramSet = overrides.acceleratorParams;
     }
 
-    if (!_accelerators.containsKey(name)) {
+    if (Plugin.accelerator(name) == null) {
       LogWarning('Accelerator \'${name}\' unknown.');
       return null;
     }
 
-    Primitive a = _accelerators[name](prims, paramSet);
+    Primitive a = Plugin.accelerator(name)(prims, paramSet);
     paramSet.reportUnused();
 
     return a;
@@ -1174,7 +954,7 @@ class Pbrt {
       paramSet = overrides.cameraParams;
     }
 
-    if (!_cameras.containsKey(name)) {
+    if (Plugin.camera(name) == null) {
       LogWarning('Camera \'${name}\' unknown.');
       return null;
     }
@@ -1185,7 +965,7 @@ class Pbrt {
     AnimatedTransform animatedCam2World = new AnimatedTransform(cam2world0,
         transformStart, cam2world1, transformEnd);
 
-    Camera c = _cameras[name](paramSet, animatedCam2World, film);
+    Camera c = Plugin.camera(name)(paramSet, animatedCam2World, film);
     paramSet.reportUnused();
 
     return c;
@@ -1197,12 +977,12 @@ class Pbrt {
       paramSet = overrides.pixelSamplerParams;
     }
 
-    if (!_pixelSamplers.containsKey(name)) {
+    if (Plugin.pixelSampler(name) == null) {
       LogWarning('PixelSampler \'${name}\' unknown.');
       return null;
     }
 
-    PixelSampler s = _pixelSamplers[name](paramSet, film);
+    PixelSampler s = Plugin.pixelSampler(name)(paramSet, film);
     paramSet.reportUnused();
 
     return s;
@@ -1216,14 +996,14 @@ class Pbrt {
       paramSet = overrides.samplerParams;
     }
 
-    if (!_samplers.containsKey(name)) {
+    if (Plugin.sampler(name) == null) {
       LogWarning('Sampler \'${name}\' unknown.');
       return null;
     }
 
     LogInfo('SAMPLER: $name');
 
-    Sampler s = _samplers[name](paramSet, film, camera, pixels);
+    Sampler s = Plugin.sampler(name)(paramSet, film, camera, pixels);
     paramSet.reportUnused();
 
     return s;
@@ -1235,12 +1015,12 @@ class Pbrt {
       paramSet = overrides.filterParams;
     }
 
-    if (!_filters.containsKey(name)) {
+    if (Plugin.filter(name) == null) {
       LogWarning('Filter \'${name}\' unknown.');
       return null;
     }
 
-    Filter f = _filters[name](paramSet);
+    Filter f = Plugin.filter(name)(paramSet);
     paramSet.reportUnused();
 
     return f;
@@ -1253,12 +1033,12 @@ class Pbrt {
       paramSet = overrides.filmParams;
     }
 
-    if (!_films.containsKey(name)) {
+    if (Plugin.film(name) == null) {
       LogWarning('Film \'${name}\' unknown.');
       return null;
     }
 
-    Film f = _films[name](paramSet, filter, previewCallback);
+    Film f = Plugin.film(name)(paramSet, filter, previewCallback);
 
     paramSet.reportUnused();
 

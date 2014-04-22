@@ -27,21 +27,6 @@ class DirectLightingIntegrator extends SurfaceIntegrator {
   DirectLightingIntegrator([this.strategy = SAMPLE_ALL_UNIFORM,
                             this.maxDepth = 5]);
 
-  static DirectLightingIntegrator Create(ParamSet params) {
-    int maxDepth = params.findOneInt('maxdepth', 5);
-    int strategy;
-    String st = params.findOneString('strategy', 'all');
-    if (st == 'one') {
-      strategy = SAMPLE_ONE_UNIFORM;
-    } else if (st == 'all') {
-      strategy = SAMPLE_ALL_UNIFORM;
-    } else {
-      LogWarning('Strategy \'$st\' for direct lighting unknown. Using \'all\'.');
-      strategy = SAMPLE_ALL_UNIFORM;
-    }
-    return new DirectLightingIntegrator(strategy, maxDepth);
-  }
-
   Spectrum Li(Scene scene, Renderer renderer,
       RayDifferential ray, Intersection isect,
       Sample sample, RNG rng) {
@@ -115,4 +100,19 @@ class DirectLightingIntegrator extends SurfaceIntegrator {
   List<LightSampleOffsets> lightSampleOffsets;
   List<BSDFSampleOffsets> bsdfSampleOffsets;
   int lightNumOffset;
+
+  static DirectLightingIntegrator Create(ParamSet params) {
+    int maxDepth = params.findOneInt('maxdepth', 5);
+    int strategy;
+    String st = params.findOneString('strategy', 'all');
+    if (st == 'one') {
+      strategy = SAMPLE_ONE_UNIFORM;
+    } else if (st == 'all') {
+      strategy = SAMPLE_ALL_UNIFORM;
+    } else {
+      LogWarning('Strategy \'$st\' for direct lighting unknown. Using \'all\'.');
+      strategy = SAMPLE_ALL_UNIFORM;
+    }
+    return new DirectLightingIntegrator(strategy, maxDepth);
+  }
 }
