@@ -2,7 +2,7 @@
 
 ##Overview
 
-DartRay is a free, open-source physically based ray tracer, written in the [Dart](www.dartlang.org) programming language. It providing a variety of rendering, lighting and material algorithms.
+DartRay is a free, open-source physically based ray tracer, written in the [Dart](www.dartlang.org) programming language. It provides a variety of rendering, lighting and material algorithms.
 
 DartRay is a [Dart](http://www.dartlang.org) port of the [PBRT](http://www.pbrt.org) renderer.
 
