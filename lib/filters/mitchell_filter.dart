@@ -24,15 +24,6 @@ class MitchellFilter extends Filter {
   MitchellFilter(this.b, this.c, double xw, double yw) :
     super(xw, yw);
 
-  static MitchellFilter Create(ParamSet ps) {
-    // Find common filter parameters
-    double xw = ps.findOneFloat("xwidth", 2.0);
-    double yw = ps.findOneFloat("ywidth", 2.0);
-    double B = ps.findOneFloat("B", 1.0 / 3.0);
-    double C = ps.findOneFloat("C", 1.0 / 3.0);
-    return new MitchellFilter(B, C, xw, yw);
-  }
-
   double evaluate(double x, double y) {
     return _mitchell1D(x * invXWidth) * _mitchell1D(y * invYWidth);
   }
@@ -47,6 +38,15 @@ class MitchellFilter extends Filter {
               (-18 + 12 * b + 6 * c) * x * x +
               (6 - 2 * b)) * (1.0 / 6.0);
     }
+  }
+
+  static MitchellFilter Create(ParamSet ps) {
+    // Find common filter parameters
+    double xw = ps.findOneFloat("xwidth", 2.0);
+    double yw = ps.findOneFloat("ywidth", 2.0);
+    double B = ps.findOneFloat("B", 1.0 / 3.0);
+    double C = ps.findOneFloat("C", 1.0 / 3.0);
+    return new MitchellFilter(B, C, xw, yw);
   }
 
   double b;

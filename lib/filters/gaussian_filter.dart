@@ -27,6 +27,13 @@ class GaussianFilter extends Filter {
     expX = exp(-a * xw * xw),
     expY = exp(-a * yw * yw);
 
+  double evaluate(double x, double y) {
+    return _gaussian(x, expX) * _gaussian(y, expY);
+  }
+
+  double _gaussian(double d, double expv) =>
+    max(0.0, exp(-alpha * d * d) - expv);
+
   static GaussianFilter Create(ParamSet ps) {
     // Find common filter parameters
     double xw = ps.findOneFloat("xwidth", 2.0);
@@ -34,13 +41,6 @@ class GaussianFilter extends Filter {
     double alpha = ps.findOneFloat("alpha", 2.0);
     return new GaussianFilter(xw, yw, alpha);
   }
-
-  double evaluate(double x, double y) {
-    return _gaussian(x, expX) * _gaussian(y, expY);
-  }
-
-  double _gaussian(double d, double expv) =>
-    max(0.0, exp(-alpha * d * d) - expv);
 
   double alpha;
   double expX;

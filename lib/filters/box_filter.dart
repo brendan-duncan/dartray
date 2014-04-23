@@ -24,13 +24,13 @@ class BoxFilter extends Filter {
   BoxFilter(double xw, double yw) :
     super(xw, yw);
 
+  double evaluate(double x, double y) {
+    return 1.0;
+  }
+
   static BoxFilter Create(ParamSet ps) {
     double xw = ps.findOneFloat('xwidth', 0.5);
     double yw = ps.findOneFloat('ywidth', 0.5);
     return new BoxFilter(xw, yw);
-  }
-
-  double evaluate(double x, double y) {
-    return 1.0;
   }
 }

@@ -42,10 +42,17 @@ class OutputImage {
   final Float32List rgb;
 
   OutputImage(this.xOffset, this.yOffset, int width, height,
-              this.imageWidth, this.imageHeight, [Float32List rgb]) :
+              [this.imageWidth, this.imageHeight, Float32List rgb]) :
     this.width = width,
     this.height = height,
-    this.rgb = rgb != null ? rgb : new Float32List(width * height * 3);
+    this.rgb = rgb != null ? rgb : new Float32List(width * height * 3) {
+    if (imageWidth == null) {
+      imageWidth = width;
+    }
+    if (imageHeight == null) {
+      imageHeight = height;
+    }
+  }
 
   Img.Image toImage({double gamma: 2.2}) {
     Img.Image img = new Img.Image(width, height);

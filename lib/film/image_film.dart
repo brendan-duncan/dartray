@@ -28,10 +28,10 @@ class ImageFilm extends Film {
   int samplesProcessed = 0;
   int previewCount;
   Filter filter;
-  int xPixelStart;
-  int yPixelStart;
-  int xPixelCount;
-  int yPixelCount;
+  int left;
+  int top;
+  int width;
+  int height;
   Image image;
 
   ImageFilm(int xres, int yres, this.filter, this.cropWindow, this.filename,
@@ -44,17 +44,17 @@ class ImageFilm extends Film {
     }
 
     // Compute film image extent
-    xPixelStart = (xResolution * cropWindow[0]).ceil();
-    xPixelCount = max(1, (xResolution * cropWindow[1]).ceil() - xPixelStart);
-    yPixelStart = (yResolution * cropWindow[2]).ceil();
-    yPixelCount = max(1, (yResolution * cropWindow[3]).ceil() - yPixelStart);
+    left = (xResolution * cropWindow[0]).ceil();
+    width = max(1, (xResolution * cropWindow[1]).ceil() - left);
+    top = (yResolution * cropWindow[2]).ceil();
+    height = max(1, (yResolution * cropWindow[3]).ceil() - top);
 
-    previewCount = xPixelCount * 12;
+    previewCount = width * 12;
 
     // Allocate film image storage
-    _Lxyz = new Float32List(xPixelCount * yPixelCount * 3);
-    _splatXYZ = new Float32List(xPixelCount * yPixelCount * 3);
-    _weightSum = new Float32List(xPixelCount * yPixelCount);
+    _Lxyz = new Float32List(width * height * 3);
+    _splatXYZ = new Float32List(width * height * 3);
+    _weightSum = new Float32List(width * height);
 
     // Precompute filter weight table
     _filterTable = new Float32List(FILTER_TABLE_SIZE * FILTER_TABLE_SIZE);
@@ -67,13 +67,13 @@ class ImageFilm extends Film {
       }
     }
 
-    image = new Image(xPixelCount, yPixelCount);
+    image = new Image(width, height);
     image.fill(0xff888888);
 
-    LogInfo('FILM $xPixelStart $yPixelStart $xPixelCount $yPixelCount');
-    output = new OutputImage(xPixelStart, yPixelStart,
-                             xPixelCount, yPixelCount,
-                             xPixelCount, yPixelCount);
+    LogInfo('FILM $left $top $width $height');
+    output = new OutputImage(left, top,
+                             width, height,
+                             width, height);
   }
 
   void addSample(CameraSample sample, Spectrum L) {
@@ -85,10 +85,10 @@ class ImageFilm extends Film {
     int y0 = (dimageY - filter.yWidth).ceil();
     int y1 = (dimageY + filter.yWidth).floor();
 
-    x0 = max(x0, xPixelStart);
-    x1 = min(x1, xPixelStart + xPixelCount - 1);
-    y0 = max(y0, yPixelStart);
-    y1 = min(y1, yPixelStart + yPixelCount - 1);
+    x0 = max(x0, left);
+    x1 = min(x1, left + width - 1);
+    y0 = max(y0, top);
+    y1 = min(y1, top + height - 1);
 
     if ((x1 - x0) < 0 || (y1 - y0) < 0) {
       return;
@@ -97,7 +97,7 @@ class ImageFilm extends Film {
     // Loop over filter support and add sample to pixel arrays
     XYZColor xyz = L.toXYZ();
 
-    // Precompute $x$ and $y$ filter table offsets
+    // Precompute x and y filter table offsets
     Int32List ifx = new Int32List(x1 - x0 + 1);
     for (int x = x0; x <= x1; ++x) {
       double fx = ((x - dimageX) * filter.invXWidth * FILTER_TABLE_SIZE).abs();
@@ -114,14 +114,14 @@ class ImageFilm extends Film {
     List<double> rgb = [0.0, 0.0, 0.0];
     List<double> splatRGB = [0.0, 0.0, 0.0];
     for (int y = y0; y <= y1; ++y) {
-      int oi = (y0 * xPixelCount + x0) * 4;
+      int oi = (y0 * width + x0) * 4;
       for (int x = x0; x <= x1; ++x, oi += 4) {
-        // Evaluate filter value at $(x,y)$ pixel
+        // Evaluate filter value at (x,y) pixel
         int offset = ify[y - y0] * FILTER_TABLE_SIZE + ifx[x - x0];
         double filterWt = _filterTable[offset];
 
         // Update pixel values with filtered sample contribution
-        int pi = (y - yPixelStart) * xPixelCount + (x - xPixelStart);
+        int pi = (y - top) * width + (x - left);
         int pi3 = pi * 3;
 
         _Lxyz[pi3] += filterWt * xyz[0];
@@ -144,14 +144,14 @@ class ImageFilm extends Film {
         }
 
         // Add splat value at pixel
-        Spectrum.XYZToRGB(_splatXYZ[pi3], _splatXYZ[pi3 + 1], _splatXYZ[pi3 + 2],
-                 splatRGB);
+        Spectrum.XYZToRGB(_splatXYZ[pi3], _splatXYZ[pi3 + 1],
+                          _splatXYZ[pi3 + 2], splatRGB);
 
-        rgb[0] += splatRGB[0];
-        rgb[1] += splatRGB[1];
-        rgb[2] += splatRGB[2];
+        rgb[0] += splatRGB[0] * splatScale;
+        rgb[1] += splatRGB[1] * splatScale;
+        rgb[2] += splatRGB[2] * splatScale;
 
-        pixels[oi] = _gamma[(rgb[0] * 255.0).floor().clamp(0, 255)];
+        pixels[oi]     = _gamma[(rgb[0] * 255.0).floor().clamp(0, 255)];
         pixels[oi + 1] = _gamma[(rgb[1] * 255.0).floor().clamp(0, 255)];
         pixels[oi + 2] = _gamma[(rgb[2] * 255.0).floor().clamp(0, 255)];
         pixels[oi + 3] = 255;
@@ -175,12 +175,12 @@ class ImageFilm extends Film {
     int x = (sample.imageX).floor();
     int y = (sample.imageY).floor();
 
-    if (x < xPixelStart || x - xPixelStart >= xPixelCount ||
-        y < yPixelStart || y - yPixelStart >= yPixelCount) {
+    if (x < left || x - left >= width ||
+        y < top || y - top >= height) {
       return;
     }
 
-    int pi = (y - yPixelStart) * xPixelCount + (x - xPixelStart);
+    int pi = (y - top) * width + (x - left);
     int pi3 = pi * 3;
 
     _splatXYZ[pi3] += xyz[0];
@@ -206,13 +206,14 @@ class ImageFilm extends Film {
     // Add splat value at pixel
     Spectrum.XYZToRGB(_splatXYZ[pi3], _splatXYZ[pi3 + 1], _splatXYZ[pi3 + 2],
                       splatRGB);
-    rgb[0] += splatRGB[0];
-    rgb[1] += splatRGB[1];
-    rgb[2] += splatRGB[2];
+
+    rgb[0] += splatRGB[0] * splatScale;
+    rgb[1] += splatRGB[1] * splatScale;
+    rgb[2] += splatRGB[2] * splatScale;
 
     Uint8List pixels = image.getBytes();
     int oi = pi * 4;
-    pixels[oi] = _gamma[(rgb[0] * 255.0).floor().clamp(0, 255)];
+    pixels[oi]     = _gamma[(rgb[0] * 255.0).floor().clamp(0, 255)];
     pixels[oi + 1] = _gamma[(rgb[1] * 255.0).floor().clamp(0, 255)];
     pixels[oi + 2] = _gamma[(rgb[2] * 255.0).floor().clamp(0, 255)];
     pixels[oi + 3] = 255;
@@ -224,17 +225,17 @@ class ImageFilm extends Film {
   }
 
   void getSampleExtent(List<int> extent) {
-    extent[0] = (xPixelStart + 0.5 - filter.xWidth).floor();
-    extent[1] = (xPixelStart + 0.5 + xPixelCount + filter.xWidth).ceil();
-    extent[2] = (yPixelStart + 0.5 - filter.yWidth).floor();
-    extent[3] = (yPixelStart + 0.5 + yPixelCount + filter.yWidth).ceil();
+    extent[0] = (left + 0.5 - filter.xWidth).floor();
+    extent[1] = (left + 0.5 + width + filter.xWidth).ceil();
+    extent[2] = (top + 0.5 - filter.yWidth).floor();
+    extent[3] = (top + 0.5 + height + filter.yWidth).ceil();
   }
 
   void getPixelExtent(List<int> extent) {
-    extent[0] = xPixelStart;
-    extent[1] = xPixelStart + xPixelCount;
-    extent[2] = yPixelStart;
-    extent[3] = yPixelStart + yPixelCount;
+    extent[0] = left;
+    extent[1] = left + width;
+    extent[2] = top;
+    extent[3] = top + height;
   }
 
   void updateDisplay(int x0, int y0, int x1, int y1,
@@ -251,8 +252,8 @@ class ImageFilm extends Film {
     List<double> splatRGB = [0.0, 0.0, 0.0];
     int pi = 0;
     int pi3 = 0;
-    for (int y = 0; y < yPixelCount; ++y) {
-      for (int x = 0; x < xPixelCount; ++x, ++pi, pi3 += 3) {
+    for (int y = 0; y < height; ++y) {
+      for (int x = 0; x < width; ++x, ++pi, pi3 += 3) {
         // Convert pixel XYZ color to RGB
         Spectrum.XYZToRGB(_Lxyz[pi3], _Lxyz[pi3 + 1], _Lxyz[pi3 + 2], c);
 

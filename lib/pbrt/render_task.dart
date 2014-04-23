@@ -117,8 +117,8 @@ class RenderTask {
             Float32List rgb = msg['output'];
             List<int> extents = msg['extents'];
             List<int> res = msg['res'];
-            int w = (extents[1] - extents[0]) + 1;
-            int h = (extents[3] - extents[2]) + 1;
+            int w = (extents[1] - extents[0]);
+            int h = (extents[3] - extents[2]);
             OutputImage output = new OutputImage(extents[0], extents[2],
                                                  w, h, res[0], res[1], rgb);
             completer.complete(output);

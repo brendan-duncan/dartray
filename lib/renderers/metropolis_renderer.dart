@@ -21,29 +21,6 @@
 part of renderers;
 
 class MetropolisRenderer extends Renderer {
-  static MetropolisRenderer Create(ParamSet params, Camera camera,
-                                   [int taskNum = 0, int taskCount = 1]) {
-    double largeStepProb = params.findOneFloat('largestepprobability', 0.25);
-    int perPixelSamples = params.findOneInt('samplesperpixel', 100);
-    int nBootstrap = params.findOneInt('bootstrapsamples', 100000);
-    int nDirectPixelSamples = params.findOneInt('directsamples', 4);
-    bool doDirectSeparately = params.findOneBool('dodirectseparately', true);
-    int mr = params.findOneInt('maxconsecutiverejects', 512);
-    int md = params.findOneInt('maxdepth', 7);
-    bool doBidirectional = params.findOneBool('bidirectional', true);
-
-    if (RenderOverrides.QuickRender()) {
-      perPixelSamples = Math.max(1, perPixelSamples ~/ 4);
-      nBootstrap = Math.max(1, nBootstrap ~/ 4);
-      nDirectPixelSamples = Math.max(1, nDirectPixelSamples ~/ 4);
-    }
-
-    return new MetropolisRenderer(perPixelSamples, nBootstrap,
-                                  nDirectPixelSamples, largeStepProb,
-                                  doDirectSeparately, mr, md, camera,
-                                  doBidirectional, taskNum, taskCount);
-  }
-
   MetropolisRenderer(this.nPixelSamples, this.nBootstrap,
                      this.nDirectPixelSamples, double lsp,
                      bool doDirectSeparately, this.maxConsecutiveRejects,
@@ -652,12 +629,36 @@ class MetropolisRenderer extends Renderer {
 
       alpha *= pathScale / rrSurviveProb;
 
-      //alpha *= renderer->Transmittance(scene, ray, null, rng);
+      //alpha *= renderer.tansmittance(scene, ray, null, rng);
       ray = new RayDifferential.child(p, v.wNext, ray, v.isect.rayEpsilon);
     }
 
     Stats.MLT_FINISHED_GENERATE_PATH();
     return length;
+  }
+
+
+  static MetropolisRenderer Create(ParamSet params, Camera camera,
+                                   [int taskNum = 0, int taskCount = 1]) {
+    double largeStepProb = params.findOneFloat('largestepprobability', 0.25);
+    int perPixelSamples = params.findOneInt('samplesperpixel', 100);
+    int nBootstrap = params.findOneInt('bootstrapsamples', 100000);
+    int nDirectPixelSamples = params.findOneInt('directsamples', 4);
+    bool doDirectSeparately = params.findOneBool('dodirectseparately', true);
+    int mr = params.findOneInt('maxconsecutiverejects', 512);
+    int md = params.findOneInt('maxdepth', 7);
+    bool doBidirectional = params.findOneBool('bidirectional', true);
+
+    if (RenderOverrides.QuickRender()) {
+      perPixelSamples = Math.max(1, perPixelSamples ~/ 4);
+      nBootstrap = Math.max(1, nBootstrap ~/ 4);
+      nDirectPixelSamples = Math.max(1, nDirectPixelSamples ~/ 4);
+    }
+
+    return new MetropolisRenderer(perPixelSamples, nBootstrap,
+                                  nDirectPixelSamples, largeStepProb,
+                                  doDirectSeparately, mr, md, camera,
+                                  doBidirectional, taskNum, taskCount);
   }
 
   int taskNum;
@@ -777,6 +778,12 @@ class _MLTTask {
     int nTaskSamples = nPixels * largeStepRate;
     int consecutiveRejects = 0;
 
+    int ntf = taskNum + 1;
+    int totalSamples = nPixels * nPixelSamples;
+    double splatScale = totalSamples / (ntf * nTaskSamples);
+
+    camera.film.splatScale = splatScale;
+
     // Declare variables for storing and computing MLT samples
     RNG rng = new RNG(taskNum);
     List<_PathVertex> cameraPath = new List<_PathVertex>(renderer.maxDepth);
@@ -852,7 +859,7 @@ class _MLTTask {
 
       if (I[current] > 0.0) {
         if ((1.0 / I[current]).isFinite) {
-          Spectrum contrib =  L[current] * (b / nPixelSamples) / I[current];
+          Spectrum contrib = L[current] * (b / nPixelSamples) / I[current];
           camera.film.splat(samples[current].cameraSample, contrib * (1.0 - a));
         }
       }
@@ -883,9 +890,6 @@ class _MLTTask {
 
     // Update display for recently computed Metropolis samples
     Stats.MLT_STARTED_DISPLAY_UPDATE();
-    int ntf = taskNum + 1;
-    int totalSamples = nPixels * nPixelSamples;
-    double splatScale = totalSamples / (ntf * nTaskSamples);
 
     camera.film.updateDisplay(x0, y0, x1, y1, splatScale);
     camera.film.writeImage(splatScale);

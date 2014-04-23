@@ -24,14 +24,14 @@ class TriangleFilter extends Filter {
   TriangleFilter(double xw, double yw) :
     super(xw, yw);
 
+  double evaluate(double x, double y) {
+    return max(0.0, xWidth - x.abs()) * max(0.0, yWidth - y.abs());
+  }
+
   static TriangleFilter Create(ParamSet ps) {
     // Find common filter parameters
     double xw = ps.findOneFloat("xwidth", 2.0);
     double yw = ps.findOneFloat("ywidth", 2.0);
     return new TriangleFilter(xw, yw);
-  }
-
-  double evaluate(double x, double y) {
-    return max(0.0, xWidth - x.abs()) * max(0.0, yWidth - y.abs());
   }
 }

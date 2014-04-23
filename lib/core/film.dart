@@ -29,6 +29,7 @@ typedef PreviewCallback(Img.Image image);
 abstract class Film {
   final int xResolution;
   final int yResolution;
+  double splatScale = 1.0;
 
   Film(this.xResolution, this.yResolution);
 

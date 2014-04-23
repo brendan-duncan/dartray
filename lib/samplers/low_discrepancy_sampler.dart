@@ -33,8 +33,9 @@ class LowDiscrepancySampler extends Sampler {
     pixelIndex = 0;
 
     if (!IsPowerOf2(nsamp)) {
-      LogWarning('Pixel samples being rounded up to power of 2');
       nPixelSamples = RoundUpPow2(nsamp);
+      LogWarning('Pixel samples being rounded up to power of 2: '
+                 '$nsamp => $nPixelSamples');
     } else {
       nPixelSamples = nsamp;
     }
@@ -67,7 +68,7 @@ class LowDiscrepancySampler extends Sampler {
 
     if (sampleBuf == null) {
        sampleBuf = new Float32List(LDPixelSampleFloatsNeeded(samples[0],
-                                                            nPixelSamples));
+                                                             nPixelSamples));
     }
 
     pixels.getPixel(pixelIndex++, pixel);

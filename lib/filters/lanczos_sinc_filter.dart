@@ -24,13 +24,6 @@ class LanczosSincFilter extends Filter {
   LanczosSincFilter(double xw, double yw, this.tau) :
     super(xw, yw);
 
-  static LanczosSincFilter Create(ParamSet ps) {
-    double xw = ps.findOneFloat("xwidth", 4.0);
-    double yw = ps.findOneFloat("ywidth", 4.0);
-    double tau = ps.findOneFloat("tau", 3.0);
-    return new LanczosSincFilter(xw, yw, tau);
-  }
-
   double evaluate(double x, double y) {
     return _sinc1D(x * invXWidth) * _sinc1D(y * invYWidth);
   }
@@ -47,6 +40,13 @@ class LanczosSincFilter extends Filter {
     double sinc = sin(x) / x;
     double lanczos = sin(x * tau) / (x * tau);
     return sinc * lanczos;
+  }
+
+  static LanczosSincFilter Create(ParamSet ps) {
+    double xw = ps.findOneFloat("xwidth", 4.0);
+    double yw = ps.findOneFloat("ywidth", 4.0);
+    double tau = ps.findOneFloat("tau", 3.0);
+    return new LanczosSincFilter(xw, yw, tau);
   }
 
   double tau;

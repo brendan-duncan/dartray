@@ -223,16 +223,16 @@ abstract class RenderManagerInterface extends ResourceManager {
               renderOutput.imageWidth != output.imageWidth ||
               renderOutput.imageHeight != output.imageHeight) {
             renderOutput = new OutputImage(0, 0, output.imageWidth,
-                                           output.imageHeight, output.imageWidth,
                                            output.imageHeight);
           }
 
-          for (int y = 0, si = 0; y < output.height; ++y) {
-            int di = (output.yOffset + y) * renderOutput.width;
-            for (int x = 0; x < output.width; ++x) {
-              renderOutput.rgb[di++] = output.rgb[si++];
-              renderOutput.rgb[di++] = output.rgb[si++];
-              renderOutput.rgb[di++] = output.rgb[si++];
+          for (int y = 0; y < output.height; ++y) {
+            int pi = ((output.yOffset + y) * renderOutput.imageWidth * 3) +
+                     (output.xOffset * 3);
+            for (int x = 0; x < output.width; ++x, pi += 3) {
+              renderOutput.rgb[pi] = output.rgb[pi];
+              renderOutput.rgb[pi + 1] = output.rgb[pi + 1];
+              renderOutput.rgb[pi + 2] = output.rgb[pi + 2];
             }
           }
         } else {
