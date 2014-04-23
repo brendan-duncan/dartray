@@ -30,6 +30,7 @@ class RandomSampler extends Sampler {
     pixels.setup(xstart, xend, ystart, yend);
     pixelIndex = 0;
     sampleCount = 0;
+    LogInfo('RANDOM $left $right $top $bottom : $width $height');
   }
 
   int maximumSampleCount() {
@@ -42,11 +43,9 @@ class RandomSampler extends Sampler {
     if (pixelIndex >= pixels.numPixels()) {
       sampleCount++;
       if (sampleCount >= samplesPerPixel) {
-        LogInfo('Random Sampler Finished: $samplesPerPixel : ${RenderOverrides.SamplingMode()}');
         return 0;
       }
       pixelIndex = 0;
-      LogInfo('Random Sampler PASS $sampleCount');
     }
 
     pixels.getPixel(pixelIndex++, pixel);

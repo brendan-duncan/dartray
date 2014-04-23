@@ -28,6 +28,7 @@ class LowDiscrepancySampler extends Sampler {
     if (pixels == null) {
       LogSevere('A PixelSampler is required by LowDiscrepencySampler');
     }
+
     pixels.setup(xstart, xend, ystart, yend);
     pixelIndex = 0;
     if (!IsPowerOf2(nsamp)) {
@@ -50,6 +51,7 @@ class LowDiscrepancySampler extends Sampler {
   Sampler getSubSampler(int num, int count) {
     List extents = [0, 0, 0, 0];
     computeSubWindow(num, count, extents);
+    LogInfo('SUB SAMPLER EXTENTS: $extents');
     if (extents[0] == extents[1] || extents[2] == extents[3]) {
       return null;
     }
@@ -99,6 +101,7 @@ class LowDiscrepancySampler extends Sampler {
     // Initialize common sampler parameters
     List<int> extents = [0, 0, 0, 0];
     film.getSampleExtent(extents);
+    LogInfo('FILM EXTENTS: $extents');
     int nsamp = params.findOneInt('pixelsamples', 4);
 
     return new LowDiscrepancySampler(extents[0], extents[1], extents[2],

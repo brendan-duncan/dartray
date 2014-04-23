@@ -24,18 +24,17 @@ part of core;
  * Determines the points on the film plane for tracing rays.
  */
 abstract class Sampler {
-  /// [RenderOverrides.samplingMode] defines how samples are generated for each
-  /// pixel.
   /// [FULL_SAMPLING] will generate all samples for a pixel before moving on
-  /// to the next pixel.
+  /// to the next pixel. Used by [RenderOverrides.samplingMode].
+  static const int FULL_SAMPLING = 0;
   /// [TWO_PASS_SAMPLING] will generate a single sample for every pixel, and
   /// then come back and do the rest of the samples on the second pass. This
   /// will allow the initial image to be displayed more quickly.
+  /// Used by [RenderOverrides.samplingMode].
+  static const int TWO_PASS_SAMPLING = 1;
   /// [ITERATIVE_SAMPLING] will generate a single sample for every pixel for
   /// each pass, until the [samplesPerPixel] has been reached. This will more
-  /// gradually refine the image.
-  static const int FULL_SAMPLING = 0;
-  static const int TWO_PASS_SAMPLING = 1;
+  /// gradually refine the image. Used by [RenderOverrides.samplingMode].
   static const int ITERATIVE_SAMPLING = 2;
 
   int xPixelStart;

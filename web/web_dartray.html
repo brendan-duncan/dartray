@@ -5,9 +5,35 @@
   	<meta charset="utf-8">
   	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dartray</title>
+    <style>
+      body {
+        width: 100%;
+        background-color: #555;
+        color: #ddd;
+        text-align: center;
+      }
+      #sceneMenu {
+        margin-below: 10px;
+      }
+      #renderCanvas {
+        box-shadow: 4px 4px 8px #000;
+      }
+      #log {
+        text-align: left;
+        overflow: scroll;
+        height: 300px;
+        box-shadow: 2px 2px 4px #000;
+      }
+    </style>
   </head>
 
   <body>
+    <!--<select id="sceneMenu"></select>
+    <br>-->
+    <canvas id="renderCanvas"></canvas>
+    <br>
+    <pre id="log"></pre>
+    
     <script type="application/dart" src="web_dartray.dart"></script>
     <script src="packages/browser/dart.js"></script>
   </body>

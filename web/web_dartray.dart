@@ -22,53 +22,82 @@ import 'dart:html' as Html;
 import 'package:dartray/dartray_web.dart';
 import 'package:image/image.dart';
 
-//String scene = 'scenes/01_bowl_of_spheres.pbrt';
-//String scene = 'scenes/02_kin_tiki_directlighting.pbrt';
-//String scene = 'scenes/03_quadrics_directlighting.pbrt';
-//String scene = 'scenes/04_box.pbrt';
-//String scene = 'scenes/05_distant_light.pbrt';
-//String scene = 'scenes/07_area_light.pbrt';
-//String scene = 'scenes/08_whitted.pbrt';
-//String scene = 'scenes/09_quadrics.pbrt';
+//String scene = 'scenes/bowl_of_spheres.pbrt';
+//String scene = 'scenes/kon_tiki_directlighting.pbrt';
+//String scene = 'scenes/quadrics_directlighting.pbrt';
+//String scene = 'scenes/box.pbrt';
+//String scene = 'scenes/distant_light.pbrt';
+//String scene = 'scenes/whitted.pbrt';
+//String scene = 'scenes/quadrics.pbrt';
 //String scene = 'scenes/area_light.pbrt';
 //String scene = 'scenes/bunny.pbrt';
-String scene = 'scenes/cornell_path.pbrt';
+//String scene = 'scenes/cornell_path.pbrt';
 //String scene = 'scenes/room-path.pbrt';
 //String scene = 'scenes/spheres.pbrt';
-//String scene = 'scenes/teapot-area-light.pbrt';
+String scene = 'scenes/teapot-area-light.pbrt';
 //String scene = 'scenes/nurbs.pbrt';
+
+const List<String> SCENES = const [
+'cornell_path.pbrt',
+'bowl_of_spheres.pbrt',
+'kin_tiki_directlighting.pbrt',
+'quadrics_directlighting.pbrt',
+'box.pbrt',
+'distant_light.pbrt',
+'area_light.pbrt',
+'whitted.pbrt',
+'quadrics.pbrt',
+'area_light.pbrt',
+'bunny.pbrt',
+'room-path.pbrt',
+'spheres.pbrt',
+'teapot-area-light.pbrt',
+'nurbs.pbrt'
+];
 
 void main() {
   RenderManager renderManager = new RenderManager();
 
-  var c = new Html.CanvasElement();
-  c.style.boxShadow = '4px 4px 8px #888';
-  Html.document.body.append(c);
+  /*Html.SelectElement sceneMenu = Html.querySelector('#sceneMenu');
+  for (String s in SCENES) {
+    var opt = new Html.OptionElement();
+    opt.label = s;
+    sceneMenu.append(opt);
+  }
+  sceneMenu.onChange.listen((e) {
+    print(SCENES[sceneMenu.selectedIndex]);
+  });*/
 
-  var imageData = c.context2D.getImageData(0, 0, c.width, c.height);
+  var log = Html.querySelector('#log');
+
+  var canvas = Html.querySelector('#renderCanvas');
+  var context = canvas.context2D;
+  var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
   RenderOverrides overrides = new RenderOverrides();
+  overrides.setSampler('random');
   overrides.samplingMode = Sampler.TWO_PASS_SAMPLING;
 
   Stopwatch timer = new Stopwatch();
   timer.start();
   renderManager.render(scene,
-      isolate: 'web_isolate.dart', //numThreads: 4,
+      isolate: 'web_isolate.dart',
+      numThreads: 2,
       overrides: overrides,
       log: (int type, String msg) {
         print('$msg');
-        var div = new Html.Element.html('<pre>$msg</pre>');
-        Html.document.body.nodes.add(div);
+        log.text += '$msg\n';
+        log.scrollByLines(1);
       },
       preview: (Image img) {
-        if (img.width != c.width || img.height != c.height) {
-          c.width = img.width;
-          c.height = img.height;
-          imageData = c.context2D.getImageData(0, 0, c.width, c.height);
+        if (img.width != canvas.width || img.height != canvas.height) {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          imageData = context.getImageData(0, 0, canvas.width, canvas.height);
         }
         var bytes = img.getBytes();
         imageData.data.setRange(0, bytes.length, bytes);
-        c.context2D.putImageData(imageData, 0, 0);
+        context.putImageData(imageData, 0, 0);
       }).then((OutputImage output) {
         timer.stop();
         LogInfo('RENDER FINISHED: ${timer.elapsed}');
@@ -80,14 +109,14 @@ void main() {
 
         if (output != null) {
           Image img = output.toImage(gamma: 2.2);
-          if (img.width != c.width || img.height != c.height) {
-            c.width = img.width;
-            c.height = img.height;
-            imageData = c.context2D.getImageData(0, 0, c.width, c.height);
+          if (img.width != canvas.width || img.height != canvas.height) {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            imageData = context.getImageData(0, 0, canvas.width, canvas.height);
           }
           var bytes = img.getBytes();
           imageData.data.setRange(0, bytes.length, bytes);
-          c.context2D.putImageData(imageData, 0, 0);
+          context.putImageData(imageData, 0, 0);
         }
       });
 }

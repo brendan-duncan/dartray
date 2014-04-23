@@ -79,7 +79,6 @@ class RenderIsolate {
   }
 
   void _message([msg = null]) {
-    _log(LOG_INFO, msg);
     if (msg is Map) {
       if (msg.containsKey('cmd')) {
         var cmd = msg['cmd'];

@@ -40,7 +40,6 @@ class RenderTask {
   RenderTask(this.previewCallback, this.taskNum, this.taskCount);
 
   void pause() {
-    LogInfo('Sending PAUSE');
     sendPort.send('pause');
   }
 
@@ -59,7 +58,7 @@ class RenderTask {
     this.overrides = overrides;
 
     Isolate.spawnUri(Uri.parse(isolateUri), ['_'],
-                     receivePort.sendPort).then((iso) {
+                     receivePort.sendPort).then((isolate) {
     });
 
     receivePort.listen((msg) {
@@ -82,8 +81,8 @@ class RenderTask {
                 String path = subMsg['path'];
                 ResourceManager.RequestFile(path).then((bytes) {
                   var data = {'cmd': 'request',
-                             'id': id,
-                             'data': bytes};
+                              'id': id,
+                              'data': bytes};
                   sendPort.send(data);
                 });
               }
