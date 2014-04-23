@@ -31,10 +31,10 @@ import 'package:image/image.dart';
 //String scene = 'scenes/quadrics.pbrt';
 //String scene = 'scenes/area_light.pbrt';
 //String scene = 'scenes/bunny.pbrt';
-//String scene = 'scenes/cornell_path.pbrt';
+String scene = 'scenes/cornell_path.pbrt';
 //String scene = 'scenes/room-path.pbrt';
 //String scene = 'scenes/spheres.pbrt';
-String scene = 'scenes/teapot-area-light.pbrt';
+//String scene = 'scenes/teapot-area-light.pbrt';
 //String scene = 'scenes/nurbs.pbrt';
 
 const List<String> SCENES = const [
@@ -75,14 +75,14 @@ void main() {
   var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
   RenderOverrides overrides = new RenderOverrides();
-  overrides.setSampler('random');
-  overrides.samplingMode = Sampler.TWO_PASS_SAMPLING;
+  //overrides.setSampler('random');
+  overrides.samplingMode = Sampler.FULL_SAMPLING;//TWO_PASS_SAMPLING;
 
   Stopwatch timer = new Stopwatch();
   timer.start();
   renderManager.render(scene,
       isolate: 'web_isolate.dart',
-      numThreads: 2,
+      //numThreads: 2,
       overrides: overrides,
       log: (int type, String msg) {
         print('$msg');
