@@ -1,5 +1,9 @@
+
+Renderer "metropolis" "integer samplesperpixel" [128] 
+    "bool dodirectseparately" ["true"] "integer directsamples" [8]
+
 #SurfaceIntegrator "path"
-#Sampler "lowdiscrepancy" "integer pixelsamples" [2]
+#Sampler "lowdiscrepancy" "integer pixelsamples" [32]
 
 LookAt 4 4 10   0 2 0  0 1 0
 Camera "perspective" "float fov" [30]

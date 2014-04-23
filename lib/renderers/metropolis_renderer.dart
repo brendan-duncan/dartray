@@ -89,8 +89,9 @@ class MetropolisRenderer extends Renderer {
         // Compute direct lighting before Metropolis light transport
         if (nDirectPixelSamples > 0) {
           LowDiscrepancySampler sampler =
-              new LowDiscrepancySampler(extent[0], extent[1],
-                                        extent[2], extent[3],
+              new LowDiscrepancySampler(extent[0], extent[2],
+                                        extent[1] - extent[0],
+                                        extent[3] - extent[2],
                                         t0, t1, new TilePixelSampler(),
                                         nDirectPixelSamples);
           Sample sample = new Sample(sampler, directLighting, null, scene);

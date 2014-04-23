@@ -1,11 +1,8 @@
 Film "image" "integer xresolution" [256 ] "integer yresolution" [256 ]
     "string filename" "d:/temp/teapot-area-light.tga"
     
-Sampler "stratified" 
-  "integer xsamples" [5] "integer ysamples" [5]
-  "bool jitter" ["false"]
-
-PixelFilter "mitchell"
+#Sampler "stratified" "integer xsamples" [5] "integer ysamples" [5] "bool jitter" ["false"]
+#PixelFilter "mitchell"
 
 Accelerator "grid"
 
@@ -54,12 +51,12 @@ AttributeEnd
 # ----------
 AttributeBegin # the sun
   LightSource "distant" "blackbody L" [3200 1] 
-  "point from" [-2 15 -10] "point to" [0 0 0] "integer nsamples" [1]
+  "point from" [-2 15 -10] "point to" [0 0 0] "integer nsamples" [32]
 AttributeEnd
 
 
 AttributeBegin # the sky
-  LightSource "infinite" "blackbody L" [20000 .8] "integer nsamples" [1]
+  LightSource "infinite" "blackbody L" [20000 .8] "integer nsamples" [32]
 AttributeEnd
 
 

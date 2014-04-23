@@ -27,19 +27,23 @@ part of core;
  * sample within pixels to sample (as done by [Sampler]).
  */
 abstract class PixelSampler {
-  void setup(int xPixelStart, int xPixelEnd, int yPixelStart, int yPixelEnd) {
-    this.xPixelStart = xPixelStart;
-    this.xPixelEnd = xPixelEnd;
-    this.yPixelStart = yPixelStart;
-    this.yPixelEnd = yPixelEnd;
+  void setup(int x, int y, int width, int height) {
+    this.left = x;
+    this.top = y;
+    this.width = width;
+    this.height = height;
   }
+
+  int get right => left + width - 1;
+
+  int get bottom => top + height - 1;
 
   int numPixels();
 
   void getPixel(int index, List<int> pixel);
 
-  int xPixelStart;
-  int xPixelEnd;
-  int yPixelStart;
-  int yPixelEnd;
+  int left;
+  int top;
+  int width;
+  int height;
 }

@@ -21,16 +21,15 @@
 part of samplers;
 
 class RandomSampler extends Sampler {
-  RandomSampler(int xstart, int xend, int ystart,
-      int yend, double sopen, double sclose, this.pixels, int ns) :
-    super(xstart, xend, ystart, yend, sopen, sclose, ns) {
+  RandomSampler(int x, int y, int width, int height, double sopen,
+                double sclose, this.pixels, int ns) :
+    super(x, y, width, height, sopen, sclose, ns) {
     if (pixels == null) {
       LogSevere('A PixelSampler is required by RandomSampler');
     }
-    pixels.setup(xstart, xend, ystart, yend);
+    pixels.setup(x, y, width, height);
     pixelIndex = 0;
     sampleCount = 0;
-    LogInfo('RANDOM $left $right $top $bottom : $width $height');
   }
 
   int maximumSampleCount() {
@@ -84,26 +83,11 @@ class RandomSampler extends Sampler {
     return sz;
   }
 
-  Sampler getSubSampler(int num, int count) {
-    List<int> extents = [0, 0, 0, 0];
-    computeSubWindow(num, count, extents);
-    if (extents[0] == extents[1] || extents[2] == extents[3]) {
-      return null;
-    }
-
-    return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
-                             shutterOpen, shutterClose, pixels,
-                             samplesPerPixel);
-  }
-
-  static RandomSampler Create(ParamSet params, Film film, Camera camera,
-                              PixelSampler pixels) {
+  static RandomSampler Create(ParamSet params, int x, int y, int width,
+                              int height, Camera camera, PixelSampler pixels) {
     int ns = params.findOneInt('pixelsamples', 10);
 
-    List<int> extents = [0, 0, 0, 0];
-    film.getSampleExtent(extents);
-
-    return new RandomSampler(extents[0], extents[1], extents[2], extents[3],
+    return new RandomSampler(x, y, width, height,
                              camera.shutterOpen, camera.shutterClose,
                              pixels, ns);
   }

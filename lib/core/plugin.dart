@@ -21,9 +21,10 @@ typedef Light AreaLightCreator(Transform light2world, ParamSet paramSet,
 
 typedef Material MaterialCreator(Transform xform, TextureParams mp);
 
-typedef PixelSampler PixelSamplerCreator(ParamSet params, Film film);
+typedef PixelSampler PixelSamplerCreator(ParamSet params);
 
-typedef Sampler SamplerCreator(ParamSet params, Film film, Camera camera,
+typedef Sampler SamplerCreator(ParamSet params, int x, int y,
+                               int width, int height, Camera camera,
                                PixelSampler pixels);
 
 typedef Shape ShapeCreator(Transform o2w, Transform w2o,

@@ -70,7 +70,9 @@ class ImageFilm extends Film {
     image = new Image(xPixelCount, yPixelCount);
     image.fill(0xff888888);
 
+    LogInfo('FILM $xPixelStart $yPixelStart $xPixelCount $yPixelCount');
     output = new OutputImage(xPixelStart, yPixelStart,
+                             xPixelCount, yPixelCount,
                              xPixelCount, yPixelCount);
   }
 

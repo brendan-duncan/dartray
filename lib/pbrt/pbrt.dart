@@ -723,8 +723,7 @@ class Pbrt {
       paramSet.reportUnused();
 
       PixelSampler pixels = _makePixelSampler(_renderOptions.pixelSamplerName,
-                                              _renderOptions.pixelSamplerParams,
-                                              camera.film);
+                                           _renderOptions.pixelSamplerParams);
 
       Sampler sampler = _makeSampler(_renderOptions.samplerName,
                                      _renderOptions.samplerParams,
@@ -976,7 +975,7 @@ class Pbrt {
     return c;
   }
 
-  PixelSampler _makePixelSampler(String name, ParamSet paramSet, Film film) {
+  PixelSampler _makePixelSampler(String name, ParamSet paramSet) {
     if (overrides != null && overrides.pixelSamplerName != null) {
       name = overrides.pixelSamplerName;
       paramSet = overrides.pixelSamplerParams;
@@ -987,15 +986,14 @@ class Pbrt {
       return null;
     }
 
-    PixelSampler s = Plugin.pixelSampler(name)(paramSet, film);
+    PixelSampler s = Plugin.pixelSampler(name)(paramSet);
     paramSet.reportUnused();
 
     return s;
   }
 
-  Sampler _makeSampler(String name,
-                       ParamSet paramSet, Film film, Camera camera,
-                       PixelSampler pixels) {
+  Sampler _makeSampler(String name, ParamSet paramSet, Film film,
+                       Camera camera, PixelSampler pixels) {
     if (overrides != null && overrides.samplerName != null) {
       name = overrides.samplerName;
       paramSet = overrides.samplerParams;
@@ -1006,9 +1004,22 @@ class Pbrt {
       return null;
     }
 
-    LogInfo('SAMPLER: $name');
+    List<int> extent = [0, 0, 0, 0];
+    film.getSampleExtent(extent);
+    int w = extent[1] - extent[0];
+    int h = extent[3] - extent[2];
 
-    Sampler s = Plugin.sampler(name)(paramSet, film, camera, pixels);
+    Sampler.ComputeSubWindow(w, h, _renderOptions.taskNum,
+                             _renderOptions.taskCount, extent);
+
+    w = extent[1] - extent[0];
+    h = extent[3] - extent[2];
+
+    LogInfo('SAMPLER: $name [${extent[0]}, ${extent[2]}, $w, $h]');
+
+    Sampler s = Plugin.sampler(name)(paramSet, extent[0], extent[2],
+                                     w, h, camera, pixels);
+
     paramSet.reportUnused();
 
     return s;

@@ -25,44 +25,33 @@ class BestCandidateSampler extends Sampler {
   static const int SAMPLE_TABLE_SIZE = SQRT_SAMPLE_TABLE_SIZE *
                                        SQRT_SAMPLE_TABLE_SIZE;
 
-  BestCandidateSampler(int xstart, int xend, int ystart, int yend,
+  BestCandidateSampler(int x, int y, int width, int height,
                        double sopen, double sclose, int nPixelSamples)
-    : super(xstart, xend, ystart, yend, sopen, sclose, nPixelSamples) {
+    : super(x, y, width, height, sopen, sclose, nPixelSamples) {
     tableWidth = SQRT_SAMPLE_TABLE_SIZE / Math.sqrt(nPixelSamples);
-    xTileStart = (xstart / tableWidth).floor();
-    xTileEnd = (xend / tableWidth).floor();
-    yTileStart = (ystart / tableWidth).floor();
-    yTileEnd = (yend / tableWidth).floor();
+    xTileStart = (left / tableWidth).floor();
+    xTileEnd = (right / tableWidth).floor();
+    yTileStart = (top / tableWidth).floor();
+    yTileEnd = (bottom / tableWidth).floor();
     xTile = xTileStart;
     yTile = yTileStart;
     tableOffset = 0;
+
     // Update sample shifts
     RNG tileRng = new RNG(xTile + (yTile << 8));
     for (int i = 0; i < 3; ++i) {
       sampleOffsets[i] = tileRng.randomFloat();
     }
 
+    pass = 0;
     if (RenderOverrides.SamplingMode() == Sampler.TWO_PASS_SAMPLING ||
         RenderOverrides.SamplingMode() == Sampler.ITERATIVE_SAMPLING) {
       PixelSampler pixels = new TilePixelSampler();
-      pixels.setup(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd);
+      pixels.setup(x, y, width, height);
 
-      randomSampler = new RandomSampler(xstart, xend, ystart, yend,
+      randomSampler = new RandomSampler(x, y, width, height,
                                         sopen, sclose, pixels, 1);
     }
-
-    pass = 0;
-  }
-
-  Sampler getSubSampler(int num, int count) {
-    List<int> extent = [0, 0, 0, 0];
-    computeSubWindow(num, count, extent);
-    if (extent[0] == extent[1] || extent[2] == extent[3]) {
-      return null;
-    }
-
-    return new BestCandidateSampler(extent[0], extent[1], extent[2], extent[3],
-                                    shutterOpen, shutterClose, samplesPerPixel);
   }
 
   int roundSize(int size) {
@@ -117,8 +106,8 @@ class BestCandidateSampler extends Sampler {
       sample.lensV = WRAP(sampleOffsets[2] + _SAMPLE_TABLE[to + 4]);
 
       // Check sample against crop window, goto _again_ if outside
-      if (sample.imageX < xPixelStart || sample.imageX >= xPixelEnd ||
-          sample.imageY < yPixelStart || sample.imageY >= yPixelEnd) {
+      if (sample.imageX < left || sample.imageX > right ||
+          sample.imageY < left || sample.imageY > right) {
         ++tableOffset;
         again = true;
         continue;
@@ -138,14 +127,13 @@ class BestCandidateSampler extends Sampler {
     return 1;
   }
 
-  static BestCandidateSampler Create(ParamSet params, Film film,
-                                     Camera camera, PixelSampler pixels) {
+  static BestCandidateSampler Create(ParamSet params, int x, int y,
+                                     int width, int height, Camera camera,
+                                     PixelSampler pixels) {
     // Initialize common sampler parameters
-    List<int> extent = [0, 0, 0, 0];
-    film.getSampleExtent(extent);
     int nsamp = params.findOneInt('pixelsamples', 4);
 
-    return new BestCandidateSampler(extent[0], extent[1], extent[2], extent[3],
+    return new BestCandidateSampler(x, y, width, height,
                                     camera.shutterOpen, camera.shutterClose,
                                     nsamp);
   }

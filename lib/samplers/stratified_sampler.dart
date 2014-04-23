@@ -21,14 +21,14 @@
 part of samplers;
 
 class StratifiedSampler extends Sampler {
-  StratifiedSampler(int xstart, int xend, int ystart, int yend,
+  StratifiedSampler(int x, int y, int width, int height,
                     this.jitterSamples, double sopen, double sclose,
                     this.pixels, int xs, int ys) :
-    super(xstart, xend, ystart, yend, sopen, sclose, xs * ys) {
+    super(x, y, width, height, sopen, sclose, xs * ys) {
     if (pixels == null) {
       LogSevere('A PixelSampler is required by StratifiedSampler');
     }
-    pixels.setup(xstart, xend, ystart, yend);
+    pixels.setup(x, y, width, height);
     pixelIndex = 0;
     xPixelSamples = xs;
     yPixelSamples = ys;
@@ -37,28 +37,16 @@ class StratifiedSampler extends Sampler {
     lensSamples = new Float32List(2 * nPixelSamples);
     timeSamples = new Float32List(xPixelSamples * yPixelSamples);
 
+    pass = 0;
     if (RenderOverrides.SamplingMode() == Sampler.TWO_PASS_SAMPLING ||
         RenderOverrides.SamplingMode() == Sampler.ITERATIVE_SAMPLING) {
-      randomSampler = new RandomSampler(xstart, xend, ystart, yend,
+      randomSampler = new RandomSampler(x, y, width, height,
                                         sopen, sclose, pixels, 1);
     }
-
-    pass = 0;
   }
 
   int roundSize(int size) {
     return size;
-  }
-
-  Sampler getSubSampler(int num, int count) {
-    List<int> range = [0, 0, 0, 0];
-    computeSubWindow(num, count, range);
-    if (range[0] == range[1] || range[2] == range[3]) {
-      return null;
-    }
-    return new StratifiedSampler(range[0], range[1], range[2], range[3],
-                                 jitterSamples, shutterOpen, shutterClose,
-                                 pixels, xPixelSamples, yPixelSamples);
   }
 
   int getMoreSamples(List<Sample> samples, RNG rng) {
@@ -124,14 +112,13 @@ class StratifiedSampler extends Sampler {
     return nPixelSamples;
   }
 
-  static StratifiedSampler Create(ParamSet params, Film film, Camera camera,
+  static StratifiedSampler Create(ParamSet params, int x, int y, int width,
+                                  int height, Camera camera,
                                   PixelSampler pixels) {
     bool jitter = params.findOneBool('jitter', true);
 
-    List<int> extents = [0, 0, 0, 0];
-    film.getSampleExtent(extents);
-
     int pixelsamples = params.findOneInt('pixelsamples', null);
+
     int xsamp;
     int ysamp;
     if (pixelsamples != null) {
@@ -142,8 +129,7 @@ class StratifiedSampler extends Sampler {
       ysamp = params.findOneInt('ysamples', 2);
     }
 
-    return new StratifiedSampler(extents[0], extents[1], extents[2],
-                                 extents[3], jitter,
+    return new StratifiedSampler(x, y, width, height, jitter,
                                  camera.shutterOpen, camera.shutterClose,
                                  pixels, xsamp, ysamp);
   }

@@ -24,23 +24,12 @@ class TilePixelSampler extends PixelSampler {
   final int tileSize;
   final bool randomize;
 
-  static TilePixelSampler Create(ParamSet params, Film film) {
-    int tileSize = params.findOneInt('tilesize', 32);
-    bool randomize = params.findOneBool('randomize', true);
-
-    return new TilePixelSampler(tileSize: tileSize, randomize: randomize);
-  }
-
   TilePixelSampler({this.tileSize: 32, this.randomize: true});
 
-  void setup(int xPixelStart, int xPixelEnd, int yPixelStart, int yPixelEnd) {
-    super.setup(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd);
-    _numSamples = (xPixelEnd - xPixelStart) *
-                  (yPixelEnd - yPixelStart);
-    _samples = new Int32List((xPixelEnd - xPixelStart) *
-                             (yPixelEnd - yPixelStart) * 2);
-    int width = xPixelEnd - xPixelStart;
-    int height = yPixelEnd - yPixelStart;
+  void setup(int x, int y, int width, int height) {
+    super.setup(x, y, width, height);
+    _numSamples = width * height;
+    _samples = new Int32List(_numSamples * 2);
     int numXTiles = width ~/ tileSize + ((width % tileSize == 0) ? 0 : 1);
     int numYTiles = height ~/ tileSize + ((height % tileSize == 0) ? 0 : 1);
 
@@ -79,17 +68,17 @@ class TilePixelSampler extends PixelSampler {
       int tx = tiles[ti++];
       int ty = tiles[ti++];
 
-      int sx = xPixelStart + (tx * tileSize);
-      int sy = yPixelStart + (ty * tileSize);
+      int sx = left + (tx * tileSize);
+      int sy = top + (ty * tileSize);
 
       for (int yi = 0; yi < tileSize; ++yi) {
         int y = sy + yi;
-        if (y >= yPixelEnd) {
+        if (y > bottom) {
           break;
         }
         for (int xi = 0; xi < tileSize; ++xi) {
           int x = sx + xi;
-          if (x >= xPixelEnd) {
+          if (x > right) {
             break;
           }
 
@@ -109,6 +98,13 @@ class TilePixelSampler extends PixelSampler {
     }
     pixel[0] = _samples[index];
     pixel[1] = _samples[index + 1];
+  }
+
+  static TilePixelSampler Create(ParamSet params) {
+    int tileSize = params.findOneInt('tilesize', 32);
+    bool randomize = params.findOneBool('randomize', true);
+
+    return new TilePixelSampler(tileSize: tileSize, randomize: randomize);
   }
 
   int _numSamples;

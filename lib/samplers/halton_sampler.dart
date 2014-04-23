@@ -21,23 +21,22 @@
 part of samplers;
 
 class HaltonSampler extends Sampler {
-  HaltonSampler(int xs, int xe, int ys, int ye, double sopen, double sclose,
-                int ps) :
-    super(xs, xe, ys, ye, sopen, sclose, ps) {
-    int delta = Math.max(xPixelEnd - xPixelStart,
-                         yPixelEnd - yPixelStart);
+  HaltonSampler(int x, int y, int width, int height, double sopen,
+                double sclose, int ps) :
+    super(x, y, width, height, sopen, sclose, ps) {
+    int delta = Math.max(width, height);
     wantedSamples = samplesPerPixel * delta * delta;
     currentSample = 0;
+
+    pass = 0;
     if (RenderOverrides.SamplingMode() == Sampler.TWO_PASS_SAMPLING ||
         RenderOverrides.SamplingMode() == Sampler.ITERATIVE_SAMPLING) {
       PixelSampler pixels = new TilePixelSampler();
-      pixels.setup(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd);
+      pixels.setup(x, y, width, height);
 
-      randomSampler = new RandomSampler(xs, xe, ys, ye,
+      randomSampler = new RandomSampler(x, y, width, height,
                                         sopen, sclose, pixels, 1);
     }
-
-    pass = 0;
   }
 
   int maximumSampleCount() {
@@ -61,15 +60,14 @@ class HaltonSampler extends Sampler {
       // Generate sample with Halton sequence and reject if outside image extent
       double u = RadicalInverse(currentSample, 3);
       double v = RadicalInverse(currentSample, 2);
-      double lerpDelta = Math.max(xPixelEnd - xPixelStart,
-                                  yPixelEnd - yPixelStart).toDouble();
+      double lerpDelta = Math.max(width, height).toDouble();
 
-      samples[0].imageX = Lerp(u, xPixelStart, xPixelStart + lerpDelta);
-      samples[0].imageY = Lerp(v, yPixelStart, yPixelStart + lerpDelta);
+      samples[0].imageX = Lerp(u, left, left + lerpDelta);
+      samples[0].imageY = Lerp(v, top, top + lerpDelta);
 
       ++currentSample;
 
-      if (samples[0].imageX >= xPixelEnd || samples[0].imageY >= yPixelEnd) {
+      if (samples[0].imageX > right || samples[0].imageY > bottom) {
         continue;
       }
 
@@ -93,29 +91,17 @@ class HaltonSampler extends Sampler {
     return 1;
   }
 
-  Sampler getSubSampler(int num, int count) {
-    List<int> range = [0, 0, 0, 0];
-    computeSubWindow(num, count, range);
-    if (range[0] == range[1] || range[2] == range[3]) {
-      return null;
-    }
-    return new HaltonSampler(range[0], range[1], range[2], range[3],
-                             shutterOpen, shutterClose, samplesPerPixel);
-  }
-
   int roundSize(int size) {
     return size;
   }
 
-  static HaltonSampler Create(ParamSet params, Film film, Camera camera,
-                              PixelSampler pixels) {
+  static HaltonSampler Create(ParamSet params, int x, int y, int width,
+                              int height, Camera camera, PixelSampler pixels) {
     // Initialize common sampler parameters
-    List<int> range = [0, 0, 0, 0];
-    film.getSampleExtent(range);
     int nsamp = params.findOneInt('pixelsamples', 4);
 
-    return new HaltonSampler(range[0], range[1], range[2], range[3],
-                             camera.shutterOpen, camera.shutterClose, nsamp);
+    return new HaltonSampler(x, y, width, height, camera.shutterOpen,
+                             camera.shutterClose, nsamp);
   }
 
   int wantedSamples;

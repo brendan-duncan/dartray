@@ -155,6 +155,7 @@ class RenderIsolate {
 
         Sampler.ComputeSubWindow(output.width, output.height,
                                  taskNum, taskCount, extents);
+
         sendPort.send({'cmd': 'final',
                        'output': output.rgb,
                        'res': [output.width, output.height],

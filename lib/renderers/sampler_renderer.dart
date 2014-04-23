@@ -114,7 +114,7 @@ class _SamplerRendererTask {
 
     Stats.STARTED_RENDERTASK(taskNum);
     // Get sub-_Sampler_ for _SamplerRendererTask_
-    Sampler sampler = mainSampler.getSubSampler(taskNum, taskCount);
+    Sampler sampler = mainSampler;
     if (sampler == null) {
       Stats.FINISHED_RENDERTASK(taskNum);
       completer.complete();
@@ -124,8 +124,8 @@ class _SamplerRendererTask {
     Completer renderCompleter = new Completer();
 
     LogInfo('SamplerRender $taskNum / $taskCount: '
-            'EXTENT: [${sampler.left} ${sampler.right} '
-            '${sampler.top} ${sampler.bottom}]');
+            '[${sampler.left} ${sampler.top} '
+            '${sampler.width} ${sampler.height}]');
 
     // Declare local variables used for rendering loop
     RNG rng = new RNG(taskNum);
@@ -201,8 +201,8 @@ class _SamplerRendererTask {
 
     renderCompleter.future.then((_) {
       // Clean up after [SamplerRenderer] is done with its image region
-      camera.film.updateDisplay(sampler.xPixelStart, sampler.yPixelStart,
-                                sampler.xPixelEnd + 1, sampler.yPixelEnd + 1);
+      camera.film.updateDisplay(sampler.left, sampler.top,
+                                sampler.width, sampler.height);
 
       Stats.FINISHED_RENDERTASK(taskNum);
       completer.complete();

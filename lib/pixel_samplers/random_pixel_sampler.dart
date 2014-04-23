@@ -24,15 +24,13 @@ part of pixel_samplers;
  * Sample the image pixels in a random order.
  */
 class RandomPixelSampler extends PixelSampler {
-  void setup(int xPixelStart, int xPixelEnd, int yPixelStart,
-             int yPixelEnd) {
-    super.setup(xPixelStart, xPixelEnd, yPixelStart, yPixelEnd);
+  void setup(int x, int y, int width, int height) {
+    super.setup(x, y, width, height);
 
-    _samples = new Int32List((xPixelEnd - xPixelStart) *
-                             (yPixelEnd - yPixelStart) * 2);
+    _samples = new Int32List(width * height * 2);
 
-    for (int y = yPixelStart, si = 0; y < yPixelEnd; ++y) {
-      for (int x = xPixelStart; x < xPixelEnd; ++x) {
+    for (int y = top, si = 0; y <= bottom; ++y) {
+      for (int x = left; x <= right; ++x) {
         _samples[si++] = x;
         _samples[si++] = y;
       }
@@ -70,7 +68,7 @@ class RandomPixelSampler extends PixelSampler {
     pixel[1] = _samples[index + 1];
   }
 
-  static RandomPixelSampler Create(ParamSet params, Film film) {
+  static RandomPixelSampler Create(ParamSet params) {
     return new RandomPixelSampler();
   }
 

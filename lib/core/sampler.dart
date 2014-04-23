@@ -37,30 +37,21 @@ abstract class Sampler {
   /// gradually refine the image. Used by [RenderOverrides.samplingMode].
   static const int ITERATIVE_SAMPLING = 2;
 
-  int xPixelStart;
-  int xPixelEnd;
-  int yPixelStart;
-  int yPixelEnd;
+  int left;
+  int top;
+  int width;
+  int height;
   double shutterOpen;
   double shutterClose;
   /// How many samples should be generated for each pixel.
   int samplesPerPixel;
 
-  Sampler(this.xPixelStart, this.xPixelEnd, this.yPixelStart,
-          this.yPixelEnd, this.shutterOpen, this.shutterClose,
-          this.samplesPerPixel);
+  Sampler(this.left, this.top, this.width, this.height, this.shutterOpen,
+          this.shutterClose, this.samplesPerPixel);
 
-  int get width => (xPixelEnd - xPixelStart);
+  int get right => left + width - 1;
 
-  int get height => (yPixelEnd - yPixelStart);
-
-  int get top => yPixelStart;
-
-  int get left => xPixelStart;
-
-  int get right => xPixelEnd - 1;
-
-  int get bottom => yPixelEnd - 1;
+  int get bottom => top + height - 1;
 
   int getMoreSamples(List<Sample> sample, RNG rng);
 
@@ -72,13 +63,7 @@ abstract class Sampler {
     return true;
   }
 
-  Sampler getSubSampler(int num, int count);
-
   int roundSize(int size);
-
-  void computeSubWindow(int num, int count, List<int> extents) {
-    ComputeSubWindow(width, height, num, count, extents);
-  }
 
   static void ComputeSubWindow(int w, int h, int num, int count,
                                List<int> extents) {

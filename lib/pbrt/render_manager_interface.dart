@@ -28,6 +28,7 @@ abstract class RenderManagerInterface extends ResourceManager {
   Pbrt pbrt;
   RenderIsolate isolate;
   String scenePath;
+  OutputImage renderOutput;
 
   RenderManagerInterface(this.scenePath) {
     RegisterStandardPlugins();
@@ -217,9 +218,30 @@ abstract class RenderManagerInterface extends ResourceManager {
     for (int i = 0; i < numThreads; ++i) {
       isolates[i] = new RenderTask(preview, i, numThreads);
       isolates[i].render(path, isolate, overrides: overrides).then((output) {
+        if (numThreads > 1) {
+          if (renderOutput == null ||
+              renderOutput.imageWidth != output.imageWidth ||
+              renderOutput.imageHeight != output.imageHeight) {
+            renderOutput = new OutputImage(0, 0, output.imageWidth,
+                                           output.imageHeight, output.imageWidth,
+                                           output.imageHeight);
+          }
+
+          for (int y = 0, si = 0; y < output.height; ++y) {
+            int di = (output.yOffset + y) * renderOutput.width;
+            for (int x = 0; x < output.width; ++x) {
+              renderOutput.rgb[di++] = output.rgb[si++];
+              renderOutput.rgb[di++] = output.rgb[si++];
+              renderOutput.rgb[di++] = output.rgb[si++];
+            }
+          }
+        } else {
+          renderOutput = output;
+        }
+
         tasksRemaining--;
         if (tasksRemaining == 0) {
-          completer.complete(output);
+          completer.complete(renderOutput);
         }
       }, onError: (msg) {
         LogError('ERROR Thread $i: $msg');
