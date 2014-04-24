@@ -107,7 +107,6 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
 
     // Get _SurfacePoint_s for translucent objects in scene
     if (filename.isNotEmpty) {
-
       List<double> fpts = ResourceManager.GetResource(filename);
       if (fpts != null) {
         if ((fpts.length % 8) != 0) {

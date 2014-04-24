@@ -34,7 +34,9 @@ abstract class Spectrum {
   static const int SAMPLED = 2;
 
   /// Determines the type of spectrum to use for color calculations, either
-  /// [SAMPLED] wavelength or [RGB] tripple.
+  /// [SAMPLED] wavelength or [RGB] tripple. This should only be set before
+  /// any Spectrum objects are created, so the type of Spectrum doesn't become
+  /// inconsistant.
   static int type = RGB;
 
   /**
@@ -88,18 +90,21 @@ abstract class Spectrum {
     return new Spectrum()..setSampled(lambda, v, offset);
   }
 
-  Spectrum.samples(int nSamples, [double v = 0.0]) :
-    c = new Float32List(nSamples) {
-    if (v != 0.0) {
-      c.fillRange(0, nSamples, v);
+  List<double> toList([List<double> data, int offset = 0]) {
+    if (data == null) {
+      return c;
     }
+    for (int i = 0; i < c.length; ++i) {
+      data[offset + i] = c[i];
+    }
+    return data;
   }
 
-  double operator[](int index) =>
-      c[index];
-
-  operator[]=(int index, double value) =>
-      c[index] = value;
+  void setList(List<double> data, [int offset = 0]) {
+    for (int i = 0; i < c.length; ++i) {
+      c[i] = data[offset + i];
+    }
+  }
 
   /**
    * Get the luminance of the spectrum.
@@ -1135,4 +1140,12 @@ abstract class Spectrum {
       1.6624255403475907e-01,   1.6997613960634927e-01,
       1.5769743995852967e-01,   1.9069090525482305e-01
   ];
+
+
+  Spectrum._(int nSamples, [double v = 0.0]) :
+    c = new Float32List(nSamples) {
+    if (v != 0.0) {
+      c.fillRange(0, nSamples, v);
+    }
+  }
 }

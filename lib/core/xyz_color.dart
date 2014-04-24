@@ -22,22 +22,22 @@ part of core;
 
 class XYZColor extends Spectrum {
   XYZColor([double v = 0.0]) :
-    super.samples(3, v);
+    super._(3, v);
 
   XYZColor.xyz(double x, double y, double z) :
-    super.samples(3) {
+    super._(3) {
     c[0] = x;
     c[1] = y;
     c[2] = z;
   }
 
   XYZColor.rgb(double r, double g, double b) :
-    super.samples(3) {
+    super._(3) {
     Spectrum.RGBToXYZ(r, g, b, c);
   }
 
   XYZColor.from(Spectrum color) :
-    super.samples(3) {
+    super._(3) {
     if (color is RGBColor) {
       Spectrum.RGBToXYZ(color.c[0], color.c[1], color.c[2], c);
     } else if (color is XYZColor) {

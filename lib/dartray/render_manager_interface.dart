@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and     *
  *  limitations under the License.                                          *
  *                                                                          *
- *   This project is based on PBRT v2 ; see http://www.dartray.org             *
+ *   This project is based on PBRT v2 ; see http://www.dartray.org          *
  *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
  ****************************************************************************/
 part of dartray;
@@ -59,17 +59,22 @@ abstract class RenderManagerInterface extends ResourceManager {
     Plugin.registerFilter('mitchell', MitchellFilter.Create);
     Plugin.registerFilter('triangle', TriangleFilter.Create);
 
-    Plugin.registerSurfaceIntegrator('ambientocclusion', AmbientOcclusionIntegrator.Create);
+    Plugin.registerSurfaceIntegrator('ambientocclusion',
+        AmbientOcclusionIntegrator.Create);
     Plugin.registerSurfaceIntegrator('diffuseprt', DiffusePRTIntegrator.Create);
-    Plugin.registerSurfaceIntegrator('directlighting', DirectLightingIntegrator.Create);
+    Plugin.registerSurfaceIntegrator('directlighting',
+        DirectLightingIntegrator.Create);
     Plugin.registerSurfaceIntegrator('glossyprt', GlossyPRTIntegrator.Create);
     Plugin.registerSurfaceIntegrator('igi', IGIIntegrator.Create);
-    Plugin.registerSurfaceIntegrator('irradiancecache', IrradianceCacheIntegrator.Create);
+    Plugin.registerSurfaceIntegrator('irradiancecache',
+        IrradianceCacheIntegrator.Create);
     Plugin.registerSurfaceIntegrator('path', PathIntegrator.Create);
     Plugin.registerSurfaceIntegrator('photonmap', PhotonMapIntegrator.Create);
     Plugin.registerSurfaceIntegrator('exphotonmap', PhotonMapIntegrator.Create);
     Plugin.registerSurfaceIntegrator('whitted', WhittedIntegrator.Create);
-    Plugin.registerSurfaceIntegrator('dipolesubsurface', DipoleSubsurfaceIntegrator.Create);
+    Plugin.registerSurfaceIntegrator('useprobes', UseProbesIntegrator.Create);
+    Plugin.registerSurfaceIntegrator('dipolesubsurface',
+        DipoleSubsurfaceIntegrator.Create);
 
     Plugin.registerLight('distant', DistantLight.Create);
     Plugin.registerLight('point', PointLight.Create);
@@ -118,8 +123,10 @@ abstract class RenderManagerInterface extends ResourceManager {
 
     Plugin.registerFloatTexture('bilerp', BilerpTexture.CreateFloat);
     Plugin.registerSpectrumTexture('bilerp', BilerpTexture.CreateSpectrum);
-    Plugin.registerFloatTexture('checkerboard', CheckerboardTexture.CreateFloat);
-    Plugin.registerSpectrumTexture('checkerboard', CheckerboardTexture.CreateSpectrum);
+    Plugin.registerFloatTexture('checkerboard',
+        CheckerboardTexture.CreateFloat);
+    Plugin.registerSpectrumTexture('checkerboard',
+        CheckerboardTexture.CreateSpectrum);
     Plugin.registerFloatTexture('constant', ConstantTexture.CreateFloat);
     Plugin.registerSpectrumTexture('constant', ConstantTexture.CreateSpectrum);
     Plugin.registerFloatTexture('dots', DotsTexture.CreateFloat);
@@ -142,7 +149,8 @@ abstract class RenderManagerInterface extends ResourceManager {
     Plugin.registerSpectrumTexture('wrinkled', WrinkledTexture.CreateSpectrum);
 
     Plugin.registerVolumeIntegrator('emission', EmissionIntegrator.Create);
-    Plugin.registerVolumeIntegrator('single', SingleScatteringIntegrator.Create);
+    Plugin.registerVolumeIntegrator('single',
+        SingleScatteringIntegrator.Create);
 
     Plugin.registerVolumeRegion('exponential', ExponentialDensityRegion.Create);
     Plugin.registerVolumeRegion('homogeneous', HomogeneousVolumeRegion.Create);

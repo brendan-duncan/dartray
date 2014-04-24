@@ -26,8 +26,8 @@ const double INV_FOURPI = 0.07957747154594766788;
 const double INFINITY = 1.0e500;
 const double FLT_EPSILON = 1.19209290e-07;
 
-double Lerp(num t, num v1, num v2) =>
-    (1.0 - t) * v1 + t * v2;
+Lerp(num t, v1, v2) =>
+    v1 * (1.0 - t) + v2 * t;
 
 double Radians(num deg) =>
   (Math.PI / 180.0) * deg;

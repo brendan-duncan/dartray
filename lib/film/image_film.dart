@@ -95,7 +95,7 @@ class ImageFilm extends Film {
     }
 
     // Loop over filter support and add sample to pixel arrays
-    XYZColor xyz = L.toXYZ();
+    List<double> xyz = L.toXYZ().toList();
 
     // Precompute x and y filter table offsets
     Int32List ifx = new Int32List(x1 - x0 + 1);
@@ -170,7 +170,7 @@ class ImageFilm extends Film {
       return;
     }
 
-    XYZColor xyz = L.toXYZ();
+    List<double> xyz = L.toXYZ().toList();
 
     int x = (sample.imageX).floor();
     int y = (sample.imageY).floor();

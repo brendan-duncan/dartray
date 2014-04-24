@@ -24,10 +24,10 @@ class SampledSpectrum extends Spectrum {
   static const int NUM_SAMPLES = 4;
 
   SampledSpectrum([double v = 0.0]) :
-    super.samples(NUM_SAMPLES, v);
+    super._(NUM_SAMPLES, v);
 
   SampledSpectrum.from(Spectrum s, [int type = Spectrum.SPECTRUM_REFLECTANCE]) :
-    super.samples(NUM_SAMPLES) {
+    super._(NUM_SAMPLES) {
     if (s is SampledSpectrum) {
       for (int i = 0; i < NUM_SAMPLES; ++i) {
         c[i] = s.c[i];
@@ -41,18 +41,18 @@ class SampledSpectrum extends Spectrum {
   }
 
   SampledSpectrum.rgb(double r, double g, double b) :
-    super.samples(NUM_SAMPLES) {
+    super._(NUM_SAMPLES) {
     setRGB(r, g, b);
   }
 
   SampledSpectrum.xyz(double x, double y, double z) :
-    super.samples(NUM_SAMPLES) {
+    super._(NUM_SAMPLES) {
     setXYZ(x, y, z);
   }
 
   SampledSpectrum.fromSampled(List<double> lambda, List<double> v,
                              [int offset = 0]) :
-    super.samples(NUM_SAMPLES) {
+    super._(NUM_SAMPLES) {
     setSampled(lambda, v, offset);
   }
 

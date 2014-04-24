@@ -36,4 +36,5 @@ part 'igi_integrator.dart';
 part 'irradiance_cache_integrator.dart';
 part 'path_integrator.dart';
 part 'photon_map_integrator.dart';
+part 'use_probes_integrator.dart';
 part 'whitted_integrator.dart';

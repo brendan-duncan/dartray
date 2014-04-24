@@ -675,23 +675,33 @@ class DartRay {
       paramSet = overrides.rendererParams;
     }
 
-    /*if (name == 'createprobes') {
+    if (name == 'createprobes') {
       // Create surface and volume integrators
-      SurfaceIntegrator *surfaceIntegrator = MakeSurfaceIntegrator(SurfIntegratorName,
-          SurfIntegratorParams);
-      if (!surfaceIntegrator) Severe('Unable to create surface integrator.');
-      VolumeIntegrator *volumeIntegrator = MakeVolumeIntegrator(VolIntegratorName,
-          VolIntegratorParams);
-      if (!volumeIntegrator) Severe('Unable to create volume integrator.');
-      renderer = CreateRadianceProbesRenderer(camera, surfaceIntegrator, volumeIntegrator, RendererParams);
-      RendererParams.ReportUnused();
-      // Warn if no light sources are defined
-      if (lights.size() == 0)
-          Warning('No light sources defined in scene; '
-              'possibly rendering a black image.');
-    }*/
+      SurfaceIntegrator surfaceIntegrator =
+          _makeSurfaceIntegrator(_renderOptions.surfaceIntegratorName,
+                                 _renderOptions.surfaceIntegratorParams);
+      if (surfaceIntegrator == null) {
+        LogSevere('Unable to create surface integrator.');
+      }
 
-    if (name == 'surfacepoints') {
+      VolumeIntegrator volumeIntegrator =
+          _makeVolumeIntegrator(_renderOptions.volumeIntegratorName,
+                                _renderOptions.volumeIntegratorParams);
+      if (volumeIntegrator == null) {
+        LogSevere('Unable to create volume integrator.');
+      }
+
+      renderer = CreateProbesRenderer.Create(camera, surfaceIntegrator,
+                                             volumeIntegrator, paramSet);
+
+      paramSet.reportUnused();
+
+      // Warn if no light sources are defined
+      if (_renderOptions.lights.isEmpty) {
+        LogWarning('No light sources defined in scene; '
+                   'possibly rendering a black image.');
+      }
+    } else if (name == 'surfacepoints') {
       Point pCamera = camera.cameraToWorld.transformPoint(camera.shutterOpen,
                                                           Point.ZERO);
 
@@ -752,7 +762,7 @@ class DartRay {
                                      _renderOptions.taskCount);
 
       // Warn if no light sources are defined
-      if (_renderOptions.lights.length == 0) {
+      if (_renderOptions.lights.isEmpty) {
         LogWarning('No light sources defined in scene; '
               'possibly rendering a black image.');
       }

@@ -1,3 +1,23 @@
+/****************************************************************************
+ *  Copyright (C) 2014 by Brendan Duncan.                                   *
+ *                                                                          *
+ *  This file is part of DartRay.                                           *
+ *                                                                          *
+ *  Licensed under the Apache License, Version 2.0 (the 'License');         *
+ *  you may not use this file except in compliance with the License.        *
+ *  You may obtain a copy of the License at                                 *
+ *                                                                          *
+ *  http://www.apache.org/licenses/LICENSE-2.0                              *
+ *                                                                          *
+ *  Unless required by applicable law or agreed to in writing, software     *
+ *  distributed under the License is distributed on an 'AS IS' BASIS,       *
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.*
+ *  See the License for the specific language governing permissions and     *
+ *  limitations under the License.                                          *
+ *                                                                          *
+ *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
+ *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
+ ****************************************************************************/
 part of renderers;
 
 class CreateProbesRenderer extends Renderer {
@@ -88,11 +108,8 @@ class CreateProbesRenderer extends Renderer {
     }
 
     // Write radiance probe coefficients to file
-    Spectrum tmp = new Spectrum();
-    int spectrumSize = tmp.c.length;
-
     int size = 15 + (nProbes[0] * nProbes[1] * nProbes[2]) *
-               SphericalHarmonics.Terms(lmax) * spectrumSize;
+               SphericalHarmonics.Terms(lmax) * Spectrum.NumSamples();
 
     // Store the generated data as a resource so that subsequent renderers can
     // retrieve it.
@@ -112,8 +129,9 @@ class CreateProbesRenderer extends Renderer {
     fp[fi++] = bbox.pMax.z;
     for (int i = 0, il = nProbes[0] * nProbes[1] * nProbes[2]; i < il; ++i) {
       for (int j = 0, jl = SphericalHarmonics.Terms(lmax); j < jl; ++j) {
-        for (int k = 0; k < spectrumSize; ++k) {
-          fp[fi++] = c_in[i][j].c[k];
+        List<double> s = c_in[i][j].toList();
+        for (int k = 0; k < s.length; ++k) {
+          fp[fi++] = s[k];
         }
       }
     }
