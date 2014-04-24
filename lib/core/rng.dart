@@ -24,7 +24,7 @@ part of core;
 /**
  * Generates random numbers using the Random class in dart:math.
  */
-/*class RNG {
+class RNG {
   Math.Random random;
   RNG([int seed = 5489]) :
     random = new Math.Random(seed);
@@ -40,12 +40,12 @@ part of core;
   int randomUint() {
     return random.nextInt(0xffffffff);
   }
-}*/
+}
 
 /**
  * Generates random numbers using the Mersenne Twister algorithm.
  */
-class RNG {
+/*class RNG {
   RNG([int seed = 5489]) {
     mti = N + 1; // mti==N+1 means mt[N] is not initialized
     this.seed(seed);
@@ -121,4 +121,4 @@ class RNG {
   /// the array for the state vector
   Uint32List mt = new Uint32List(N);
   int mti;
-}
+}*/
