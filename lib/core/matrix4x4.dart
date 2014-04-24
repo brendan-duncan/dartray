@@ -320,35 +320,35 @@ class Matrix4x4 {
     data[0] = (n23 * n34 * n42 - n24 * n33 * n42 + n24 * n32 * n43 -
                n22 * n34 * n43 - n23 * n32 * n44 + n22 * n33 * n44) * invDet;
     data[4] = (n14 * n33 * n42 - n13 * n34 * n42 - n14 * n32 * n43 +
-           n12 * n34 * n43 + n13 * n32 * n44 - n12 * n33 * n44) * invDet;
+               n12 * n34 * n43 + n13 * n32 * n44 - n12 * n33 * n44) * invDet;
     data[8] = (n13 * n24 * n42 - n14 * n23 * n42 + n14 * n22 * n43 -
-           n12 * n24 * n43 - n13 * n22 * n44 + n12 * n23 * n44) * invDet;
+               n12 * n24 * n43 - n13 * n22 * n44 + n12 * n23 * n44) * invDet;
     data[12] = (n14 * n23 * n32 - n13 * n24 * n32 - n14 * n22 * n33 +
-            n12 * n24 * n33 + n13 * n22 * n34 - n12 * n23 * n34) * invDet;
+                n12 * n24 * n33 + n13 * n22 * n34 - n12 * n23 * n34) * invDet;
     data[1] = (n24 * n33 * n41 - n23 * n34 * n41 - n24 * n31 * n43 +
-           n21 * n34 * n43 + n23 * n31 * n44 - n21 * n33 * n44) * invDet;
+               n21 * n34 * n43 + n23 * n31 * n44 - n21 * n33 * n44) * invDet;
     data[5] = (n13 * n34 * n41 - n14 * n33 * n41 + n14 * n31 * n43 -
-           n11 * n34 * n43 - n13 * n31 * n44 + n11 * n33 * n44) * invDet;
+               n11 * n34 * n43 - n13 * n31 * n44 + n11 * n33 * n44) * invDet;
     data[9] = (n14 * n23 * n41 - n13 * n24 * n41 - n14 * n21 * n43 +
-           n11 * n24 * n43 + n13 * n21 * n44 - n11 * n23 * n44) * invDet;
+               n11 * n24 * n43 + n13 * n21 * n44 - n11 * n23 * n44) * invDet;
     data[13] = (n13 * n24 * n31 - n14 * n23 * n31 + n14 * n21 * n33 -
-            n11 * n24 * n33 - n13 * n21 * n34 + n11 * n23 * n34) * invDet;
+                n11 * n24 * n33 - n13 * n21 * n34 + n11 * n23 * n34) * invDet;
     data[2] = (n22 * n34 * n41 - n24 * n32 * n41 + n24 * n31 * n42 -
-           n21 * n34 * n42 - n22 * n31 * n44 + n21 * n32 * n44) * invDet;
+               n21 * n34 * n42 - n22 * n31 * n44 + n21 * n32 * n44) * invDet;
     data[6] = (n14 * n32 * n41 - n12 * n34 * n41 - n14 * n31 * n42 +
-           n11 * n34 * n42 + n12 * n31 * n44 - n11 * n32 * n44) * invDet;
+               n11 * n34 * n42 + n12 * n31 * n44 - n11 * n32 * n44) * invDet;
     data[10] = (n12 * n24 * n41 - n14 * n22 * n41 + n14 * n21 * n42 -
-            n11 * n24 * n42 - n12 * n21 * n44 + n11 * n22 * n44) * invDet;
+                n11 * n24 * n42 - n12 * n21 * n44 + n11 * n22 * n44) * invDet;
     data[14] = (n14 * n22 * n31 - n12 * n24 * n31 - n14 * n21 * n32 +
-            n11 * n24 * n32 + n12 * n21 * n34 - n11 * n22 * n34) * invDet;
+                n11 * n24 * n32 + n12 * n21 * n34 - n11 * n22 * n34) * invDet;
     data[3] = (n23 * n32 * n41 - n22 * n33 * n41 - n23 * n31 * n42 +
-           n21 * n33 * n42 + n22 * n31 * n43 - n21 * n32 * n43) * invDet;
+               n21 * n33 * n42 + n22 * n31 * n43 - n21 * n32 * n43) * invDet;
     data[7] = (n12 * n33 * n41 - n13 * n32 * n41 + n13 * n31 * n42 -
-           n11 * n33 * n42 - n12 * n31 * n43 + n11 * n32 * n43) * invDet;
+               n11 * n33 * n42 - n12 * n31 * n43 + n11 * n32 * n43) * invDet;
     data[11] = (n13 * n22 * n41 - n12 * n23 * n41 - n13 * n21 * n42 +
-            n11 * n23 * n42 + n12 * n21 * n43 - n11 * n22 * n43) * invDet;
+                n11 * n23 * n42 + n12 * n21 * n43 - n11 * n22 * n43) * invDet;
     data[15] = (n12 * n23 * n31 - n13 * n22 * n31 + n13 * n21 * n32 -
-            n11 * n23 * n32 - n12 * n21 * n33 + n11 * n22 * n33) * invDet;
+                n11 * n23 * n32 - n12 * n21 * n33 + n11 * n22 * n33) * invDet;
 
     return this;
   }
@@ -357,10 +357,10 @@ class Matrix4x4 {
    * Convert the matrix to a string.
    */
   String toString() {
-    return "${data[0]} ${data[4]} ${data[8]} ${data[12]} "
-           "${data[1]} ${data[5]} ${data[9]} ${data[13]} "
-           "${data[2]} ${data[6]} ${data[10]} ${data[14]} "
-           "${data[3]} ${data[7]} ${data[11]} ${data[15]}";
+    return '${data[0]} ${data[1]} ${data[2]} ${data[3]} '
+           '${data[4]} ${data[5]} ${data[6]} ${data[7]} '
+           '${data[8]} ${data[9]} ${data[10]} ${data[11]} '
+           '${data[12]} ${data[13]} ${data[14]} ${data[15]}';
   }
 }
 

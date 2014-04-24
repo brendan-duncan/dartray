@@ -59,6 +59,7 @@ part 'transform_set.dart';
 class DartRay {
   ResourceManager resourceManager;
   RenderOverrides overrides;
+  OutputImage outputImage;
 
   DartRay(this.resourceManager);
 
@@ -72,79 +73,18 @@ class DartRay {
       LogDebug('OVERRIDES: ${this.overrides.toJson()}');
     }
 
-    loadScene(scene).then((x) {
-      if (_renders.isEmpty) {
-        c.complete(null);
-      }
-
-      resourceManager.waitUntilReady().then((_) {
-        LogInfo('FINISHED Preparing Scene: ${t.elapsed}');
-
-        OutputImage outputImage;
-        Future.forEach(_renders, (r) {
-          Renderer renderer = r[0];
-          Scene scene = r[1];
-          Future<OutputImage> f = renderer.render(scene);
-          f.then((OutputImage output) {
-            LogInfo('FINISHED Render');
-            outputImage = output;
-          }).catchError((e) {
-            LogInfo('ERROR: $e');
-          });
-          return f;
-        }).then((_) {
-          LogInfo('FINISHED All Renders');
-          c.complete(outputImage);
-        }).catchError((e) {
-          LogInfo('ERROR: $e');
-        });
-      });
-    });
-
-    return c.future;
-  }
-
-  Future loadScene(String file) {
     PbrtParser parser = new PbrtParser(this);
-    return parser.parse(file);
-  }
-
-  Future<OutputImage> render() {
-    Completer<OutputImage> c = new Completer<OutputImage>();
-
-    if (_renders.isEmpty) {
-      c.complete(null);
-      return c.future;
-    }
-
-    resourceManager.waitUntilReady().then((_) {
-      OutputImage outputImage;
-      Future.forEach(_renders, (r) {
-        Renderer renderer = r[0];
-        Scene scene = r[1];
-        Future<OutputImage> f = renderer.render(scene);
-        f.then((OutputImage output) {
-          LogInfo('FINISHED Render');
-          outputImage = output;
-        }).catchError((e) {
-          LogInfo('ERROR: $e');
-        });
-        return f;
-      }).then((_) {
-        LogInfo('FINISHED All Renders');
-        c.complete(outputImage);
-      }).catchError((e) {
-        LogInfo('ERROR: $e');
-      });
+    parser.parse(scene).then((x) {
+      c.complete(outputImage);
     });
 
     return c.future;
   }
 
   static const int MAX_TRANSFORMS = 2;
-  static const int _START_TRANSFORM_BITS = (1 << 0);
-  static const int _END_TRANSFORM_BITS = (1 << 1);
-  static const int _ALL_TRANSFORMS_BITS = ((1 << MAX_TRANSFORMS) - 1);
+  static const int START_TRANSFORM_BITS = (1 << 0);
+  static const int END_TRANSFORM_BITS = (1 << 1);
+  static const int ALL_TRANSFORMS_BITS = ((1 << MAX_TRANSFORMS) - 1);
 
   static const int STATE_UNINITIALIZED = 0;
   static const int STATE_OPTIONS_BLOCK = 1;
@@ -152,17 +92,13 @@ class DartRay {
 
   int _currentApiState = STATE_OPTIONS_BLOCK;
   TransformSet _curTransform = new TransformSet();
-  int _activeTransformBits = _ALL_TRANSFORMS_BITS;
+  int _activeTransformBits = ALL_TRANSFORMS_BITS;
   Map<String, TransformSet> _namedCoordinateSystems = {};
   RenderOptions _renderOptions = new RenderOptions();
   GraphicsState _graphicsState = new GraphicsState();
   List<GraphicsState> _pushedGraphicsStates = [];
   List<TransformSet> _pushedTransforms = [];
   List<int> _pushedActiveTransformBits = [];
-
-  // API Initialization
-  void init() {
-  }
 
   // API Cleanup
   void cleanup() {
@@ -255,15 +191,15 @@ class DartRay {
   }
 
   void activeTransformAll() {
-    _activeTransformBits = _ALL_TRANSFORMS_BITS;
+    _activeTransformBits = ALL_TRANSFORMS_BITS;
   }
 
   void activeTransformEndTime() {
-    _activeTransformBits = _END_TRANSFORM_BITS;
+    _activeTransformBits = END_TRANSFORM_BITS;
   }
 
   void activeTransformStartTime() {
-    _activeTransformBits = _START_TRANSFORM_BITS;
+    _activeTransformBits = START_TRANSFORM_BITS;
   }
 
   void transformTimes(double start, double end) {
@@ -327,7 +263,7 @@ class DartRay {
     for (int i = 0; i < MAX_TRANSFORMS; ++i) {
       _curTransform[i] = new Transform();
     }
-    _activeTransformBits = _ALL_TRANSFORMS_BITS;
+    _activeTransformBits = ALL_TRANSFORMS_BITS;
     _namedCoordinateSystems['world'] = _curTransform;
   }
 
@@ -349,7 +285,7 @@ class DartRay {
   }
 
   void transformBegin() {
-    _pushedTransforms.add(_curTransform);
+    _pushedTransforms.add(new TransformSet.from(_curTransform));
     _pushedActiveTransformBits.add(_activeTransformBits);
   }
 
@@ -609,7 +545,7 @@ class DartRay {
   }
 
 
-  void worldEnd() {
+  Future worldEnd() {
     // Ensure there are no pushed graphics states
     while (_pushedGraphicsStates.isNotEmpty) {
       LogWarning('Missing end to pbrtAttributeBegin()');
@@ -623,7 +559,26 @@ class DartRay {
     }
 
     // Create scene and render
-    _renders.add([_makeRenderer(), _makeScene()]);
+    Renderer renderer = _makeRenderer();
+    Scene scene = _makeScene();
+
+    Future future;
+
+    if (renderer != null && scene != null) {
+      Completer c = new Completer();
+      future = c.future;
+
+      resourceManager.waitUntilReady().then((_) {
+        future = renderer.render(scene);
+        future.then((OutputImage output) {
+          LogInfo('FINISHED Render');
+          outputImage = output;
+          c.complete();
+        }).catchError((e) {
+          LogInfo('ERROR: $e');
+        });
+      });
+    }
 
     // Clean up after rendering
     _graphicsState = new GraphicsState();
@@ -634,8 +589,10 @@ class DartRay {
       _curTransform.t[i] = new Transform();
     }
 
-    _activeTransformBits = _ALL_TRANSFORMS_BITS;
+    _activeTransformBits = ALL_TRANSFORMS_BITS;
     _namedCoordinateSystems.clear();
+
+    return future;
   }
 
 

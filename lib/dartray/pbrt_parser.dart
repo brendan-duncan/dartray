@@ -79,244 +79,256 @@ class PbrtParser {
       }
     }
 
-    Future.wait(futures).then((List responses) {
-      LogDebug('LOADING SUB-INCLUDES');
-      List<Future<List<int>>> subFutures = [];
+    if (futures.isNotEmpty) {
+      Future.wait(futures).then((List responses) {
+        LogDebug('LOADING SUB-INCLUDES');
+        List<Future<List<int>>> subFutures = [];
 
-      if (responses.isNotEmpty) {
-        for (int i = 0; i < responses.length; ++i) {
-          List<int> inc = responses[i];
-          if (inc != null && inc.isNotEmpty) {
-            subFutures.add(_loadIncludes(inc, '@'/*paths[i]*/));
+        if (responses.isNotEmpty) {
+          for (int i = 0; i < responses.length; ++i) {
+            List<int> inc = responses[i];
+            if (inc != null && inc.isNotEmpty) {
+              subFutures.add(_loadIncludes(inc, '@'));
+            }
           }
-        }
 
-        Future.wait(subFutures).then((List subResponses) {
-          LogDebug('FINISHED SUB-INCLUDES');
+          Future.wait(subFutures).then((List subResponses) {
+            LogDebug('FINISHED SUB-INCLUDES');
+            c.complete();
+          }).catchError((e) {
+            LogError(e);
+            c.completeError(e);
+          });
+        } else {
           c.complete();
-        }).catchError((e) {
-          LogError(e);
-          c.completeError(e);
-        });
-      } else {
-        c.complete();
-      }
-    }).catchError((e) {
-      LogError(e.toString());
-      c.completeError(e);
-    });
+        }
+      }).catchError((e) {
+        LogError(e.toString());
+        c.completeError(e);
+      });
+    } else {
+      c.complete();
+    }
 
     return c.future;
   }
 
   Future _parse(List<int> input, String path) {
-    LogDebug('PARSING INPUT $path');
+    LogDebug('PARSING FILE $path');
     Completer c = new Completer();
-    List<Future> futures = [];
 
     PbrtLexer _lexer = new PbrtLexer(input, path);
 
-    int tk = _lexer.nextToken();
-    while (!_lexer.isEof()) {
-      List<Future> cmdFutures = [];
-
-      Map cmd = _parseCommand(_lexer, null);
-
-      if (cmdFutures.isNotEmpty) {
-        futures.addAll(cmdFutures);
-      }
-
-      if (cmd == null) {
-        _lexer.nextToken();
-        continue;
-      }
-
-      String name = cmd['name'].toLowerCase();
-
-      switch (name) {
-        case 'accelerator':
-          dartray.accelerator(cmd['type'], cmd['params']);
-          break;
-        case 'activetransform':
-          if (cmd['type'] == 'StartTime') {
-            dartray.activeTransformStartTime();
-          } else if (cmd['type'] == 'EndTime') {
-            dartray.activeTransformEndTime();
-          } else if (cmd['type'] == 'All') {
-            dartray.activeTransformAll();
-          }
-          break;
-        case 'arealightsource':
-          dartray.areaLightSource(cmd['type'], cmd['params']);
-          break;
-        case 'attributebegin':
-          dartray.attributeBegin();
-          break;
-        case 'attributeend':
-          dartray.attributeEnd();
-          break;
-        case 'camera':
-          dartray.camera(cmd['type'], cmd['params']);
-          break;
-        case 'coordinatesystem':
-          dartray.coordinateSystem(cmd['type']);
-          break;
-        case 'coordsystransform':
-          dartray.coordSysTransform(cmd['type']);
-          break;
-        case 'concattransform':
-          if (!cmd.containsKey('values') || cmd['values'].length != 16) {
-            LogWarning('ConcatTransform requires 16 values, '
-                       '${cmd['values'].length} found.');
-          } else {
-            var v = cmd['values'];
-            Matrix4x4 m = Matrix4x4.Transpose(new Matrix4x4.fromList(v));
-            dartray.concatTransform(m);
-          }
-          break;
-        case 'film':
-          dartray.film(cmd['type'], cmd['params']);
-          break;
-        case 'ident':
-        case 'identity':
-          dartray.identity();
-          break;
-        case 'lightsource':
-          dartray.lightSource(cmd['type'], cmd['params']);
-          break;
-        case 'lookat':
-          if (!cmd.containsKey('values') || cmd['values'].length != 9) {
-            LogWarning('LookAt requires 9 values');
-          } else {
-            var v = cmd['values'];
-            dartray.lookAt(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
-          }
-          break;
-        case 'makenamedmaterial':
-          dartray.makeNamedMaterial(cmd['id'], cmd['params']);
-          break;
-        case 'material':
-          dartray.material(cmd['type'], cmd['params']);
-          break;
-        case 'namedmaterial':
-          dartray.namedMaterial(cmd['type']);
-          break;
-        case 'objectbegin':
-          dartray.objectBegin(cmd['type']);
-          break;
-        case 'objectend':
-          dartray.objectEnd();
-          break;
-        case 'objectinstance':
-          dartray.objectInstance(cmd['type']);
-          break;
-        case 'pixelfilter':
-          dartray.pixelFilter(cmd['type'], cmd['params']);
-          break;
-        case 'renderer':
-          dartray.renderer(cmd['type'], cmd['params']);
-          break;
-        case 'reverseorientation':
-          dartray.reverseOrientation();
-          break;
-        case 'rotate':
-          if (!cmd.containsKey('values') || cmd['values'].length != 4) {
-            LogWarning('Rotate requires 4 values');
-          } else {
-            var v = cmd['values'];
-            dartray.rotate(v[0], v[1], v[2], v[3]);
-          }
-          break;
-        case 'pixels':
-          dartray.pixels(cmd['type'], cmd['params']);
-          break;
-        case 'sampler':
-          dartray.sampler(cmd['type'], cmd['params']);
-          break;
-        case 'scale':
-          if (!cmd.containsKey('values') || cmd['values'].length != 3) {
-            LogWarning('Scale requires 3 values');
-          } else {
-            var v = cmd['values'];
-            dartray.scale(v[0], v[1], v[2]);
-          }
-          break;
-        case 'shape':
-          dartray.shape(cmd['type'], cmd['params']);
-          break;
-        case 'surfaceintegrator':
-          dartray.surfaceIntegrator(cmd['type'], cmd['params']);
-          break;
-        case 'texture':
-          dartray.texture(cmd['id'], cmd['type'], cmd['class'], cmd['params']);
-          break;
-        case 'translate':
-          if (!cmd.containsKey('values') || cmd['values'].length != 3) {
-            LogWarning('Translate requires 3 values');
-          } else {
-            var v = cmd['values'];
-            dartray.translate(v[0], v[1], v[2]);
-          }
-          break;
-        case 'transform':
-          if (!cmd.containsKey('values') || cmd['values'].length != 16) {
-            LogWarning('Transform requires 16 values');
-          } else {
-            var v = cmd['values'];
-            Matrix4x4 m = new Matrix4x4.values(v[0], v[4], v[8], v[12],
-                                               v[1], v[5], v[9], v[13],
-                                               v[2], v[6], v[10], v[14],
-                                               v[3], v[7], v[11], v[15]);
-            dartray.transform(m);
-          }
-          break;
-        case 'transformbegin':
-          dartray.transformBegin();
-          break;
-        case 'transformend':
-          dartray.transformEnd();
-          break;
-        case 'transformtimes':
-          if (!cmd.containsKey('values') || cmd['values'].length != 2) {
-            LogWarning('TransformTimes requires 2 values');
-          } else {
-            var v = cmd['values'];
-            dartray.transformTimes(v[0], v[1]);
-          }
-          break;
-        case 'volume':
-          dartray.volume(cmd['type'], cmd['params']);
-          break;
-        case 'volumeintegrator':
-          dartray.volumeIntegrator(cmd['type'], cmd['params']);
-          break;
-        case 'worldbegin':
-          dartray.worldBegin();
-          break;
-        case 'worldend':
-          dartray.worldEnd();
-          break;
-        case 'include':
-          var inc = dartray.resourceManager.getResource(cmd['value']);
-          if (inc is List<int>) {
-            _lexer.addInclude(inc, cmd['value']);
-          } else {
-            LogWarning('MISSING include: ${cmd['value']}');
-          }
-          break;
-        default:
-          LogWarning('UNHANDLED command ${cmd['name']}');
-          break;
-      }
-    }
-
-    // Wait until all files loaded by the parsing process have finished
-    // before indicating the parse has finished.
-    Future.wait(futures).then((e) {
+    FutureWhileLoop(() => _nextCommand(_lexer)).then((_) {
       c.complete();
     });
 
     return c.future;
+  }
+
+  Future _nextCommand(PbrtLexer lexer) {
+    if (lexer.isEof()) {
+      // Returning null will break the parsing loop
+      return null;
+    }
+
+    Map cmd = _parseCommand(lexer, null);
+
+    if (cmd == null) {
+      // Nothing was parsed, then there's nothing to do.
+      lexer.nextToken();
+      Completer completer = new Completer();
+      completer.complete();
+      return completer.future;
+    }
+
+    String name = cmd['name'].toLowerCase();
+
+    Future cmdFuture;
+
+    switch (name) {
+      case 'accelerator':
+        dartray.accelerator(cmd['type'], cmd['params']);
+        break;
+      case 'activetransform':
+        if (cmd['type'] == 'StartTime') {
+          dartray.activeTransformStartTime();
+        } else if (cmd['type'] == 'EndTime') {
+          dartray.activeTransformEndTime();
+        } else if (cmd['type'] == 'All') {
+          dartray.activeTransformAll();
+        }
+        break;
+      case 'arealightsource':
+        dartray.areaLightSource(cmd['type'], cmd['params']);
+        break;
+      case 'attributebegin':
+        dartray.attributeBegin();
+        break;
+      case 'attributeend':
+        dartray.attributeEnd();
+        break;
+      case 'camera':
+        dartray.camera(cmd['type'], cmd['params']);
+        break;
+      case 'coordinatesystem':
+        dartray.coordinateSystem(cmd['type']);
+        break;
+      case 'coordsystransform':
+        dartray.coordSysTransform(cmd['type']);
+        break;
+      case 'concattransform':
+        if (!cmd.containsKey('values') || cmd['values'].length != 16) {
+          LogWarning('ConcatTransform requires 16 values, '
+                     '${cmd['values'].length} found.');
+        } else {
+          var v = cmd['values'];
+          Matrix4x4 m = Matrix4x4.Transpose(new Matrix4x4.fromList(v));
+          dartray.concatTransform(m);
+        }
+        break;
+      case 'film':
+        dartray.film(cmd['type'], cmd['params']);
+        break;
+      case 'ident':
+      case 'identity':
+        dartray.identity();
+        break;
+      case 'lightsource':
+        dartray.lightSource(cmd['type'], cmd['params']);
+        break;
+      case 'lookat':
+        if (!cmd.containsKey('values') || cmd['values'].length != 9) {
+          LogWarning('LookAt requires 9 values');
+        } else {
+          var v = cmd['values'];
+          dartray.lookAt(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
+        }
+        break;
+      case 'makenamedmaterial':
+        dartray.makeNamedMaterial(cmd['id'], cmd['params']);
+        break;
+      case 'material':
+        dartray.material(cmd['type'], cmd['params']);
+        break;
+      case 'namedmaterial':
+        dartray.namedMaterial(cmd['type']);
+        break;
+      case 'objectbegin':
+        dartray.objectBegin(cmd['type']);
+        break;
+      case 'objectend':
+        dartray.objectEnd();
+        break;
+      case 'objectinstance':
+        dartray.objectInstance(cmd['type']);
+        break;
+      case 'pixelfilter':
+        dartray.pixelFilter(cmd['type'], cmd['params']);
+        break;
+      case 'renderer':
+        dartray.renderer(cmd['type'], cmd['params']);
+        break;
+      case 'reverseorientation':
+        dartray.reverseOrientation();
+        break;
+      case 'rotate':
+        if (!cmd.containsKey('values') || cmd['values'].length != 4) {
+          LogWarning('Rotate requires 4 values');
+        } else {
+          var v = cmd['values'];
+          dartray.rotate(v[0], v[1], v[2], v[3]);
+        }
+        break;
+      case 'pixels':
+        dartray.pixels(cmd['type'], cmd['params']);
+        break;
+      case 'sampler':
+        dartray.sampler(cmd['type'], cmd['params']);
+        break;
+      case 'scale':
+        if (!cmd.containsKey('values') || cmd['values'].length != 3) {
+          LogWarning('Scale requires 3 values');
+        } else {
+          var v = cmd['values'];
+          dartray.scale(v[0], v[1], v[2]);
+        }
+        break;
+      case 'shape':
+        dartray.shape(cmd['type'], cmd['params']);
+        break;
+      case 'surfaceintegrator':
+        dartray.surfaceIntegrator(cmd['type'], cmd['params']);
+        break;
+      case 'texture':
+        dartray.texture(cmd['id'], cmd['type'], cmd['class'], cmd['params']);
+        break;
+      case 'translate':
+        if (!cmd.containsKey('values') || cmd['values'].length != 3) {
+          LogWarning('Translate requires 3 values');
+        } else {
+          var v = cmd['values'];
+          dartray.translate(v[0], v[1], v[2]);
+        }
+        break;
+      case 'transform':
+        if (!cmd.containsKey('values') || cmd['values'].length != 16) {
+          LogWarning('Transform requires 16 values');
+        } else {
+          var v = cmd['values'];
+          Matrix4x4 m = new Matrix4x4.values(v[0], v[4], v[8], v[12],
+                                             v[1], v[5], v[9], v[13],
+                                             v[2], v[6], v[10], v[14],
+                                             v[3], v[7], v[11], v[15]);
+          dartray.transform(m);
+        }
+        break;
+      case 'transformbegin':
+        dartray.transformBegin();
+        break;
+      case 'transformend':
+        dartray.transformEnd();
+        break;
+      case 'transformtimes':
+        if (!cmd.containsKey('values') || cmd['values'].length != 2) {
+          LogWarning('TransformTimes requires 2 values');
+        } else {
+          var v = cmd['values'];
+          dartray.transformTimes(v[0], v[1]);
+        }
+        break;
+      case 'volume':
+        dartray.volume(cmd['type'], cmd['params']);
+        break;
+      case 'volumeintegrator':
+        dartray.volumeIntegrator(cmd['type'], cmd['params']);
+        break;
+      case 'worldbegin':
+        dartray.worldBegin();
+        break;
+      case 'worldend':
+        cmdFuture = dartray.worldEnd();
+        break;
+      case 'include':
+        var inc = dartray.resourceManager.getResource(cmd['value']);
+        if (inc is List<int>) {
+          lexer.addInclude(inc, cmd['value']);
+        } else {
+          LogWarning('MISSING include: ${cmd['value']}');
+        }
+        break;
+      default:
+        LogWarning('UNHANDLED command ${cmd['name']}');
+        break;
+    }
+
+    if (cmdFuture == null) {
+      Completer completer = new Completer();
+      completer.complete();
+      cmdFuture = completer.future;
+    }
+
+    return cmdFuture;
   }
 
   Map _parseCommand(PbrtLexer _lexer, List<Future> futures) {

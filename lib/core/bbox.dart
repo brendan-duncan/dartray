@@ -58,6 +58,8 @@ class BBox {
     return inside(c) ? Vector.Distance(c, pMax) : 0.0;
   }
 
+  Point get center => (pMin * 0.5) + (pMax * 0.5);
+
   Point operator[](int index) => (index == 0) ? pMin : pMax;
 
   bool intersectP(Ray ray, [List<double> hitt0, List<double> hitt1]) {

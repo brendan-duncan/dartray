@@ -27,6 +27,7 @@ class CreateProbesRenderer extends Renderer {
                        this.includeIndirectInProbes, this.time, this.filename);
 
   Future<OutputImage> render(Scene scene) {
+    LogInfo('Starting CreateProbesRenderer');
     // Compute scene bounds and initialize probe integrators
     if (bbox.pMin.x > bbox.pMax.x) {
       bbox = scene.worldBound;

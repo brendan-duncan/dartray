@@ -48,6 +48,8 @@ class MetropolisRenderer extends Renderer {
   }
 
   Future<OutputImage> render(Scene scene) {
+    LogInfo('Starting MetropolisRenderer: '
+                '${camera.film.xResolution}x${camera.film.yResolution}');
     Stats.MLT_STARTED_RENDERING();
 
     if (scene.lights.length > 0) {

@@ -24,62 +24,68 @@ class SurfacePointsRenderer extends Renderer {
   SurfacePointsRenderer(this.minDist, this.pCamera, this.time, this.filename);
 
   Future<OutputImage> render(Scene scene) {
+    Stopwatch timer = new Stopwatch()..start();
+    LogInfo('Starting SurfacePointsRenderer');
+
     // Declare shared variables for Poisson point generation
     BBox octBounds = scene.worldBound;
     octBounds.expand(0.001 * Math.pow(octBounds.volume(), 1.0 / 3.0));
     Octree pointOctree = new Octree(octBounds);
 
-     // Create scene bounding sphere to catch rays that leave the scene
-     Point sceneCenter = new Point();
-     double sceneRadius = scene.worldBound.boundingSphere(sceneCenter);
+    // Create scene bounding sphere to catch rays that leave the scene
+    Point sceneCenter = new Point();
+    double sceneRadius = scene.worldBound.boundingSphere(sceneCenter);
 
-     Transform objectToWorld = Transform.Translate(sceneCenter - Point.ZERO);
-     Transform worldToObject = Transform.Inverse(objectToWorld);
+    Transform objectToWorld = Transform.Translate(sceneCenter - Point.ZERO);
+    Transform worldToObject = Transform.Inverse(objectToWorld);
 
-     Shape sph = new Sphere(objectToWorld, worldToObject,
-                            true, sceneRadius, -sceneRadius,
-                            sceneRadius, 360.0);
+    Shape sph = new Sphere(objectToWorld, worldToObject,
+                           true, sceneRadius, -sceneRadius,
+                           sceneRadius, 360.0);
 
-     GeometricPrimitive sphere = new GeometricPrimitive(sph, null, null);
+    GeometricPrimitive sphere = new GeometricPrimitive(sph, null, null);
 
-     _SurfacePointStats stats = new _SurfacePointStats();
-     int maxFails = 2000;
+    _SurfacePointStats stats = new _SurfacePointStats();
+    int maxFails = 2000;
 
-     if (RenderOverrides.QuickRender()) {
-       maxFails = Math.max(10, maxFails ~/ 10);
-     }
+    if (RenderOverrides.QuickRender()) {
+      maxFails = Math.max(10, maxFails ~/ 10);
+    }
 
-     // Launch tasks to trace rays to find Poisson points
-     Stats.SUBSURFACE_STARTED_RAYS_FOR_POINTS();
+    // Launch tasks to trace rays to find Poisson points
+    Stats.SUBSURFACE_STARTED_RAYS_FOR_POINTS();
 
-     int nTasks = 1;
-     for (int i = 0; i < nTasks; ++i) {
-       _SurfacePointTask task = new _SurfacePointTask(scene, pCamera, time, i,
-                                                      minDist, maxFails, stats,
-                                                      sphere, pointOctree,
-                                                      points);
-       task.run();
-     }
+    int nTasks = 1;
+    for (int i = 0; i < nTasks; ++i) {
+      _SurfacePointTask task = new _SurfacePointTask(scene, pCamera, time, i,
+                                                     minDist, maxFails, stats,
+                                                     sphere, pointOctree,
+                                                     points);
+      task.run();
+    }
 
-     Stats.SUBSURFACE_FINISHED_RAYS_FOR_POINTS(stats.totalRaysTraced,
-                                               stats.numPointsAdded);
+    LogInfo('FINISHED SurfacePointsRenderer, ${points.length} points : '
+            '${timer.elapsed}');
 
-     if (filename.isNotEmpty) {
-       Float32List data = new Float32List(points.length * 8);
-       int di = 0;
-       for (int i = 0; i < points.length; ++i) {
-         SurfacePoint sp = points[i];
-         data[di++] = sp.p.x;
-         data[di++] = sp.p.y;
-         data[di++] = sp.p.z;
-         data[di++] = sp.n.x;
-         data[di++] = sp.n.y;
-         data[di++] = sp.n.z;
-         data[di++] = sp.area;
-         data[di++] = sp.rayEpsilon;
-       }
+    Stats.SUBSURFACE_FINISHED_RAYS_FOR_POINTS(stats.totalRaysTraced,
+                                              stats.numPointsAdded);
 
-       ResourceManager.WriteFile(filename, data);
+    if (filename.isNotEmpty) {
+      Float32List data = new Float32List(points.length * 8);
+      int di = 0;
+      for (int i = 0; i < points.length; ++i) {
+        SurfacePoint sp = points[i];
+        data[di++] = sp.p.x;
+        data[di++] = sp.p.y;
+        data[di++] = sp.p.z;
+        data[di++] = sp.n.x;
+        data[di++] = sp.n.y;
+        data[di++] = sp.n.z;
+        data[di++] = sp.area;
+        data[di++] = sp.rayEpsilon;
+      }
+
+      ResourceManager.WriteFile(filename, data);
     }
 
     // This renderer does not generate an image.
@@ -160,6 +166,8 @@ class _SurfacePointTask {
     RNG rng = new RNG(37 * taskNum);
     List<SurfacePoint> candidates = [];
 
+    Intersection isect = new Intersection();
+
     while (true) {
       int pathsTraced;
       int raysTraced = 0;
@@ -172,7 +180,6 @@ class _SurfacePointTask {
         while (ray.depth < 30) {
           // Find ray intersection with scene geometry or bounding sphere
           ++raysTraced;
-          Intersection isect = new Intersection();
           bool hitOnSphere = false;
 
           if (!scene.intersect(ray, isect)) {
@@ -252,10 +259,14 @@ class _SurfacePointTask {
         }
       }
 
+      /*LogDebug('SurfacePointsRenderer: Tracing Paths: $raysTraced : '
+               '${stats.repeatedFails} / ${maxFails} : '
+               '${surfacePoints.length}');*/
+
       // Stop following paths if not finding new points
       if (stats.totalPathsTraced > 50000 && stats.numPointsAdded == 0) {
         LogWarning('There don\'t seem to be any objects with BSSRDFs '
-                   'in this scene.  Giving up.');
+                   'in this scene. Giving up.');
         return;
       }
 

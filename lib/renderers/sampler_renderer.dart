@@ -29,7 +29,7 @@ class SamplerRenderer extends Renderer {
    * Render the [scene] from the viewpoint of the [camera].
    */
   Future<OutputImage> render(Scene scene) {
-    LogInfo('Starting Render: '
+    LogInfo('Starting SamplerRenderer: '
             '${camera.film.xResolution}x${camera.film.yResolution}');
 
     // Allow integrators to do preprocessing for the scene

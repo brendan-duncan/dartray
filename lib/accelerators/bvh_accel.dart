@@ -75,16 +75,6 @@ class BVHAccel extends Aggregate {
     Stats.BVH_FINISHED_CONSTRUCTION(this);
   }
 
-  static BVHAccel Create(List<Primitive> prims, ParamSet ps) {
-    String splitMethod = ps.findOneString("splitmethod", "sah");
-    int maxPrimsInNode = ps.findOneInt("maxnodeprims", 4);
-    int sm = (splitMethod == 'sah') ? SPLIT_SAH :
-             (splitMethod == 'middle') ? SPLIT_MIDDLE :
-             (splitMethod == 'equal') ? SPLIT_EQUAL_COUNTS :
-             SPLIT_SAH;
-    return new BVHAccel(prims, maxPrimsInNode, sm);
-  }
-
   BBox worldBound() {
     return nodes != null ? nodes[0].bounds : new BBox();
   }
@@ -322,14 +312,15 @@ class BVHAccel extends Aggregate {
             for (int i = start; i < end; ++i) {
               int b = (nBuckets *
                 ((buildData[i].centroid[dim] - centroidBounds.pMin[dim]) /
-                (centroidBounds.pMax[dim] - centroidBounds.pMin[dim]))).floor();
+                (centroidBounds.pMax[dim] - centroidBounds.pMin[dim]))).toInt();
               if (b == nBuckets) {
                 b = nBuckets - 1;
               }
 
               assert(b >= 0 && b < nBuckets);
               buckets[b].count++;
-              buckets[b].bounds = BBox.Union(buckets[b].bounds, buildData[i].bounds);
+              buckets[b].bounds = BBox.Union(buckets[b].bounds,
+                                             buildData[i].bounds);
             }
 
             // Compute costs for splitting after each bucket
@@ -368,7 +359,8 @@ class BVHAccel extends Aggregate {
               bool CompareToBucket(_BVHPrimitiveInfo p) {
                 int b = (nBuckets *
                     ((p.centroid[dim] - centroidBounds.pMin[dim]) /
-                     (centroidBounds.pMax[dim] - centroidBounds.pMin[dim]))).floor();
+                     (centroidBounds.pMax[dim] -
+                      centroidBounds.pMin[dim]))).floor();
 
                 if (b == nBuckets) {
                   b = nBuckets - 1;
@@ -443,7 +435,7 @@ class BVHAccel extends Aggregate {
       tmax = tymax;
     }
 
-    // Check for ray intersection against $z$ slab
+    // Check for ray intersection against z slab
     double tzmin = (bounds[dirIsNeg[2]].z - ray.origin.z) * invDir.z;
     double tzmax = (bounds[1 - dirIsNeg[2]].z - ray.origin.z) * invDir.z;
     if ((tmin > tzmax) || (tzmin > tmax)) {
@@ -460,6 +452,16 @@ class BVHAccel extends Aggregate {
     return (tmin < ray.maxDistance) && (tmax > ray.minDistance);
   }
 
+  static BVHAccel Create(List<Primitive> prims, ParamSet ps) {
+    String splitMethod = ps.findOneString("splitmethod", "sah");
+    int maxPrimsInNode = ps.findOneInt("maxnodeprims", 4);
+    int sm = (splitMethod == 'sah') ? SPLIT_SAH :
+             (splitMethod == 'middle') ? SPLIT_MIDDLE :
+             (splitMethod == 'equal') ? SPLIT_EQUAL_COUNTS :
+             SPLIT_SAH;
+    return new BVHAccel(prims, maxPrimsInNode, sm);
+  }
+
   int maxPrimsInNode;
   int splitMethod;
   List<Primitive> primitives = [];
@@ -471,7 +473,7 @@ class _BVHPrimitiveInfo {
     if (bounds == null) {
       bounds = new BBox();
     }
-    centroid = new Point.from(bounds.pMin * 0.5 + bounds.pMax * 0.5);
+    centroid = bounds.center;
   }
 
   int primitiveNumber;

@@ -26,25 +26,63 @@ const double INV_FOURPI = 0.07957747154594766788;
 const double INFINITY = 1.0e500;
 const double FLT_EPSILON = 1.19209290e-07;
 
+/**
+ * The Future class has a forEach static method, but not a while-loop
+ * equivalent. This function will continue calling f while f returns a future,
+ * and breaks when f returns null.
+ * It waits for the future returned by f to complete before calling f again.
+ * The returned future will complete when the loop has beeb broken.
+ */
+Future FutureWhileLoop(Function f) {
+  Completer doneSignal = new Completer();
+  void nextElement(_) {
+    Future future = f();
+    if (future == null) {
+      doneSignal.complete(null);
+    } else {
+      new Future.sync(() => future)
+        .then(nextElement, onError : doneSignal.completeError);
+    }
+  }
+  nextElement(null);
+  return doneSignal.future;
+}
+
+/**
+ * Linear interpolation between two values [v1] and [v2], at [t] which should
+ * be between 0 and 1.
+ */
 Lerp(num t, v1, v2) =>
     v1 * (1.0 - t) + v2 * t;
 
+/**
+ * Convert degrees to radians.
+ */
 double Radians(num deg) =>
   (Math.PI / 180.0) * deg;
 
+/**
+ * Convert radians to degrees.
+ */
 double Degrees(num rad) =>
   (180.0 / Math.PI) * rad;
 
-double _invLog2 = 1.0 / Math.log(2.0);
+final double _invLog2 = 1.0 / Math.log(2.0);
 
 double Log2(num x) {
   return Math.log(x) * _invLog2;
 }
 
+/**
+ * Is the value [v] a power of 2?
+ */
 bool IsPowerOf2(int v) {
   return (v & (v - 1)) == 0;
 }
 
+/**
+ * Round a value [v] to the next power of 2.
+ */
 int RoundUpPow2(int v) {
   v--;
   v |= v >> 1;
@@ -64,11 +102,17 @@ int Mod(int a, int b) {
   return a;
 }
 
+/**
+ * Smooth interpolation of [value] between [min] and [max].
+ */
 double SmoothStep(double min, double max, double value) {
   double v = ((value - min) / (max - min)).clamp(0.0, 1.0);
   return v * v * (-2.0 * v  + 3.0);
 }
 
+/**
+ * Solve the given quadratic equation.
+ */
 bool Quadratic(double A, double B, double C, List<double> t0,
                List<double> t1) {
   // Find quadratic discriminant
