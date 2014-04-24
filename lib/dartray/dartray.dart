@@ -73,15 +73,28 @@ class DartRay {
     }
 
     loadScene(scene).then((x) {
-      if (_scene == null) {
+      if (_renders.isEmpty) {
         c.complete(null);
       }
 
       resourceManager.waitUntilReady().then((_) {
         LogInfo('FINISHED Preparing Scene: ${t.elapsed}');
-        _renderer.render(_scene).then((OutputImage output) {
-          LogInfo('FINISHED Render');
-          c.complete(output);
+
+        OutputImage outputImage;
+        Future.forEach(_renders, (r) {
+          Renderer renderer = r[0];
+          Scene scene = r[1];
+          Future<OutputImage> f = renderer.render(scene);
+          f.then((OutputImage output) {
+            LogInfo('FINISHED Render');
+            outputImage = output;
+          }).catchError((e) {
+            LogInfo('ERROR: $e');
+          });
+          return f;
+        }).then((_) {
+          LogInfo('FINISHED All Renders');
+          c.complete(outputImage);
         }).catchError((e) {
           LogInfo('ERROR: $e');
         });
@@ -91,22 +104,41 @@ class DartRay {
     return c.future;
   }
 
-  Renderer getRenderer() => _renderer;
-
-  Scene getScene() => _scene;
-
   Future loadScene(String file) {
     PbrtParser parser = new PbrtParser(this);
     return parser.parse(file);
   }
 
   Future<OutputImage> render() {
-    if (_renderer == null || _scene == null) {
-      Completer<OutputImage> completer = new Completer<OutputImage>();
-      completer.complete(null);
-      return completer.future;
+    Completer<OutputImage> c = new Completer<OutputImage>();
+
+    if (_renders.isEmpty) {
+      c.complete(null);
+      return c.future;
     }
-    return _renderer.render(_scene);
+
+    resourceManager.waitUntilReady().then((_) {
+      OutputImage outputImage;
+      Future.forEach(_renders, (r) {
+        Renderer renderer = r[0];
+        Scene scene = r[1];
+        Future<OutputImage> f = renderer.render(scene);
+        f.then((OutputImage output) {
+          LogInfo('FINISHED Render');
+          outputImage = output;
+        }).catchError((e) {
+          LogInfo('ERROR: $e');
+        });
+        return f;
+      }).then((_) {
+        LogInfo('FINISHED All Renders');
+        c.complete(outputImage);
+      }).catchError((e) {
+        LogInfo('ERROR: $e');
+      });
+    });
+
+    return c.future;
   }
 
   static const int MAX_TRANSFORMS = 2;
@@ -591,8 +623,7 @@ class DartRay {
     }
 
     // Create scene and render
-    _renderer = _makeRenderer();
-    _scene = _makeScene();
+    _renders.add([_makeRenderer(), _makeScene()]);
 
     // Clean up after rendering
     _graphicsState = new GraphicsState();
@@ -1071,6 +1102,5 @@ class DartRay {
     return f;
   }
 
-  Renderer _renderer;
-  Scene _scene;
+  List _renders = [];
 }
