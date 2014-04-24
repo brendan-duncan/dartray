@@ -30,6 +30,7 @@ import '../samplers/samplers.dart';
 import '../shapes/shapes.dart';
 
 part 'aggregate_test_renderer.dart';
+part 'create_probes_renderer.dart';
 part 'metropolis_renderer.dart';
 part 'sampler_renderer.dart';
 part 'surface_points_renderer.dart';

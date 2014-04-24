@@ -59,4 +59,10 @@ class RayDifferential extends Ray {
     rxDirection = direction + (rxDirection - direction) * s;
     ryDirection = direction + (ryDirection - direction) * s;
   }
+
+  bool hasNaNs() {
+    return super.hasNaNs() ||
+         (hasDifferentials && (rxOrigin.hasNaNs() || ryOrigin.hasNaNs() ||
+                               rxDirection.hasNaNs() || ryDirection.hasNaNs()));
+  }
 }

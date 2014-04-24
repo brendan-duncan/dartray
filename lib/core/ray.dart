@@ -69,4 +69,7 @@ class Ray {
 
   Point pointAt(double t) =>
       new Point.from(origin + (direction * t));
+
+  bool hasNaNs() => origin.hasNaNs() || direction.hasNaNs() ||
+                    minDistance.isNaN || maxDistance.isNaN;
 }

@@ -39,8 +39,7 @@ class Vector {
     z = other.z;
   }
 
-  Vector operator+(Vector v) =>
-    new Vector(x + v.x, y + v.y, z + v.z);
+  Vector operator+(Vector v) => new Vector(x + v.x, y + v.y, z + v.z);
 
   void add(Vector v) {
     x += v.x;
@@ -48,8 +47,7 @@ class Vector {
     z += v.z;
   }
 
-  Vector operator-(Vector v) =>
-      new Vector(x - v.x, y - v.y, z - v.z);
+  Vector operator-(Vector v) => new Vector(x - v.x, y - v.y, z - v.z);
 
   void subtract(Vector v) {
     x -= v.x;
@@ -57,8 +55,7 @@ class Vector {
     z -= v.z;
   }
 
-  Vector operator*(double f) =>
-      new Vector(x * f, y * f, z * f);
+  Vector operator*(double f) => new Vector(x * f, y * f, z * f);
 
   void scale(double f) {
     x *= f;
@@ -66,8 +63,7 @@ class Vector {
     z *= f;
   }
 
-  Vector operator/(double f) =>
-      new Vector(x / f, y / f, z / f);
+  Vector operator/(double f) => new Vector(x / f, y / f, z / f);
 
   void invScale(double f) {
     x /= f;
@@ -75,24 +71,20 @@ class Vector {
     z /= f;
   }
 
-  Vector operator-() =>
-      new Vector(-x, -y, -z);
+  Vector operator-() => new Vector(-x, -y, -z);
 
-  double operator[](int i) =>
-      (i == 0) ? x : (i == 1) ? y : z;
+  double operator[](int i) => (i == 0) ? x : (i == 1) ? y : z;
 
   operator[]=(int i, double v) =>
     (i == 0) ? x = v : (i == 1) ? y = v : z = v;
 
-  double lengthSquared() =>
-      x * x + y * y + z * z;
+  double lengthSquared() => x * x + y * y + z * z;
 
-  double length() =>
-      Math.sqrt(lengthSquared());
+  double length() => Math.sqrt(lengthSquared());
 
-  String toString() {
-    return '$x $y $z';
-  }
+  String toString() => '$x $y $z';
+
+  bool hasNaNs() => x.isNaN || y.isNaN || z.isNaN;
 
   static double CosTheta(Vector v) => v.z;
 

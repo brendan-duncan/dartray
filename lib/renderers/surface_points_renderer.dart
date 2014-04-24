@@ -62,6 +62,7 @@ class SurfacePointsRenderer extends Renderer {
        ResourceManager.WriteFile(filename, data);
     }
 
+    // This renderer does not generate an image.
     Completer<OutputImage> c = new Completer<OutputImage>();
     c.complete(null);
     return c.future;
