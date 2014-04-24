@@ -27,29 +27,23 @@ class Triangle extends Shape {
   }
 
   BBox objectBound() {
-    Point p1 = mesh.p[v(0)];
-    Point p2 = mesh.p[v(1)];
-    Point p3 = mesh.p[v(2)];
-    return BBox.UnionPoint(new BBox(worldToObject.transformPoint(p1),
-                                    worldToObject.transformPoint(p2)),
-                           worldToObject.transformPoint(p3));
+    List<Point> tri = mesh.triangle(v(0), v(1), v(2));
+    return BBox.UnionPoint(new BBox(worldToObject.transformPoint(tri[0]),
+                                    worldToObject.transformPoint(tri[1])),
+                           worldToObject.transformPoint(tri[2]));
   }
 
   BBox worldBound() {
-    Point p1 = mesh.p[v(0)];
-    Point p2 = mesh.p[v(1)];
-    Point p3 = mesh.p[v(2)];
-    return BBox.UnionPoint(new BBox(p1, p2), p3);
+    List<Point> tri = mesh.triangle(v(0), v(1), v(2));
+    return BBox.UnionPoint(new BBox(tri[0], tri[1]), tri[2]);
   }
 
   bool intersect(Ray ray, List<double> tHit, List<double> rayEpsilon,
                  DifferentialGeometry dg) {
-    // Get triangle vertices in _p1_, _p2_, and _p3_
-    Point p1 = mesh.p[v(0)];
-    Point p2 = mesh.p[v(1)];
-    Point p3 = mesh.p[v(2)];
-    Vector e1 = p2 - p1;
-    Vector e2 = p3 - p1;
+    // Get triangle vertices in p1, p2, and p3
+    List<Point> tri = mesh.triangle(v(0), v(1), v(2));
+    Vector e1 = tri[1] - tri[0];
+    Vector e2 = tri[2] - tri[0];
     Vector s1 = Vector.Cross(ray.direction, e2);
     double divisor = Vector.Dot(s1, e1);
 
@@ -60,7 +54,7 @@ class Triangle extends Shape {
     double invDivisor = 1.0 / divisor;
 
     // Compute first barycentric coordinate
-    Vector s = ray.origin - p1;
+    Vector s = ray.origin - tri[0];
     double b1 = Vector.Dot(s, s1) * invDivisor;
     if (b1 < 0.0 || b1 > 1.0) {
       return false;
@@ -90,8 +84,8 @@ class Triangle extends Shape {
     double du2 = uvs[2] - uvs[4];
     double dv1 = uvs[1] - uvs[5];
     double dv2 = uvs[3] - uvs[5];
-    Vector dp1 = p1 - p3;
-    Vector dp2 = p2 - p3;
+    Vector dp1 = tri[0] - tri[2];
+    Vector dp2 = tri[1] - tri[2];
     double determinant = du1 * dv2 - dv1 * du2;
     if (determinant == 0.0) {
       // Handle zero determinant for triangle partial derivative matrix
@@ -134,11 +128,9 @@ class Triangle extends Shape {
 
   bool intersectP(Ray ray) {
     // Get triangle vertices in _p1_, _p2_, and _p3_
-    Point p1 = mesh.p[v(0)];
-    Point p2 = mesh.p[v(1)];
-    Point p3 = mesh.p[v(2)];
-    Vector e1 = p2 - p1;
-    Vector e2 = p3 - p1;
+    List<Point> tri = mesh.triangle(v(0), v(1), v(2));
+    Vector e1 = tri[1] - tri[0];
+    Vector e2 = tri[2] - tri[0];
     Vector s1 = Vector.Cross(ray.direction, e2);
     double divisor = Vector.Dot(s1, e1);
 
@@ -149,7 +141,7 @@ class Triangle extends Shape {
     double invDivisor = 1.0 / divisor;
 
     // Compute first barycentric coordinate
-    Vector s = ray.origin - p1;
+    Vector s = ray.origin - tri[0];
     double b1 = Vector.Dot(s, s1) * invDivisor;
     if (b1 < 0.0 || b1 > 1.0) {
       return false;
@@ -180,8 +172,8 @@ class Triangle extends Shape {
       double du2 = uvs[2] - uvs[4];
       double dv1 = uvs[1] - uvs[5];
       double dv2 = uvs[3] - uvs[5];
-      Vector dp1 = p1 - p3;
-      Vector dp2 = p2 - p3;
+      Vector dp1 = tri[0] - tri[2];
+      Vector dp2 = tri[1] - tri[2];
       double determinant = du1 * dv2 - dv1 * du2;
       if (determinant == 0.0) {
         // Handle zero determinant for triangle partial derivative matrix
@@ -233,10 +225,8 @@ class Triangle extends Shape {
 
   double area() {
     // Get triangle vertices in _p1_, _p2_, and _p3_
-    Point p1 = mesh.p[v(0)];
-    Point p2 = mesh.p[v(1)];
-    Point p3 = mesh.p[v(2)];
-    return 0.5 * Vector.Cross(p2 - p1, p3 - p1).length();
+    List<Point> tri = mesh.triangle(v(0), v(1), v(2));
+    return 0.5 * Vector.Cross(tri[1] - tri[0], tri[2] - tri[0]).length();
   }
 
   void getShadingGeometry(Transform obj2world, DifferentialGeometry dg,
@@ -256,9 +246,9 @@ class Triangle extends Shape {
     List<double> A = [_uv[2] - _uv[0],
                       _uv[4] - _uv[0],
                       _uv[3] - _uv[1],
-                      _uv[5] - _uv[1] ];
+                      _uv[5] - _uv[1]];
 
-    List<double> C = [ dg.u - _uv[0], dg.v - _uv[1] ];
+    List<double> C = [dg.u - _uv[0], dg.v - _uv[1]];
 
     double bx;
     if (!SolveLinearSystem2x2(A, C, _by, _bz)) {
@@ -330,7 +320,8 @@ class Triangle extends Shape {
     dgShading.dvdx = dg.dvdx;
     dgShading.dudy = dg.dudy;
     dgShading.dvdy = dg.dvdy;
-    dgShading.dpdx = dg.dpdx;  dgShading.dpdy = dg.dpdy;
+    dgShading.dpdx = dg.dpdx;
+    dgShading.dpdy = dg.dpdy;
   }
 
   Point sample(double u1, double u2, Normal Ns) {
@@ -339,11 +330,9 @@ class Triangle extends Shape {
     UniformSampleTriangle(u1, u2, b1, b2);
 
     // Get triangle vertices in _p1_, _p2_, and _p3_
-    Point p1 = mesh.p[v(0)];
-    Point p2 = mesh.p[v(1)];
-    Point p3 = mesh.p[v(2)];
-    Point p = p1 * b1[0] + p2 * b2[0] + p3 * (1.0 - b1[0] - b2[0]);
-    Vector n = Vector.Cross(p2 - p1, p3 - p1);
+    List<Point> tri = mesh.triangle(v(0), v(1), v(2));
+    Point p = tri[0] * b1[0] + tri[1] * b2[0] + tri[2] * (1.0 - b1[0] - b2[0]);
+    Vector n = Vector.Cross(tri[1] - tri[0], tri[2] - tri[0]);
     Ns.copy(Vector.Normalize(n));
     if (reverseOrientation) {
       Ns.x *= -1.0;

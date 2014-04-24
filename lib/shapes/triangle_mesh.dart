@@ -26,18 +26,43 @@ class TriangleMesh extends Shape {
                List<Point> P, this.n, this.s,
                this.uvs, this.alphaTexture) :
     super(o2w, w2o, ro) {
-    p = new List<Point>(nverts);
+    _p = new Float32List(nverts * 3);
     // Transform mesh vertices to world space
-    for (int i = 0; i < nverts; ++i) {
-      p[i] = objectToWorld.transformPoint(P[i]);
+    for (int i = 0, j = 0; i < nverts; ++i) {
+      Point p = objectToWorld.transformPoint(P[i]);
+      _p[j++] = p.x;
+      _p[j++] = p.y;
+      _p[j++] = p.z;
     }
+  }
+
+  Point point(int index) {
+    int i3 = index * 3;
+    return new Point(_p[i3], _p[i3 + 1], _p[i3 + 2]);
+  }
+
+  List<Point> _triangle = [new Point(), new Point(), new Point()];
+  List<Point> triangle(int v1, int v2, int v3) {
+    int i3 = v1 * 3;
+    _triangle[0].data[0] = _p[i3];
+    _triangle[0].data[1] = _p[i3 + 1];
+    _triangle[0].data[2] = _p[i3 + 2];
+    i3 = v2 * 3;
+    _triangle[1].data[0] = _p[i3];
+    _triangle[1].data[1] = _p[i3 + 1];
+    _triangle[1].data[2] = _p[i3 + 2];
+    i3 = v3 * 3;
+    _triangle[2].data[0] = _p[i3];
+    _triangle[2].data[1] = _p[i3 + 1];
+    _triangle[2].data[2] = _p[i3 + 2];
+    return _triangle;
   }
 
   BBox objectBound() {
     BBox objectBounds = new BBox();
     for (int i = 0; i < nverts; i++) {
       objectBounds = BBox.UnionPoint(objectBounds,
-                                     worldToObject.transformPoint(p[i]));
+                                     worldToObject.transformPoint(point(i)));
     }
     return objectBounds;
   }
@@ -45,7 +70,7 @@ class TriangleMesh extends Shape {
   BBox worldBound() {
     BBox worldBounds = new BBox();
     for (int i = 0; i < nverts; i++) {
-      worldBounds = BBox.UnionPoint(worldBounds, p[i]);
+      worldBounds = BBox.UnionPoint(worldBounds, point(i));
     }
     return worldBounds;
   }
@@ -62,9 +87,10 @@ class TriangleMesh extends Shape {
     }
   }
 
-  int ntris, nverts;
+  int ntris;
+  int nverts;
   List<int> vertexIndex;
-  List<Point> p;
+  Float32List _p;
   List<Normal> n;
   List<Vector> s;
   List<double> uvs;
@@ -83,6 +109,13 @@ class TriangleMesh extends Shape {
 
     if (vi == null || P == null) {
       return null;
+    }
+
+    // Replace the List<*> with a more compact typed data lists.
+    vi = new Uint32List.fromList(vi);
+
+    if (uvs != null) {
+      uvs = new Float32List.fromList(uvs);
     }
 
     bool discardDegnerateUVs = params.findOneBool('discarddegenerateUVs', false);
@@ -164,7 +197,7 @@ class TriangleMesh extends Shape {
     }
 
     return new TriangleMesh(o2w, w2o, reverseOrientation,
-                                 vi.length ~/ 3, P.length, vi, P, N, S, uvs,
-                                 alphaTex);
+                            vi.length ~/ 3, P.length, vi, P, N, S, uvs,
+                            alphaTex);
   }
 }

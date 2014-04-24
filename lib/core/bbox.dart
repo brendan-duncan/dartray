@@ -48,6 +48,15 @@ class BBox {
     pMin = new Point.from(other.pMin),
     pMax = new Point.from(other.pMax);
 
+  void reset() {
+    pMin.x = INFINITY;
+    pMin.y = INFINITY;
+    pMin.z = INFINITY;
+    pMax.x = -INFINITY;
+    pMax.y = -INFINITY;
+    pMax.z = -INFINITY;
+  }
+
   void copy(BBox other) {
     pMin.copy(other.pMin);
     pMax.copy(other.pMax);

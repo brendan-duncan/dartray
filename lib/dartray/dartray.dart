@@ -1007,8 +1007,8 @@ class DartRay {
     int w = extent[1] - extent[0];
     int h = extent[3] - extent[2];
 
-    Sampler.ComputeSubWindow(w, h, _renderOptions.taskNum,
-                             _renderOptions.taskCount, extent);
+    GetSubWindow(w, h, _renderOptions.taskNum, _renderOptions.taskCount,
+                 extent);
 
     w = extent[1] - extent[0];
     h = extent[3] - extent[2];

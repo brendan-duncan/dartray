@@ -226,7 +226,7 @@ abstract class RenderManagerInterface extends ResourceManager {
     for (int i = 0; i < numThreads; ++i) {
       isolates[i] = new RenderTask(preview, i, numThreads);
       isolates[i].render(path, isolate, overrides: overrides).then((output) {
-        if (numThreads > 1) {
+        //if (numThreads > 1) {
           if (renderOutput == null ||
               renderOutput.imageWidth != output.imageWidth ||
               renderOutput.imageHeight != output.imageHeight) {
@@ -243,9 +243,9 @@ abstract class RenderManagerInterface extends ResourceManager {
               renderOutput.rgb[pi + 2] = output.rgb[pi + 2];
             }
           }
-        } else {
+        /*} else {
           renderOutput = output;
-        }
+        }*/
 
         tasksRemaining--;
         if (tasksRemaining == 0) {

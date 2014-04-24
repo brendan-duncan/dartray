@@ -93,8 +93,7 @@ class MetropolisRenderer extends Renderer {
       Stats.MLT_STARTED_BOOTSTRAPPING(nBootstrap);
       RNG rng = new RNG(taskNum);
 
-      Sampler.ComputeSubWindow((extent[1] - extent[0]) + 1,
-                               (extent[3] - extent[2]) + 1,
+      GetSubWindow((extent[1] - extent[0]) + 1, (extent[3] - extent[2]) + 1,
                                taskNum, taskCount, extent);
       LogInfo('RENDER EXTENT $extent');
 

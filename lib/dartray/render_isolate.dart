@@ -136,8 +136,7 @@ class RenderIsolate {
 
     if (doPreview) {
       dartray.setPreviewCallback((Image img) {
-        Sampler.ComputeSubWindow(img.width, img.height, taskNum, taskCount,
-                                 extents);
+        GetSubWindow(img.width, img.height, taskNum, taskCount, extents);
 
         sendPort.send({'cmd': 'preview',
                        'res': [img.width, img.height],
@@ -153,8 +152,7 @@ class RenderIsolate {
         _log(LOG_INFO, 'FINISHED: ${timer.elapsed}');
         LogInfo('[$taskNum] STATS:\n${Stats.getString()}');
 
-        Sampler.ComputeSubWindow(output.width, output.height,
-                                 taskNum, taskCount, extents);
+        GetSubWindow(output.width, output.height, taskNum, taskCount, extents);
 
         sendPort.send({'cmd': 'final',
                        'output': output.rgb,

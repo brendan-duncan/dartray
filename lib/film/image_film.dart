@@ -246,7 +246,6 @@ class ImageFilm extends Film {
   }
 
   OutputImage writeImage([double splatScale = 1.0]) {
-    LogInfo('WRITE IMAGE $splatScale');
     // Convert image to RGB and compute final pixel values
     List<double> c = [0.0, 0.0, 0.0];
     List<double> splatRGB = [0.0, 0.0, 0.0];

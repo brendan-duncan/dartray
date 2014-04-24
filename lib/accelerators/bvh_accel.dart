@@ -34,6 +34,7 @@ class BVHAccel extends Aggregate {
     for (int i = 0; i < p.length; ++i) {
       p[i].fullyRefine(primitives);
     }
+    LogInfo('BVH: ${primitives.length} Primitives');
 
     if (primitives.isEmpty) {
       nodes = null;
@@ -44,15 +45,18 @@ class BVHAccel extends Aggregate {
     Stats.BVH_STARTED_CONSTRUCTION(this, primitives.length);
 
     // Initialize _buildData_ array for primitives
-    List<_BVHPrimitiveInfo> buildData = [];
+    List<_BVHPrimitiveInfo> buildData =
+        new List<_BVHPrimitiveInfo>(primitives.length);
+
     for (int i = 0; i < primitives.length; ++i) {
       BBox bbox = primitives[i].worldBound();
-      buildData.add(new _BVHPrimitiveInfo(i, bbox));
+      buildData[i] = new _BVHPrimitiveInfo(i, bbox);
     }
 
     // Recursively build BVH tree for primitives
     List<int> totalNodes = [0];
     List<Primitive> orderedPrims = [];
+
     _BVHBuildNode root = _recursiveBuild(buildData, 0,
                                          primitives.length,
                                          totalNodes,
@@ -323,11 +327,15 @@ class BVHAccel extends Aggregate {
                                              buildData[i].bounds);
             }
 
+            BBox b0 = new BBox();
+            BBox b1 = new BBox();
+
             // Compute costs for splitting after each bucket
-            List<double> cost = new List<double>(nBuckets - 1);
-            for (int i = 0; i < nBuckets-1; ++i) {
-              BBox b0 = new BBox();
-              BBox b1 = new BBox();
+            List<double> cost = new Float32List(nBuckets - 1);
+
+            for (int i = 0; i < nBuckets - 1; ++i) {
+              b0.reset();
+              b1.reset();
               int count0 = 0, count1 = 0;
 
               for (int j = 0; j <= i; ++j) {
@@ -399,7 +407,7 @@ class BVHAccel extends Aggregate {
 
   int _flattenBVHTree(_BVHBuildNode node, List<int> offset) {
     _LinearBVHNode linearNode = nodes[offset[0]];
-    linearNode.bounds = new BBox.from(node.bounds);
+    linearNode.bounds = node.bounds;//new BBox.from(node.bounds);
     int myOffset = offset[0]++;
 
     if (node.nPrimitives > 0) {
@@ -512,7 +520,7 @@ class _BVHBuildNode {
 }
 
 class _LinearBVHNode {
-  BBox bounds = new BBox();
+  BBox bounds;
   int offset; // primitivesOffset / secondChildOffset
   int nPrimitives;  // 0 . interior node
   int axis;

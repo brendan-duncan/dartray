@@ -37,36 +37,8 @@ String scene = 'scenes/cornell_path.pbrt';
 //String scene = 'scenes/teapot-area-light.pbrt';
 //String scene = 'scenes/nurbs.pbrt';
 
-const List<String> SCENES = const [
-'cornell_path.pbrt',
-'bowl_of_spheres.pbrt',
-'kin_tiki_directlighting.pbrt',
-'quadrics_directlighting.pbrt',
-'box.pbrt',
-'distant_light.pbrt',
-'area_light.pbrt',
-'whitted.pbrt',
-'quadrics.pbrt',
-'area_light.pbrt',
-'bunny.pbrt',
-'room-path.pbrt',
-'spheres.pbrt',
-'teapot-area-light.pbrt',
-'nurbs.pbrt'
-];
-
 void main() {
   RenderManager renderManager = new RenderManager();
-
-  /*Html.SelectElement sceneMenu = Html.querySelector('#sceneMenu');
-  for (String s in SCENES) {
-    var opt = new Html.OptionElement();
-    opt.label = s;
-    sceneMenu.append(opt);
-  }
-  sceneMenu.onChange.listen((e) {
-    print(SCENES[sceneMenu.selectedIndex]);
-  });*/
 
   var log = Html.querySelector('#log');
 
@@ -75,19 +47,21 @@ void main() {
   var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
   RenderOverrides overrides = new RenderOverrides();
-  //overrides.setSampler('random');
+  //overrides.setSampler('random', {'integer pixelsamples': [1]});
   overrides.samplingMode = Sampler.TWO_PASS_SAMPLING;
 
   Stopwatch timer = new Stopwatch();
   timer.start();
   renderManager.render(scene,
       isolate: 'web_isolate.dart',
-      //numThreads: 2,
+      numThreads: 4,
       overrides: overrides,
       log: (int type, String msg) {
         print('$msg');
-        log.text += '$msg\n';
-        log.scrollByLines(1);
+        if (type != LOG_DEBUG) {
+          log.text += '$msg\n';
+          log.scrollByLines(1);
+        }
       },
       preview: (Image img) {
         if (img.width != canvas.width || img.height != canvas.height) {
@@ -107,7 +81,7 @@ void main() {
           LogInfo('STATS....\n${Stats.getString()}');
         }
 
-        /*if (output != null) {
+        if (output != null) {
           Image img = output.toImage(gamma: 2.2);
           if (img.width != canvas.width || img.height != canvas.height) {
             canvas.width = img.width;
@@ -117,6 +91,6 @@ void main() {
           var bytes = img.getBytes();
           imageData.data.setRange(0, bytes.length, bytes);
           context.putImageData(imageData, 0, 0);
-        }*/
+        }
       });
 }

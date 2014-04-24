@@ -48,6 +48,29 @@ Future FutureWhileLoop(Function f) {
   return doneSignal.future;
 }
 
+void GetSubWindow(int w, int h, int num, int count, List<int> extents) {
+  // Determine how many tiles to use in each dimension, nx and ny
+  int nx = count;
+  int ny = 1;
+  while ((nx & 0x1) == 0 && 2 * w * ny < h * nx) {
+    nx >>= 1;
+    ny <<= 1;
+  }
+  assert(nx * ny == count);
+
+  // Compute x and y pixel sample range for sub-window
+  int xo = num % nx;
+  int yo = num ~/ nx;
+  double tx0 = xo / nx;
+  double tx1 = (xo + 1) / nx;
+  double ty0 = yo / ny;
+  double ty1 = (yo + 1) / ny;
+  extents[0] = Lerp(tx0, 0, w).floor();
+  extents[1] = Math.min(Lerp(tx1, 0, w).floor(), w);
+  extents[2] = Lerp(ty0, 0, h).floor();
+  extents[3] = Math.min(Lerp(ty1, 0, h).floor(), h);
+}
+
 /**
  * Linear interpolation between two values [v1] and [v2], at [t] which should
  * be between 0 and 1.
