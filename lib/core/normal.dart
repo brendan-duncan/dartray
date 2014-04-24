@@ -24,7 +24,7 @@ part of core;
  * A vector that's interpreted and transformed as a surface normal.
  */
 class Normal extends Vector {
-  Normal([double x = 0.0, double y = 0.0, double z = 0.0]) :
+  Normal([num x = 0.0, num y = 0.0, num z = 0.0]) :
     super(x, y, z);
 
   Normal.from(Vector other) :
@@ -35,10 +35,10 @@ class Normal extends Vector {
     return this;
   }
 
-  Normal operator*(double s) =>
+  Normal operator*(num s) =>
       new Normal(x * s, y * s, z * s);
 
-  Normal operator/(double s) =>
+  Normal operator/(num s) =>
       new Normal(x / s, y / s, z / s);
 
   Normal operator+(Vector p) =>

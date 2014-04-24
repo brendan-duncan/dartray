@@ -99,6 +99,22 @@ bool Quadratic(double A, double B, double C, List<double> t0,
   return true;
 }
 
+bool SolveLinearSystem2x2(List<double> A, List<double> B,
+                          List<double> x0, List<double> x1) {
+  double det = A[0] * A[3] - A[1] * A[2];
+  if (det.abs() < 1.0e-10) {
+    return false;
+  }
+
+  x0[0] = (A[3] * B[0] - A[1] * B[1]) / det;
+  x1[0] = (A[0] * B[1] - A[2] * B[0]) / det;
+
+  if (x0[0].isNaN || x1[0].isNaN) {
+    return false;
+  }
+
+  return true;
+}
 
 List<double> ReadFloatFile(List<int> bytes, String path) {
   String text = new String.fromCharCodes(bytes);

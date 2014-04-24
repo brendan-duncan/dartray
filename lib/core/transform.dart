@@ -41,14 +41,14 @@ class Transform {
   }
 
   bool isIdentity() {
-    return (m.m[0] == 1.0 && m.m[1] == 0.0 &&
-            m.m[2] == 0.0 && m.m[3] == 0.0 &&
-            m.m[4] == 0.0 && m.m[5] == 1.0 &&
-            m.m[6] == 0.0 && m.m[7] == 0.0 &&
-            m.m[8] == 0.0 && m.m[9] == 0.0 &&
-            m.m[10] == 1.0 && m.m[11] == 0.0 &&
-            m.m[12] == 0.0 && m.m[13] == 0.0 &&
-            m.m[14] == 0.0 && m.m[15] == 1.0);
+    return (m.data[0] == 1.0 && m.data[1] == 0.0 &&
+            m.data[2] == 0.0 && m.data[3] == 0.0 &&
+            m.data[4] == 0.0 && m.data[5] == 1.0 &&
+            m.data[6] == 0.0 && m.data[7] == 0.0 &&
+            m.data[8] == 0.0 && m.data[9] == 0.0 &&
+            m.data[10] == 1.0 && m.data[11] == 0.0 &&
+            m.data[12] == 0.0 && m.data[13] == 0.0 &&
+            m.data[14] == 0.0 && m.data[15] == 1.0);
   }
 
   static Transform Inverse(Transform t) {
@@ -66,10 +66,10 @@ class Transform {
 
   bool operator<(Transform t2) {
     for (int i = 0; i < 16; ++i) {
-      if (m.m[i] < t2.m.m[i]) {
+      if (m.data[i] < t2.m.data[i]) {
         return true;
       }
-      if (m.m[i] > t2.m.m[i]) {
+      if (m.data[i] > t2.m.data[i]) {
         return false;
       }
     }
@@ -91,15 +91,15 @@ class Transform {
   }
 
   bool swapsHandedness() {
-    double det = ((m.m[0] *
-                   (m.m[5] * m.m[10] -
-                    m.m[6] * m.m[5])) -
-                   (m.m[1] *
-                    (m.m[4] * m.m[10] -
-                     m.m[6] * m.m[4])) +
-                    (m.m[2] *
-                     (m.m[4] * m.m[9] -
-                      m.m[5] * m.m[8])));
+    double det = ((m.data[0] *
+                   (m.data[5] * m.data[10] -
+                    m.data[6] * m.data[5])) -
+                   (m.data[1] *
+                    (m.data[4] * m.data[10] -
+                     m.data[6] * m.data[4])) +
+                    (m.data[2] *
+                     (m.data[4] * m.data[9] -
+                      m.data[5] * m.data[8])));
     return det < 0.0;
   }
 
@@ -112,10 +112,10 @@ class Transform {
     double y = p.y;
     double z = p.z;
 
-    out.x = m.m[0] * x + m.m[1] * y + m.m[2] * z + m.m[3];
-    out.y = m.m[4] * x + m.m[5] * y + m.m[6] * z + m.m[7];
-    out.z = m.m[8] * x + m.m[9] * y + m.m[10] * z + m.m[11];
-    double w = m.m[12] * x + m.m[13] * y + m.m[14] * z + m.m[15];
+    out.x = m.data[0] * x + m.data[1] * y + m.data[2] * z + m.data[3];
+    out.y = m.data[4] * x + m.data[5] * y + m.data[6] * z + m.data[7];
+    out.z = m.data[8] * x + m.data[9] * y + m.data[10] * z + m.data[11];
+    double w = m.data[12] * x + m.data[13] * y + m.data[14] * z + m.data[15];
 
     if (w != 1.0) {
       out.invScale(w);
@@ -133,9 +133,9 @@ class Transform {
     double y = p.y;
     double z = p.z;
 
-    out.x = m.m[0] * x + m.m[1] * y + m.m[2] * z;
-    out.y = m.m[4] * x + m.m[5] * y + m.m[6] * z;
-    out.z = m.m[8] * x + m.m[9] * y + m.m[10] * z;
+    out.x = m.data[0] * x + m.data[1] * y + m.data[2] * z;
+    out.y = m.data[4] * x + m.data[5] * y + m.data[6] * z;
+    out.z = m.data[8] * x + m.data[9] * y + m.data[10] * z;
 
     return out;
   }
@@ -149,9 +149,9 @@ class Transform {
     double y = p.y;
     double z = p.z;
 
-    out.x = mInv.m[0] * x + mInv.m[4] * y + mInv.m[8] * z;
-    out.y = mInv.m[1] * x + mInv.m[5] * y + mInv.m[9] * z;
-    out.z = mInv.m[2] * x + mInv.m[6] * y + mInv.m[10] * z;
+    out.x = mInv.data[0] * x + mInv.data[4] * y + mInv.data[8] * z;
+    out.y = mInv.data[1] * x + mInv.data[5] * y + mInv.data[9] * z;
+    out.z = mInv.data[2] * x + mInv.data[6] * y + mInv.data[10] * z;
 
     return out;
   }

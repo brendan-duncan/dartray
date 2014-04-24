@@ -24,10 +24,10 @@ part of core;
  * A base class for various types of colors such as XYZ and RGB.
  */
 abstract class Spectrum {
+  final Float32List c;
+
   static final Spectrum ONE = new Spectrum(1.0);
   static final Spectrum ZERO = new Spectrum(0.0);
-
-  final Float32List c;
 
   static const int RGB = 0;
   static const int XYZ = 1;
@@ -36,6 +36,14 @@ abstract class Spectrum {
   /// Determines the type of spectrum to use for color calculations, either
   /// [SAMPLED] wavelength or [RGB] tripple.
   static int type = RGB;
+
+  /**
+   * How many samples does a spectrum color have?
+   */
+  static int NumSamples() =>
+      type == RGB ? 3 :
+      type == XYZ ? 3 :
+      SampledSpectrum.NUM_SAMPLES;
 
   /**
    * Factor constructor will create the type of spectrum currently being used.

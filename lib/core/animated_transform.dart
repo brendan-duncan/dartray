@@ -52,17 +52,17 @@ class AnimatedTransform {
 
   static void Decompose(Matrix4x4 m, Vector T, Quaternion Rquat, Matrix4x4 S) {
     // Extract translation _T_ from transformation matrix
-    T.x = m.m[3];
-    T.y = m.m[7];
-    T.z = m.m[11];
+    T.x = m.data[3];
+    T.y = m.data[7];
+    T.z = m.data[11];
 
     // Compute new transformation matrix _M_ without translation
     Matrix4x4 M = new Matrix4x4.from(m);
     for (int i = 0; i < 3; ++i) {
-      M.m[i * 4 + 3] = 0.0;
-      M.m[12 + i] = 0.0;
+      M.data[i * 4 + 3] = 0.0;
+      M.data[12 + i] = 0.0;
     }
-    M.m[15] = 1.0;
+    M.data[15] = 1.0;
 
     // Extract rotation _R_ from transformation matrix
     double norm;
@@ -74,15 +74,15 @@ class AnimatedTransform {
       Matrix4x4 Rnext = new Matrix4x4();
       Matrix4x4 Rit = Matrix4x4.Inverse(Matrix4x4.Transpose(R));
       for (int i = 0; i < 16; ++i) {
-        Rnext.m[i] = 0.5 * (R.m[i] + Rit.m[i]);
+        Rnext.data[i] = 0.5 * (R.data[i] + Rit.data[i]);
       }
 
       // Compute norm of difference between _R_ and _Rnext_
       norm = 0.0;
       for (int i = 0, j = 0; i < 3; ++i, j += 4) {
-        double n = (R.m[j] - Rnext.m[j]).abs() +
-                   (R.m[j + 1] - Rnext.m[j + 1]).abs() +
-                   (R.m[j + 2] - Rnext.m[j + 2]).abs();
+        double n = (R.data[j] - Rnext.data[j]).abs() +
+                   (R.data[j + 1] - Rnext.data[j + 1]).abs() +
+                   (R.data[j + 2] - Rnext.data[j + 2]).abs();
         norm = Math.max(norm, n);
      }
 
@@ -119,7 +119,7 @@ class AnimatedTransform {
     // Interpolate scale at _dt_
     Matrix4x4 scale = new Matrix4x4();
     for (int i = 0; i < 16; ++i) {
-      scale.m[i] = Lerp(dt, S[0].m[i], S[1].m[i]);
+      scale.data[i] = Lerp(dt, S[0].data[i], S[1].data[i]);
     }
 
     // Compute interpolated matrix as product of interpolated components

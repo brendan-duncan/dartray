@@ -24,71 +24,99 @@ part of core;
  * A 3-dimensional vector.
  */
 class Vector {
-  double x, y, z;
+  final Float32List data;
 
-  Vector([this.x = 0.0, this.y = 0.0, this.z = 0.0]);
+  Vector([num x = 0.0, num y = 0.0, num z = 0.0]) :
+    data = new Float32List(3) {
+    data[0] = x;
+    data[1] = y;
+    data[2] = z;
+  }
 
   Vector.from(Vector other) :
-    x = other.x,
-    y = other.y,
-    z = other.z;
+    data = new Float32List.fromList(other.data);
+
+  double get x => data[0];
+
+  set x(num v) => data[0] = v;
+
+  double get y => data[1];
+
+  set y(num v) => data[1] = v;
+
+  double get z => data[2];
+
+  set z(num v) => data[2] = v;
 
   void copy(Vector other) {
-    x = other.x;
-    y = other.y;
-    z = other.z;
+    data[0] = other.data[0];
+    data[1] = other.data[1];
+    data[2] = other.data[2];
   }
 
-  Vector operator+(Vector v) => new Vector(x + v.x, y + v.y, z + v.z);
+  Vector operator+(Vector v) =>
+      new Vector(data[0] + v.data[0],
+                 data[1] + v.data[1],
+                 data[2] + v.data[2]);
 
-  void add(Vector v) {
-    x += v.x;
-    y += v.y;
-    z += v.z;
-  }
+  Vector operator-(Vector v) =>
+      new Vector(data[0] - v.data[0],
+                 data[1] - v.data[1],
+                 data[2] - v.data[2]);
 
-  Vector operator-(Vector v) => new Vector(x - v.x, y - v.y, z - v.z);
+  Vector operator*(num f) =>
+      new Vector(data[0] * f, data[1] * f, data[2] * f);
 
-  void subtract(Vector v) {
-    x -= v.x;
-    y -= v.y;
-    z -= v.z;
-  }
+  Vector operator/(num f) =>
+      new Vector(data[0] / f, data[1] / f, data[2] / f);
 
-  Vector operator*(double f) => new Vector(x * f, y * f, z * f);
+  Vector operator-() =>
+      new Vector(-data[0], -data[1], -data[2]);
 
-  void scale(double f) {
-    x *= f;
-    y *= f;
-    z *= f;
-  }
+  double operator[](int i) => data[i];
 
-  Vector operator/(double f) => new Vector(x / f, y / f, z / f);
+  operator[]=(int i, num v) => data[i] = v;
 
-  void invScale(double f) {
-    x /= f;
-    y /= f;
-    z /= f;
-  }
-
-  Vector operator-() => new Vector(-x, -y, -z);
-
-  double operator[](int i) => (i == 0) ? x : (i == 1) ? y : z;
-
-  operator[]=(int i, double v) =>
-    (i == 0) ? x = v : (i == 1) ? y = v : z = v;
-
-  double lengthSquared() => x * x + y * y + z * z;
+  double lengthSquared() =>
+      data[0] * data[0] + data[1] * data[1] + data[2] * data[2];
 
   double length() => Math.sqrt(lengthSquared());
 
-  String toString() => '$x $y $z';
+  Vector scale(num s) {
+    data[0] *= s;
+    data[1] *= s;
+    data[2] *= s;
+    return this;
+  }
 
-  bool hasNaNs() => x.isNaN || y.isNaN || z.isNaN;
+  Vector invScale(num s) {
+    data[0] /= s;
+    data[1] /= s;
+    data[2] /= s;
+    return this;
+  }
 
-  static double CosTheta(Vector v) => v.z;
+  Vector add(Vector s) {
+    data[0] += s.data[0];
+    data[1] += s.data[1];
+    data[2] += s.data[2];
+    return this;
+  }
 
-  static double AbsCosTheta(Vector v) => v.z.abs();
+  Vector subtract(Vector s) {
+    data[0] -= s.data[0];
+    data[1] -= s.data[1];
+    data[2] -= s.data[2];
+    return this;
+  }
+
+  String toString() => '${data[0]} ${data[1]} ${data[2]}';
+
+  bool hasNaNs() => data[0].isNaN || data[1].isNaN || data[2].isNaN;
+
+  static double CosTheta(Vector v) => v.data[2];
+
+  static double AbsCosTheta(Vector v) => v.data[2].abs();
 
   static double SinTheta2(Vector v) =>
     Math.max(0.0, 1.0 - CosTheta(v) * CosTheta(v));
@@ -100,7 +128,7 @@ class Vector {
     if (sintheta == 0.0) {
       return 1.0;
     }
-    return (v.x / sintheta).clamp(-1.0, 1.0);
+    return (v.data[0] / sintheta).clamp(-1.0, 1.0);
   }
 
   static double SinPhi(Vector v) {
@@ -108,7 +136,7 @@ class Vector {
     if (sintheta == 0.0) {
       return 0.0;
     }
-    return (v.y / sintheta).clamp(-1.0, 1.0);
+    return (v.data[1] / sintheta).clamp(-1.0, 1.0);
   }
 
   static double Distance(Vector a, Vector b) {
@@ -120,14 +148,20 @@ class Vector {
   }
 
   static double Dot(Vector v1, Vector v2) =>
-      v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+      v1.data[0] * v2.data[0] + v1.data[1] * v2.data[1] +
+      v1.data[2] * v2.data[2];
 
   static double AbsDot(Vector v1, Vector v2) =>
-      (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z).abs();
+      (v1.data[0] * v2.data[0] + v1.data[1] * v2.data[1] +
+       v1.data[2] * v2.data[2]).abs();
 
   static Vector Cross(Vector v1, Vector v2) {
-    double v1x = v1.x, v1y = v1.y, v1z = v1.z;
-    double v2x = v2.x, v2y = v2.y, v2z = v2.z;
+    double v1x = v1.data[0];
+    double v1y = v1.data[1];
+    double v1z = v1.data[2];
+    double v2x = v2.data[0];
+    double v2y = v2.data[1];
+    double v2z = v2.data[2];
     return new Vector((v1y * v2z) - (v1z * v2y),
                       (v1z * v2x) - (v1x * v2z),
                       (v1x * v2y) - (v1y * v2x));
@@ -135,15 +169,13 @@ class Vector {
 
   static Vector Normalize(Vector v) => v / v.length();
 
-  static Vector SphericalDirection(double sintheta, double costheta,
-                                   double phi) {
+  static Vector SphericalDirection(num sintheta, num costheta, num phi) {
       return new Vector(sintheta * Math.cos(phi),
                        sintheta * Math.sin(phi),
                        costheta);
   }
 
-  static Vector SphericalDirectionVec(double sintheta, double costheta,
-                                      double phi,
+  static Vector SphericalDirectionVec(num sintheta, num costheta, num phi,
                                       Vector x, Vector y, Vector z) {
       return x * (sintheta * Math.cos(phi)) +
              y * (sintheta * Math.sin(phi)) +
@@ -165,21 +197,25 @@ class Vector {
 
   static void CoordinateSystem(Vector v1, Vector v2, Vector v3) {
     if (v1.x.abs() > v1.y.abs()) {
-      double invLen = 1.0 / Math.sqrt(v1.x * v1.x + v1.z * v1.z);
-      v2.x = -v1.z * invLen;
-      v2.y = 0.0;
-      v2.z = v1.x * invLen;
+      double invLen = 1.0 / Math.sqrt(v1.data[0] * v1.data[0] +
+                                      v1.data[2] * v1.data[2]);
+      v2.data[0] = -v1.data[2] * invLen;
+      v2.data[1] = 0.0;
+      v2.data[2] = v1.data[0] * invLen;
     } else {
-      double invLen = 1.0 / Math.sqrt(v1.y * v1.y + v1.z * v1.z);
-      v2.x = 0.0;
-      v2.y = v1.z * invLen;
-      v2.z = -v1.y * invLen;
+      double invLen = 1.0 / Math.sqrt(v1.data[1] * v1.data[1] +
+                                      v1.data[2] * v1.data[2]);
+      v2.data[0] = 0.0;
+      v2.data[1] = v1.data[2] * invLen;
+      v2.data[2] = -v1.data[1] * invLen;
     }
 
     v3.copy(Vector.Cross(v1, v2));
   }
 
   static Vector FaceForward(Vector n, Vector n2) {
-    return (Vector.Dot(n, n2) < 0.0) ? new Vector(-n.x, -n.y, -n.z) : n;
+    return (Vector.Dot(n, n2) < 0.0) ?
+           new Vector(-n.data[0], -n.data[1], -n.data[2]) :
+           n;
   }
 }

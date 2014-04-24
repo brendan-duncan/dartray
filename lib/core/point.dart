@@ -26,23 +26,23 @@ part of core;
 class Point extends Vector {
   static final Point ZERO = new Point(0.0, 0.0, 0.0);
 
-  Point([double x = 0.0, double y = 0.0, double z = 0.0]) :
+  Point([num x = 0.0, num y = 0.0, num z = 0.0]) :
     super(x, y, z);
 
   Point.from(Vector other) :
     super.from(other);
 
-  Point operator*(double s) =>
-      new Point(x * s, y * s, z * s);
+  Point operator*(num s) =>
+      new Point(data[0] * s, data[1] * s, data[2] * s);
 
-  Point operator/(double s) =>
-      new Point(x / s, y / s, z / s);
+  Point operator/(num s) =>
+      new Point(data[0] / s, data[1] / s, data[2] / s);
 
   Point operator+(Vector p) =>
-      new Point(x + p.x, y + p.y, z + p.z);
+      new Point(data[0] + p.data[0], data[1] + p.data[1], data[2] + p.data[2]);
 
   Point operator-(Vector p) =>
-      new Point(x - p.x, y - p.y, z - p.z);
+      new Point(data[0] - p.data[0], data[1] - p.data[1], data[2] - p.data[2]);
 
   static double Distance(Point p1, Point p2) =>
       (p2 - p1).length();
