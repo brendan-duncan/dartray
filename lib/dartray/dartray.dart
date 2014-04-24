@@ -18,7 +18,7 @@
  *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
  *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
  ****************************************************************************/
-library pbrt;
+library dartray;
 
 import 'dart:async';
 import 'dart:isolate';
@@ -53,14 +53,14 @@ part 'transform_set.dart';
 
 
 /**
- * Pbrt provides an API and file format compatible with the PBRT
- * rendering system API and format.
+ * [DartRay] provides an API and file format compatible with the PBRT
+ * rendering system API and file format.
  */
-class Pbrt {
+class DartRay {
   ResourceManager resourceManager;
   RenderOverrides overrides;
 
-  Pbrt(this.resourceManager);
+  DartRay(this.resourceManager);
 
   Future<OutputImage> renderScene(String scene, {RenderOverrides overrides}) {
     Stopwatch t = new Stopwatch()..start();
@@ -109,10 +109,10 @@ class Pbrt {
     return _renderer.render(_scene);
   }
 
-  static const int _MAX_TRANSFORMS = 2;
+  static const int MAX_TRANSFORMS = 2;
   static const int _START_TRANSFORM_BITS = (1 << 0);
   static const int _END_TRANSFORM_BITS = (1 << 1);
-  static const int _ALL_TRANSFORMS_BITS = ((1 << _MAX_TRANSFORMS) - 1);
+  static const int _ALL_TRANSFORMS_BITS = ((1 << MAX_TRANSFORMS) - 1);
 
   static const int STATE_UNINITIALIZED = 0;
   static const int STATE_OPTIONS_BLOCK = 1;
@@ -150,7 +150,7 @@ class Pbrt {
   }
 
   void identity() {
-    for (int i = 0; i < _MAX_TRANSFORMS; ++i) {
+    for (int i = 0; i < MAX_TRANSFORMS; ++i) {
       if (_activeTransformBits & (1 << i) != 0) {
         _curTransform[i] = new Transform();
       }
@@ -158,7 +158,7 @@ class Pbrt {
   }
 
   void translate(double dx, double dy, double dz) {
-    for (int i = 0; i < _MAX_TRANSFORMS; ++i) {
+    for (int i = 0; i < MAX_TRANSFORMS; ++i) {
       if (_activeTransformBits & (1 << i) != 0) {
         _curTransform[i] = _curTransform[i] *
                           Transform.Translate(new Vector(dx, dy, dz));
@@ -167,7 +167,7 @@ class Pbrt {
   }
 
   void transform(Matrix4x4 tr) {
-    for (int i = 0; i < _MAX_TRANSFORMS; ++i) {
+    for (int i = 0; i < MAX_TRANSFORMS; ++i) {
       if (_activeTransformBits & (1 << i) != 0) {
         _curTransform[i] = new Transform(tr);
       }
@@ -175,7 +175,7 @@ class Pbrt {
   }
 
   void concatTransform(Matrix4x4 tr) {
-    for (int i = 0; i < _MAX_TRANSFORMS; ++i) {
+    for (int i = 0; i < MAX_TRANSFORMS; ++i) {
       if (_activeTransformBits & (1 << i) != 0) {
         _curTransform[i] = _curTransform[i] * new Transform(tr);
       }
@@ -183,7 +183,7 @@ class Pbrt {
   }
 
   void rotate(double angle, double dx, double dy, double dz) {
-    for (int i = 0; i < _MAX_TRANSFORMS; ++i) {
+    for (int i = 0; i < MAX_TRANSFORMS; ++i) {
       if (_activeTransformBits & (1 << i) != 0) {
         _curTransform[i] = _curTransform[i] *
                           Transform.Rotate(angle, new Vector(dx, dy, dz));
@@ -192,7 +192,7 @@ class Pbrt {
   }
 
   void scale(double sx, double sy, double sz) {
-    for (int i = 0; i < _MAX_TRANSFORMS; ++i) {
+    for (int i = 0; i < MAX_TRANSFORMS; ++i) {
       if (_activeTransformBits & (1 << i) != 0) {
         _curTransform[i] = _curTransform[i] * Transform.Scale(sx, sy, sz);
       }
@@ -201,7 +201,7 @@ class Pbrt {
 
   void lookAt(double ex, double ey, double ez, double lx, double ly,
               double lz, double ux, double uy, double uz) {
-    for (int i = 0; i < _MAX_TRANSFORMS; ++i) {
+    for (int i = 0; i < MAX_TRANSFORMS; ++i) {
       if (_activeTransformBits & (1 << i) != 0) {
         _curTransform[i] = _curTransform[i] *
             Transform.LookAt(new Point(ex, ey, ez), new Point(lx, ly, lz),
@@ -292,7 +292,7 @@ class Pbrt {
 
   void worldBegin() {
     _currentApiState = STATE_WORLD_BLOCK;
-    for (int i = 0; i < _MAX_TRANSFORMS; ++i) {
+    for (int i = 0; i < MAX_TRANSFORMS; ++i) {
       _curTransform[i] = new Transform();
     }
     _activeTransformBits = _ALL_TRANSFORMS_BITS;
@@ -454,7 +454,7 @@ class Pbrt {
       params.reportUnused();
 
       // Get _animatedWorldToObject_ transform for shape
-      assert(_MAX_TRANSFORMS == 2);
+      assert(MAX_TRANSFORMS == 2);
 
       Transform world2obj0 = Transform.Inverse(_curTransform[0]);
       Transform world2obj1 = Transform.Inverse(_curTransform[1]);
@@ -563,7 +563,7 @@ class Pbrt {
       inst.add(accel);
     }
 
-    assert(_MAX_TRANSFORMS == 2);
+    assert(MAX_TRANSFORMS == 2);
 
     Transform world2instance0 = Transform.Inverse(_curTransform[0]);
     Transform world2instance1 = Transform.Inverse(_curTransform[1]);
@@ -599,7 +599,7 @@ class Pbrt {
 
     _currentApiState = STATE_OPTIONS_BLOCK;
     //ProbesPrint(stdout);
-    for (int i = 0; i < _MAX_TRANSFORMS; ++i) {
+    for (int i = 0; i < MAX_TRANSFORMS; ++i) {
       _curTransform.t[i] = new Transform();
     }
 

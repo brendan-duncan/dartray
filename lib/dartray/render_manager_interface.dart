@@ -15,24 +15,24 @@
  *  See the License for the specific language governing permissions and     *
  *  limitations under the License.                                          *
  *                                                                          *
- *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
+ *   This project is based on PBRT v2 ; see http://www.dartray.org             *
  *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
  ****************************************************************************/
-part of pbrt;
+part of dartray;
 
 /**
  * Manages the rendering process, either rendering locally or submitting the
  * job to one or more isolates (web workers).
  */
 abstract class RenderManagerInterface extends ResourceManager {
-  Pbrt pbrt;
+  DartRay dartray;
   RenderIsolate isolate;
   String scenePath;
   OutputImage renderOutput;
 
   RenderManagerInterface(this.scenePath) {
     RegisterStandardPlugins();
-    pbrt = new Pbrt(this);
+    dartray = new DartRay(this);
   }
 
   static void RegisterStandardPlugins() {
@@ -206,7 +206,7 @@ abstract class RenderManagerInterface extends ResourceManager {
 
     if (isolate == null) {
       LogInfo('STARTING RENDER');
-      pbrt.renderScene(path, overrides: overrides).then((output) {
+      dartray.renderScene(path, overrides: overrides).then((output) {
         completer.complete(output);
       });
 

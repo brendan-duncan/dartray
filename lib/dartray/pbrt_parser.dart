@@ -18,14 +18,14 @@
  *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
  *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
  ****************************************************************************/
-part of pbrt;
+part of dartray;
 
 class PbrtParser {
-  Pbrt pbrt;
+  DartRay dartray;
   ResourceManager resourceManager;
 
-  PbrtParser(Pbrt pbrt) :
-    this.pbrt = pbrt,
+  PbrtParser(DartRay pbrt) :
+    this.dartray = pbrt,
     resourceManager = pbrt.resourceManager;
 
   Future parse(String file) {
@@ -67,9 +67,9 @@ class PbrtParser {
       String name = cmd['name'].toLowerCase();
 
       if (name == 'include') {
-        if (!pbrt.resourceManager.hasResource(cmd['value'])) {
+        if (!dartray.resourceManager.hasResource(cmd['value'])) {
           LogDebug('LOADING INCLUDE ${cmd['value']}');
-          Future f = pbrt.resourceManager.requestFile(cmd['value']);
+          Future f = dartray.resourceManager.requestFile(cmd['value']);
           futures.add(f);
           paths.add(cmd['value']);
           f.then((_) {
@@ -135,34 +135,34 @@ class PbrtParser {
 
       switch (name) {
         case 'accelerator':
-          pbrt.accelerator(cmd['type'], cmd['params']);
+          dartray.accelerator(cmd['type'], cmd['params']);
           break;
         case 'activetransform':
           if (cmd['type'] == 'StartTime') {
-            pbrt.activeTransformStartTime();
+            dartray.activeTransformStartTime();
           } else if (cmd['type'] == 'EndTime') {
-            pbrt.activeTransformEndTime();
+            dartray.activeTransformEndTime();
           } else if (cmd['type'] == 'All') {
-            pbrt.activeTransformAll();
+            dartray.activeTransformAll();
           }
           break;
         case 'arealightsource':
-          pbrt.areaLightSource(cmd['type'], cmd['params']);
+          dartray.areaLightSource(cmd['type'], cmd['params']);
           break;
         case 'attributebegin':
-          pbrt.attributeBegin();
+          dartray.attributeBegin();
           break;
         case 'attributeend':
-          pbrt.attributeEnd();
+          dartray.attributeEnd();
           break;
         case 'camera':
-          pbrt.camera(cmd['type'], cmd['params']);
+          dartray.camera(cmd['type'], cmd['params']);
           break;
         case 'coordinatesystem':
-          pbrt.coordinateSystem(cmd['type']);
+          dartray.coordinateSystem(cmd['type']);
           break;
         case 'coordsystransform':
-          pbrt.coordSysTransform(cmd['type']);
+          dartray.coordSysTransform(cmd['type']);
           break;
         case 'concattransform':
           if (!cmd.containsKey('values') || cmd['values'].length != 16) {
@@ -171,91 +171,91 @@ class PbrtParser {
           } else {
             var v = cmd['values'];
             Matrix4x4 m = Matrix4x4.Transpose(new Matrix4x4.fromList(v));
-            pbrt.concatTransform(m);
+            dartray.concatTransform(m);
           }
           break;
         case 'film':
-          pbrt.film(cmd['type'], cmd['params']);
+          dartray.film(cmd['type'], cmd['params']);
           break;
         case 'ident':
         case 'identity':
-          pbrt.identity();
+          dartray.identity();
           break;
         case 'lightsource':
-          pbrt.lightSource(cmd['type'], cmd['params']);
+          dartray.lightSource(cmd['type'], cmd['params']);
           break;
         case 'lookat':
           if (!cmd.containsKey('values') || cmd['values'].length != 9) {
             LogWarning('LookAt requires 9 values');
           } else {
             var v = cmd['values'];
-            pbrt.lookAt(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
+            dartray.lookAt(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
           }
           break;
         case 'makenamedmaterial':
-          pbrt.makeNamedMaterial(cmd['id'], cmd['params']);
+          dartray.makeNamedMaterial(cmd['id'], cmd['params']);
           break;
         case 'material':
-          pbrt.material(cmd['type'], cmd['params']);
+          dartray.material(cmd['type'], cmd['params']);
           break;
         case 'namedmaterial':
-          pbrt.namedMaterial(cmd['type']);
+          dartray.namedMaterial(cmd['type']);
           break;
         case 'objectbegin':
-          pbrt.objectBegin(cmd['type']);
+          dartray.objectBegin(cmd['type']);
           break;
         case 'objectend':
-          pbrt.objectEnd();
+          dartray.objectEnd();
           break;
         case 'objectinstance':
-          pbrt.objectInstance(cmd['type']);
+          dartray.objectInstance(cmd['type']);
           break;
         case 'pixelfilter':
-          pbrt.pixelFilter(cmd['type'], cmd['params']);
+          dartray.pixelFilter(cmd['type'], cmd['params']);
           break;
         case 'renderer':
-          pbrt.renderer(cmd['type'], cmd['params']);
+          dartray.renderer(cmd['type'], cmd['params']);
           break;
         case 'reverseorientation':
-          pbrt.reverseOrientation();
+          dartray.reverseOrientation();
           break;
         case 'rotate':
           if (!cmd.containsKey('values') || cmd['values'].length != 4) {
             LogWarning('Rotate requires 4 values');
           } else {
             var v = cmd['values'];
-            pbrt.rotate(v[0], v[1], v[2], v[3]);
+            dartray.rotate(v[0], v[1], v[2], v[3]);
           }
           break;
         case 'pixels':
-          pbrt.pixels(cmd['type'], cmd['params']);
+          dartray.pixels(cmd['type'], cmd['params']);
           break;
         case 'sampler':
-          pbrt.sampler(cmd['type'], cmd['params']);
+          dartray.sampler(cmd['type'], cmd['params']);
           break;
         case 'scale':
           if (!cmd.containsKey('values') || cmd['values'].length != 3) {
             LogWarning('Scale requires 3 values');
           } else {
             var v = cmd['values'];
-            pbrt.scale(v[0], v[1], v[2]);
+            dartray.scale(v[0], v[1], v[2]);
           }
           break;
         case 'shape':
-          pbrt.shape(cmd['type'], cmd['params']);
+          dartray.shape(cmd['type'], cmd['params']);
           break;
         case 'surfaceintegrator':
-          pbrt.surfaceIntegrator(cmd['type'], cmd['params']);
+          dartray.surfaceIntegrator(cmd['type'], cmd['params']);
           break;
         case 'texture':
-          pbrt.texture(cmd['id'], cmd['type'], cmd['class'], cmd['params']);
+          dartray.texture(cmd['id'], cmd['type'], cmd['class'], cmd['params']);
           break;
         case 'translate':
           if (!cmd.containsKey('values') || cmd['values'].length != 3) {
             LogWarning('Translate requires 3 values');
           } else {
             var v = cmd['values'];
-            pbrt.translate(v[0], v[1], v[2]);
+            dartray.translate(v[0], v[1], v[2]);
           }
           break;
         case 'transform':
@@ -267,37 +267,37 @@ class PbrtParser {
                                                v[1], v[5], v[9], v[13],
                                                v[2], v[6], v[10], v[14],
                                                v[3], v[7], v[11], v[15]);
-            pbrt.transform(m);
+            dartray.transform(m);
           }
           break;
         case 'transformbegin':
-          pbrt.transformBegin();
+          dartray.transformBegin();
           break;
         case 'transformend':
-          pbrt.transformEnd();
+          dartray.transformEnd();
           break;
         case 'transformtimes':
           if (!cmd.containsKey('values') || cmd['values'].length != 2) {
             LogWarning('TransformTimes requires 2 values');
           } else {
             var v = cmd['values'];
-            pbrt.transformTimes(v[0], v[1]);
+            dartray.transformTimes(v[0], v[1]);
           }
           break;
         case 'volume':
-          pbrt.volume(cmd['type'], cmd['params']);
+          dartray.volume(cmd['type'], cmd['params']);
           break;
         case 'volumeintegrator':
-          pbrt.volumeIntegrator(cmd['type'], cmd['params']);
+          dartray.volumeIntegrator(cmd['type'], cmd['params']);
           break;
         case 'worldbegin':
-          pbrt.worldBegin();
+          dartray.worldBegin();
           break;
         case 'worldend':
-          pbrt.worldEnd();
+          dartray.worldEnd();
           break;
         case 'include':
-          var inc = pbrt.resourceManager.getResource(cmd['value']);
+          var inc = dartray.resourceManager.getResource(cmd['value']);
           if (inc is List<int>) {
             _lexer.addInclude(inc, cmd['value']);
           } else {

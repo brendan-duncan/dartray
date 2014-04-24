@@ -15,10 +15,10 @@
  *  See the License for the specific language governing permissions and     *
  *  limitations under the License.                                          *
  *                                                                          *
- *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
+ *   This project is based on PBRT v2 ; see http://www.dartray.org             *
  *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
  ****************************************************************************/
-part of pbrt;
+part of dartray;
 
 /**
  * Starts an Isolate service to connect to the primary [RenderManager] from
@@ -130,12 +130,12 @@ class RenderIsolate {
 
     Stopwatch timer = new Stopwatch()..start();
 
-    Pbrt pbrt = new Pbrt(manager);
+    DartRay dartray = new DartRay(manager);
 
     List<int> extents = [0, 0, 0, 0];
 
     if (doPreview) {
-      pbrt.setPreviewCallback((Image img) {
+      dartray.setPreviewCallback((Image img) {
         Sampler.ComputeSubWindow(img.width, img.height, taskNum, taskCount,
                                  extents);
 
@@ -148,8 +148,8 @@ class RenderIsolate {
 
     try {
       OutputImage output;
-      pbrt.setTask(taskNum, taskCount);
-      pbrt.renderScene(scene, overrides: overrides).then((output) {
+      dartray.setTask(taskNum, taskCount);
+      dartray.renderScene(scene, overrides: overrides).then((output) {
         _log(LOG_INFO, 'FINISHED: ${timer.elapsed}');
         LogInfo('[$taskNum] STATS:\n${Stats.getString()}');
 

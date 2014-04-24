@@ -18,46 +18,32 @@
  *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
  *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
  ****************************************************************************/
-part of pbrt;
+part of dartray;
 
-class TransformSet {
-  TransformSet() {
-    for (int i = 0; i < Pbrt._MAX_TRANSFORMS; ++i) {
-      t[i] = new Transform();
-    }
+class GraphicsState {
+  GraphicsState() {
+    material = 'matte';
+    reverseOrientation = false;
   }
 
-  TransformSet.from(TransformSet other) {
-    t[0] = new Transform.from(other.t[0]);
-    t[1] = new Transform.from(other.t[1]);
-  }
+  GraphicsState.from(GraphicsState other) :
+    doubleTextures = new Map.from(other.doubleTextures),
+    spectrumTextures = new Map.from(other.spectrumTextures),
+    materialParams = new ParamSet.from(other.materialParams),
+    material = other.material,
+    namedMaterials = new Map.from(other.namedMaterials),
+    currentNamedMaterial = other.currentNamedMaterial,
+    areaLightParams = new ParamSet.from(other.areaLightParams),
+    areaLight = other.areaLight,
+    reverseOrientation = other.reverseOrientation;
 
-  Transform operator[](int i) {
-    assert(i >= 0 && i < Pbrt._MAX_TRANSFORMS);
-    return t[i];
-  }
-
-  operator[]=(int i, Transform transform) {
-    assert(i >= 0 && i < Pbrt._MAX_TRANSFORMS);
-    t[i] = transform;
-  }
-
-  bool isAnimated() {
-    for (int i = 0; i < Pbrt._MAX_TRANSFORMS - 1; ++i) {
-      if (t[i] != t[i + 1]) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  static TransformSet Inverse(TransformSet ts) {
-    TransformSet t2 = new TransformSet();
-    for (int i = 0; i < Pbrt._MAX_TRANSFORMS; ++i) {
-      t2.t[i] = Transform.Inverse(ts.t[i]);
-    }
-    return t2;
-  }
-
-  List<Transform> t = new List<Transform>(Pbrt._MAX_TRANSFORMS);
+  Map<String, Texture> doubleTextures = {};
+  Map<String, Texture> spectrumTextures = {};
+  ParamSet materialParams = new ParamSet();
+  String material;
+  Map<String, Material> namedMaterials = {};
+  String currentNamedMaterial;
+  ParamSet areaLightParams = new ParamSet();
+  String areaLight = '';
+  bool reverseOrientation;
 }
