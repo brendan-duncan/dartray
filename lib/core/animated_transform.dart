@@ -1,28 +1,36 @@
 /****************************************************************************
- *  Copyright (C) 2014 by Brendan Duncan.                                   *
+ * Copyright (C) 2014 by Brendan Duncan.                                    *
  *                                                                          *
- *  This file is part of DartRay.                                           *
+ * This file is part of DartRay.                                            *
  *                                                                          *
- *  Licensed under the Apache License, Version 2.0 (the "License");         *
- *  you may not use this file except in compliance with the License.        *
- *  You may obtain a copy of the License at                                 *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
  *                                                                          *
- *  http://www.apache.org/licenses/LICENSE-2.0                              *
+ * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
- *  Unless required by applicable law or agreed to in writing, software     *
- *  distributed under the License is distributed on an "AS IS" BASIS,       *
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.*
- *  See the License for the specific language governing permissions and     *
- *  limitations under the License.                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
  *                                                                          *
- *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
- *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
+ * This project is based on PBRT v2 ; see http://www.pbrt.org               *
+ * pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.  *
  ****************************************************************************/
 part of core;
 
 /**
  * Animates objects and cameras over time as a linear interpolation between
  * two transforms.
+ *
+ * The transformation used to evaluate an object is linearly interpolated
+ * between [transform1] at [startTime], and [transform2] at [endTime], for the
+ * current camera shutter time being evaluated.
+ *
+ * If [transform1] and [transform2] are the same, then the transform is
+ * considered not-animated, and the interpolation is short-cutted to return
+ * [transform1].
  */
 class AnimatedTransform {
   AnimatedTransform(Transform transform1, this.startTime,
@@ -92,7 +100,7 @@ class AnimatedTransform {
     // XXX TODO FIXME deal with flip...
     Rquat.copy(new Quaternion.fromMatrix(R));
 
-    // Compute scale _S_ using rotation and original matrix
+    // Compute scale S using rotation and original matrix
     S.copy(Matrix4x4.Mul(Matrix4x4.Inverse(R), M));
   }
 
@@ -110,13 +118,13 @@ class AnimatedTransform {
 
     double dt = (time - startTime) / (endTime - startTime);
 
-    // Interpolate translation at _dt_
+    // Interpolate translation at dt
     Vector trans = T[0] * (1.0 - dt) + T[1] * dt;
 
-    // Interpolate rotation at _dt_
+    // Interpolate rotation at dt
     Quaternion rotate = Quaternion.Slerp(dt, R[0], R[1]);
 
-    // Interpolate scale at _dt_
+    // Interpolate scale at dt
     Matrix4x4 scale = new Matrix4x4();
     for (int i = 0; i < 16; ++i) {
       scale.data[i] = Lerp(dt, S[0].data[i], S[1].data[i]);

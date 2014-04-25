@@ -1,22 +1,22 @@
 /****************************************************************************
- *  Copyright (C) 2014 by Brendan Duncan.                                   *
+ * Copyright (C) 2014 by Brendan Duncan.                                    *
  *                                                                          *
- *  This file is part of DartRay.                                           *
+ * This file is part of DartRay.                                            *
  *                                                                          *
- *  Licensed under the Apache License, Version 2.0 (the "License");         *
- *  you may not use this file except in compliance with the License.        *
- *  You may obtain a copy of the License at                                 *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
  *                                                                          *
- *  http://www.apache.org/licenses/LICENSE-2.0                              *
+ * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
- *  Unless required by applicable law or agreed to in writing, software     *
- *  distributed under the License is distributed on an "AS IS" BASIS,       *
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.*
- *  See the License for the specific language governing permissions and     *
- *  limitations under the License.                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
  *                                                                          *
- *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
- *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
+ * This project is based on PBRT v2 ; see http://www.pbrt.org               *
+ * pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.  *
  ****************************************************************************/
 part of core;
 
@@ -25,6 +25,11 @@ part of core;
  * it emits.
  */
 abstract class Light {
+  final Transform lightToWorld;
+  final Transform worldToLight;
+  /// The number of samples to evaluate on the surface of an area light.
+  final int nSamples;
+
   Light(Transform l2w, [int ns = 1]) :
     nSamples = Math.max(1, ns),
     lightToWorld = new Transform.from(l2w),
@@ -73,30 +78,23 @@ abstract class Light {
   double pdf(Point p, Vector wi);
 
   /**
-   * Returns the incident radiance from the light at a point [p] and also
-   * returns the direction vector [wi] that gives the direction from which
-   * radiance is arriving, assuming that there are no occluding objects between
-   * them.
-   *
-   * For some types of lights (usually area lights), light may arrive at p
-   * from many directions. For these types of lights, the sampleL method
-   * must randomly sample a point on the light source's surface, so that
-   * Monte Carlo integration can be used to find the reflected light at p
-   * due to illumination from the light.
+   * Returns the radiance arriving at point [p] from the light.
    */
-  Spectrum sampleLAtPoint(Point p, double pEpsilon,
-                          LightSample ls, double time, Vector wi,
-                          List<double> pdf, VisibilityTester vis);
+  Spectrum sampleLAtPoint(Point p, double pEpsilon, LightSample ls,
+                          double time, Vector wi, List<double> pdf,
+                          VisibilityTester vis);
 
   /**
-   * Returns the incident radiance from the light in a direction ([u1],[u2])
+   * Returns the radiance from the light in a direction ([u1],[u2])
    * from the sample point [ls] on the light.
-   * TODO What is the actual description of this function?
    */
   Spectrum sampleL(Scene scene, LightSample ls,
                    double u1, double u2, double time,
                    Ray ray, Normal Ns, List<double> pdf);
 
+  /**
+   * Compute the spherical hamonic projection of the light.
+   */
   void shProject(Point p, double pEpsilon, int lmax,
                  Scene scene, bool computeLightVisibility, double time,
                  RNG rng, List<Spectrum> coeffs) {
@@ -129,8 +127,4 @@ abstract class Light {
       }
     }
   }
-
-  final int nSamples;
-  final Transform lightToWorld;
-  final Transform worldToLight;
 }

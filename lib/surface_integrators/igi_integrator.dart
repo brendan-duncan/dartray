@@ -1,22 +1,22 @@
 /****************************************************************************
- *  Copyright (C) 2014 by Brendan Duncan.                                   *
+ * Copyright (C) 2014 by Brendan Duncan.                                    *
  *                                                                          *
- *  This file is part of DartRay.                                           *
+ * This file is part of DartRay.                                            *
  *                                                                          *
- *  Licensed under the Apache License, Version 2.0 (the "License");         *
- *  you may not use this file except in compliance with the License.        *
- *  You may obtain a copy of the License at                                 *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
  *                                                                          *
- *  http://www.apache.org/licenses/LICENSE-2.0                              *
+ * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
- *  Unless required by applicable law or agreed to in writing, software     *
- *  distributed under the License is distributed on an "AS IS" BASIS,       *
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.*
- *  See the License for the specific language governing permissions and     *
- *  limitations under the License.                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
  *                                                                          *
- *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
- *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
+ * This project is based on PBRT v2 ; see http://www.pbrt.org               *
+ * pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.  *
  ****************************************************************************/
 part of surface_integrators;
 
@@ -34,19 +34,6 @@ class IGIIntegrator extends SurfaceIntegrator {
       virtualLights[i] = new List<_VirtualLight>();
     }
   }
-
-  static IGIIntegrator Create(ParamSet params) {
-    int nLightPaths = params.findOneInt("nlights", 64);
-    int nLightSets = params.findOneInt("nsets", 4);
-    double rrThresh = params.findOneFloat("rrthreshold", 0.0001);
-    int maxDepth = params.findOneInt("maxdepth", 5);
-    double glimit = params.findOneFloat("glimit", 10.0);
-    int gatherSamples = params.findOneInt("gathersamples", 16);
-
-    return new IGIIntegrator(nLightPaths, nLightSets, rrThresh,
-                             maxDepth, glimit, gatherSamples);
-  }
-
 
   Spectrum Li(Scene scene, Renderer renderer,
       RayDifferential ray, Intersection isect,
@@ -276,6 +263,18 @@ class IGIIntegrator extends SurfaceIntegrator {
         }
       }
     }
+  }
+
+  static IGIIntegrator Create(ParamSet params) {
+    int nLightPaths = params.findOneInt("nlights", 64);
+    int nLightSets = params.findOneInt("nsets", 4);
+    double rrThresh = params.findOneFloat("rrthreshold", 0.0001);
+    int maxDepth = params.findOneInt("maxdepth", 5);
+    double glimit = params.findOneFloat("glimit", 10.0);
+    int gatherSamples = params.findOneInt("gathersamples", 16);
+
+    return new IGIIntegrator(nLightPaths, nLightSets, rrThresh,
+                             maxDepth, glimit, gatherSamples);
   }
 
   List<LightSampleOffsets> lightSampleOffsets;

@@ -15,27 +15,17 @@
  *  See the License for the specific language governing permissions and     *
  *  limitations under the License.                                          *
  *                                                                          *
- *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
- *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
+ *  This project is based on PBRT v2 ; see http://www.pbrt.org              *
+ *  pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys. *
  ****************************************************************************/
 part of surface_integrators;
 
 /**
  * Path tracing surface integrator.
- *
- * PBRT Spec:
- *  Name: 'path'
- *  Parameters:
- *    int maxdepth _5_: The maximum number of bounces for a ray.
  */
 class PathIntegrator extends SurfaceIntegrator {
   PathIntegrator(int md) {
     maxDepth = md;
-  }
-
-  static PathIntegrator Create(ParamSet params) {
-    int maxDepth = params.findOneInt('maxdepth', 5);
-    return new PathIntegrator(maxDepth);
   }
 
   Spectrum Li(Scene scene, Renderer renderer,
@@ -141,6 +131,11 @@ class PathIntegrator extends SurfaceIntegrator {
       bsdfSampleOffsets[i] = new BSDFSampleOffsets(1, sample);
       pathSampleOffsets[i] = new BSDFSampleOffsets(1, sample);
     }
+  }
+
+  static PathIntegrator Create(ParamSet params) {
+    int maxDepth = params.findOneInt('maxdepth', 5);
+    return new PathIntegrator(maxDepth);
   }
 
   int maxDepth;

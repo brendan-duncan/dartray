@@ -1,27 +1,28 @@
 /****************************************************************************
- *  Copyright (C) 2014 by Brendan Duncan.                                   *
+ * Copyright (C) 2014 by Brendan Duncan.                                    *
  *                                                                          *
- *  This file is part of DartRay.                                           *
+ * This file is part of DartRay.                                            *
  *                                                                          *
- *  Licensed under the Apache License, Version 2.0 (the "License");         *
- *  you may not use this file except in compliance with the License.        *
- *  You may obtain a copy of the License at                                 *
+ * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * you may not use this file except in compliance with the License.         *
+ * You may obtain a copy of the License at                                  *
  *                                                                          *
- *  http://www.apache.org/licenses/LICENSE-2.0                              *
+ * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
- *  Unless required by applicable law or agreed to in writing, software     *
- *  distributed under the License is distributed on an "AS IS" BASIS,       *
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.*
- *  See the License for the specific language governing permissions and     *
- *  limitations under the License.                                          *
+ * Unless required by applicable law or agreed to in writing, software      *
+ * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
+ * See the License for the specific language governing permissions and      *
+ * limitations under the License.                                           *
  *                                                                          *
- *   This project is based on PBRT v2 ; see http://www.pbrt.org             *
- *   pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.*
+ * This project is based on PBRT v2 ; see http://www.pbrt.org               *
+ * pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.  *
  ****************************************************************************/
 part of core;
 
 /**
- * 3D axis aligned bounding box.
+ * 3D axis aligned bounding box, primarily used to represent the area
+ * encompassing one or more objects.
  */
 class BBox {
   Point pMin;
@@ -71,11 +72,17 @@ class BBox {
 
   Point operator[](int index) => (index == 0) ? pMin : pMax;
 
+  /**
+   * Test for a ray intersection with this box. If an intersection was found,
+   * true is returned and [hitt0] is set to the closest intersection point
+   * (where the ray enters the box) and [hitt1] is set to the farthest
+   * intersection point (where the ray exits the box).
+   */
   bool intersectP(Ray ray, [List<double> hitt0, List<double> hitt1]) {
     double t0 = ray.minDistance;
     double t1 = ray.maxDistance;
     for (int i = 0; i < 3; ++i) {
-      // Update interval for _i_th bounding box slab
+      // Update interval for i'th bounding box slab
       double invRayDir = 1.0 / ray.direction[i];
       double tNear = (pMin[i] - ray.origin[i]) * invRayDir;
       double tFar  = (pMax[i] - ray.origin[i]) * invRayDir;
