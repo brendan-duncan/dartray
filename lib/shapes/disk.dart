@@ -32,24 +32,25 @@ class Disk extends Shape {
                     new Point( radius,  radius, height));
   }
 
+  static Ray _ray = new Ray();
+
   bool intersect(Ray r, List<double> tHit, List<double> rayEpsilon,
                  DifferentialGeometry dg) {
     // Transform _Ray_ to object space
-    Ray ray = new Ray();
-    worldToObject.transformRay(r, ray);
+    worldToObject.transformRay(r, _ray);
 
     // Compute plane intersection for disk
-    if (ray.direction.z.abs() < 1.0e-7) {
+    if (_ray.direction.z.abs() < 1.0e-7) {
       return false;
     }
 
-    double thit = (height - ray.origin.z) / ray.direction.z;
-    if (thit < ray.minDistance || thit > ray.maxDistance) {
+    double thit = (height - _ray.origin.z) / _ray.direction.z;
+    if (thit < _ray.minDistance || thit > _ray.maxDistance) {
       return false;
     }
 
     // See if hit point is inside disk radii and $\phimax$
-    Point phit = ray.pointAt(thit);
+    Point phit = _ray.pointAt(thit);
     double dist2 = phit.x * phit.x + phit.y * phit.y;
     if (dist2 > radius * radius || dist2 < innerRadius * innerRadius) {
       return false;
@@ -80,23 +81,27 @@ class Disk extends Shape {
     Normal dndu = new Normal();
     Normal dndv = new Normal();
 
-    // Initialize _DifferentialGeometry_ from parametric information
+    // Initialize DifferentialGeometry from parametric information
     Transform o2w = objectToWorld;
-    dg.set(o2w.transformPoint(phit), o2w.transformVector(dpdu),
-           o2w.transformVector(dpdv), o2w.transformNormal(dndu),
-           o2w.transformNormal(dndv), u, v, this);
 
-    // Update _tHit_ for quadric intersection
+    dg.set(o2w.transformPoint(phit),
+           o2w.transformVector(dpdu),
+           o2w.transformVector(dpdv),
+           o2w.transformNormal(dndu),
+           o2w.transformNormal(dndv),
+           u, v, this);
+
+    // Update tHit for quadric intersection
     tHit[0] = thit;
 
-    // Compute _rayEpsilon_ for quadric intersection
+    // Compute rayEpsilon for quadric intersection
     rayEpsilon[0] = 5.0e-4 * thit;
 
     return true;
   }
 
   bool intersectP(Ray r) {
-    // Transform _Ray_ to object space
+    // Transform Ray to object space
     Ray ray = new Ray();
     worldToObject.transformRay(r, ray);
 
@@ -110,18 +115,20 @@ class Disk extends Shape {
       return false;
     }
 
-    // See if hit point is inside disk radii and $\phimax$
+    // See if hit point is inside disk radii and phimax
     Point phit = ray.pointAt(thit);
     double dist2 = phit.x * phit.x + phit.y * phit.y;
     if (dist2 > radius * radius || dist2 < innerRadius * innerRadius) {
       return false;
     }
 
-    // Test disk $\phi$ value against $\phimax$
+    // Test disk phi value against phimax
     double phi = Math.atan2(phit.y, phit.x);
+
     if (phi < 0.0) {
       phi += 2.0 * Math.PI;
     }
+
     if (phi > phiMax) {
       return false;
     }

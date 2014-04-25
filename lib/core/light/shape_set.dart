@@ -35,8 +35,8 @@ class ShapeSet {
     }
 
     if (shapes.length > 64) {
-      LogWarning("Area light geometry turned into ${shapes.length} shapes; "
-             "may be very inefficient.");
+      LogWarning('Area light geometry turned into ${shapes.length} shapes; '
+                 'may be very inefficient.');
     }
 
     // Compute total area of shapes in _ShapeSet_ and area CDF
@@ -59,7 +59,7 @@ class ShapeSet {
     int sn = areaDistribution.sampleDiscrete(ls.uComponent, null) % shapes.length;
     Point pt = shapes[sn].sample2(p, ls.uPos[0], ls.uPos[1], Ns);
     // Find closest intersection of ray with shapes in ShapeSet
-    Ray r = new Ray(p, pt - p, 1e-3, INFINITY);
+    Ray r = new Ray(p, pt - p, 1.0e-3, INFINITY);
     List<double> rayEps = [0.0];
     List<double> thit = [1.0];
     bool anyHit = false;

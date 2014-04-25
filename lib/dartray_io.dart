@@ -25,6 +25,6 @@ import 'dart:io';
 import 'core/core.dart';
 import 'dartray/dartray.dart';
 
-export 'dartray.dart';
+export 'dartray_core.dart';
 
 part 'dartray_io/render_manager.dart';

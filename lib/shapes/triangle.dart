@@ -20,6 +20,9 @@
  ****************************************************************************/
 part of shapes;
 
+/**
+ * An individual triangle in a [TriangleMesh].
+ */
 class Triangle extends Shape {
   Triangle(Transform o2w, Transform w2o, bool ro, this.mesh, this.index) :
     super(o2w, w2o, ro) {
@@ -40,6 +43,123 @@ class Triangle extends Shape {
 
   bool intersect(Ray ray, List<double> tHit, List<double> rayEpsilon,
                  DifferentialGeometry dg) {
+    // Get triangle vertices in p1, p2, and p3
+    List<Point> tri = mesh.triangle(v(0), v(1), v(2));
+    Point p1 = tri[0];
+    Point p2 = tri[1];
+    Point p3 = tri[2];
+
+    double e1x = p2.data[0] - p1.data[0];
+    double e1y = p2.data[1] - p1.data[1];
+    double e1z = p2.data[2] - p1.data[2];
+
+    double e2x = p3.data[0] - p1.data[0];
+    double e2y = p3.data[1] - p1.data[1];
+    double e2z = p3.data[2] - p1.data[2];
+
+    double s1x = (ray.direction.y * e2z) - (ray.direction.z * e2y);
+    double s1y = (ray.direction.z * e2x) - (ray.direction.x * e2z);
+    double s1z = (ray.direction.x * e2y) - (ray.direction.y * e2x);
+
+    double divisor = (s1x * e1x) + (s1y * e1y) + (s1z * e1z);
+
+    if (divisor == 0.0) {
+      return false;
+    }
+
+    double invDivisor = 1.0 / divisor;
+
+    // Compute first barycentric coordinate
+    double sx = ray.origin.x - p1.x;
+    double sy = ray.origin.y - p1.y;
+    double sz = ray.origin.z - p1.z;
+
+    double b1 = (sx * s1x + sy * s1y + sz * s1z) * invDivisor;
+    if (b1 < 0.0 || b1 > 1.0) {
+      return false;
+    }
+
+    // Compute second barycentric coordinate
+    double s2x = (sy * e1z) - (sz * e1y);
+    double s2y = (sz * e1x) - (sx * e1z);
+    double s2z = (sx * e1y) - (sy * e1x);
+
+    double b2 = ((ray.direction.x * s2x) + (ray.direction.y * s2y) +
+                 (ray.direction.z * s2z)) * invDivisor;
+
+    if (b2 < 0.0 || b1 + b2 > 1.0) {
+      return false;
+    }
+
+    // Compute t to intersection point
+    double t = (e2x * s2x + e2y * s2y + e2z * s2z) * invDivisor;
+    if (t < ray.minDistance || t > ray.maxDistance) {
+      return false;
+    }
+
+    // Compute triangle partial derivatives
+    Vector dpdu;
+    Vector dpdv;
+
+    getUVs(_uvs);
+
+    // Compute deltas for triangle partial derivatives
+    double du1 = _uvs[0] - _uvs[4];
+    double du2 = _uvs[2] - _uvs[4];
+    double dv1 = _uvs[1] - _uvs[5];
+    double dv2 = _uvs[3] - _uvs[5];
+    Vector dp1 = p1 - p3;
+    Vector dp2 = p2 - p3;
+    double determinant = du1 * dv2 - dv1 * du2;
+
+    if (determinant == 0.0) {
+      dpdu = new Vector();
+      dpdv = new Vector();
+
+      // Cross(e2, e3)
+      double e3x = (e2y * e1z) - (e2z * e1y);
+      double e3y = (e2z * e1x) - (e2x * e1z);
+      double e3z = (e2x * e1y) - (e2y * e1x);
+      double len = Math.sqrt(e3x * e3x + e3y * e3y + e3z * e3z);
+
+      // Handle zero determinant for triangle partial derivative matrix
+      Vector.CoordinateSystem(new Vector(e3x / len, e3y / len, e3z / len),
+                              dpdu, dpdv);
+    } else {
+      double invdet = 1.0 / determinant;
+      dpdu = (dp1 * dv2 - dp2 * dv1) * invdet;
+      dpdv = (dp1 * -du2 + dp2 * du1) * invdet;
+    }
+
+    // Interpolate (u,v) triangle parametric coordinates
+    double b0 = 1.0 - b1 - b2;
+    double tu = b0 * _uvs[0] + b1 * _uvs[2] + b2 * _uvs[4];
+    double tv = b0 * _uvs[1] + b1 * _uvs[3] + b2 * _uvs[5];
+
+    // Test intersection against alpha texture, if present
+    if (ray.depth != -1) {
+      if (mesh.alphaTexture != null) {
+          DifferentialGeometry dgLocal =
+              new DifferentialGeometry().set(ray.pointAt(t), dpdu, dpdv,
+                                             Normal.ZERO, Normal.ZERO,
+                                             tu, tv, this);
+
+        if (mesh.alphaTexture.evaluate(dgLocal) == 0.0) {
+          return false;
+        }
+      }
+    }
+
+    // Fill in DifferentialGeometry from triangle hit
+    dg.set(ray.pointAt(t), dpdu, dpdv, Normal.ZERO, Normal.ZERO, tu, tv, this);
+
+    tHit[0] = t;
+    rayEpsilon[0] = 1.0e-3 * t;
+
+    return true;
+  }
+
+  bool intersectP(Ray ray) {
     // Get triangle vertices in p1, p2, and p3
     List<Point> tri = mesh.triangle(v(0), v(1), v(2));
     Vector e1 = tri[1] - tri[0];
@@ -67,94 +187,7 @@ class Triangle extends Shape {
       return false;
     }
 
-    // Compute _t_ to intersection point
-    double t = Vector.Dot(e2, s2) * invDivisor;
-    if (t < ray.minDistance || t > ray.maxDistance) {
-      return false;
-    }
-
-    // Compute triangle partial derivatives
-    Vector dpdu = new Vector();
-    Vector dpdv = new Vector();
-    List<double> uvs = new List<double>(6);
-    getUVs(uvs);
-
-    // Compute deltas for triangle partial derivatives
-    double du1 = uvs[0] - uvs[4];
-    double du2 = uvs[2] - uvs[4];
-    double dv1 = uvs[1] - uvs[5];
-    double dv2 = uvs[3] - uvs[5];
-    Vector dp1 = tri[0] - tri[2];
-    Vector dp2 = tri[1] - tri[2];
-    double determinant = du1 * dv2 - dv1 * du2;
-    if (determinant == 0.0) {
-      // Handle zero determinant for triangle partial derivative matrix
-      Vector.CoordinateSystem(Vector.Normalize(Vector.Cross(e2, e1)),
-                              dpdu, dpdv);
-    } else {
-      double invdet = 1.0 / determinant;
-      dpdu = (dp1 * dv2 - dp2 * dv1) * invdet;
-      dpdv = (dp1 * -du2 + dp2 * du1) * invdet;
-    }
-
-    // Interpolate $(u,v)$ triangle parametric coordinates
-    double b0 = 1.0 - b1 - b2;
-    double tu = b0 * uvs[0] + b1 * uvs[2] + b2 * uvs[4];
-    double tv = b0 * uvs[1] + b1 * uvs[3] + b2 * uvs[5];
-
-    // Test intersection against alpha texture, if present
-    if (ray.depth != -1) {
-      if (mesh.alphaTexture != null) {
-          DifferentialGeometry dgLocal = new DifferentialGeometry().set(
-              ray.pointAt(t), dpdu, dpdv,
-              new Normal(0.0, 0.0, 0.0), new Normal(0.0, 0.0, 0.0),
-              tu, tv, this);
-
-        if (mesh.alphaTexture.evaluate(dgLocal) == 0.0) {
-          return false;
-        }
-      }
-    }
-
-    // Fill in _DifferentialGeometry_ from triangle hit
-    dg.set(ray.pointAt(t), dpdu, dpdv, new Normal(0.0, 0.0, 0.0),
-           new Normal(0.0, 0.0, 0.0), tu, tv, this);
-
-    tHit[0] = t;
-    rayEpsilon[0] = 1.0e-3 * t;
-
-    return true;
-  }
-
-  bool intersectP(Ray ray) {
-    // Get triangle vertices in _p1_, _p2_, and _p3_
-    List<Point> tri = mesh.triangle(v(0), v(1), v(2));
-    Vector e1 = tri[1] - tri[0];
-    Vector e2 = tri[2] - tri[0];
-    Vector s1 = Vector.Cross(ray.direction, e2);
-    double divisor = Vector.Dot(s1, e1);
-
-    if (divisor == 0.0) {
-      return false;
-    }
-
-    double invDivisor = 1.0 / divisor;
-
-    // Compute first barycentric coordinate
-    Vector s = ray.origin - tri[0];
-    double b1 = Vector.Dot(s, s1) * invDivisor;
-    if (b1 < 0.0 || b1 > 1.0) {
-      return false;
-    }
-
-    // Compute second barycentric coordinate
-    Vector s2 = Vector.Cross(s, e1);
-    double b2 = Vector.Dot(ray.direction, s2) * invDivisor;
-    if (b2 < 0.0 || b1 + b2 > 1.0) {
-      return false;
-    }
-
-    // Compute _t_ to intersection point
+    // Compute t to intersection point
     double t = Vector.Dot(e2, s2) * invDivisor;
     if (t < ray.minDistance || t > ray.maxDistance) {
       return false;
@@ -163,19 +196,22 @@ class Triangle extends Shape {
     // Test shadow ray intersection against alpha texture, if present
     if (ray.depth != -1 && mesh.alphaTexture != null) {
       // Compute triangle partial derivatives
-      Vector dpdu, dpdv;
-      List<double> uvs = new List<double>(6);
-      getUVs(uvs);
+      Vector dpdu;
+      Vector dpdv;
+      getUVs(_uvs);
 
       // Compute deltas for triangle partial derivatives
-      double du1 = uvs[0] - uvs[4];
-      double du2 = uvs[2] - uvs[4];
-      double dv1 = uvs[1] - uvs[5];
-      double dv2 = uvs[3] - uvs[5];
+      double du1 = _uvs[0] - _uvs[4];
+      double du2 = _uvs[2] - _uvs[4];
+      double dv1 = _uvs[1] - _uvs[5];
+      double dv2 = _uvs[3] - _uvs[5];
       Vector dp1 = tri[0] - tri[2];
       Vector dp2 = tri[1] - tri[2];
       double determinant = du1 * dv2 - dv1 * du2;
+
       if (determinant == 0.0) {
+        dpdu = new Vector();
+        dpdv = new Vector();
         // Handle zero determinant for triangle partial derivative matrix
         Vector.CoordinateSystem(Vector.Normalize(Vector.Cross(e2, e1)),
                                 dpdu, dpdv);
@@ -187,13 +223,13 @@ class Triangle extends Shape {
 
       // Interpolate $(u,v)$ triangle parametric coordinates
       double b0 = 1.0 - b1 - b2;
-      double tu = b0 * uvs[0] + b1 * uvs[2] + b2 * uvs[4];
-      double tv = b0 * uvs[1] + b1 * uvs[3] + b2 * uvs[5];
+      double tu = b0 * _uvs[0] + b1 * _uvs[2] + b2 * _uvs[4];
+      double tv = b0 * _uvs[1] + b1 * _uvs[3] + b2 * _uvs[5];
 
-      DifferentialGeometry dgLocal = new DifferentialGeometry().set(
-        ray.pointAt(t), dpdu, dpdv,
-        new Normal(0.0, 0.0, 0.0), new Normal(0.0, 0.0, 0.0),
-        tu, tv, this);
+      DifferentialGeometry dgLocal =
+          new DifferentialGeometry().set(ray.pointAt(t), dpdu, dpdv,
+                                         Normal.ZERO, Normal.ZERO,
+                                         tu, tv, this);
 
       if (mesh.alphaTexture.evaluate(dgLocal) == 0.0) {
         return false;
@@ -204,6 +240,9 @@ class Triangle extends Shape {
   }
 
   int v(int i) => mesh.vertexIndex[index + i];
+
+  // cache storage for uvs
+  static List<double> _uvs = new List<double>(6);
 
   void getUVs(List<double> uv) {
     if (mesh.uvs != null) {

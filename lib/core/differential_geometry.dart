@@ -75,19 +75,17 @@ class DifferentialGeometry {
     dvdy = other.dvdy;
   }
 
-  DifferentialGeometry set(Point P, Vector DPDU,
-              Vector DPDV, Normal DNDU,
-              Normal DNDV, double uu, double vv,
-              Shape sh) {
-    p.copy(P);
-    dpdu.copy(DPDU);
-    dpdv.copy(DPDV);
-    dndu.copy(DNDU);
-    dndv.copy(DNDV);
-    nn.copy(Vector.Normalize(Vector.Cross(dpdu, dpdv)));
-    u = uu;
-    v = vv;
-    shape = sh;
+  DifferentialGeometry set(Point p, Vector dpdu, Vector dpdv, Normal dndu,
+                           Normal dndv, double u, double v, Shape shape) {
+    this.p = p;//.copy(p);
+    this.dpdu = dpdu;//.copy(dpdu);
+    this.dpdv = dpdv;//.copy(dpdv);
+    this.dndu = dndu;//.copy(dndu);
+    this.dndv = dndv;//.copy(dndv);
+    this.nn = Vector.Normalize(Vector.Cross(dpdu, dpdv));
+    this.u = u;
+    this.v = v;
+    this.shape = shape;
     dudx = 0.0;
     dvdx = 0.0;
     dudy = 0.0;
@@ -96,6 +94,7 @@ class DifferentialGeometry {
     // Adjust normal based on orientation and handedness
     int a = shape != null && shape.reverseOrientation ? 1 : 0;
     int b = shape != null && shape.transformSwapsHandedness ? 1 : 0;
+
     if (shape != null && (a ^ b) != 0) {
       nn *= -1.0;
     }

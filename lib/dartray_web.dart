@@ -27,6 +27,6 @@ import 'dart:typed_data';
 import 'core/core.dart';
 import 'dartray/dartray.dart';
 
-export 'dartray.dart';
+export 'dartray_core.dart';
 
 part 'dartray_web/render_manager.dart';

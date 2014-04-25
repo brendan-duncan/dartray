@@ -18,7 +18,7 @@
  * This project is based on PBRT v2 ; see http://www.pbrt.org               *
  * pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.  *
  ****************************************************************************/
-library dartray;
+library dartray_core;
 
 export 'accelerators/accelerators.dart';
 export 'cameras/cameras.dart';

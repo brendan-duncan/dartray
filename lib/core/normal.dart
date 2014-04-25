@@ -24,6 +24,8 @@ part of core;
  * A vector that's interpreted and transformed as a surface normal.
  */
 class Normal extends Vector {
+  static final Normal ZERO = new Normal(0.0, 0.0, 0.0);
+
   Normal([num x = 0.0, num y = 0.0, num z = 0.0]) :
     super(x, y, z);
 
