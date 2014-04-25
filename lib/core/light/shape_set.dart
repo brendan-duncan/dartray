@@ -52,13 +52,13 @@ class ShapeSet {
 
   Point sample(LightSample ls, Normal Ns, [Point p]) {
     if (p == null) {
-      int sn = areaDistribution.sampleDiscrete(ls.uComponent, null);
+      int sn = areaDistribution.sampleDiscrete(ls.uComponent, null) % shapes.length;
       return shapes[sn].sample(ls.uPos[0], ls.uPos[1], Ns);
     }
 
-    int sn = areaDistribution.sampleDiscrete(ls.uComponent, null);
+    int sn = areaDistribution.sampleDiscrete(ls.uComponent, null) % shapes.length;
     Point pt = shapes[sn].sample2(p, ls.uPos[0], ls.uPos[1], Ns);
-    // Find closest intersection of ray with shapes in _ShapeSet_
+    // Find closest intersection of ray with shapes in ShapeSet
     Ray r = new Ray(p, pt - p, 1e-3, INFINITY);
     List<double> rayEps = [0.0];
     List<double> thit = [1.0];

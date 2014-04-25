@@ -63,7 +63,11 @@ class Distribution1D {
     assert(u >= cdf[offset] && u <= cdf[offset + 1]);
 
     // Compute offset along CDF segment
-    double du = (u - cdf[offset]) / (cdf[offset + 1] - cdf[offset]);
+    double dc = (cdf[offset + 1] - cdf[offset]);
+    double du = 0.0;
+    if (dc != 0.0) {
+      du = (u - cdf[offset]) / dc;
+    }
     assert(!du.isNaN);
 
     // Compute PDF for sampled offset

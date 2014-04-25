@@ -73,10 +73,15 @@ class DartRay {
       LogDebug('OVERRIDES: ${this.overrides.toJson()}');
     }
 
-    PbrtParser parser = new PbrtParser(this);
-    parser.parse(scene).then((x) {
-      c.complete(outputImage);
-    });
+    try {
+      PbrtParser parser = new PbrtParser(this);
+      parser.parse(scene).then((x) {
+        c.complete(outputImage);
+      });
+    } catch (e) {
+      LogError('EXCEPTION: $e');
+      c.completeError(e);
+    }
 
     return c.future;
   }
@@ -569,14 +574,18 @@ class DartRay {
       future = c.future;
 
       resourceManager.waitUntilReady().then((_) {
-        future = renderer.render(scene);
-        future.then((OutputImage output) {
-          LogInfo('FINISHED Render');
-          outputImage = output;
-          c.complete();
-        }).catchError((e) {
-          LogInfo('ERROR: $e');
-        });
+        try {
+          future = renderer.render(scene);
+          future.then((OutputImage output) {
+            LogInfo('FINISHED Render');
+            outputImage = output;
+            c.complete();
+          }).catchError((e) {
+            c.completeError(e);
+          });
+        } catch (e) {
+          c.completeError(e);
+        }
       });
     }
 

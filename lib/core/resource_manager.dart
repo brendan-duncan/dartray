@@ -92,7 +92,7 @@ abstract class ResourceManager {
    * came from. When all requesters of data have completed, the render will
    * continue.
    */
-  Future<List<int>> requestFile(String path, [Future future]) {
+  Future requestFile(String path, [Future future]) {
     if (future != null) {
       futures.add(future);
     }
@@ -102,12 +102,12 @@ abstract class ResourceManager {
         return resources[path];
       }
 
-      Completer<List<int>> c = new Completer<List<int>>();
+      Completer c = new Completer();
       c.complete(resources[path]);
       return c.future;
     }
 
-    Completer<List<int>> c = new Completer<List<int>>();
+    Completer c = new Completer();
     resources[path] = c.future;
 
     loadFile(path).then((bytes) {

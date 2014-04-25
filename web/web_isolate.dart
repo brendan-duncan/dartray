@@ -22,5 +22,9 @@ import 'dart:isolate';
 import 'package:dartray/dartray_web.dart';
 
 void main(List<String> args, SendPort port) {
-  new RenderManager().startIsolate(port);
+  try {
+    new RenderManager().startIsolate(port);
+  } catch (e) {
+    port.send('ERROR: $e');
+  }
 }

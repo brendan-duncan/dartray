@@ -2,10 +2,10 @@
 LookAt 0 -.2 5 5 -1 0 0 1 0
 Camera "perspective" "float fov" [30 ]
 
-Film "image" "integer xresolution" [100 ] "integer yresolution" [100 ]
+Film "image" "integer xresolution" [320] "integer yresolution" [240]
      #"float cropwindow" [.25 .75 .23 .58]
 
-Sampler "bestcandidate" "integer pixelsamples" [1]
+Sampler "bestcandidate" "integer pixelsamples" [8]
 
 
 WorldBegin

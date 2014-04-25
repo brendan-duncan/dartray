@@ -69,6 +69,11 @@ class RenderIsolate {
     });
   }
 
+  /**
+   * Sends a request to the parent isolate, sending a unique id.
+   * The returned [Future] will be completed when the parent isolate
+   * sends a message back with that ID.
+   */
   Future requestResponse(msg) {
     int id = rng.nextInt(0xffffffff);
     Completer c = new Completer();
