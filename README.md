@@ -12,7 +12,7 @@ DartRay is a [Dart](http://www.dartlang.org) port of the [PBRT](http://www.pbrt.
 ![IGI (Instant Global Illumination) surface integrator, environment camera](https://cloud.githubusercontent.com/assets/3642099/2714447/0e5122c8-c4f7-11e3-8436-a7c5b9011ab7.jpg)
 ![Dipole Subsurface Scattering](https://cloud.githubusercontent.com/assets/3642099/2797718/917d9174-cc39-11e3-881d-3b8f16d10be1.png)
 ![smoke](https://cloud.githubusercontent.com/assets/3642099/2797791/db44e606-cc3c-11e3-8617-beb25d29dfbc.png)
-
+![yeahright](https://cloud.githubusercontent.com/assets/3642099/2804809/abddafde-ccae-11e3-8a83-6089a06e5e1b.png)
 
 ##License
 Copyright (C) 2014 Brendan Duncan
