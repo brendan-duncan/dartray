@@ -121,7 +121,7 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
     }
 
     Stopwatch timer = new Stopwatch()..start();
-    LogInfo('STARTING DipoleSubsurface Preprocessing');
+    LogInfo('STARTING DipoleSubsurface Preprocessing. This may take a while.');
 
     List<SurfacePoint> pts = [];
 

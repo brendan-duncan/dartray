@@ -1,0 +1,63 @@
+
+LookAt 0 2 -5   0 -.3 0   0 1 0
+Camera "perspective" "float fov" [22]
+
+Film "image" "integer xresolution" [400] "integer yresolution" [200]
+"string filename" "anim-bluespheres.exr"
+
+Sampler "lowdiscrepancy" "integer pixelsamples" [64]
+PixelFilter "box"
+
+SurfaceIntegrator "path"
+
+WorldBegin
+
+#LightSource "distant" "point from" [0 20 -5] "point to" [0 0 0 ]
+#LightSource "distant" "point from" [0 0 -5] "point to" [0 0 0 ] "color L" [ .3 .3 .3]
+
+AttributeBegin
+Rotate -90 1 0 0
+LightSource "infinite" "string mapname" ["textures/skylight-day.exr"]
+        "integer nsamples" [8]
+AttributeEnd
+
+Texture "lines-tex" "color" "imagemap" "string filename" "textures/lines.exr"
+Material "plastic" "texture Kd" "lines-tex"
+"float roughness" [.002] "color Ks" [.3 .3 .3]
+
+AttributeBegin
+Translate -1.25 0 0
+Rotate 40 1 1 0
+Shape "sphere" "float radius" [.5]
+AttributeEnd
+
+AttributeBegin
+Rotate 40 1 1 0
+ActiveTransform EndTime
+Rotate 7 0 0 1
+ActiveTransform All
+Shape "sphere" "float radius" [.5]
+AttributeEnd
+
+AttributeBegin
+Translate 1.25 0 0
+Rotate 40 1 1 0
+ActiveTransform EndTime
+Rotate 20 0 0 1
+Shape "sphere" "float radius" [.5]
+AttributeEnd
+
+AttributeBegin
+Material "uber" "color Kr" [1 1 1] "color Kd" [.2 .2 .2]
+    "color Ks" [ 0 0 0]
+Material "mirror"
+Translate 0 0 1
+Rotate 45 1 0 0
+Shape "trianglemesh" "integer indices" [ 0 1 2] 
+    "point P" [-10 -10 0   10 -10 0   0 10 0]
+#Shape "trianglemesh" "integer indices" [ 0 1 2] 
+#    "point P" [-200 -0.5 0   200 -0.5 0   0 -0.5 200]
+AttributeEnd
+
+WorldEnd
+

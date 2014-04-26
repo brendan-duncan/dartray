@@ -75,7 +75,8 @@ class RenderManager extends RenderManagerInterface {
       .then((resp) {
         if (resp.response is String) {
           String s = resp.response;
-          c.complete(s.codeUnits);
+          Uint8List bytes = new Uint8List.fromList(s.codeUnits);
+          c.complete(bytes);
           return;
         } else if (resp.response is ByteBuffer) {
           c.complete(new Uint8List.view(resp.response));
@@ -87,7 +88,7 @@ class RenderManager extends RenderManagerInterface {
           LogError('Unknown HttpRequest response type');
         }
       }).catchError((e) {
-        LogError('Error Loading Resource $path: $e');
+        LogError('Error Loading Resource $path');
       });
     }
 

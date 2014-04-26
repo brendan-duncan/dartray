@@ -5,6 +5,7 @@ description: DartRay is an extendable physically based ray tracer providing a nu
 homepage: https://github.com/brendan-duncan/dartray
 documentation: https://github.com/brendan-duncan/dartray/wiki
 dependencies:
+  archive: '>=1.0.16'
   image: '>=1.1.19'
 dev_dependencies:
   args: any

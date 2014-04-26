@@ -1,0 +1,33 @@
+
+LookAt 3.3 4 -4   1.2 .7 0    0 1 0
+Camera "perspective" "float fov" [28]
+Film "image" "integer xresolution" [400] "integer yresolution" [400]
+    "string filename" "smoke-2.exr"
+
+#Sampler "bestcandidate" "integer pixelsamples" [15]
+#PixelFilter "triangle"
+
+VolumeIntegrator "single" "float stepsize" [.025]
+
+WorldBegin
+
+#LightSource "point" "point from" [0 10 2] "color I" [100 100 100]
+AttributeBegin
+AreaLightSource "area" "color L" [9500 9500 9500 ] "integer nsamples" [4]
+Translate 4 15 -2
+Rotate 80 1 0 0
+Shape "disk" "float radius" [.2]
+AttributeEnd
+
+Include "geometry/density_render.60.pbz"
+  "color sigma_a" [1 1 1] "color sigma_s" [4 4 4]
+  "color Le" [4.5 4.5 4.5]
+
+Material "matte" "color Kd" [.57 .57 .6]
+Translate 0 -1 0
+Shape "trianglemesh" "integer indices" [0 1 2 2 3 0]
+	"point P" [ -5 0 -5  5 0 -5  5 0 5  -5 0 5]
+Shape "trianglemesh" "integer indices" [0 1 2 2 3 0]
+	"point P" [ -5 0 1.7  5 0 1.7   5 10 1.7  -5 10 1.7 ]
+
+WorldEnd

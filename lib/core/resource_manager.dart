@@ -212,6 +212,13 @@ abstract class ResourceManager {
   }
 
   /**
+   * Add a resource, or replace a resources data.
+   */
+  void setResource(String path, data) {
+    resources[path] = data;
+  }
+
+  /**
    * Add a resource so it can be accessed later.
    */
   void writeFile(String path, data) {

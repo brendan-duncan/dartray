@@ -74,6 +74,12 @@ class ImageFilm extends Film {
     output = new OutputImage(left, top,
                              width, height,
                              width, height);
+
+    // Send the initial image so the preview display updates to the correct
+    // resolution.
+    if (previewCallback != null) {
+      previewCallback(image);
+    }
   }
 
   void addSample(CameraSample sample, Spectrum L) {

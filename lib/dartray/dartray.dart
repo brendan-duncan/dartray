@@ -24,6 +24,8 @@ import 'dart:async';
 import 'dart:isolate';
 import 'dart:math' as Math;
 import 'dart:typed_data';
+
+import 'package:archive/archive.dart';
 import 'package:image/image.dart';
 
 import '../accelerators/accelerators.dart';

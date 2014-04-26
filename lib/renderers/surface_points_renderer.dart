@@ -25,7 +25,7 @@ class SurfacePointsRenderer extends Renderer {
 
   Future<OutputImage> render(Scene scene) {
     Stopwatch timer = new Stopwatch()..start();
-    LogInfo('Starting SurfacePointsRenderer');
+    LogInfo('Starting SurfacePointsRenderer. This may take a few minutes...');
 
     // Declare shared variables for Poisson point generation
     BBox octBounds = scene.worldBound;

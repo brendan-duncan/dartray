@@ -160,7 +160,7 @@ class MetropolisRenderer extends Renderer {
 
       for (int i = 0; i < nTasks; ++i) {
         Stopwatch t = new Stopwatch()..start();
-        LogInfo('Metropolis: Task $i');
+        LogInfo('Metropolis: Task ${i + 1} / $nTasks');
         List<double> d = [0.0, 0.0];
         Sample02(0, scramble, d);
 
@@ -169,7 +169,7 @@ class MetropolisRenderer extends Renderer {
                                      initialSample, scene, camera, this,
                                      lightDistribution);
         task.run();
-        LogInfo('Metropolis: Finished Task $i: ${t.elapsed}');
+        LogInfo('Metropolis: Finished Task ${i + 1} / $nTasks: ${t.elapsed}');
       }
     }
 

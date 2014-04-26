@@ -35,6 +35,15 @@ class PbrtParser {
     Completer c = new Completer();
 
     resourceManager.requestFile(file).then((List<int> input) {
+      if (file.endsWith('pbz')) {
+        try {
+          input = new GZipDecoder().decodeBytes(input);
+          resourceManager.setResource(file, input);
+        } catch (e) {
+          LogError('EXCEPTION: $e');
+        }
+      }
+
       LogDebug('FINISHED Loading $file. Scanning for includes.');
       _loadIncludes(input, file).then((_) {
         LogDebug('FINISHED Includes.');
@@ -67,12 +76,19 @@ class PbrtParser {
       String name = cmd['name'].toLowerCase();
 
       if (name == 'include') {
-        if (!dartray.resourceManager.hasResource(cmd['value'])) {
-          LogDebug('LOADING INCLUDE ${cmd['value']}');
-          Future f = dartray.resourceManager.requestFile(cmd['value']);
+        String file = cmd['value'];
+        if (!dartray.resourceManager.hasResource(file)) {
+          LogDebug('LOADING INCLUDE ${file}');
+          Future f = dartray.resourceManager.requestFile(file);
           futures.add(f);
           paths.add(cmd['value']);
-          f.then((_) {
+          f.then((List<int> input) {
+            if (file.endsWith('.pbz')) {
+              LogDebug('DECOMPRESSING $file');
+              input = new GZipDecoder().decodeBytes(input);
+              LogDebug('FINISHED DECOMPRESSING $file');
+              resourceManager.setResource(file, input);
+            }
             LogDebug('FINISHED INCLUDE ${cmd['value']}');
           });
         }

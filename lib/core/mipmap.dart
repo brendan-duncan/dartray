@@ -143,7 +143,7 @@ class MIPMap {
     // Initialize levels of MIPMap from image
     levels = 1 + Log2(Math.max(xres, yres)).toInt();
     pyramid = new List<SpectrumImage>(levels);
-    if (filename.isNotEmpty) {
+    if (filename.isNotEmpty && levels > 1) {
       LogInfo('$filename: Generating $levels MIPMap Levels');
     }
 
@@ -176,7 +176,7 @@ class MIPMap {
         weightLut[i] = Math.exp(-alpha * r2) - Math.exp(-alpha);
       }
     }
-    if (filename.isNotEmpty) {
+    if (filename.isNotEmpty && levels > 1) {
       LogInfo('Finished generating MIPMap for $filename');
     }
   }
