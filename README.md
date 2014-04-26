@@ -6,6 +6,10 @@ DartRay is a free, open-source physically based ray tracer, written in the [Dart
 
 DartRay is a [Dart](http://www.dartlang.org) port of the [PBRT](http://www.pbrt.org) renderer.
 
+[Test DartRay](http://brendan-duncan.github.io/dartray/web_dartray/web_dartray.html)<br>
+*_Note that DartRay was written for the Dart VM and Javascript will be significantly slower._*
+
+
 ##Test Renders
 ![Dipole Subsurface Scattering](https://cloud.githubusercontent.com/assets/3642099/2797718/917d9174-cc39-11e3-881d-3b8f16d10be1.png)
 ![Path Tracing surface integrator](https://cloud.githubusercontent.com/assets/3642099/2703164/cf037684-c447-11e3-81d7-e2f2c6520fa1.jpg)

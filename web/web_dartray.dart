@@ -37,7 +37,7 @@ const List<String> SCENES = const [
 ];
 
 void main() {
-  String scene = 'bump-sphere';
+  String scene = 'cornell-path';
 
   String queryString = window.location.search.replaceFirst('?', '');
   if (queryString.isNotEmpty) {
@@ -78,8 +78,6 @@ void main() {
   var canvasContainer = querySelector('#canvasContainer');
 
   RenderOverrides overrides = new RenderOverrides();
-  //overrides.setSampler('random', {'integer pixelsamples': [1]});
-  //overrides.resolutionScale = 0.5;
   overrides.samplingMode = Sampler.TWO_PASS_SAMPLING;
 
   Stopwatch timer = new Stopwatch();
