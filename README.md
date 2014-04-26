@@ -7,9 +7,8 @@ state-of-the-art algorithms for rendering, lighting and shading. It is written
 in the [Dart](www.dartlang.org) programming language, with an emphasis on experimentation
 and learning.
 
-DartRay is a [Dart](http://www.dartlang.org) port of the [PBRT](http://www.pbrt.org) renderer
-by Matt Pharr and Greg Humphreys. I highly recommend the book on PBRT, Physically
-Based Rendering.
+DartRay is a port of the [PBRT](http://www.pbrt.org) renderer by Matt Pharr and 
+Greg Humphreys. I highly recommend the book on PBRT, Physically Based Rendering.
 
 ##[Test DartRay](http://brendan-duncan.github.io/dartray/web_dartray/web_dartray.html)<br>
 *_Note that DartRay was written for the Dart VM and Javascript will be significantly slower._*
