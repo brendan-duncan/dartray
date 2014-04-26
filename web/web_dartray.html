@@ -12,11 +12,19 @@
         color: #ddd;
         text-align: center;
       }
+      h1 {
+        font-family: "Arial";
+        margin: 0 0 10px 0;
+      }
       #sceneMenu {
         margin-below: 10px;
       }
       #renderCanvas {
         box-shadow: 0px 0px 15px #000;
+        background-color: #888;
+      }
+      #renderImage {
+        box-shadow: 0px 0px 15px #fff;
         background-color: #888;
       }
       #log {
@@ -35,10 +43,11 @@
   </head>
 
   <body>
-    <!--<select id="sceneMenu"></select>
-    <br>-->
-    <canvas id="renderCanvas"></canvas>
-    <br>
+    <h1>DartRay</h1>
+    <div id="canvasContainer">
+      <canvas id="renderCanvas"></canvas>
+    </div>
+    <p>
     <pre id="log"></pre>
 
     <script type="application/dart" src="web_dartray.dart"></script>

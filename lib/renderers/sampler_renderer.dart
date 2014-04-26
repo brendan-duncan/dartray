@@ -20,10 +20,14 @@
  ****************************************************************************/
 part of renderers;
 
+/**
+ * This is the primary DartRay renderer, able to use any [Sampler],
+ * [SurfaceIntegrator] and [VolumeIntegrator].
+ */
 class SamplerRenderer extends Renderer {
   SamplerRenderer(this.sampler, this.camera, this.surfaceIntegrator,
-                  this.volumeIntegrator,
-                  [this.taskNum = 0, this.taskCount = 1]);
+                  this.volumeIntegrator, [this.taskNum = 0,
+                  this.taskCount = 1]);
 
   /**
    * Render the [scene] from the viewpoint of the [camera].

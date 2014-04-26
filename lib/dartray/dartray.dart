@@ -577,7 +577,6 @@ class DartRay {
         try {
           future = renderer.render(scene);
           future.then((OutputImage output) {
-            LogInfo('FINISHED Render');
             outputImage = output;
             c.complete();
           }).catchError((e) {

@@ -8,3 +8,4 @@ dependencies:
   image: '>=1.1.19'
 dev_dependencies:
   args: any
+  crypto: any

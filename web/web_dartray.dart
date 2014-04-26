@@ -19,6 +19,7 @@
  * pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.  *
  ****************************************************************************/
 import 'dart:html' as Html;
+import 'package:crypto/crypto.dart';
 import 'package:dartray/dartray_web.dart';
 import 'package:image/image.dart';
 
@@ -46,9 +47,11 @@ void main() {
   var context = canvas.context2D;
   var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
+  var canvasContainer = Html.querySelector('#canvasContainer');
+
   RenderOverrides overrides = new RenderOverrides();
   //overrides.setSampler('random', {'integer pixelsamples': [1]});
-  //overrides.resolutionScale = 0.5;
+  overrides.resolutionScale = 0.5;
   overrides.samplingMode = Sampler.TWO_PASS_SAMPLING;
 
   Stopwatch timer = new Stopwatch();
@@ -75,7 +78,7 @@ void main() {
         context.putImageData(imageData, 0, 0);
       }).then((OutputImage output) {
         timer.stop();
-        LogInfo('RENDER FINISHED: ${timer.elapsed}');
+        LogInfo('FINISHED Render: ${timer.elapsed}');
 
         String s = Stats.getString();
         if (s.isNotEmpty) {
@@ -89,9 +92,19 @@ void main() {
             canvas.height = img.height;
             imageData = context.getImageData(0, 0, canvas.width, canvas.height);
           }
-          var bytes = img.getBytes();
-          imageData.data.setRange(0, bytes.length, bytes);
-          context.putImageData(imageData, 0, 0);
+
+          // When the render has finished, replace the canvas with an IMG
+          // element so it can be saved from the browser.
+          var png = encodePng(img);
+
+          var imgEl = new Html.ImageElement();
+          imgEl.id = 'renderImage';
+          canvasContainer.append(imgEl);
+
+          canvas.hidden = true;
+
+          var png64 = CryptoUtils.bytesToBase64(png);
+          imgEl.src = 'data:image/png;base64,${png64}';
         }
       });
 }

@@ -83,6 +83,9 @@ class RenderIsolate {
     return c.future;
   }
 
+  /**
+   * Handle a message recieved from the parent isolate.
+   */
   void _message([msg = null]) {
     if (msg is Map) {
       if (msg.containsKey('cmd')) {
@@ -125,13 +128,13 @@ class RenderIsolate {
 
   void _log(int type, String msg) {
     String timestamp = new DateTime.now().toString().substring(11);
-    sendPort.send('${LOG_TYPES[type]} [THREAD $taskNum/$taskCount]: '
+    sendPort.send('${LOG_TYPES[type]} [THREAD ${taskNum + 1}/$taskCount]: '
                   '$timestamp : $msg');
   }
 
   void _render(String scene, int taskNum, int taskCount,
                bool doPreview, RenderOverrides overrides) {
-    LogInfo('RENDER THREAD STARTED $taskNum / $taskCount');
+    LogInfo('RENDER THREAD STARTED ${taskNum + 1} / $taskCount');
 
     Stopwatch timer = new Stopwatch()..start();
 
