@@ -8,7 +8,7 @@ in the [Dart](www.dartlang.org) programming language, with an emphasis on experi
 and learning.
 
 DartRay is a port of the [PBRT](http://www.pbrt.org) renderer by Matt Pharr and 
-Greg Humphreys. I highly recommend the book on PBRT, Physically Based Rendering.
+Greg Humphreys. I highly recommend the book on PBRT, [Physically Based Rendering: From Theory To Implementation](http://www.amazon.com/gp/product/0123750792?ie=UTF8&tag=pharr-20&linkCode=as2&camp=1789&creative=390957&creativeASIN=0123750792).
 
 ##[Documentation](https://github.com/brendan-duncan/dartray/wiki)
 
