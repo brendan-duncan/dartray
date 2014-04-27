@@ -84,7 +84,7 @@ class Distribution1D {
     int ptr = upper_bound(cdf, u, last: count + 1);
     int offset = Math.max(0, ptr - 1);
     assert(offset < count);
-    assert(u >= cdf[offset] && u < cdf[offset+1]);
+    assert(u >= cdf[offset] && u < cdf[offset + 1]);
     if (pdf != null) {
       pdf[0] = func[offset] / (funcInt * count);
     }
@@ -106,7 +106,7 @@ Vector UniformSampleHemisphere(double u1, double u2) {
   return new Vector(x, y, z);
 }
 
-double  UniformHemispherePdf() {
+double UniformHemispherePdf() {
   return INV_TWOPI;
 }
 
@@ -125,7 +125,7 @@ double UniformSpherePdf() {
 
 Vector UniformSampleCone(double u1, double u2, double costhetamax) {
   double costheta = (1.0 - u1) + u1 * costhetamax;
-  double sintheta = Math.sqrt(1.0 - costheta*costheta);
+  double sintheta = Math.sqrt(1.0 - costheta * costheta);
   double phi = u2 * 2.0 * Math.PI;
   return new Vector(Math.cos(phi) * sintheta,
                     Math.sin(phi) * sintheta,
@@ -173,14 +173,14 @@ void ConcentricSampleDisk(double u1, double u2, List<double> dx,
       // Handle first region of disk
       r = sx;
       if (sy > 0.0) {
-        theta = sy/r;
+        theta = sy / r;
       } else {
         theta = 8.0 + sy / r;
       }
     } else {
       // Handle second region of disk
       r = sy;
-      theta = 2.0 - sx/r;
+      theta = 2.0 - sx / r;
     }
   } else {
     if (sx <= sy) {
@@ -425,12 +425,12 @@ void LDPixelSample(int xPos, int yPos, double shutterOpen,
   List<Float32List> twoDSamples = new List<Float32List>(count2D);
 
   for (int i = 0; i < count1D; ++i) {
-    oneDSamples[i] = new Float32List.view(buffer.buffer,  buf);
+    oneDSamples[i] = new Float32List.view(buffer.buffer, buf);
     buf += n1D[i] * nPixelSamples * 4;
   }
 
   for (int i = 0; i < count2D; ++i) {
-    twoDSamples[i] = new Float32List.view(buffer.buffer,  buf);
+    twoDSamples[i] = new Float32List.view(buffer.buffer, buf);
     buf += 2 * n2D[i] * nPixelSamples * 4;
   }
 
@@ -459,14 +459,14 @@ void LDPixelSample(int xPos, int yPos, double shutterOpen,
     for (int j = 0; j < count1D; ++j) {
       int startSamp = n1D[j] * i;
       for (int k = 0; k < n1D[j]; ++k) {
-        samples[i].oneD[j][k] = oneDSamples[j][startSamp+k];
+        samples[i].oneD[j][k] = oneDSamples[j][startSamp + k];
       }
     }
 
     for (int j = 0; j < count2D; ++j) {
       int startSamp = 2 * n2D[j] * i;
-      for (int k = 0; k < 2*n2D[j]; ++k) {
-        samples[i].twoD[j][k] = twoDSamples[j][startSamp+k];
+      for (int k = 0; k < 2 * n2D[j]; ++k) {
+        samples[i].twoD[j][k] = twoDSamples[j][startSamp + k];
       }
     }
   }

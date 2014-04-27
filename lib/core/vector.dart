@@ -140,8 +140,8 @@ class Vector {
   }
 
   static double Distance(Vector a, Vector b) {
-      return (b - a).length();
-    }
+    return (b - a).length();
+  }
 
   static double DistanceSquared(Vector a, Vector b) {
     return (b - a).lengthSquared();

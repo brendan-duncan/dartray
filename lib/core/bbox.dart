@@ -45,9 +45,9 @@ class BBox {
     }
   }
 
-  BBox.from(BBox other) :
-    pMin = new Point.from(other.pMin),
-    pMax = new Point.from(other.pMax);
+  BBox.from(BBox other)
+      : pMin = new Point.from(other.pMin),
+        pMax = new Point.from(other.pMax);
 
   void reset() {
     pMin.x = INFINITY;
@@ -70,7 +70,7 @@ class BBox {
 
   Point get center => (pMin * 0.5) + (pMax * 0.5);
 
-  Point operator[](int index) => (index == 0) ? pMin : pMax;
+  Point operator [](int index) => (index == 0) ? pMin : pMax;
 
   /**
    * Test for a ray intersection with this box. If an intersection was found,

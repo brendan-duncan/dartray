@@ -83,7 +83,7 @@ class Matrix4x4 {
     data[15] = m44;
   }
 
-  bool operator==(Matrix4x4 m2) {
+  bool operator ==(Matrix4x4 m2) {
     for (int i = 0; i < 16; ++i) {
       if (data[i] != m2.data[i]) {
         return false;

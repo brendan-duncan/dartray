@@ -64,7 +64,7 @@ double PhaseIsotropic(Vector a, Vector b) {
 
 double PhaseRayleigh(Vector w, Vector wp) {
   double costheta = Vector.Dot(w, wp);
-  return  3.0 / (16.0 * Math.PI) * (1 + costheta * costheta);
+  return 3.0 / (16.0 * Math.PI) * (1 + costheta * costheta);
 }
 
 

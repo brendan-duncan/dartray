@@ -282,7 +282,7 @@ class Nurbs extends Shape {
     List<double> uknots = params.findFloat('uknots');
     assert(nu != -1 && uorder != -1 && uknots != null);
     assert(uknots.length == nu + uorder);
-    double u0 = params.findOneFloat('u0', uknots[uorder-1]);
+    double u0 = params.findOneFloat('u0', uknots[uorder - 1]);
     double u1 = params.findOneFloat('u1', uknots[nu]);
 
     int nv = params.findOneInt('nv', -1);
@@ -290,14 +290,14 @@ class Nurbs extends Shape {
     List<double> vknots = params.findFloat('vknots');
     assert(nv != -1 && vorder != -1 && vknots != null);
     assert(vknots.length == nv + vorder);
-    double v0 = params.findOneFloat('v0', vknots[vorder-1]);
+    double v0 = params.findOneFloat('v0', vknots[vorder - 1]);
     double v1 = params.findOneFloat('v1', vknots[nv]);
 
     bool isHomogeneous = false;
     List<double> P;
     List<Point> p = params.findPoint('P');
     int npt;
-    if (p != null)  {
+    if (p != null) {
       P = new Float32List(p.length * 3);
       for (int i = 0, j = 0; i < p.length; ++i) {
         P[j++] = p[i].x;

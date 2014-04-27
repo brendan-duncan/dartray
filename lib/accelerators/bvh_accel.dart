@@ -84,7 +84,7 @@ class BVHAccel extends Aggregate {
     return nodes != null ? nodes[0].bounds : new BBox();
   }
 
-  bool canIntersect()  {
+  bool canIntersect() {
     return true;
   }
 
@@ -523,6 +523,6 @@ class _BVHBuildNode {
 class _LinearBVHNode {
   BBox bounds;
   int offset; // primitivesOffset / secondChildOffset
-  int nPrimitives;  // 0 . interior node
+  int nPrimitives; // 0 . interior node
   int axis;
 }

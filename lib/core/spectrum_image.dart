@@ -100,7 +100,7 @@ class SpectrumImage {
     height = other.height;
   }
 
-  operator[](int index) {
+  operator [](int index) {
     if (samplesPerPixel == 1) {
       return data[index];
     }
@@ -112,7 +112,7 @@ class SpectrumImage {
     return _output;
   }
 
-  operator[]=(int index, s) {
+  operator []=(int index, s) {
     if (samplesPerPixel == 1) {
       data[index] = s;
       return;

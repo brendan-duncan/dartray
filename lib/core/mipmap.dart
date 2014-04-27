@@ -285,7 +285,7 @@ class MIPMap {
     dt1 *= pyramid[level].height;
 
     // Compute ellipse coefficients to bound EWA filter region
-    double A = dt0 * dt0 + dt1*dt1 + 1;
+    double A = dt0 * dt0 + dt1 * dt1 + 1;
     double B = -2.0 * (ds0 * dt0 + ds1 * dt1);
     double C = ds0 * ds0 + ds1 * ds1 + 1;
     double invF = 1.0 / (A * C - B * B * 0.25);
