@@ -104,6 +104,7 @@ abstract class ResourceManager {
 
       Completer c = new Completer();
       c.complete(resources[path]);
+
       return c.future;
     }
 
@@ -114,6 +115,11 @@ abstract class ResourceManager {
       if (bytes == null) {
         c.complete(null);
         return;
+      }
+
+      if (_isCompressed(path)) {
+        bytes = _decompress(path, bytes);
+        _decompressed[path] = true;
       }
 
       resources[path] = bytes;
@@ -144,8 +150,15 @@ abstract class ResourceManager {
         return resources[path];
       }
 
+      // If the resource is in raw bytes, then it was probably loaded from an
+      // archive and we should decode it now that it's been requested.
+      if (resources[path] is List<int>) {
+        _decodeImage(path, resources[path]);
+      }
+
       Completer<List<int>> c = new Completer<List<int>>();
       c.complete(resources[path]);
+
       return c.future;
     }
 
@@ -159,34 +172,39 @@ abstract class ResourceManager {
         c.complete(null);
         return;
       }
-
-      Img.Decoder decoder = Img.findDecoderForData(bytes);
-      if (decoder == null) {
-        c.complete(null);
-        return;
-      }
-
-      Img.HdrImage hdr = decoder.decodeHdrImage(bytes);
-      SpectrumImage res = new SpectrumImage(hdr.width, hdr.height);
-
-      int ri = 0;
-      for (int y = 0; y < hdr.height; ++y) {
-        for (int x = 0; x < hdr.width; ++x) {
-          double r = hdr.getRed(x, y);
-          double g = hdr.getGreen(x, y);
-          double b = hdr.getBlue(x, y);
-          res.data[ri++] = r;
-          res.data[ri++] = g;
-          res.data[ri++] = b;
-        }
-      }
-
-      LogDebug('HDR IMAGE LOADED $path');
-      resources[path] = res;
-      c.complete(res);
+      c.complete(_decodeImage(path, bytes));
     });
 
     return c.future;
+  }
+
+  SpectrumImage _decodeImage(String path, List<int> bytes) {
+    Img.Decoder decoder = Img.findDecoderForData(bytes);
+
+    if (decoder == null) {
+      resources[path] = null;
+      return null;
+    }
+
+    Img.HdrImage hdr = decoder.decodeHdrImage(bytes);
+    SpectrumImage res = new SpectrumImage(hdr.width, hdr.height);
+
+    int ri = 0;
+    for (int y = 0; y < hdr.height; ++y) {
+      for (int x = 0; x < hdr.width; ++x) {
+        double r = hdr.getRed(x, y);
+        double g = hdr.getGreen(x, y);
+        double b = hdr.getBlue(x, y);
+        res.data[ri++] = r;
+        res.data[ri++] = g;
+        res.data[ri++] = b;
+      }
+    }
+
+    LogDebug('IMAGE LOADED $path');
+    resources[path] = res;
+
+    return res;
   }
 
   /**
@@ -208,7 +226,15 @@ abstract class ResourceManager {
     if (!resources.containsKey(path)) {
       return null;
     }
-    return resources[path];
+
+    var data = resources[path];
+    if (_isCompressed(path)) {
+      data = _decompress(path, data);
+      _decompressed[path] = true;
+      resources[path] = data;
+    }
+
+    return data;
   }
 
   /**
@@ -238,7 +264,31 @@ abstract class ResourceManager {
     textures[name] = texture;
   }
 
+  List<int> _decompress(String file, List<int> bytes) {
+    if (file.endsWith('.gz')) {
+      bytes = new GZipDecoder().decodeBytes(bytes);
+    } else if (file.endsWith('.z')) {
+      bytes = new ZLibDecoder().decodeBytes(bytes);
+    } else if (file.endsWith('.bz2')) {
+      bytes = new BZip2Decoder().decodeBytes(bytes);
+    }
+    return bytes;
+  }
+
+  bool _isCompressed(String file) {
+    if (_decompressed.containsKey(file)) {
+      if (_decompressed[file]) {
+        return false;
+      }
+    }
+
+    return file.endsWith('.gz') ||
+           file.endsWith('.z') ||
+           file.endsWith('.bz2');
+  }
+
   List<Future> futures = [];
   Map<String, dynamic> resources = {};
+  Map<String, bool> _decompressed = {};
   Map<String, MIPMap> textures = {};
 }

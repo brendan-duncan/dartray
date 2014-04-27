@@ -43,7 +43,7 @@ Material "metal"  "float roughness" [.001]
 
 Translate 15 0 10
 Scale 1.25 1.25 1.25
-Include "geometry/room-teapot.pbz"
+Include "geometry/room-teapot.pbrt.gz"
 AttributeEnd
 
 WorldEnd

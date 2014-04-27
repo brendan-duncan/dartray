@@ -19,7 +19,7 @@ Rotate 80 1 0 0
 Shape "disk" "float radius" [.2]
 AttributeEnd
 
-Include "geometry/density_render.60.pbz"
+Include "geometry/density_render.60.pbrt.gz"
   "color sigma_a" [1 1 1] "color sigma_s" [4 4 4]
   "color Le" [4.5 4.5 4.5]
 

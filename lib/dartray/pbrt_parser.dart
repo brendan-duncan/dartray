@@ -29,21 +29,13 @@ class PbrtParser {
     resourceManager = pbrt.resourceManager;
 
   Future parse(String file) {
-    Stopwatch t = new Stopwatch();
-    t.start();
+    Stopwatch t = new Stopwatch()..start();
+
     LogInfo('LOADING Scene $file');
     Completer c = new Completer();
 
     resourceManager.requestFile(file).then((List<int> input) {
-      if (file.endsWith('pbz')) {
-        try {
-          input = new GZipDecoder().decodeBytes(input);
-          resourceManager.setResource(file, input);
-        } catch (e) {
-          LogError('EXCEPTION: $e');
-        }
-      }
-
+      input = _decodeFile(file, input);
       LogDebug('FINISHED Loading $file. Scanning for includes.');
       _loadIncludes(input, file).then((_) {
         LogDebug('FINISHED Includes.');
@@ -56,6 +48,26 @@ class PbrtParser {
     });
 
     return c.future;
+  }
+
+  bool _isSceneFileName(String file) {
+    int i = file.lastIndexOf('/');
+    if (i == -1) {
+      i = file.lastIndexOf('\\');
+    }
+
+    if (i != -1) {
+      file = file.substring(i + 1);
+    }
+
+    return file == 'scene.pbrt' || file == 'scene.pbrt.z' ||
+           file == 'scene.pbrt.gz' || file == 'scene.pbrt.bz2';
+  }
+
+  bool _isArchive(String file) {
+    return file.endsWith('.zip') || file.endsWith('.tar') ||
+           file.endsWith('.tgz') || file.endsWith('.tbz') ||
+           file.endsWith('.tar.gz') || file.endsWith('.tar.bz2');
   }
 
   Future _loadIncludes(List<int> input, String path) {
@@ -83,13 +95,8 @@ class PbrtParser {
           futures.add(f);
           paths.add(cmd['value']);
           f.then((List<int> input) {
-            if (file.endsWith('.pbz')) {
-              LogDebug('DECOMPRESSING $file');
-              input = new GZipDecoder().decodeBytes(input);
-              LogDebug('FINISHED DECOMPRESSING $file');
-              resourceManager.setResource(file, input);
-            }
-            LogDebug('FINISHED INCLUDE ${cmd['value']}');
+            _decodeFile(file, input);
+            LogDebug('FINISHED LOADING INCLUDE ${cmd['value']}');
           });
         }
       }
@@ -335,20 +342,25 @@ class PbrtParser {
           cmdFuture = dartray.worldEnd();
           break;
         case 'include':
-          var inc = dartray.resourceManager.getResource(cmd['value']);
-          if (inc is List<int>) {
-            lexer.addInclude(inc, cmd['value']);
-          } else {
-            LogWarning('MISSING include: ${cmd['value']}');
+          String name = cmd['value'];
+          LogInfo('INCLUDE $name');
+          // don't parse archive includes (their contents were added to the
+          // resources during the preprocess).
+          if (!_isArchive(name)) {
+            var inc = dartray.resourceManager.getResource(cmd['value']);
+            if (inc is List<int>) {
+              lexer.addInclude(inc, cmd['value']);
+            } else {
+              LogWarning('MISSING include: ${cmd['value']}');
+            }
           }
           break;
         default:
           LogWarning('UNHANDLED command ${cmd['name']}');
           break;
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
       LogError('EXCEPTION: $e');
-      LogError('STACKTRACE: $stackTrace');
     }
 
     if (cmdFuture == null) {
@@ -584,5 +596,52 @@ class PbrtParser {
     }
 
     return ps;
+  }
+
+  /**
+   * Checks to see if the file is an archive (zip, tar), and extracts its
+   * contents if it is.
+   */
+  List<int> _decodeFile(String file, List<int> input) {
+    if (!_isArchive(file)) {
+      return input;
+    }
+
+    try {
+      if (file.endsWith('.tgz') || file.endsWith('.tar.gz')) {
+        input = new GZipDecoder().decodeBytes(input);
+        file += '.tar';
+      } else if (file.endsWith('.tbz') || file.endsWith('.tar.bz2')) {
+        input = new BZip2Decoder().decodeBytes(input);
+        file += '.tar';
+      }
+
+      if (file.endsWith('.zip')) {
+        LogInfo('Decoding Zip Archive: $file');
+        Archive arc = new ZipDecoder().decodeBytes(input);
+        input = null;
+        for (ArchiveFile f in arc) {
+          List<int> fc = _decodeFile(f.name, f.content);
+          if (_isSceneFileName(f.name)) {
+            input = f.content;
+          }
+          resourceManager.setResource(f.name, f.content);
+        }
+      } else if (file.endsWith('.tar')) {
+        LogInfo('Decoding Tar Archive: $file');
+        Archive arc = new TarDecoder().decodeBytes(input);
+        input = null;
+        for (ArchiveFile f in arc) {
+          if (_isSceneFileName(f.name)) {
+            input = f.content;
+          }
+          resourceManager.setResource(f.name, f.content);
+        }
+      }
+    } catch (e) {
+      LogError('EXCEPTION: $e');
+    }
+
+    return input;
   }
 }

@@ -62,7 +62,7 @@ Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [2.666670 -1.33
 Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [2.666670 1.333330 0.000000 4.000000 1.333330 0.000000 4.000000 0.000000 0.000000 2.666670 0.000000 0.000000 ] 
 Shape "trianglemesh"  "integer indices" [0 2 1 0 3 2 ] "point P" [2.666670 4.000000 0.000000 4.000000 4.000000 0.000000 4.000000 2.666670 0.000000 2.666670 2.666670 0.000000 ] 
 
-Include "geometry/teapot-area-light.pbz"
+Include "geometry/teapot-area-light.pbrt.gz"
 
 WorldEnd
 # ignored frame end
