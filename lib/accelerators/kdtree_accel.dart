@@ -406,7 +406,7 @@ class KdTreeAccel extends Aggregate {
                        (pBelow * nBelow + pAbove * nAbove);
 
           // Update best split if this is lowest cost so far
-          if (cost < bestCost)  {
+          if (cost < bestCost) {
             bestCost = cost;
             bestAxis = axis;
             bestOffset = i;
@@ -422,9 +422,9 @@ class KdTreeAccel extends Aggregate {
 
       // Create leaf if no good splits were found
       if (bestAxis == -1 && retries < 2) {
-          ++retries;
-          axis = (axis+1) % 3;
-          continue;
+        ++retries;
+        axis = (axis + 1) % 3;
+        continue;
       }
 
       break;
@@ -448,7 +448,7 @@ class KdTreeAccel extends Aggregate {
       }
     }
 
-    for (int i = bestOffset+1; i < 2*nPrimitives; ++i) {
+    for (int i = bestOffset + 1; i < 2 * nPrimitives; ++i) {
       if (edges[bestAxis][i].type == _BoundEdge.END) {
         prims1[prims1Offset + n1++] = edges[bestAxis][i].primNum;
       }
@@ -546,7 +546,7 @@ class _BoundEdge {
     type = starting ? START : END;
   }
 
-  bool operator<(_BoundEdge e) {
+  bool operator <(_BoundEdge e) {
     if (t == e.t) {
       return type < e.type;
     }

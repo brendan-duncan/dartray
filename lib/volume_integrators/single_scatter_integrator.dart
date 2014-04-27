@@ -24,7 +24,7 @@ class SingleScatteringIntegrator extends VolumeIntegrator {
   SingleScatteringIntegrator(this.stepSize);
 
   static SingleScatteringIntegrator Create(ParamSet params) {
-    double stepSize  = params.findOneFloat("stepsize", 1.0);
+    double stepSize = params.findOneFloat("stepsize", 1.0);
     return new SingleScatteringIntegrator(stepSize);
   }
 

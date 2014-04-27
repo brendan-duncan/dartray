@@ -160,7 +160,7 @@ class GridAccel extends Aggregate {
       Stats.GRID_RAY_TRAVERSED_VOXEL(pos, voxel != null ? voxel.size() : 0);
       if (voxel != null) {
         if (voxel.intersect(ray, isect)) {
-          hitSomething =  true;
+          hitSomething = true;
         }
       }
 

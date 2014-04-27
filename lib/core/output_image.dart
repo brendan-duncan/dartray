@@ -63,6 +63,6 @@ class OutputImage {
       pixels[oi + 2] = (rgb[i + 2] * 255.0).floor().clamp(0, 255);
       pixels[oi + 3] = 255;
     }
-    return Img.adjustColor(img, gamma: 1.0/gamma);
+    return Img.adjustColor(img, gamma: 1.0 / gamma);
   }
 }

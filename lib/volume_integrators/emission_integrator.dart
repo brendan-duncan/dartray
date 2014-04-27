@@ -24,7 +24,7 @@ class EmissionIntegrator extends VolumeIntegrator {
   EmissionIntegrator(this.stepSize);
 
   static EmissionIntegrator Create(ParamSet params) {
-    double stepSize  = params.findOneFloat('stepsize', 1.0);
+    double stepSize = params.findOneFloat('stepsize', 1.0);
     return new EmissionIntegrator(stepSize);
   }
 

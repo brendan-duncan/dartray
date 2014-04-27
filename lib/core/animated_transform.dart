@@ -92,10 +92,10 @@ class AnimatedTransform {
                    (R.data[j + 1] - Rnext.data[j + 1]).abs() +
                    (R.data[j + 2] - Rnext.data[j + 2]).abs();
         norm = Math.max(norm, n);
-     }
+      }
 
-     R = Rnext;
-   } while (++count < 100 && norm > 0.0001);
+      R = Rnext;
+    } while (++count < 100 && norm > 0.0001);
 
     // XXX TODO FIXME deal with flip...
     Rquat.copy(new Quaternion.fromMatrix(R));
@@ -107,8 +107,8 @@ class AnimatedTransform {
   void interpolate(double time, Transform t) {
     // Handle boundary conditions for matrix interpolation
     if (!actuallyAnimated || time <= startTime) {
-       t.copy(startTransform);
-       return;
+      t.copy(startTransform);
+      return;
     }
 
     if (time >= endTime) {
@@ -199,7 +199,7 @@ class AnimatedTransform {
     const int nSteps = 128;
     Transform t = new Transform();
     for (int i = 0; i < nSteps; ++i) {
-      double time = Lerp(i / (nSteps-1), startTime, endTime);
+      double time = Lerp(i / (nSteps - 1), startTime, endTime);
       interpolate(time, t);
       if (useInverse) {
         t = Transform.Inverse(t);

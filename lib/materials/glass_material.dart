@@ -29,7 +29,7 @@ class GlassMaterial extends Material {
     Texture index = mp.getFloatTexture("index", 1.5);
     Texture bumpMap = mp.getFloatTextureOrNull("bumpmap");
     return new GlassMaterial(Kr, Kt, index, bumpMap);
-}
+  }
 
   BSDF getBSDF(DifferentialGeometry dgGeom, DifferentialGeometry dgShading) {
     DifferentialGeometry dgs;

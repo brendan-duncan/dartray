@@ -567,7 +567,7 @@ class StatsCounter extends StatTracker {
     Stats.trackers.add(this);
   }
 
-  StatsCounter operator+(int n) {
+  StatsCounter operator +(int n) {
     count += n;
     return this;
   }

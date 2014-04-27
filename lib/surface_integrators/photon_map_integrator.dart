@@ -198,7 +198,7 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
                     bsdf, rng, isect, wo, maxDistSquared);
     }
 
-    if (ray.depth+1 < maxSpecularDepth) {
+    if (ray.depth + 1 < maxSpecularDepth) {
       Vector wi = new Vector();
       // Trace rays for specular reflection and refraction
       L += Integrator.SpecularReflect(ray, bsdf, rng, isect, renderer, scene,

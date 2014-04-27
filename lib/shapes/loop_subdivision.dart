@@ -88,7 +88,7 @@ class LoopSubdivision extends Shape {
       } else if (v.boundary && val == 4) {
         v.regular = true;
       } else {
-         v.regular = false;
+        v.regular = false;
       }
     }
   }
@@ -272,7 +272,7 @@ class LoopSubdivision extends Shape {
         } else {
           double theta = Math.PI / (valence - 1);
           T = (Pring[0] + Pring[valence - 1]) * Math.sin(theta);
-          for (int k = 1; k < valence-1; ++k) {
+          for (int k = 1; k < valence - 1; ++k) {
             double wt = (2 * Math.cos(theta) - 2) * Math.sin((k) * theta);
             T += Pring[k] * wt;
           }
@@ -348,7 +348,7 @@ class LoopSubdivision extends Shape {
     int valence = vert.valence();
     List<Point> Pring = new List<Point>(valence);
     vert.oneRing(Pring);
-    Point P = vert.P * (1.0 - 2.0  * beta);
+    Point P = vert.P * (1.0 - 2.0 * beta);
     P += Pring[0] * beta;
     P += Pring[valence - 1] * beta;
     return P;
