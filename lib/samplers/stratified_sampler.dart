@@ -20,6 +20,21 @@
  ****************************************************************************/
 part of samplers;
 
+/**
+ * Sampler "stratified" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**     |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | integer    | pixelsamples  |   null          | Can be used to set both
+ * |            |               |                 | xsamples and ysamples.
+ * ----------------------------------------------------------------------------
+ * | integer    | xsamples      |   2             |
+ * ----------------------------------------------------------------------------
+ * | integer    | ysamples      |   2             |
+ * ----------------------------------------------------------------------------
+ * | bool       | jitter        |   true          |
+ * ----------------------------------------------------------------------------
+ */
 class StratifiedSampler extends Sampler {
   StratifiedSampler(int x, int y, int width, int height,
                     this.jitterSamples, double sopen, double sclose,

@@ -20,6 +20,19 @@
  ****************************************************************************/
 part of samplers;
 
+/**
+ * Sampler "adaptive" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**     |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | integer    | minsamples    |   4             |
+ * ----------------------------------------------------------------------------
+ * | integer    | maxsamples    |   32            |
+ * ----------------------------------------------------------------------------
+ * | string     | method        |   "contrast"    | Possible values: "contrast",
+ * |            |               |                 | "shapeid".
+ * ----------------------------------------------------------------------------
+ */
 class AdaptiveSampler extends Sampler {
   static const int ADAPTIVE_COMPARE_SHAPE_ID = 0;
   static const int ADAPTIVE_CONTRAST_THRESHOLD = 1;
@@ -176,7 +189,6 @@ class AdaptiveSampler extends Sampler {
   static AdaptiveSampler Create(ParamSet params, int x, int y,
                                 int width, int height, Camera camera,
                                 PixelSampler pixels) {
-    // Initialize common sampler parameters
     int minsamp = params.findOneInt('minsamples', 4);
     int maxsamp = params.findOneInt('maxsamples', 32);
 

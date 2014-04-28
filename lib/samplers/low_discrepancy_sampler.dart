@@ -20,6 +20,14 @@
  ****************************************************************************/
 part of samplers;
 
+/**
+ * Sampler "lowdiscrepancy" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**     |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | integer    | pixelsamples  |   4             |
+ * ----------------------------------------------------------------------------
+ */
 class LowDiscrepancySampler extends Sampler {
   LowDiscrepancySampler(int x, int y, int width, int height,
                         double sopen, double sclose, this.pixels,

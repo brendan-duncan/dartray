@@ -22,6 +22,8 @@ part of pixel_samplers;
 
 /**
  * Sample the image pixels in a linear order.
+ *
+ * Pixels "linear"
  */
 class LinearPixelSampler extends PixelSampler {
   void setup(int x, int y, int width, int height) {

@@ -20,6 +20,14 @@
  ****************************************************************************/
 part of renderers;
 
+/**
+ * Renderer "aggregatetest" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**       |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | integer    |  niters         |   100000        |
+ * ----------------------------------------------------------------------------
+ */
 class AggregateTestRenderer extends Renderer {
   AggregateTestRenderer(this.nIterations, List<Primitive> p) {
     for (int i = 0; i < p.length; ++i) {

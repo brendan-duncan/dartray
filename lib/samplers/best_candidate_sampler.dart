@@ -20,6 +20,14 @@
  ****************************************************************************/
 part of samplers;
 
+/**
+ * Sampler "bestcandidate" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**     |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | integer    | pixelsamples  |   4             |
+ * ----------------------------------------------------------------------------
+ */
 class BestCandidateSampler extends Sampler {
   static const int SQRT_SAMPLE_TABLE_SIZE = 64;
   static const int SAMPLE_TABLE_SIZE = SQRT_SAMPLE_TABLE_SIZE *

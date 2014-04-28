@@ -20,6 +20,14 @@
  ****************************************************************************/
 part of samplers;
 
+/**
+ * Sampler "random" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**     |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | integer    | pixelsamples  |   10            |
+ * ----------------------------------------------------------------------------
+ */
 class RandomSampler extends Sampler {
   RandomSampler(int x, int y, int width, int height, double sopen,
                 double sclose, this.pixels, int ns)

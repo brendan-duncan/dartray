@@ -20,6 +20,14 @@
  ****************************************************************************/
 part of samplers;
 
+/**
+ * Sampler "halton" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**     |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | integer    | pixelsamples  |   4             |
+ * ----------------------------------------------------------------------------
+ */
 class HaltonSampler extends Sampler {
   HaltonSampler(int x, int y, int width, int height, double sopen,
                 double sclose, int ps)

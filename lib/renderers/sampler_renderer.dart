@@ -21,8 +21,9 @@
 part of renderers;
 
 /**
- * This is the primary DartRay renderer, able to use any [Sampler],
- * [SurfaceIntegrator] and [VolumeIntegrator].
+ * This is the primary (and default) DartRay renderer.
+ *
+ * Renderer "sampler"
  */
 class SamplerRenderer extends Renderer {
   SamplerRenderer(this.sampler, this.camera, this.surfaceIntegrator,

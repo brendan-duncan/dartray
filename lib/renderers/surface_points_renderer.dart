@@ -20,6 +20,16 @@
  ****************************************************************************/
 part of renderers;
 
+/**
+ * Renderer "surfacepoints" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**             |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | float      | minsampledistance     |   0.25          |
+ * ----------------------------------------------------------------------------
+ * | string     | filename              |   ""            |
+ * ----------------------------------------------------------------------------
+ */
 class SurfacePointsRenderer extends Renderer {
   SurfacePointsRenderer(this.minDist, this.pCamera, this.time, this.filename);
 
