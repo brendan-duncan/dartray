@@ -55,7 +55,7 @@ class RenderManager extends RenderManagerInterface {
     if (isolate != null) {
       isolate.requestResponse({'cmd': 'file', 'path': path}).then((bytes) {
         if (bytes is String) {
-          c.complete(bytes.codeUnits);
+          c.complete(new Uint8List.fromList(bytes.codeUnits));
           return;
         } else if (bytes is ByteBuffer) {
           c.complete(new Uint8List.view(bytes));
@@ -68,7 +68,7 @@ class RenderManager extends RenderManagerInterface {
         }
       });
     } else {
-      path = scenePath + '/' + path;
+      path = '$scenePath/$path';
 
       Html.HttpRequest.request(path, method: 'GET',
                                mimeType: 'text\/plain; charset=x-user-defined')

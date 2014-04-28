@@ -27,7 +27,7 @@ class ImageTexture extends Texture {
     if (filename.isNotEmpty) {
       Completer completer = new Completer();
 
-      ResourceManager.RequestImage(filename, completer.future)
+      ResourceManager.RequestImage(filename, future: completer.future)
       .then((SpectrumImage img) {
         String name = MIPMap.GetTextureName(filename, doTri: doTri,
                                             maxAniso: maxAniso,

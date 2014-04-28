@@ -42,7 +42,7 @@ class ProjectionLight extends Light {
 
     if (texname.isNotEmpty) {
       Completer completer = new Completer();
-      ResourceManager.RequestImage(texname, completer.future)
+      ResourceManager.RequestImage(texname, future: completer.future)
         .then((SpectrumImage img) {
           String name = MIPMap.GetTextureName(texname);
 

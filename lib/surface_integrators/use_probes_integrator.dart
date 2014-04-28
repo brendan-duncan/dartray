@@ -25,7 +25,8 @@ class UseProbesIntegrator extends SurfaceIntegrator {
     Completer completer = new Completer();
     if (filename.isNotEmpty) {
       // Read precomputed radiance probe values from file
-      ResourceManager.RequestFile(filename, completer.future).then((bytes) {
+      ResourceManager.RequestFile(filename, future: completer.future)
+      .then((bytes) {
 
         List<double> fp;
         if (bytes is List<int>) {

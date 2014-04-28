@@ -79,8 +79,9 @@ class RenderTask {
               var subCmd = subMsg['cmd'];
               if (subCmd == 'file') {
                 String path = subMsg['path'];
-                ResourceManager.RequestFile(path).then((bytes) {
-                  var data = {'cmd': 'request',
+                ResourceManager.RequestFile(path, decompress: false)
+                .then((bytes) {
+                  Map data = {'cmd': 'request',
                               'id': id,
                               'data': bytes};
                   sendPort.send(data);

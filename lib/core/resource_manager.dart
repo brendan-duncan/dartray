@@ -29,12 +29,13 @@ abstract class ResourceManager {
     global = this;
   }
 
-  static Future<List<int>> RequestFile(String path, [Future future]) {
-    return global.requestFile(path, future);
+  static Future<List<int>> RequestFile(String path, {Future future,
+                                       bool decompress: true}) {
+    return global.requestFile(path, future: future, decompress: decompress);
   }
 
-  static Future<SpectrumImage> RequestImage(String path, [Future future]) {
-    return global.requestImage(path, future);
+  static Future<SpectrumImage> RequestImage(String path, {Future future}) {
+    return global.requestImage(path, future: future);
   }
 
   static bool HasResource(String path) {
@@ -92,7 +93,7 @@ abstract class ResourceManager {
    * came from. When all requesters of data have completed, the render will
    * continue.
    */
-  Future requestFile(String path, [Future future]) {
+  Future requestFile(String path, {Future future, bool decompress: true}) {
     if (future != null) {
       futures.add(future);
     }
@@ -117,7 +118,7 @@ abstract class ResourceManager {
         return;
       }
 
-      if (_isCompressed(path)) {
+      if (decompress && _isCompressed(path)) {
         bytes = _decompress(path, bytes);
         _decompressed[path] = true;
       }
@@ -140,7 +141,7 @@ abstract class ResourceManager {
    * came from. When all requesters of data have completed, the render will
    * continue.
    */
-  Future<SpectrumImage> requestImage(String path, [Future future]) {
+  Future<SpectrumImage> requestImage(String path, {Future future}) {
     if (future != null) {
       futures.add(future);
     }
@@ -265,12 +266,16 @@ abstract class ResourceManager {
   }
 
   List<int> _decompress(String file, List<int> bytes) {
-    if (file.endsWith('.gz')) {
-      bytes = new GZipDecoder().decodeBytes(bytes);
-    } else if (file.endsWith('.z')) {
-      bytes = new ZLibDecoder().decodeBytes(bytes);
-    } else if (file.endsWith('.bz2')) {
-      bytes = new BZip2Decoder().decodeBytes(bytes);
+    try {
+      if (file.endsWith('.gz')) {
+        bytes = new GZipDecoder().decodeBytes(bytes);
+      } else if (file.endsWith('.z')) {
+        bytes = new ZLibDecoder().decodeBytes(bytes);
+      } else if (file.endsWith('.bz2')) {
+        bytes = new BZip2Decoder().decodeBytes(bytes);
+      }
+    } catch (e) {
+      LogDebug('EXCEPTION $e');
     }
     return bytes;
   }

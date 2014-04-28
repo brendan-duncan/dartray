@@ -32,7 +32,8 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
     // Initialize _SurfacePoint_s from file
     Completer completer = new Completer();
     if (filename.isNotEmpty) {
-      ResourceManager.RequestFile(filename, completer.future).then((bytes) {
+      ResourceManager.RequestFile(filename, future: completer.future)
+      .then((bytes) {
         if (bytes is List<int>) {
           List<double> floats = ReadFloatFile(bytes, filename);
           ResourceManager.WriteFile(filename, floats);

@@ -39,7 +39,7 @@ class InfiniteAreaLight extends Light {
       : super(light2world, ns) {
     if (texmap.isNotEmpty) {
       Completer completer = new Completer();
-      ResourceManager.RequestImage(texmap, completer.future)
+      ResourceManager.RequestImage(texmap, future: completer.future)
         .then((SpectrumImage img) {
           String name = MIPMap.GetTextureName(texmap);
 

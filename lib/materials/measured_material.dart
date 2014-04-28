@@ -91,7 +91,7 @@ class MeasuredMaterial extends Material {
       }
 
       Completer c = new Completer();
-      ResourceManager.RequestFile(filename, c.future).then((bytes) {
+      ResourceManager.RequestFile(filename, future: c.future).then((bytes) {
         List<double> values = ReadFloatFile(bytes, filename);
 
         int pos = 0;
@@ -141,7 +141,7 @@ class MeasuredMaterial extends Material {
       }
 
       Completer c = new Completer();
-      ResourceManager.RequestFile(filename, c.future).then((bytes) {
+      ResourceManager.RequestFile(filename, future: c.future).then((bytes) {
         InputBuffer fp = new InputBuffer(bytes, bigEndian: false);
         int dims0 = fp.readInt32();
         int dims1 = fp.readInt32();
