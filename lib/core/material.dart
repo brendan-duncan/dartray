@@ -38,7 +38,7 @@ abstract class Material {
     // Compute offset positions and evaluate displacement texture
     DifferentialGeometry dgEval = new DifferentialGeometry.from(dgs);
 
-    // Shift _dgEval_ _du_ in the $u$ direction
+    // Shift dgEval du in the u direction
     double du = 0.5 * (dgs.dudx.abs() + dgs.dudy.abs());
     if (du == 0.0) {
       du = 0.01;
@@ -50,7 +50,7 @@ abstract class Material {
                                  dgs.dndu * du);
     double uDisplace = d.evaluate(dgEval);
 
-    // Shift _dgEval_ _dv_ in the $v$ direction
+    // Shift dgEval dv in the v direction
     double dv = 0.5 * (dgs.dvdx.abs() + dgs.dvdy.abs());
     if (dv == 0.0) {
       dv = 0.01;

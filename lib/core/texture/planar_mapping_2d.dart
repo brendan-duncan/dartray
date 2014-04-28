@@ -21,15 +21,14 @@
 part of core;
 
 class PlanarMapping2D extends TextureMapping2D {
-  PlanarMapping2D(Vector vv1, Vector vv2, [this.ds = 0.0,
-                  this.dt = 0.0]) :
-    vs = new Vector.from(vv1),
-    vt = new Vector.from(vv2);
+  PlanarMapping2D(Vector vv1, Vector vv2, [this.ds = 0.0, this.dt = 0.0])
+      : vs = new Vector.from(vv1),
+        vt = new Vector.from(vv2);
 
   void map(DifferentialGeometry dg, List<double> s, List<double> t,
            List<double> dsdx, List<double> dtdx, List<double> dsdy,
            List<double> dtdy) {
-    Vector vec = dg.p - new Point(0.0, 0.0, 0.0);
+    Vector vec = dg.p;
     s[0] = ds + Vector.Dot(vec, vs);
     t[0] = dt + Vector.Dot(vec, vt);
     dsdx[0] = Vector.Dot(dg.dpdx, vs);
@@ -38,6 +37,8 @@ class PlanarMapping2D extends TextureMapping2D {
     dtdy[0] = Vector.Dot(dg.dpdy, vt);
   }
 
-  Vector vs, vt;
-  double ds, dt;
+  Vector vs;
+  Vector vt;
+  double ds;
+  double dt;
 }

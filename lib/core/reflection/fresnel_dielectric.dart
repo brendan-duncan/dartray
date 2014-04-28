@@ -55,10 +55,10 @@ class FresnelDielectric extends Fresnel {
     cosi = cosi.abs();
 
     double Rparl = ((et * cosi) - (ei * cost)) /
-                         ((et * cosi) + (ei * cost));
+                   ((et * cosi) + (ei * cost));
 
     double Rperp = ((ei * cosi) - (et * cost)) /
-                         ((ei * cosi) + (et * cost));
+                   ((ei * cosi) + (et * cost));
 
     return new Spectrum((Rparl * Rparl + Rperp * Rperp) / 2.0);
   }

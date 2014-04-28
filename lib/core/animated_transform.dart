@@ -34,20 +34,20 @@ part of core;
  */
 class AnimatedTransform {
   AnimatedTransform(Transform transform1, this.startTime,
-                    Transform transform2, this.endTime) :
-    startTransform = new Transform.from(transform1),
-    endTransform = new Transform.from(transform2),
-    actuallyAnimated = (transform1 != transform2) {
+                    Transform transform2, this.endTime)
+      : startTransform = new Transform.from(transform1),
+        endTransform = new Transform.from(transform2),
+        actuallyAnimated = (transform1 != transform2) {
     Decompose(startTransform.m, T[0], R[0], S[0]);
     Decompose(endTransform.m, T[1], R[1], S[1]);
   }
 
-  AnimatedTransform.from(AnimatedTransform other) :
-    startTime = other.startTime,
-    endTime = other.endTime,
-    startTransform = new Transform.from(other.startTransform),
-    endTransform = new Transform.from(other.endTransform),
-    actuallyAnimated = other.actuallyAnimated {
+  AnimatedTransform.from(AnimatedTransform other)
+      : startTime = other.startTime,
+        endTime = other.endTime,
+        startTransform = new Transform.from(other.startTransform),
+        endTransform = new Transform.from(other.endTransform),
+        actuallyAnimated = other.actuallyAnimated {
     T[0] = new Vector.from(other.T[0]);
     T[1] = new Vector.from(other.T[1]);
 

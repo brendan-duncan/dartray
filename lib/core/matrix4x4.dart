@@ -34,8 +34,8 @@ class Matrix4x4 {
   /**
    * Creates a new identity matrix.
    */
-  Matrix4x4() :
-    data = new Float32List(16) {
+  Matrix4x4()
+      : data = new Float32List(16) {
     data[0] = 1.0;
     data[5] = 1.0;
     data[10] = 1.0;
@@ -45,14 +45,14 @@ class Matrix4x4 {
   /**
    * Create a matrix as a copy of [other].
    */
-  Matrix4x4.from(Matrix4x4 other) :
-    data = new Float32List.fromList(other.data);
+  Matrix4x4.from(Matrix4x4 other)
+      : data = new Float32List.fromList(other.data);
 
   /**
    * Create a matrix as a copy of [other].
    */
-  Matrix4x4.fromList(List other) :
-    data = new Float32List.fromList(other);
+  Matrix4x4.fromList(List other)
+      : data = new Float32List.fromList(other);
 
   /**
    * Create a matrix from a set of 16 numbers.
@@ -60,8 +60,8 @@ class Matrix4x4 {
   Matrix4x4.values(double m11, double m12, double m13, double m14,
                    double m21, double m22, double m23, double m24,
                    double m31, double m32, double m33, double m34,
-                   double m41, double m42, double m43, double m44) :
-    data = new Float32List(16) {
+                   double m41, double m42, double m43, double m44)
+      : data = new Float32List(16) {
     data[0] = m11;
     data[1] = m12;
     data[2] = m13;
@@ -147,9 +147,9 @@ class Matrix4x4 {
    * Set the elements of the matrix.
    */
   Matrix4x4 set(double m11, double m12, double m13, double m14,
-           double m21, double m22, double m23, double m24,
-           double m31, double m32, double m33, double m34,
-           double m41, double m42, double m43, double m44) {
+                double m21, double m22, double m23, double m24,
+                double m31, double m32, double m33, double m34,
+                double m41, double m42, double m43, double m44) {
     data[0] = m11;
     data[1] = m12;
     data[2] = m13;

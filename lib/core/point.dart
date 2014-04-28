@@ -26,11 +26,11 @@ part of core;
 class Point extends Vector {
   static final Point ZERO = new Point(0.0, 0.0, 0.0);
 
-  Point([num x = 0.0, num y = 0.0, num z = 0.0]) :
-    super(x, y, z);
+  Point([num x = 0.0, num y = 0.0, num z = 0.0])
+      : super(x, y, z);
 
-  Point.from(Vector other) :
-    super.from(other);
+  Point.from(Vector other)
+      : super.from(other);
 
   Point operator*(num s) =>
       new Point(data[0] * s, data[1] * s, data[2] * s);

@@ -22,54 +22,13 @@ part of cameras;
 
 class OrthographicCamera extends ProjectiveCamera {
   OrthographicCamera(AnimatedTransform cam2world, List<double> screenWindow,
-        double sopen, double sclose, double lensr, double focald, Film film) :
-    super(cam2world, Transform.Orthographic(0.0, 1.0), screenWindow,
-          sopen, sclose, lensr, focald, film) {
+                     double sopen, double sclose, double lensr, double focald,
+                     Film film)
+      : super(cam2world, Transform.Orthographic(0.0, 1.0), screenWindow,
+              sopen, sclose, lensr, focald, film) {
     // Compute differential changes in origin for ortho camera rays
     dxCamera = rasterToCamera.transformVector(new Vector(1.0, 0.0, 0.0));
     dyCamera = rasterToCamera.transformVector(new Vector(0.0, 1.0, 0.0));
-  }
-
-  static OrthographicCamera Create(ParamSet params, AnimatedTransform cam2world,
-                                   Film film) {
-    // Extract common camera parameters from _ParamSet_
-    double shutteropen = params.findOneFloat("shutteropen", 0.0);
-    double shutterclose = params.findOneFloat("shutterclose", 1.0);
-    if (shutterclose < shutteropen) {
-      LogWarning('Shutter close time [$shutterclose] < '
-                 'shutter open [$shutteropen].  Swapping them.');
-      double t = shutterclose;
-      shutterclose = shutteropen;
-      shutteropen = t;
-    }
-
-    double lensradius = params.findOneFloat("lensradius", 0.0);
-    double focaldistance = params.findOneFloat("focaldistance", 1.0e30);
-    double frame = params.findOneFloat("frameaspectratio",
-                                       film.xResolution / film.yResolution);
-
-    List<double> screen;
-
-    List<double> sw = params.findFloat('screenwindow');
-    if (sw != null && sw.length == 4) {
-      screen = sw;
-    } else {
-      screen = [0.0, 0.0, 0.0, 0.0];
-      if (frame > 1.0) {
-        screen[0] = -frame;
-        screen[1] =  frame;
-        screen[2] = -1.0;
-        screen[3] =  1.0;
-      } else {
-        screen[0] = -1.0;
-        screen[1] =  1.0;
-        screen[2] = -1.0 / frame;
-        screen[3] =  1.0 / frame;
-      }
-    }
-
-    return new OrthographicCamera(cam2world, screen, shutteropen, shutterclose,
-                                  lensradius, focaldistance, film);
   }
 
   double generateRay(CameraSample sample, Ray ray) {
@@ -137,6 +96,48 @@ class OrthographicCamera extends ProjectiveCamera {
     cameraToWorld.transformRay(ray, ray);
 
     return 1.0;
+  }
+
+  static OrthographicCamera Create(ParamSet params, AnimatedTransform cam2world,
+                                   Film film) {
+    // Extract common camera parameters from _ParamSet_
+    double shutteropen = params.findOneFloat("shutteropen", 0.0);
+    double shutterclose = params.findOneFloat("shutterclose", 1.0);
+    if (shutterclose < shutteropen) {
+      LogWarning('Shutter close time [$shutterclose] < '
+                 'shutter open [$shutteropen].  Swapping them.');
+      double t = shutterclose;
+      shutterclose = shutteropen;
+      shutteropen = t;
+    }
+
+    double lensradius = params.findOneFloat("lensradius", 0.0);
+    double focaldistance = params.findOneFloat("focaldistance", 1.0e30);
+    double frame = params.findOneFloat("frameaspectratio",
+                                       film.xResolution / film.yResolution);
+
+    List<double> screen;
+
+    List<double> sw = params.findFloat('screenwindow');
+    if (sw != null && sw.length == 4) {
+      screen = sw;
+    } else {
+      screen = [0.0, 0.0, 0.0, 0.0];
+      if (frame > 1.0) {
+        screen[0] = -frame;
+        screen[1] =  frame;
+        screen[2] = -1.0;
+        screen[3] =  1.0;
+      } else {
+        screen[0] = -1.0;
+        screen[1] =  1.0;
+        screen[2] = -1.0 / frame;
+        screen[3] =  1.0 / frame;
+      }
+    }
+
+    return new OrthographicCamera(cam2world, screen, shutteropen, shutterclose,
+                                  lensradius, focaldistance, film);
   }
 
   Vector dxCamera;

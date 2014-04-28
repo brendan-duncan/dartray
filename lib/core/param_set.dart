@@ -21,19 +21,18 @@
 part of core;
 
 class ParamSet {
-  ParamSet() {
-  }
+  ParamSet();
 
-  ParamSet.from(ParamSet other) :
-    bools = new List.from(other.bools),
-    ints = new List.from(other.ints),
-    floats = new List.from(other.floats),
-    points = new List.from(other.points),
-    vectors = new List.from(other.vectors),
-    normals = new List.from(other.normals),
-    spectra = new List.from(other.spectra),
-    strings = new List.from(other.strings),
-    textures = new List.from(other.textures);
+  ParamSet.from(ParamSet other)
+      : bools = new List.from(other.bools),
+        ints = new List.from(other.ints),
+        floats = new List.from(other.floats),
+        points = new List.from(other.points),
+        vectors = new List.from(other.vectors),
+        normals = new List.from(other.normals),
+        spectra = new List.from(other.spectra),
+        strings = new List.from(other.strings),
+        textures = new List.from(other.textures);
 
   ParamSet.fromJson(Map json) {
     for (String type_name in json.keys) {

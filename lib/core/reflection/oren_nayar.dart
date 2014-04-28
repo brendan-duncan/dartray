@@ -21,9 +21,9 @@
 part of core;
 
 class OrenNayar extends BxDF {
-  OrenNayar(Spectrum reflectance, double sig) :
-    super(BSDF_REFLECTION | BSDF_DIFFUSE),
-    R = new Spectrum.from(reflectance) {
+  OrenNayar(Spectrum reflectance, double sig)
+      : R = new Spectrum.from(reflectance),
+        super(BSDF_REFLECTION | BSDF_DIFFUSE) {
     double sigma = Radians(sig);
     double sigma2 = sigma * sigma;
     A = 1.0 - (sigma2 / (2.0 * (sigma2 + 0.33)));

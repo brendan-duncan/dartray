@@ -28,15 +28,15 @@ class Transform {
   Matrix4x4 m;
   Matrix4x4 mInv;
 
-  Transform([Matrix4x4 m, Matrix4x4 inv]) :
-    this.m = (m == null) ? new Matrix4x4() : new Matrix4x4.from(m),
-    this.mInv = (inv == null) ?
-                (m == null ? new Matrix4x4() : Matrix4x4.Inverse(m)) :
-                new Matrix4x4.from(inv);
+  Transform([Matrix4x4 m, Matrix4x4 inv])
+      : this.m = (m == null) ? new Matrix4x4() : new Matrix4x4.from(m),
+        this.mInv = (inv == null) ?
+                    (m == null ? new Matrix4x4() : Matrix4x4.Inverse(m)) :
+                    new Matrix4x4.from(inv);
 
-  Transform.from(Transform t) :
-    m = new Matrix4x4.from(t.m),
-    mInv = new Matrix4x4.from(t.mInv);
+  Transform.from(Transform t)
+      : m = new Matrix4x4.from(t.m),
+        mInv = new Matrix4x4.from(t.mInv);
 
   Transform copy(Transform t) {
     m = new Matrix4x4.from(t.m);
@@ -64,11 +64,11 @@ class Transform {
                          Matrix4x4.Transpose(t.mInv));
   }
 
-  bool operator==(Transform t) {
+  bool operator ==(Transform t) {
     return t.m == m && t.mInv == mInv;
   }
 
-  bool operator<(Transform t2) {
+  bool operator <(Transform t2) {
     for (int i = 0; i < 16; ++i) {
       if (m.data[i] < t2.m.data[i]) {
         return true;
@@ -80,7 +80,7 @@ class Transform {
     return false;
   }
 
-  Transform operator*(Transform t2) {
+  Transform operator *(Transform t2) {
     return new Transform(Matrix4x4.Mul(m, t2.m),
                          Matrix4x4.Mul(t2.mInv, mInv));
   }

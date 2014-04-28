@@ -21,8 +21,8 @@
 part of core;
 
 class Microfacet extends BxDF {
-  Microfacet(this.R, this.fresnel, this.distribution) :
-    super(BSDF_REFLECTION | BSDF_GLOSSY);
+  Microfacet(this.R, this.fresnel, this.distribution)
+      : super(BSDF_REFLECTION | BSDF_GLOSSY);
 
   Spectrum f(Vector wo, Vector wi) {
     double cosThetaO = Vector.AbsCosTheta(wo);
@@ -55,7 +55,7 @@ class Microfacet extends BxDF {
   }
 
   Spectrum sample_f(Vector wo, Vector wi, double u1, double u2,
-                       List<double> pdf) {
+                    List<double> pdf) {
     pdf[0] = distribution.sample_f(wo, wi, u1, u2);
     if (!Vector.SameHemisphere(wo, wi)) {
       return new Spectrum(0.0);

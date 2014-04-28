@@ -24,11 +24,6 @@ part of accelerators;
  * Hierarchical uniform grid ray accelerator.
  */
 class GridAccel extends Aggregate {
-  static GridAccel Create(List<Primitive> prims, ParamSet ps) {
-    bool refineImmediately = ps.findOneBool('refineimmediately', true);
-    return new GridAccel(prims, refineImmediately);
-  }
-
   GridAccel(List<Primitive> p, bool refineImmediately) {
     LogInfo('Building Hierarchical Grid Acceleration Structures.');
     Stats.GRID_STARTED_CONSTRUCTION(this, p.length);
@@ -276,6 +271,11 @@ class GridAccel extends Aggregate {
 
   int offset(int x, int y, int z) {
     return z * nVoxels[0] * nVoxels[1] + y * nVoxels[0] + x;
+  }
+
+  static GridAccel Create(List<Primitive> prims, ParamSet ps) {
+    bool refineImmediately = ps.findOneBool('refineimmediately', true);
+    return new GridAccel(prims, refineImmediately);
   }
 
   List<Primitive> primitives = [];

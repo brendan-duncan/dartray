@@ -21,10 +21,6 @@
 part of accelerators;
 
 class BruteForceAccel extends Aggregate {
-  static BruteForceAccel Create(List<Primitive> prims, ParamSet ps) {
-    return new BruteForceAccel(prims);
-  }
-
   BruteForceAccel(List<Primitive> p) {
     LogInfo('Building Brute Force Acceleration Structures.');
     for (int i = 0; i < p.length; ++i) {
@@ -68,6 +64,10 @@ class BruteForceAccel extends Aggregate {
     }
 
     return false;
+  }
+
+  static BruteForceAccel Create(List<Primitive> prims, ParamSet ps) {
+    return new BruteForceAccel(prims);
   }
 
   List<Primitive> primitives = [];

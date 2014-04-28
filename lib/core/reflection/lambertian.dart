@@ -28,9 +28,9 @@ part of core;
  * approximation to many real-world surfaces such as matte paint.
  */
 class Lambertian extends BxDF {
-  Lambertian(Spectrum reflectance) :
-    super(BSDF_REFLECTION | BSDF_DIFFUSE),
-    R = new Spectrum.from(reflectance);
+  Lambertian(Spectrum reflectance)
+      : R = new Spectrum.from(reflectance),
+        super(BSDF_REFLECTION | BSDF_DIFFUSE);
 
   Spectrum f(Vector wo, Vector wi) {
     return R * INV_PI;

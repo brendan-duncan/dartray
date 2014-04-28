@@ -47,7 +47,7 @@ class Anisotropic extends MicrofacetDistribution {
   }
 
   double sample_f(Vector wo, Vector wi, double u1, double u2) {
-    // Sample from first quadrant and remap to hemisphere to sample $\wh$
+    // Sample from first quadrant and remap to hemisphere to sample wh
     List<double> phi_cosTheta = [0.0, 0.0];
     if (u1 < 0.25) {
       sampleFirstQuadrant(4.0 * u1, u2, phi_cosTheta);
@@ -74,7 +74,7 @@ class Anisotropic extends MicrofacetDistribution {
       wh = -wh;
     }
 
-    // Compute incident direction by reflecting about $\wh$
+    // Compute incident direction by reflecting about wh
     wi.copy(-wo + wh * 2.0 * Vector.Dot(wo, wh));
 
     // Compute PDF for $\wi$ from anisotropic distribution

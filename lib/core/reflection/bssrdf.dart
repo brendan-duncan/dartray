@@ -31,7 +31,7 @@ class BSSRDF {
   final Spectrum sigma_a;
   final Spectrum sigma_prime_s;
 
-  BSSRDF(Spectrum sigma_a, Spectrum sigma_prime_s, this.eta) :
-    this.sigma_a = new Spectrum.from(sigma_a),
-    this.sigma_prime_s = new Spectrum.from(sigma_prime_s);
+  BSSRDF(Spectrum sigma_a, Spectrum sigma_prime_s, this.eta)
+      : this.sigma_a = new Spectrum.from(sigma_a),
+        this.sigma_prime_s = new Spectrum.from(sigma_prime_s);
 }

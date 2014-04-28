@@ -25,10 +25,9 @@ part of core;
  */
 abstract class VolumeIntegrator extends Integrator {
   Spectrum Li(Scene scene, Renderer renderer,
-        RayDifferential ray, Sample sample, RNG rng,
-        Spectrum transmittance);
+              RayDifferential ray, Sample sample, RNG rng,
+              Spectrum transmittance);
 
-  Spectrum transmittance(Scene scene,
-        Renderer renderer, RayDifferential ray,
-        Sample sample, RNG rng);
+  Spectrum transmittance(Scene scene, Renderer renderer, RayDifferential ray,
+                         Sample sample, RNG rng);
 }

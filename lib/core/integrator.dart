@@ -37,17 +37,20 @@ abstract class Integrator {
   }
 
   static Spectrum UniformSampleAllLights(Scene scene, Renderer renderer,
-      Point p, Normal n, Vector wo,
-      double rayEpsilon, double time, BSDF bsdf, Sample sample,
-      RNG rng, List<LightSampleOffsets> lightSampleOffsets,
-      List<BSDFSampleOffsets> bsdfSampleOffsets) {
+                                    Point p, Normal n, Vector wo,
+                                    double rayEpsilon, double time,
+                                    BSDF bsdf, Sample sample,
+                                    RNG rng,
+                                    List<LightSampleOffsets> lightSampleOffsets,
+                                    List<BSDFSampleOffsets> bsdfSampleOffsets) {
     Spectrum L = new Spectrum(0.0);
+
     for (int i = 0; i < scene.lights.length; ++i) {
       Light light = scene.lights[i];
       int nSamples = lightSampleOffsets != null ?
                      lightSampleOffsets[i].nSamples : 1;
 
-      // Estimate direct lighting from _light_ samples
+      // Estimate direct lighting from light samples
       Spectrum Ld = new Spectrum(0.0);
 
       for (int j = 0; j < nSamples; ++j) {
@@ -63,8 +66,8 @@ abstract class Integrator {
         }
 
         Ld += EstimateDirect(scene, renderer, light, p, n, wo,
-                rayEpsilon, time, bsdf, rng, lightSample, bsdfSample,
-                BSDF_ALL & ~BSDF_SPECULAR);
+                             rayEpsilon, time, bsdf, rng, lightSample,
+                             bsdfSample, BSDF_ALL & ~BSDF_SPECULAR);
       }
 
       L += Ld / nSamples.toDouble();
@@ -74,12 +77,13 @@ abstract class Integrator {
   }
 
   static Spectrum UniformSampleOneLight(Scene scene, Renderer renderer,
-      Point p, Normal n, Vector wo,
-      double rayEpsilon, double time, BSDF bsdf,
-      Sample sample, RNG rng, [int lightNumOffset = -1,
-      LightSampleOffsets lightSampleOffset = null,
-      BSDFSampleOffsets bsdfSampleOffset = null]) {
-    // Randomly choose a single light to sample, _light_
+                                        Point p, Normal n, Vector wo,
+                                        double rayEpsilon, double time,
+                                        BSDF bsdf, Sample sample, RNG rng,
+                                        [int lightNumOffset = -1,
+                                        LightSampleOffsets lightSampleOffset,
+                                        BSDFSampleOffsets bsdfSampleOffset]) {
+    // Randomly choose a single light to sample
     int nLights = scene.lights.length;
     if (nLights == 0) {
       return new Spectrum(0.0);
@@ -113,10 +117,10 @@ abstract class Integrator {
   }
 
   static Spectrum EstimateDirect(Scene scene, Renderer renderer,
-      Light light, Point p,
-      Normal n, Vector wo, double rayEpsilon, double time, BSDF bsdf,
-      RNG rng, LightSample lightSample, BSDFSample bsdfSample,
-      int flags) {
+                                 Light light, Point p, Normal n, Vector wo,
+                                 double rayEpsilon, double time, BSDF bsdf,
+                                 RNG rng, LightSample lightSample,
+                                 BSDFSample bsdfSample, int flags) {
     Spectrum Ld = new Spectrum(0.0);
     // Sample light source with multiple importance sampling
     Vector wi = new Vector();
@@ -189,13 +193,13 @@ abstract class Integrator {
     Point p = bsdf.dgShading.p;
     Normal n = bsdf.dgShading.nn;
     Spectrum f = bsdf.sample_f(wo, wi, new BSDFSample.random(rng), pdf,
-                                  BSDF_REFLECTION | BSDF_SPECULAR);
+                               BSDF_REFLECTION | BSDF_SPECULAR);
     Spectrum L = new Spectrum(0.0);
 
     if (pdf[0] > 0.0 && !f.isBlack() && Vector.AbsDot(wi, n) != 0.0) {
-      // Compute ray differential _rd_ for specular reflection
+      // Compute ray differential rd for specular reflection
       RayDifferential rd = new RayDifferential.child(p, wi, ray,
-                                                          isect.rayEpsilon);
+                                                     isect.rayEpsilon);
       if (ray.hasDifferentials) {
         rd.hasDifferentials = true;
         rd.rxOrigin = p + isect.dg.dpdx;
@@ -211,10 +215,10 @@ abstract class Integrator {
         double dDNdy = Vector.Dot(dwody, n) + Vector.Dot(wo, dndy);
 
         rd.rxDirection = wi - dwodx + new Vector.from(dndx * Vector.Dot(wo, n) +
-                                                 n * dDNdx) * 2.0;
+                         n * dDNdx) * 2.0;
 
         rd.ryDirection = wi - dwody + new Vector.from(dndy * Vector.Dot(wo, n) +
-                                                      n * dDNdy)* 2.0;
+                         n * dDNdy)* 2.0;
       }
 
       Stats.STARTED_SPECULAR_REFLECTION_RAY(rd);
@@ -227,8 +231,8 @@ abstract class Integrator {
   }
 
   static Spectrum SpecularTransmit(RayDifferential ray, BSDF bsdf, RNG rng,
-      Intersection isect, Renderer renderer, Scene scene,
-      Sample sample) {
+                                   Intersection isect, Renderer renderer,
+                                   Scene scene, Sample sample) {
     Vector wo = -ray.direction;
     Vector wi = new Vector();
     List<double> pdf = [0.0];
@@ -241,7 +245,7 @@ abstract class Integrator {
     if (pdf[0] > 0.0 && !f.isBlack() && Vector.AbsDot(wi, n) != 0.0) {
       // Compute ray differential _rd_ for specular transmission
       RayDifferential rd = new RayDifferential.child(p, wi, ray,
-                                                          isect.rayEpsilon);
+                                                     isect.rayEpsilon);
 
       if (ray.hasDifferentials) {
         rd.hasDifferentials = true;

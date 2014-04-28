@@ -155,11 +155,11 @@ void UniformSampleDisk(double u1, double u2, List<double> x, List<double> y) {
 void ConcentricSampleDisk(double u1, double u2, List<double> dx,
                                   List<double> dy) {
   double r, theta;
-  // Map uniform random numbers to $[-1,1]^2$
+  // Map uniform random numbers to [-1,1]^2
   double sx = 2 * u1 - 1;
   double sy = 2 * u2 - 1;
 
-  // Map square to $(r,\theta)$
+  // Map square to (r,\theta)
 
   // Handle degeneracy at the origin
   if (sx == 0.0 && sy == 0.0) {

@@ -35,5 +35,8 @@ class UVMapping2D extends TextureMapping2D {
     dtdy[0] = sv * dg.dvdy;
   }
 
-  double su, sv, du, dv;
+  double su;
+  double sv;
+  double du;
+  double dv;
 }

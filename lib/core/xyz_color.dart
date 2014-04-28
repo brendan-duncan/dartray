@@ -21,23 +21,23 @@
 part of core;
 
 class XYZColor extends Spectrum {
-  XYZColor([double v = 0.0]) :
-    super._(3, v);
+  XYZColor([double v = 0.0])
+      : super._(3, v);
 
-  XYZColor.xyz(double x, double y, double z) :
-    super._(3) {
+  XYZColor.xyz(double x, double y, double z)
+      : super._(3) {
     c[0] = x;
     c[1] = y;
     c[2] = z;
   }
 
-  XYZColor.rgb(double r, double g, double b) :
-    super._(3) {
+  XYZColor.rgb(double r, double g, double b)
+      : super._(3) {
     Spectrum.RGBToXYZ(r, g, b, c);
   }
 
-  XYZColor.from(Spectrum color) :
-    super._(3) {
+  XYZColor.from(Spectrum color)
+      : super._(3) {
     if (color is RGBColor) {
       Spectrum.RGBToXYZ(color.c[0], color.c[1], color.c[2], c);
     } else if (color is XYZColor) {
@@ -82,13 +82,13 @@ class XYZColor extends Spectrum {
     return this;
   }
 
-  XYZColor operator+(XYZColor s) =>
+  XYZColor operator +(XYZColor s) =>
     new XYZColor.xyz(c[0] + s.c[0], c[1] + s.c[1], c[2] + s.c[2]);
 
-  XYZColor operator-(XYZColor s) =>
+  XYZColor operator -(XYZColor s) =>
       new XYZColor.xyz(c[0] - s.c[0], c[1] - s.c[1], c[2] - s.c[2]);
 
-  XYZColor operator*(s) {
+  XYZColor operator *(s) {
     if (s is num) {
       return new XYZColor.xyz(c[0] * s, c[1] * s, c[2] * s);
     }
@@ -99,7 +99,7 @@ class XYZColor extends Spectrum {
     return new XYZColor(0.0);
   }
 
-  XYZColor operator/(s) {
+  XYZColor operator /(s) {
     if (s is num) {
       return new XYZColor.xyz(c[0] / s, c[1] / s, c[2] / s);
     }

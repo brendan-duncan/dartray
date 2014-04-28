@@ -24,36 +24,36 @@ part of core;
  * Translates a BRDF (reflection function) as a BTDF (transmission function).
  */
 class BRDFToBTDF extends BxDF {
-  BRDFToBTDF(BxDF b) :
-    super(b.type ^ (BSDF_REFLECTION | BSDF_TRANSMISSION)),
-    brdf = b;
+  BRDFToBTDF(BxDF b)
+      : brdf = b,
+        super(b.type ^ (BSDF_REFLECTION | BSDF_TRANSMISSION));
 
-  static Vector otherHemisphere(Vector w) {
+  static Vector OtherHemisphere(Vector w) {
     return new Vector(w.x, w.y, -w.z);
   }
 
   Spectrum f(Vector wo, Vector wi) {
-    return brdf.f(wo, otherHemisphere(wi));
+    return brdf.f(wo, OtherHemisphere(wi));
   }
 
   Spectrum sample_f(Vector wo, Vector wi, double u1, double u2,
-                       List<double> pdf) {
+                    List<double> pdf) {
     Spectrum f = brdf.sample_f(wo, wi, u1, u2, pdf);
-    wi.copy(otherHemisphere(wi));
+    wi.copy(OtherHemisphere(wi));
     return f;
   }
 
   Spectrum rho(Vector w, int nSamples, List<double> samples) {
-    return brdf.rho(otherHemisphere(w), nSamples, samples);
+    return brdf.rho(OtherHemisphere(w), nSamples, samples);
   }
 
   Spectrum rho2(int nSamples, List<double> samples1,
-                   List<double> samples2) {
+                List<double> samples2) {
     return brdf.rho2(nSamples, samples1, samples2);
   }
 
   double pdf(Vector wo, Vector wi) {
-    return brdf.pdf(wo, otherHemisphere(wi));
+    return brdf.pdf(wo, OtherHemisphere(wi));
   }
 
   BxDF brdf;

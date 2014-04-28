@@ -21,8 +21,8 @@
 part of core;
 
 class RegularHalfangleBRDF extends BxDF {
-  RegularHalfangleBRDF(this.brdf, this.nThetaH, this.nThetaD, this.nPhiD) :
-    super(BSDF_REFLECTION | BSDF_GLOSSY);
+  RegularHalfangleBRDF(this.brdf, this.nThetaH, this.nThetaD, this.nPhiD)
+      : super(BSDF_REFLECTION | BSDF_GLOSSY);
 
   Spectrum f(Vector WO, Vector WI) {
     // Compute [wh] and transform wi to halfangle coordinate system

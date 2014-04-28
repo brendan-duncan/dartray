@@ -34,8 +34,8 @@ class Scene {
   /// The world-space boudning box of all geometry.
   BBox worldBound;
 
-  Scene(this.aggregate, List<Light> lights, this.volumeRegion) :
-    lights = new List<Light>.from(lights) {
+  Scene(this.aggregate, List<Light> lights, this.volumeRegion)
+      : lights = new List<Light>.from(lights) {
     worldBound = aggregate.worldBound();
     if (volumeRegion != null) {
       worldBound = BBox.Union(worldBound, volumeRegion.worldBound());

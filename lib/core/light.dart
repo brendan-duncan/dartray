@@ -3,14 +3,14 @@
  *                                                                          *
  * This file is part of DartRay.                                            *
  *                                                                          *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * Licensed under the Apache License, Version 2.0 (the 'License');          *
  * you may not use this file except in compliance with the License.         *
  * You may obtain a copy of the License at                                  *
  *                                                                          *
  * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
  * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * distributed under the License is distributed on an 'AS IS' BASIS,        *
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
  * See the License for the specific language governing permissions and      *
  * limitations under the License.                                           *
@@ -30,17 +30,17 @@ abstract class Light {
   /// The number of samples to evaluate on the surface of an area light.
   final int nSamples;
 
-  Light(Transform l2w, [int ns = 1]) :
-    nSamples = Math.max(1, ns),
-    lightToWorld = new Transform.from(l2w),
-    worldToLight = new Transform.from(Transform.Inverse(l2w)) {
+  Light(Transform l2w, [int ns = 1])
+      : nSamples = Math.max(1, ns),
+        lightToWorld = new Transform.from(l2w),
+        worldToLight = new Transform.from(Transform.Inverse(l2w)) {
       // Warn if light has transformation with scale
       if (worldToLight.hasScale()) {
-        LogWarning("Scaling detected in world to light transformation!\n"
-                   "The system has numerous assumptions, implicit and explicit,\n"
-                   "that this transform will have no scale factors in it.\n"
-                   "Proceed at your own risk; your image may have errors or\n"
-                   "the system may crash as a result of this.");
+        LogWarning('Scaling detected in world to light transformation! '
+                   'The system has numerous assumptions, implicit and '
+                   'explicit, that this transform will have no scale factors '
+                   'in it. Proceed at your own risk; your image may have '
+                   'errors or the system may crash as a result of this.');
       }
   }
 
@@ -52,12 +52,12 @@ abstract class Light {
    */
   Spectrum power(Scene scene);
 
-  /** I
-   * ndicates whether the light is described by a delta distribution.
+  /**
+   * Indicates whether the light is described by a delta distribution.
    * Such lights include point lights, which emit illumination from a single
    * point, and directional lights, where all light arrives from the same
    * direction. The only way to detect illumination from light sources like
-   * these is to call their {@link #sampleL} methods. It is impossible to
+   * these is to call their sampleL methods. It is impossible to
    * randomly choose a direction from a point p that happens to find such
    * a light source.
    */
@@ -109,14 +109,16 @@ abstract class Light {
 
     List<double> u = [0.0, 0.0];
     List<double> pdf = [0.0];
+
     for (int i = 0; i < ns; ++i) {
-      // Compute incident radiance sample from _light_, update SH _coeffs_
+      // Compute incident radiance sample from light, update SH coeffs
       Sample02(i, scramble2D, u);
       LightSample lightSample = new LightSample(u[0], u[1],
                                                 VanDerCorput(i, scramble1D));
       Vector wi = new Vector();
       VisibilityTester vis = new VisibilityTester();
-      Spectrum Li = sampleLAtPoint(p, pEpsilon, lightSample, time, wi, pdf, vis);
+      Spectrum Li = sampleLAtPoint(p, pEpsilon, lightSample, time, wi, pdf,
+                                   vis);
       if (!Li.isBlack() && pdf[0] > 0.0 &&
           (!computeLightVisibility || vis.unoccluded(scene))) {
         // Add light sample contribution to MC estimate of SH coefficients

@@ -24,8 +24,8 @@ class CylindricalMapping2D extends TextureMapping2D {
   CylindricalMapping2D(this.worldToTexture);
 
   void map(DifferentialGeometry dg, List<double> s, List<double> t,
-             List<double> dsdx, List<double> dtdx, List<double> dsdy,
-             List<double> dtdy) {
+           List<double> dsdx, List<double> dtdx, List<double> dsdy,
+           List<double> dtdy) {
     _cylinder(dg.p, s, t);
     // Compute texture coordinate differentials for cylinder (u,v) mapping
     List<double> sx = [0.0],
@@ -54,7 +54,7 @@ class CylindricalMapping2D extends TextureMapping2D {
   }
 
   void _cylinder(Point p, List<double> s, List<double> t) {
-    Vector vec = Vector.Normalize(worldToTexture.transformPoint(p) - new Point());
+    Vector vec = Vector.Normalize(worldToTexture.transformPoint(p));
     s[0] = (Math.PI + Math.atan2(vec.y, vec.x)) / (2.0 * Math.PI);
     t[0] = vec.z;
   }

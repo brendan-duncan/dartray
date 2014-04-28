@@ -30,8 +30,8 @@ abstract class Shape {
   bool transformSwapsHandedness = false;
   final int shapeId;
 
-  Shape(this.objectToWorld, this.worldToObject, this.reverseOrientation) :
-    shapeId = _nextShapeId++;
+  Shape(this.objectToWorld, this.worldToObject, this.reverseOrientation)
+      : shapeId = _nextShapeId++;
 
   BBox objectBound();
 

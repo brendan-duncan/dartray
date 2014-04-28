@@ -29,11 +29,11 @@ abstract class Filter {
   final double invXWidth;
   final double invYWidth;
 
-  Filter(double xw, double yw) :
-    xWidth = xw,
-    yWidth = yw,
-    invXWidth = 1.0 / xw,
-    invYWidth = 1.0 / yw;
+  Filter(double xw, double yw)
+      : xWidth = xw,
+        yWidth = yw,
+        invXWidth = 1.0 / xw,
+        invYWidth = 1.0 / yw;
 
   double evaluate(double x, double y);
 }

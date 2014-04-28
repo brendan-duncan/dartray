@@ -42,10 +42,10 @@ class OutputImage {
   final Float32List rgb;
 
   OutputImage(this.xOffset, this.yOffset, int width, height,
-              [this.imageWidth, this.imageHeight, Float32List rgb]) :
-    this.width = width,
-    this.height = height,
-    this.rgb = rgb != null ? rgb : new Float32List(width * height * 3) {
+              [this.imageWidth, this.imageHeight, Float32List rgb])
+      : this.width = width,
+        this.height = height,
+        this.rgb = rgb != null ? rgb : new Float32List(width * height * 3) {
     if (imageWidth == null) {
       imageWidth = width;
     }

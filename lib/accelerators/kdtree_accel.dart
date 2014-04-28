@@ -24,17 +24,6 @@ part of accelerators;
  * Kd-Tree ray accelerator.
  */
 class KdTreeAccel extends Aggregate {
-  static KdTreeAccel Create(List<Primitive> prims, ParamSet ps) {
-    int isectCost = ps.findOneInt('intersectcost', 80);
-    int travCost = ps.findOneInt('traversalcost', 1);
-    double emptyBonus = ps.findOneFloat('emptybonus', 0.5);
-    int maxPrims = ps.findOneInt('maxprims', 1);
-    int maxDepth = ps.findOneInt('maxdepth', -1);
-    return new KdTreeAccel(prims, isectCost, travCost,
-        emptyBonus, maxPrims, maxDepth);
-  }
-
-
   KdTreeAccel(List<Primitive> p,
               [this.isectCost = 80, this.traversalCost = 1,
               this.emptyBonus = 0.5,
@@ -467,6 +456,16 @@ class KdTreeAccel extends Aggregate {
     nodes[nodeNum].initInterior(bestAxis, aboveChild, tsplit);
     _buildTree(aboveChild, bounds1, allPrimBounds, prims1, n1,
                depth - 1, edges, prims0, prims1, nPrimitives, badRefines);
+  }
+
+  static KdTreeAccel Create(List<Primitive> prims, ParamSet ps) {
+    int isectCost = ps.findOneInt('intersectcost', 80);
+    int travCost = ps.findOneInt('traversalcost', 1);
+    double emptyBonus = ps.findOneFloat('emptybonus', 0.5);
+    int maxPrims = ps.findOneInt('maxprims', 1);
+    int maxDepth = ps.findOneInt('maxdepth', -1);
+    return new KdTreeAccel(prims, isectCost, travCost,
+        emptyBonus, maxPrims, maxDepth);
   }
 
   int isectCost;

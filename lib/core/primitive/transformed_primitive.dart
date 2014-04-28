@@ -24,8 +24,8 @@ part of core;
  * A primitive with an animatable world-space transformation.
  */
 class TransformedPrimitive extends Primitive {
-  TransformedPrimitive(this.primitive, AnimatedTransform w2p) :
-      worldToPrimitive = new AnimatedTransform.from(w2p);
+  TransformedPrimitive(this.primitive, AnimatedTransform w2p)
+      : worldToPrimitive = new AnimatedTransform.from(w2p);
 
   bool intersect(Ray r, Intersection isect) {
     Transform w2p = new Transform();

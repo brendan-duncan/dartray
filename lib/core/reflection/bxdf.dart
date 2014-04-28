@@ -61,8 +61,7 @@ abstract class BxDF {
     return r / nSamples;
   }
 
-  Spectrum rho2(int nSamples, List<double> samples1,
-                   List<double> samples2) {
+  Spectrum rho2(int nSamples, List<double> samples1, List<double> samples2) {
     Spectrum r = new Spectrum(0.0);
     for (int i = 0; i < nSamples; ++i) {
       Vector wi = new Vector();

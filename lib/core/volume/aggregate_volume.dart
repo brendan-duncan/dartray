@@ -23,8 +23,8 @@ part of core;
 class AggregateVolume extends VolumeRegion {
   List<VolumeRegion> regions = [];
 
-  AggregateVolume(this.regions) :
-    _bound = new BBox() {
+  AggregateVolume(this.regions)
+      : _bound = new BBox() {
     for (int i = 0; i < regions.length; ++i) {
       _bound = BBox.Union(_bound, regions[i].worldBound());
     }

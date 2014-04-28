@@ -21,17 +21,17 @@
 part of core;
 
 class SpecularReflection extends BxDF {
-  SpecularReflection(Spectrum r, Fresnel f) :
-    super(BSDF_REFLECTION | BSDF_SPECULAR),
-    R = new Spectrum.from(r),
-    fresnel = f;
+  SpecularReflection(Spectrum r, Fresnel f)
+      : R = new Spectrum.from(r),
+        fresnel = f,
+        super(BSDF_REFLECTION | BSDF_SPECULAR);
 
   Spectrum f(Vector wo, Vector wi) {
     return new Spectrum(0.0);
   }
 
   Spectrum sample_f(Vector wo, Vector wi, double u1, double u2,
-                       List<double> pdf) {
+                    List<double> pdf) {
     // Compute perfect specular reflection direction
     wi.x = -wo.x;
     wi.y = -wo.y;

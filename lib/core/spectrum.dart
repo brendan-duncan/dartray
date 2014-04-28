@@ -168,7 +168,7 @@ abstract class Spectrum {
     return true;
   }
 
-  Spectrum operator+(Spectrum s) {
+  Spectrum operator +(Spectrum s) {
     Spectrum r = new Spectrum();
     for (int i = 0, n = c.length; i < n; ++i) {
       r.c[i] = c[i] + s.c[i];
@@ -176,7 +176,7 @@ abstract class Spectrum {
     return r;
   }
 
-  Spectrum operator-(Spectrum s) {
+  Spectrum operator -(Spectrum s) {
     Spectrum r = new Spectrum();
     for (int i = 0, n = c.length; i < n; ++i) {
       r.c[i] = c[i] - s.c[i];
@@ -184,7 +184,7 @@ abstract class Spectrum {
     return r;
   }
 
-  Spectrum operator*(s) {
+  Spectrum operator *(s) {
     Spectrum r = new Spectrum();
     if (s is num) {
       for (int i = 0, n = c.length; i < n; ++i) {
@@ -200,7 +200,7 @@ abstract class Spectrum {
     return r;
   }
 
-  Spectrum operator/(s) {
+  Spectrum operator /(s) {
     Spectrum r = new Spectrum();
     if (s is num) {
       for (int i = 0, n = c.length; i < n; ++i) {
@@ -216,7 +216,7 @@ abstract class Spectrum {
     return r;
   }
 
-  Spectrum operator-() {
+  Spectrum operator -() {
     Spectrum r = new Spectrum();
     for (int i = 0, n = c.length; i < n; ++i) {
       r.c[i] = -c[i];
@@ -1142,8 +1142,8 @@ abstract class Spectrum {
   ];
 
 
-  Spectrum._(int nSamples, [double v = 0.0]) :
-    c = new Float32List(nSamples) {
+  Spectrum._(int nSamples, [double v = 0.0])
+      : c = new Float32List(nSamples) {
     if (v != 0.0) {
       c.fillRange(0, nSamples, v);
     }

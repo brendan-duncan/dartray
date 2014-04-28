@@ -21,9 +21,9 @@
 part of core;
 
 class Octree {
-  Octree(BBox b, [this.maxDepth = 16]) :
-    bound = new BBox.from(b),
-    root = new _OctreeNode();
+  Octree(BBox b, [this.maxDepth = 16])
+      : bound = new BBox.from(b),
+        root = new _OctreeNode();
 
   void add(dataItem, BBox dataBound) {
     _add(root, bound, dataItem, dataBound,
@@ -51,13 +51,13 @@ class Octree {
     Point pMid = nodeBound.pMin * 0.5 + nodeBound.pMax * 0.5;
 
     // Determine which children the item overlaps
-    List<bool> x = [ dataBound.pMin.x <= pMid.x, dataBound.pMax.x > pMid.x ];
-    List<bool> y = [ dataBound.pMin.y <= pMid.y, dataBound.pMax.y > pMid.y ];
-    List<bool> z = [ dataBound.pMin.z <= pMid.z, dataBound.pMax.z > pMid.z ];
-    List<bool> over = [ (x[0] && y[0] && z[0]), (x[0] && y[0] && z[1]),
-                     (x[0] && y[1] && z[0]), (x[0] && y[1] && z[1]),
-                     (x[1] && y[0] && z[0]), (x[1] && y[0] && z[1]),
-                     (x[1] && y[1] && z[0]), (x[1] && y[1] && z[1]) ];
+    List<bool> x = [dataBound.pMin.x <= pMid.x, dataBound.pMax.x > pMid.x];
+    List<bool> y = [dataBound.pMin.y <= pMid.y, dataBound.pMax.y > pMid.y];
+    List<bool> z = [dataBound.pMin.z <= pMid.z, dataBound.pMax.z > pMid.z];
+    List<bool> over = [(x[0] && y[0] && z[0]), (x[0] && y[0] && z[1]),
+                       (x[0] && y[1] && z[0]), (x[0] && y[1] && z[1]),
+                       (x[1] && y[0] && z[0]), (x[1] && y[0] && z[1]),
+                       (x[1] && y[1] && z[0]), (x[1] && y[1] && z[1])];
 
     for (int child = 0; child < 8; ++child) {
       if (!over[child]) {
@@ -119,7 +119,7 @@ class _OctreeNode {
   final List<_OctreeNode> children;
   final List data;
 
-  _OctreeNode() :
-    children = new List<_OctreeNode>(8),
-    data = [];
+  _OctreeNode()
+      : children = new List<_OctreeNode>(8),
+        data = [];
 }

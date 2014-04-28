@@ -21,11 +21,11 @@
 part of core;
 
 class RGBColor extends Spectrum {
-  RGBColor([double v = 0.0]) :
-    super._(3, v);
+  RGBColor([double v = 0.0])
+      : super._(3, v);
 
-  RGBColor.rgb(double r, double g, double b) :
-    super._(3) {
+  RGBColor.rgb(double r, double g, double b)
+      : super._(3) {
     c[0] = r;
     c[1] = g;
     c[2] = b;
@@ -33,15 +33,15 @@ class RGBColor extends Spectrum {
     assert(!c[0].isInfinite && !c[1].isInfinite && !c[2].isInfinite);
   }
 
-  RGBColor.xyz(double x, double y, double z) :
-    super._(3) {
+  RGBColor.xyz(double x, double y, double z)
+      : super._(3) {
     Spectrum.XYZToRGB(x, y, z, c);
     assert(!c[0].isNaN && !c[1].isNaN && !c[2].isNaN);
     assert(!c[0].isInfinite && !c[1].isInfinite && !c[2].isInfinite);
   }
 
-  RGBColor.from(Spectrum s) :
-    super._(3) {
+  RGBColor.from(Spectrum s)
+      : super._(3) {
     if (s is RGBColor) {
       c[0] = s.c[0];
       c[1] = s.c[1];

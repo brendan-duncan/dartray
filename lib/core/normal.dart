@@ -26,11 +26,11 @@ part of core;
 class Normal extends Vector {
   static final Normal ZERO = new Normal(0.0, 0.0, 0.0);
 
-  Normal([num x = 0.0, num y = 0.0, num z = 0.0]) :
-    super(x, y, z);
+  Normal([num x = 0.0, num y = 0.0, num z = 0.0])
+      : super(x, y, z);
 
-  Normal.from(Vector other) :
-    super.from(other);
+  Normal.from(Vector other)
+      : super.from(other);
 
   Normal normalize() {
     invScale(length());

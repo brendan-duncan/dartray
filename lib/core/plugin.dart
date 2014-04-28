@@ -57,6 +57,8 @@ typedef VolumeRegion VolumeRegionCreator(Transform volume2world,
 
 typedef Renderer RendererCreator(ParamSet params);
 
+
+
 class Plugin {
   static AcceleratorCreator accelerator(String name) => _accelerators[name];
 

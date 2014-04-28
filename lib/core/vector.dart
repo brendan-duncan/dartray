@@ -26,15 +26,15 @@ part of core;
 class Vector {
   final Float32List data;
 
-  Vector([num x = 0.0, num y = 0.0, num z = 0.0]) :
-    data = new Float32List(3) {
+  Vector([num x = 0.0, num y = 0.0, num z = 0.0])
+      : data = new Float32List(3) {
     data[0] = x;
     data[1] = y;
     data[2] = z;
   }
 
-  Vector.from(Vector other) :
-    data = new Float32List.fromList(other.data);
+  Vector.from(Vector other)
+      : data = new Float32List.fromList(other.data);
 
   double get x => data[0];
 
@@ -54,28 +54,28 @@ class Vector {
     data[2] = other.data[2];
   }
 
-  Vector operator+(Vector v) =>
+  Vector operator +(Vector v) =>
       new Vector(data[0] + v.data[0],
                  data[1] + v.data[1],
                  data[2] + v.data[2]);
 
-  Vector operator-(Vector v) =>
+  Vector operator -(Vector v) =>
       new Vector(data[0] - v.data[0],
                  data[1] - v.data[1],
                  data[2] - v.data[2]);
 
-  Vector operator*(num f) =>
+  Vector operator *(num f) =>
       new Vector(data[0] * f, data[1] * f, data[2] * f);
 
-  Vector operator/(num f) =>
+  Vector operator /(num f) =>
       new Vector(data[0] / f, data[1] / f, data[2] / f);
 
-  Vector operator-() =>
+  Vector operator -() =>
       new Vector(-data[0], -data[1], -data[2]);
 
-  double operator[](int i) => data[i];
+  double operator [](int i) => data[i];
 
-  operator[]=(int i, num v) => data[i] = v;
+  operator []=(int i, num v) => data[i] = v;
 
   double lengthSquared() =>
       data[0] * data[0] + data[1] * data[1] + data[2] * data[2];

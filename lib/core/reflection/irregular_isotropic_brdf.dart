@@ -21,17 +21,17 @@
 part of core;
 
 class IrregIsotropicBRDFSample {
-  IrregIsotropicBRDFSample(Point pp, Spectrum vv) :
-    p = new Point.from(pp),
-    v = new Spectrum.from(vv);
+  IrregIsotropicBRDFSample(Point pp, Spectrum vv)
+      : p = new Point.from(pp),
+        v = new Spectrum.from(vv);
 
   Point p;
   Spectrum v;
 }
 
 class IrregularIsotropicBRDF extends BxDF {
-  IrregularIsotropicBRDF(this.isoBRDFData) :
-    super(BSDF_REFLECTION | BSDF_GLOSSY);
+  IrregularIsotropicBRDF(this.isoBRDFData)
+      : super(BSDF_REFLECTION | BSDF_GLOSSY);
 
   Spectrum f(Vector wo, Vector wi) {
     Point m = BRDFRemap(wo, wi);

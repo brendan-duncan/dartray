@@ -66,7 +66,7 @@ class BSDF {
     }
 
     int which = Math.min((bsdfSample.uComponent * matchingComps).floor(),
-                          matchingComps - 1);
+                         matchingComps - 1);
 
     BxDF bxdf;
     int count = which;
@@ -151,6 +151,7 @@ class BSDF {
 
     double v = matchingComps > 0 ? pdf / matchingComps : 0.0;
     Stats.FINISHED_BSDF_PDF();
+
     return v;
   }
 
@@ -169,6 +170,7 @@ class BSDF {
         ++num;
       }
     }
+
     return num;
   }
 
@@ -178,8 +180,8 @@ class BSDF {
 
   Vector localToWorld(Vector v) {
     return new Vector(sn.x * v.x + tn.x * v.y + nn.x * v.z,
-                  sn.y * v.x + tn.y * v.y + nn.y * v.z,
-                  sn.z * v.x + tn.z * v.y + nn.z * v.z);
+                      sn.y * v.x + tn.y * v.y + nn.y * v.z,
+                      sn.z * v.x + tn.z * v.y + nn.z * v.z);
   }
 
   Spectrum f(Vector woW, Vector wiW, [int flags = BSDF_ALL]) {
@@ -204,6 +206,7 @@ class BSDF {
     }
 
     Stats.FINISHED_BSDF_EVAL();
+
     return f;
   }
 

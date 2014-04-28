@@ -21,7 +21,7 @@
 part of core;
 
 class IdentityMapping3D extends TextureMapping3D {
-    IdentityMapping3D(this.worldToTexture);
+  IdentityMapping3D(this.worldToTexture);
 
   Point map(DifferentialGeometry dg, Vector dpdx, Vector dpdy) {
     dpdx.copy(worldToTexture.transformVector(dg.dpdx));

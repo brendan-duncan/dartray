@@ -22,12 +22,12 @@ part of core;
 
 abstract class DensityRegion extends VolumeRegion {
   DensityRegion(Spectrum sa, Spectrum ss, double gg,
-                Spectrum emit, Transform volumeToWorld) :
-    sig_a = new Spectrum.from(sa),
-    sig_s = new Spectrum.from(ss),
-    le = new Spectrum.from(emit),
-    g = gg,
-    worldToVolume = Transform.Inverse(volumeToWorld);
+                Spectrum emit, Transform volumeToWorld)
+      : sig_a = new Spectrum.from(sa),
+        sig_s = new Spectrum.from(ss),
+        le = new Spectrum.from(emit),
+        g = gg,
+        worldToVolume = Transform.Inverse(volumeToWorld);
 
   double density(Point Pobj);
 

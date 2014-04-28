@@ -36,8 +36,8 @@ class VisibilityTester {
     return !scene.intersectP(r);
   }
 
-  Spectrum transmittance(Scene scene, Renderer renderer,
-                         Sample sample, RNG rng) {
+  Spectrum transmittance(Scene scene, Renderer renderer, Sample sample,
+                         RNG rng) {
     return renderer.transmittance(scene, new RayDifferential.fromRay(r),
                                   sample, rng);
   }

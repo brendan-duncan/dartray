@@ -116,15 +116,6 @@ int RoundUpPow2(int v) {
   return v + 1;
 }
 
-int Mod(int a, int b) {
-  int n = a ~/ b;
-  a -= n * b;
-  if (a < 0) {
-    a += b;
-  }
-  return a;
-}
-
 /**
  * Smooth interpolation of [value] between [min] and [max].
  */

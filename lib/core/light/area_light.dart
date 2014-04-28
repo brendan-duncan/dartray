@@ -21,8 +21,8 @@
 part of core;
 
 abstract class AreaLight extends Light {
-  AreaLight(Transform l2w, int ns) :
-    super(l2w, ns);
+  AreaLight(Transform l2w, int ns)
+      : super(l2w, ns);
 
   Spectrum L(Point p, Normal n, Vector w);
 }

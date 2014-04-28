@@ -32,16 +32,16 @@ class RayDifferential extends Ray {
   Vector ryDirection = new Vector();
 
   RayDifferential([Point origin, Vector direction, double start = 0.0,
-                   double end = INFINITY, double t = 0.0, int d = 0]) :
-    super(origin, direction, start, end, t, d);
+                   double end = INFINITY, double t = 0.0, int d = 0])
+      : super(origin, direction, start, end, t, d);
 
-  RayDifferential.fromRay(Ray ray) :
-    super(new Point.from(ray.origin), new Vector.from(ray.direction),
-          ray.minDistance, ray.maxDistance, ray.time, ray.depth);
+  RayDifferential.fromRay(Ray ray)
+      : super(new Point.from(ray.origin), new Vector.from(ray.direction),
+              ray.minDistance, ray.maxDistance, ray.time, ray.depth);
 
   RayDifferential.child([Point origin, Vector direction, Ray parent,
-                       double start = 0.0, end = INFINITY]) :
-    super.withParent(origin, direction, parent, start, end);
+                       double start = 0.0, end = INFINITY])
+      : super.withParent(origin, direction, parent, start, end);
 
   void copy(RayDifferential b) {
     origin.copy(b.origin);

@@ -24,8 +24,8 @@ part of core;
  * Base class for objects that can be for ray intersections.
  */
 abstract class Primitive {
-  Primitive() :
-    primitiveId = _nextprimitiveId++;
+  Primitive()
+      : primitiveId = _nextprimitiveId++;
 
   /**
    * The world-space bounding box for this primitive.

@@ -29,17 +29,17 @@ class SpectrumImage {
   int samplesPerPixel;
   Float32List data;
 
-  SpectrumImage(int width, int height, [int samplesPerPixel = SPECTRUM]) :
-    this.width = width,
-    this.height = height,
-    this.samplesPerPixel = samplesPerPixel,
-    data = new Float32List(width * height * samplesPerPixel);
+  SpectrumImage(int width, int height, [int samplesPerPixel = SPECTRUM])
+      : this.width = width,
+        this.height = height,
+        this.samplesPerPixel = samplesPerPixel,
+        data = new Float32List(width * height * samplesPerPixel);
 
-  SpectrumImage.fromImage(Img.Image img) :
-    width = img.width,
-    height = img.height,
-    samplesPerPixel = 3,
-    data = new Float32List(img.width * img.height * 3) {
+  SpectrumImage.fromImage(Img.Image img)
+      : width = img.width,
+        height = img.height,
+        samplesPerPixel = 3,
+        data = new Float32List(img.width * img.height * 3) {
     Uint8List b = img.getBytes();
     for (int y = 0, p = 0, d = 0; y < height; ++y) {
       for (int x = 0; x < width; ++x, p += 4) {
@@ -50,11 +50,11 @@ class SpectrumImage {
     }
   }
 
-  SpectrumImage.from(SpectrumImage other) :
-    width = other.width,
-    height = other.height,
-    samplesPerPixel = other.samplesPerPixel,
-    data = new Float32List.fromList(other.data);
+  SpectrumImage.from(SpectrumImage other)
+      : width = other.width,
+        height = other.height,
+        samplesPerPixel = other.samplesPerPixel,
+        data = new Float32List.fromList(other.data);
 
   /**
    * Convert the image to [FLOAT] or [SPECTRUM] format.

@@ -23,16 +23,16 @@ part of core;
 class ConstantTexture<T> extends Texture {
   ConstantTexture(this.value);
 
+  evaluate(DifferentialGeometry dg) {
+    return value;
+  }
+
   static ConstantTexture CreateSpectrum(Transform tex2world, TextureParams tp) {
     return new ConstantTexture(tp.findSpectrum("value", new Spectrum(1.0)));
   }
 
   static ConstantTexture CreateFloat(Transform tex2world, TextureParams tp) {
     return new ConstantTexture(tp.findFloat("value", 1.0));
-  }
-
-  evaluate(DifferentialGeometry dg) {
-    return value;
   }
 
   T value;

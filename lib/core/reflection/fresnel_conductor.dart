@@ -21,9 +21,9 @@
 part of core;
 
 class FresnelConductor extends Fresnel {
-  FresnelConductor(Spectrum e, Spectrum kk) :
-    eta = new Spectrum.from(e),
-    k = new Spectrum.from(kk);
+  FresnelConductor(Spectrum e, Spectrum kk)
+      : eta = new Spectrum.from(e),
+        k = new Spectrum.from(kk);
 
   Spectrum evaluate(double cosi) {
     cosi = cosi.abs();

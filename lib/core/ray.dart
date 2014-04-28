@@ -40,24 +40,24 @@ class Ray {
   int depth;
 
   Ray([Point o, Vector d, this.minDistance = 0.0, this.maxDistance = INFINITY,
-      this.time = 0.0, this.depth = 0]) :
-    origin = o == null ? new Point() : new Point.from(o),
-    direction = d == null ? new Vector() : new Vector.from(d);
+      this.time = 0.0, this.depth = 0])
+      : origin = o == null ? new Point() : new Point.from(o),
+        direction = d == null ? new Vector() : new Vector.from(d);
 
-  Ray.from(Ray other) :
-    origin = new Point.from(other.origin),
-    direction = new Vector.from(other.direction),
-    minDistance = other.minDistance,
-    maxDistance = other.maxDistance,
-    time = other.time,
-    depth = other.depth;
+  Ray.from(Ray other)
+      : origin = new Point.from(other.origin),
+        direction = new Vector.from(other.direction),
+        minDistance = other.minDistance,
+        maxDistance = other.maxDistance,
+        time = other.time,
+        depth = other.depth;
 
   Ray.withParent(Point origin, Vector direction, Ray parent,
-           [this.minDistance = 0.0, this.maxDistance = INFINITY]) :
-    this.origin = new Point.from(origin),
-    this.direction = new Vector.from(direction),
-    this.time = parent.time,
-    this.depth = parent.depth + 1;
+                 [this.minDistance = 0.0, this.maxDistance = INFINITY])
+      : this.origin = new Point.from(origin),
+        this.direction = new Vector.from(direction),
+        this.time = parent.time,
+        this.depth = parent.depth + 1;
 
   void set(Point o, Vector d, double minDist, double maxDist, double time) {
     origin = new Point.from(o);

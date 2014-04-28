@@ -26,8 +26,8 @@ part of core;
  */
 class RNG {
   Math.Random random;
-  RNG([int seed = 5489]) :
-    random = new Math.Random(seed);
+  RNG([int seed = 5489])
+      : random = new Math.Random(seed);
 
   void seed(int seed) {
     random = new Math.Random(seed);

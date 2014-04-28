@@ -21,16 +21,16 @@
 part of core;
 
 class FresnelBlend extends BxDF {
-  FresnelBlend(Spectrum d, Spectrum s, this.distribution) :
-    super(BSDF_REFLECTION | BSDF_GLOSSY),
-    Rd = new Spectrum.from(d),
-    Rs = new Spectrum.from(s);
+  FresnelBlend(Spectrum d, Spectrum s, this.distribution)
+      : Rd = new Spectrum.from(d),
+        Rs = new Spectrum.from(s),
+        super(BSDF_REFLECTION | BSDF_GLOSSY);
 
   Spectrum f(Vector wo, Vector wi) {
     Spectrum diffuse = Rd * ((28.0 / (23.0 * Math.PI))) *
-            (Spectrum.ONE - Rs) *
-            ((1.0 - Math.pow(1.0 - 0.5 * Vector.AbsCosTheta(wi), 5)) *
-             (1.0 - Math.pow(1.0 - 0.5 * Vector.AbsCosTheta(wo), 5)));
+                      (Spectrum.ONE - Rs) *
+                      ((1.0 - Math.pow(1.0 - 0.5 * Vector.AbsCosTheta(wi), 5)) *
+                      (1.0 - Math.pow(1.0 - 0.5 * Vector.AbsCosTheta(wo), 5)));
 
     Vector wh = wi + wo;
     if (wh.x == 0.0 && wh.y == 0.0 && wh.z == 0.0) {
@@ -39,9 +39,9 @@ class FresnelBlend extends BxDF {
 
     wh = Vector.Normalize(wh);
 
-    var a = distribution.d(wh) / (4.0 * Vector.AbsDot(wi, wh) *
-            Math.max(Vector.AbsCosTheta(wi), Vector.AbsCosTheta(wo)));
-    var b = schlickFresnel(Vector.Dot(wi, wh));
+    double a = distribution.d(wh) / (4.0 * Vector.AbsDot(wi, wh) *
+               Math.max(Vector.AbsCosTheta(wi), Vector.AbsCosTheta(wo)));
+    Spectrum b = schlickFresnel(Vector.Dot(wi, wh));
 
     Spectrum specular = b * a;
 

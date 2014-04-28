@@ -21,10 +21,10 @@
 part of core;
 
 class ScaledBxDF extends BxDF {
-  ScaledBxDF(BxDF b, Spectrum sc) :
-    super(b.type),
-    bxdf = b,
-    s = new Spectrum.from(sc);
+  ScaledBxDF(BxDF b, Spectrum sc)
+      : bxdf = b,
+        s = new Spectrum.from(sc),
+        super(b.type);
 
   Spectrum rho(Vector w, int nSamples, List<double> samples) {
     return s * bxdf.rho(w, nSamples, samples);
@@ -39,7 +39,7 @@ class ScaledBxDF extends BxDF {
   }
 
   Spectrum sample_f(Vector wo, Vector wi, double u1, double u2,
-                       List<double> pdf) {
+                    List<double> pdf) {
     Spectrum f = bxdf.sample_f(wo, wi, u1, u2, pdf);
     return s * f;
   }

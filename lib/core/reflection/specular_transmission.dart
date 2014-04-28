@@ -21,9 +21,9 @@
 part of core;
 
 class SpecularTransmission extends BxDF {
-  SpecularTransmission(Spectrum t, double ei, double et) :
-    super(BSDF_TRANSMISSION | BSDF_SPECULAR),
-    fresnel = new FresnelDielectric(ei, et) {
+  SpecularTransmission(Spectrum t, double ei, double et)
+      : fresnel = new FresnelDielectric(ei, et),
+        super(BSDF_TRANSMISSION | BSDF_SPECULAR) {
     T = t;
     etai = ei;
     etat = et;
@@ -66,7 +66,7 @@ class SpecularTransmission extends BxDF {
     pdf[0] = 1.0;
     Spectrum F = fresnel.evaluate(Vector.CosTheta(wo));
 
-    return ((new Spectrum(1.0) - F) * T) / Vector.AbsCosTheta(wi);
+    return ((Spectrum.ONE - F) * T) / Vector.AbsCosTheta(wi);
   }
 
   double pdf(Vector wo, Vector wi) {

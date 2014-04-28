@@ -55,7 +55,7 @@ class KdTree {
 
     // Choose split direction and partition data
 
-    // Compute bounds of data from _start_ to _end_
+    // Compute bounds of data from start to end
     BBox bound = new BBox();
     for (int i = start; i < end; ++i) {
       bound = BBox.UnionPoint(bound, data[buildNodes[i]].p);
@@ -64,10 +64,12 @@ class KdTree {
     int splitAxis = bound.maximumExtent();
     int splitPos = (start + end) ~/ 2;
 
-    nth_element(buildNodes, start, splitPos, end, new _CompareNode(data, splitAxis));
+    nth_element(buildNodes, start, splitPos, end,
+                new _CompareNode(data, splitAxis));
 
     // Allocate kd-tree node and continue recursively
-    nodes[nodeNum] = new _KdNode(data[buildNodes[splitPos]].p[splitAxis], splitAxis);
+    nodes[nodeNum] = new _KdNode(data[buildNodes[splitPos]].p[splitAxis],
+                                 splitAxis);
     nodeData[nodeNum] = data[buildNodes[splitPos]];
 
     if (start < splitPos) {
@@ -123,9 +125,9 @@ class _CompareNode {
   _CompareNode(this.data, this.axis);
 
   bool call(d1, d2) {
-      return data[d1].p[axis] == data[d2].p[axis] ?
-             (data[d1].hashCode < data[d2].hashCode) :
-             data[d1].p[axis] < data[d2].p[axis];
+    return (data[d1].p[axis] == data[d2].p[axis]) ?
+           (data[d1].hashCode < data[d2].hashCode) :
+           (data[d1].p[axis] < data[d2].p[axis]);
   }
 
   List data;
@@ -133,14 +135,14 @@ class _CompareNode {
 }
 
 class _KdNode {
-  _KdNode(this.splitPos, this.splitAxis) :
-    rightChild = (1 << 29) - 1,
-    hasLeftChild = false;
+  _KdNode(this.splitPos, this.splitAxis)
+      : rightChild = (1 << 29) - 1,
+        hasLeftChild = false;
 
-  _KdNode.leaf() :
-    splitAxis = 3,
-    rightChild = (1 << 29) - 1,
-    hasLeftChild = false;
+  _KdNode.leaf()
+      : splitAxis = 3,
+        rightChild = (1 << 29) - 1,
+        hasLeftChild = false;
 
   double splitPos;
   int splitAxis;

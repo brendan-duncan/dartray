@@ -41,47 +41,46 @@ class DifferentialGeometry {
   double dudy;
   double dvdy;
 
-  DifferentialGeometry() :
-    p = new Point(),
-    nn = new Normal(),
-    u = 0.0,
-    v = 0.0,
-    dpdu = new Vector(),
-    dpdv = new Vector(),
-    dndu = new Normal(),
-    dndv = new Normal(),
-    dpdx = new Vector(),
-    dpdy = new Vector(),
-    dudx = 0.0,
-    dvdx = 0.0,
-    dudy = 0.0,
-    dvdy = 0.0;
+  DifferentialGeometry()
+      : p = new Point(),
+        nn = new Normal(),
+        u = 0.0,
+        v = 0.0,
+        dpdu = new Vector(),
+        dpdv = new Vector(),
+        dndu = new Normal(),
+        dndv = new Normal(),
+        dpdx = new Vector(),
+        dpdy = new Vector(),
+        dudx = 0.0,
+        dvdx = 0.0,
+        dudy = 0.0,
+        dvdy = 0.0;
 
-  DifferentialGeometry.from(DifferentialGeometry other) {
-    p = new Point.from(other.p);
-    nn = new Normal.from(other.nn);
-    u = other.u;
-    v = other.v;
-    shape = other.shape;
-    dpdu = new Vector.from(other.dpdu);
-    dpdv = new Vector.from(other.dpdv);
-    dndu = new Normal.from(other.dndu);
-    dndv = new Normal.from(other.dndv);
-    dpdx = new Vector.from(other.dpdx);
-    dpdy = new Vector.from(other.dpdy);
-    dudx = other.dudx;
-    dvdx = other.dvdx;
-    dudy = other.dudy;
-    dvdy = other.dvdy;
-  }
+  DifferentialGeometry.from(DifferentialGeometry other)
+      : p = new Point.from(other.p),
+        nn = new Normal.from(other.nn),
+        u = other.u,
+        v = other.v,
+        shape = other.shape,
+        dpdu = new Vector.from(other.dpdu),
+        dpdv = new Vector.from(other.dpdv),
+        dndu = new Normal.from(other.dndu),
+        dndv = new Normal.from(other.dndv),
+        dpdx = new Vector.from(other.dpdx),
+        dpdy = new Vector.from(other.dpdy),
+        dudx = other.dudx,
+        dvdx = other.dvdx,
+        dudy = other.dudy,
+        dvdy = other.dvdy;
 
   DifferentialGeometry set(Point p, Vector dpdu, Vector dpdv, Normal dndu,
                            Normal dndv, double u, double v, Shape shape) {
-    this.p = p;//.copy(p);
-    this.dpdu = dpdu;//.copy(dpdu);
-    this.dpdv = dpdv;//.copy(dpdv);
-    this.dndu = dndu;//.copy(dndu);
-    this.dndv = dndv;//.copy(dndv);
+    this.p = p;
+    this.dpdu = dpdu;
+    this.dpdv = dpdv;
+    this.dndu = dndu;
+    this.dndv = dndv;
     this.nn = Vector.Normalize(Vector.Cross(dpdu, dpdv));
     this.u = u;
     this.v = v;
@@ -122,7 +121,7 @@ class DifferentialGeometry {
 
   void computeDifferentials(RayDifferential ray) {
     if (ray.hasDifferentials) {
-      // Estimate screen space change in $\pt{}$ and $(u,v)$
+      // Estimate screen space change in pt and (u,v)
 
       // Compute auxiliary intersection points with plane
       double d = -Vector.Dot(nn, new Vector(p.x, p.y, p.z));
@@ -151,9 +150,9 @@ class DifferentialGeometry {
       dpdx = px - p;
       dpdy = py - p;
 
-      // Compute $(u,v)$ offsets at auxiliary points
+      // Compute (u,v) offsets at auxiliary points
 
-      // Initialize _A_, _Bx_, and _By_ matrices for offset computation
+      // Initialize A, Bx, and By matrices for offset computation
       List<double> A = new List<double>(4);
       List<double> Bx = new List<double>(2);
       List<double> By = new List<double>(2);

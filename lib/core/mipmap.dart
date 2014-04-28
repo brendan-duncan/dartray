@@ -56,10 +56,10 @@ class MIPMap {
     return name;
   }
 
-  MIPMap() :
-    width = 0,
-    height = 0,
-    levels = 0;
+  MIPMap()
+      : width = 0,
+        height = 0,
+        levels = 0;
 
   MIPMap.texture(SpectrumImage img, String filename,
                  [this.doTrilinear = false,
@@ -91,7 +91,7 @@ class MIPMap {
           for (int j = 0; j < 4; ++j) {
             int origS = sWeights[s].firstTexel + j;
             if (wrapMode == TEXTURE_REPEAT) {
-              origS = Mod(origS, xres);
+              origS = origS % xres;
             } else if (wrapMode == TEXTURE_CLAMP) {
               origS = origS.clamp(0, xres - 1);
             }
@@ -115,7 +115,7 @@ class MIPMap {
           for (int j = 0; j < 4; ++j) {
             int offset = tWeights[t].firstTexel + j;
             if (wrapMode == TEXTURE_REPEAT) {
-              offset = Mod(offset, yres);
+              offset = offset % yres;
             } else if (wrapMode == TEXTURE_CLAMP) {
               offset = offset.clamp(0, yres - 1);
             }
@@ -151,7 +151,7 @@ class MIPMap {
     pyramid[0] = new SpectrumImage.from(img);
 
     for (int i = 1; i < levels; ++i) {
-      // Initialize $i$th MIPMap level from $i-1$st level
+      // Initialize i'th MIPMap level from i-1'th level
       int sRes = Math.max(1, pyramid[i - 1].width ~/ 2);
       int tRes = Math.max(1, pyramid[i - 1].height ~/ 2);
       pyramid[i] = new SpectrumImage(sRes, tRes, img.samplesPerPixel);
@@ -188,8 +188,8 @@ class MIPMap {
     // Compute texel $(s,t)$ accounting for boundary conditions
     switch (wrapMode) {
       case TEXTURE_REPEAT:
-        s = Mod(s, l.width);
-        t = Mod(t, l.height);
+        s = s % l.width;
+        t = t % l.height;
         break;
       case TEXTURE_CLAMP:
         s = s.clamp(0, l.width - 1);

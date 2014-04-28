@@ -27,17 +27,17 @@ class Quaternion {
   Vector v;
   double w;
 
-  Quaternion() :
-    v = new Vector(),
-    w = 1.0;
+  Quaternion()
+      : v = new Vector(),
+        w = 1.0;
 
-  Quaternion.from(Quaternion q) :
-    v = new Vector.from(q.v),
-    w = q.w;
+  Quaternion.from(Quaternion q)
+      : v = new Vector.from(q.v),
+        w = q.w;
 
-  Quaternion.fromMatrix(Matrix4x4 m) :
-    v = new Vector(),
-    w = 1.0 {
+  Quaternion.fromMatrix(Matrix4x4 m)
+      : v = new Vector(),
+        w = 1.0 {
     double trace = m.data[0] + m.data[5] + m.data[10];
     if (trace > 0.0) {
       // Compute w from matrix trace, then xyz
@@ -123,9 +123,15 @@ class Quaternion {
   }
 
   Transform toTransform() {
-    double xx = v.x * v.x, yy = v.y * v.y, zz = v.z * v.z;
-    double xy = v.x * v.y, xz = v.x * v.z, yz = v.y * v.z;
-    double wx = v.x * w,   wy = v.y * w,   wz = v.z * w;
+    double xx = v.x * v.x;
+    double yy = v.y * v.y;
+    double zz = v.z * v.z;
+    double xy = v.x * v.y;
+    double xz = v.x * v.z;
+    double yz = v.y * v.z;
+    double wx = v.x * w;
+    double wy = v.y * w;
+    double wz = v.z * w;
 
     Matrix4x4 m = new Matrix4x4();
     m.data[0] = 1.0 - 2.0 * (yy + zz);

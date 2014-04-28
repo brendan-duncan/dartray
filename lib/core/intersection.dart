@@ -25,13 +25,11 @@ part of core;
  * intersected, and the point of intersection and associated geometric data.
  */
 class Intersection {
-  Intersection() :
-    dg = new DifferentialGeometry() {
-    primitive = null;
-    shapeId = 0;
-    primitiveId = 0;
-    rayEpsilon = 0.0;
-  }
+  Intersection()
+      : dg = new DifferentialGeometry(),
+        shapeId = 0,
+        primitiveId = 0,
+        rayEpsilon = 0.0;
 
   void copy(Intersection other) {
     dg = other.dg;

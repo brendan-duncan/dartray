@@ -32,11 +32,10 @@ abstract class ProjectiveCamera extends Camera {
   double focalDistance;
 
   ProjectiveCamera(AnimatedTransform cam2world,
-          this.cameraToScreen, List<double> screenWindow,
-          double sopen, double sclose, this.lensRadius,
-          this.focalDistance,
-          Film film) :
-    super(cam2world, sopen, sclose, film) {
+                   this.cameraToScreen, List<double> screenWindow,
+                   double sopen, double sclose, this.lensRadius,
+                   this.focalDistance, Film film)
+      : super(cam2world, sopen, sclose, film) {
     // Compute projective camera screen transformations
     screenToRaster =
          Transform.Scale(film.xResolution.toDouble(),
@@ -48,6 +47,7 @@ abstract class ProjectiveCamera extends Camera {
          Transform.Translate(new Vector(-screenWindow[0].toDouble(),
                                         -screenWindow[3].toDouble(),
                                         0.0));
+
     rasterToScreen = Transform.Inverse(screenToRaster);
     rasterToCamera = Transform.Inverse(cameraToScreen) * rasterToScreen;
   }
