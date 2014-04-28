@@ -23,19 +23,11 @@ part of materials;
 class SubstrateMaterial extends Material {
   SubstrateMaterial(this.Kd, this.Ks, this.nu, this.nv, this.bumpMap);
 
-  static SubstrateMaterial Create(Transform xform, TextureParams mp) {
-    Texture Kd = mp.getSpectrumTexture('Kd', new Spectrum(0.5));
-    Texture Ks = mp.getSpectrumTexture('Ks', new Spectrum(0.5));
-    Texture uroughness = mp.getFloatTexture('uroughness', 0.1);
-    Texture vroughness = mp.getFloatTexture('vroughness', 0.1);
-    Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
-    return new SubstrateMaterial(Kd, Ks, uroughness, vroughness, bumpMap);
-  }
-
   BSDF getBSDF(DifferentialGeometry dgGeom, DifferentialGeometry dgShading) {
-    // Allocate _BSDF_, possibly doing bump mapping with _bumpMap_
-    DifferentialGeometry dgs = new DifferentialGeometry();
+    // Allocate BSDF, possibly doing bump mapping with bumpMap
+    DifferentialGeometry dgs;
     if (bumpMap != null) {
+      dgs = new DifferentialGeometry();
       Material.Bump(bumpMap, dgGeom, dgShading, dgs);
     } else {
       dgs = dgShading;
@@ -53,6 +45,15 @@ class SubstrateMaterial extends Material {
     }
 
     return bsdf;
+  }
+
+  static SubstrateMaterial Create(Transform xform, TextureParams mp) {
+    Texture Kd = mp.getSpectrumTexture('Kd', new Spectrum(0.5));
+    Texture Ks = mp.getSpectrumTexture('Ks', new Spectrum(0.5));
+    Texture uroughness = mp.getFloatTexture('uroughness', 0.1);
+    Texture vroughness = mp.getFloatTexture('vroughness', 0.1);
+    Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
+    return new SubstrateMaterial(Kd, Ks, uroughness, vroughness, bumpMap);
   }
 
   Texture Kd;

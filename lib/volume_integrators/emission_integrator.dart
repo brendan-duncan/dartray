@@ -23,11 +23,6 @@ part of volume_integrators;
 class EmissionIntegrator extends VolumeIntegrator {
   EmissionIntegrator(this.stepSize);
 
-  static EmissionIntegrator Create(ParamSet params) {
-    double stepSize = params.findOneFloat('stepsize', 1.0);
-    return new EmissionIntegrator(stepSize);
-  }
-
   void requestSamples(Sampler sampler, Sample sample, Scene scene) {
     tauSampleOffset = sample.add1D(1);
     scatterSampleOffset = sample.add1D(1);
@@ -36,7 +31,8 @@ class EmissionIntegrator extends VolumeIntegrator {
   Spectrum Li(Scene scene, Renderer renderer,
               RayDifferential ray, Sample sample, RNG rng, Spectrum T) {
     VolumeRegion vr = scene.volumeRegion;
-    //Assert(sample != NULL);
+    assert(sample != null);
+
     List<double> t0 = [0.0];
     List<double> t1 = [0.0];
 
@@ -103,6 +99,11 @@ class EmissionIntegrator extends VolumeIntegrator {
     Spectrum tau = scene.volumeRegion.tau(ray, step, offset);
 
     return (-tau).exp();
+  }
+
+  static EmissionIntegrator Create(ParamSet params) {
+    double stepSize = params.findOneFloat('stepsize', 1.0);
+    return new EmissionIntegrator(stepSize);
   }
 
   double stepSize;

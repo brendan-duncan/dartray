@@ -21,9 +21,8 @@
 part of shapes;
 
 class Heightfield extends Shape {
-  Heightfield(Transform o2w, Transform w2o, bool ro, this.nx, this.ny,
-              this.z) :
-    super(o2w, w2o, ro);
+  Heightfield(Transform o2w, Transform w2o, bool ro, this.nx, this.ny, this.z)
+      : super(o2w, w2o, ro);
 
   bool canIntersect() {
     return false;
@@ -65,7 +64,7 @@ class Heightfield extends Shape {
     paramSet.addFloat('uv', uvs);
     paramSet.addPoint('P', P);
     refined.add(TriangleMesh.Create(objectToWorld, worldToObject,
-                                         reverseOrientation, paramSet));
+                                    reverseOrientation, paramSet));
   }
 
   BBox objectBound() {
@@ -83,10 +82,6 @@ class Heightfield extends Shape {
     return new BBox(new Point(0.0, 0.0, minz), new Point(1.0, 1.0, maxz));
   }
 
-  List<double> z;
-  int nx;
-  int ny;
-
   static Heightfield Create(Transform o2w, Transform w2o,
                             bool reverseOrientation, ParamSet params) {
     int nu = params.findOneInt('nu', -1);
@@ -96,4 +91,8 @@ class Heightfield extends Shape {
     assert(nu != -1 && nv != -1 && Pz != null);
     return new Heightfield(o2w, w2o, reverseOrientation, nu, nv, Pz);
   }
+
+  List<double> z;
+  int nx;
+  int ny;
 }

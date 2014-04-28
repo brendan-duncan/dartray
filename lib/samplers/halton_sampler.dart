@@ -22,8 +22,8 @@ part of samplers;
 
 class HaltonSampler extends Sampler {
   HaltonSampler(int x, int y, int width, int height, double sopen,
-                double sclose, int ps) :
-    super(x, y, width, height, sopen, sclose, ps) {
+                double sclose, int ps)
+      : super(x, y, width, height, sopen, sclose, ps) {
     int delta = Math.max(width, height);
     wantedSamples = samplesPerPixel * delta * delta;
     currentSample = 0;

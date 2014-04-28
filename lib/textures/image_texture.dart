@@ -26,41 +26,42 @@ class ImageTexture extends Texture {
                bool spectrum) {
     if (filename.isNotEmpty) {
       Completer completer = new Completer();
+
       ResourceManager.RequestImage(filename, completer.future)
-        .then((SpectrumImage img) {
-          String name = MIPMap.GetTextureName(filename, doTri: doTri,
-                                              maxAniso: maxAniso,
-                                              wrap: wrap, scale: scale,
-                                              gamma: gamma,
-                                              spectrum: spectrum);
-          LogDebug('TEXTURE $name');
+      .then((SpectrumImage img) {
+        String name = MIPMap.GetTextureName(filename, doTri: doTri,
+                                            maxAniso: maxAniso,
+                                            wrap: wrap, scale: scale,
+                                            gamma: gamma,
+                                            spectrum: spectrum);
+        LogDebug('TEXTURE $name');
 
-          if (ResourceManager.HasTexture(name)) {
-            mipmap = ResourceManager.GetTexture(name);
-            completer.complete();
-            return;
-          }
-
-          if (img != null) {
-            if (!spectrum) {
-              img = img.convert(SpectrumImage.FLOAT);
-            } else {
-              img = new SpectrumImage.from(img);
-            }
-
-            if (scale != 1.0 || gamma != 1.0) {
-              for (int i = 0, len = img.data.length; i < len; ++i) {
-                img.data[i] = pow(img.data[i] * scale, gamma);
-              }
-            }
-
-            mipmap = new MIPMap.texture(img, filename, doTri, maxAniso, wrap);
-            ResourceManager.AddTexture(name, mipmap);
-          }
-
-          // Let the renderer know we're done processing the resource.
+        if (ResourceManager.HasTexture(name)) {
+          mipmap = ResourceManager.GetTexture(name);
           completer.complete();
-        });
+          return;
+        }
+
+        if (img != null) {
+          if (!spectrum) {
+            img = img.convert(SpectrumImage.FLOAT);
+          } else {
+            img = new SpectrumImage.from(img);
+          }
+
+          if (scale != 1.0 || gamma != 1.0) {
+            for (int i = 0, len = img.data.length; i < len; ++i) {
+              img.data[i] = pow(img.data[i] * scale, gamma);
+            }
+          }
+
+          mipmap = new MIPMap.texture(img, filename, doTri, maxAniso, wrap);
+          ResourceManager.AddTexture(name, mipmap);
+        }
+
+        // Let the renderer know we're done processing the resource.
+        completer.complete();
+      });
     }
 
     double v = pow(scale, gamma);
@@ -87,10 +88,6 @@ class ImageTexture extends Texture {
     var v = mipmap.lookup2(s[0], t[0], dsdx[0], dtdx[0], dsdy[0], dtdy[0]);
     return v;
   }
-
-  MIPMap mipmap;
-  TextureMapping2D mapping;
-
 
   static ImageTexture CreateFloat(Transform tex2world, TextureParams tp) {
     // Initialize 2D texture mapping _map_ from _tp_
@@ -173,4 +170,7 @@ class ImageTexture extends Texture {
     return new ImageTexture(map, tp.findFilename('filename'),
                             trilerp, maxAniso, wrapMode, scale, gamma, true);
   }
+
+  MIPMap mipmap;
+  TextureMapping2D mapping;
 }

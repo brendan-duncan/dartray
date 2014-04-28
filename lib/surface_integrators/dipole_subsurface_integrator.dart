@@ -3,14 +3,14 @@
  *                                                                          *
  * This file is part of DartRay.                                            *
  *                                                                          *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * Licensed under the Apache License, Version 2.0 (the 'License');          *
  * you may not use this file except in compliance with the License.         *
  * You may obtain a copy of the License at                                  *
  *                                                                          *
  * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
  * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * distributed under the License is distributed on an 'AS IS' BASIS,        *
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
  * See the License for the specific language governing permissions and      *
  * limitations under the License.                                           *
@@ -42,9 +42,8 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
     }
   }
 
-  Spectrum Li(Scene scene, Renderer renderer,
-              RayDifferential ray, Intersection isect, Sample sample,
-              RNG rng) {
+  Spectrum Li(Scene scene, Renderer renderer, RayDifferential ray,
+              Intersection isect, Sample sample, RNG rng) {
     Spectrum L = new Spectrum(0.0);
     Vector wo = -ray.direction;
     // Compute emitted light if ray hit an area light source
@@ -130,8 +129,8 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
       List<double> fpts = ResourceManager.GetResource(filename);
       if (fpts != null) {
         if ((fpts.length % 8) != 0) {
-          LogError("Excess values (${fpts.length}) in points "
-                   "file \"${filename}\"");
+          LogError('Excess values (${fpts.length}) in points '
+                   'file \'${filename}\'');
         }
 
         for (int i = 0; i < fpts.length; i += 8) {
@@ -219,18 +218,6 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
     LogInfo('FINISHED DipoleSubsurface Preprocessing: ${timer.elapsed}');
   }
 
-  int maxSpecularDepth;
-  double maxError;
-  double minSampleDist;
-  String filename;
-  List<_IrradiancePoint> irradiancePoints = [];
-  BBox octreeBounds;
-  _SubsurfaceOctreeNode octree;
-
-  List<LightSampleOffsets> lightSampleOffsets;
-  List<BSDFSampleOffsets> bsdfSampleOffsets;
-
-
   static DipoleSubsurfaceIntegrator Create(ParamSet params) {
     int maxDepth = params.findOneInt('maxdepth', 5);
     double maxError = params.findOneFloat('maxerror', 0.05);
@@ -243,6 +230,17 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
     return new DipoleSubsurfaceIntegrator(maxDepth, maxError, minDist,
                                           pointsfile);
   }
+
+  int maxSpecularDepth;
+  double maxError;
+  double minSampleDist;
+  String filename;
+  List<_IrradiancePoint> irradiancePoints = [];
+  BBox octreeBounds;
+  _SubsurfaceOctreeNode octree;
+
+  List<LightSampleOffsets> lightSampleOffsets;
+  List<BSDFSampleOffsets> bsdfSampleOffsets;
 }
 
 class _SubsurfaceOctreeNode {

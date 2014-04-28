@@ -91,11 +91,11 @@ class AggregateTestRenderer extends Renderer {
       // Report any inconsistencies between intersections
       if (!inconsistentBounds && ((hitAccel != hitAll) ||
           (rayAccel.maxDistance != rayAll.maxDistance))) {
-        /*LogWarning("Disagreement: t accel %.16g [%a] t exhaustive %.16g [%a]\n"
-                   "Ray: org [%a, %a, %a], dir [%a, %a, %a], mint = %a",
-                   rayAccel.maxt, rayAll.maxt, rayAccel.maxt, rayAll.maxt,
-                   rayAll.o.x, rayAll.o.y, rayAll.o.z,
-                   rayAll.d.x, rayAll.d.y, rayAll.d.z, rayAll.mint);*/
+        LogWarning('Disagreement: '
+              't accel ${rayAccel.maxDistance} [${rayAll.maxDistance}] '
+              't exhaustive ${rayAccel.maxDistance}] [${rayAll.maxDistance}], '
+              'Ray: org [${rayAll.origin}], dir [${rayAll.direction}], '
+              'mint = ${rayAll.minDistance}');
       }
 
       if (hitAll) {
@@ -115,12 +115,12 @@ class AggregateTestRenderer extends Renderer {
   }
 
   Spectrum transmittance(Scene scene, RayDifferential ray,
-          Sample sample, RNG rng) {
+                         Sample sample, RNG rng) {
     return new Spectrum(0.0);
   }
 
   static AggregateTestRenderer Create(ParamSet params,
-                                     List<Primitive> primitives) {
+                                      List<Primitive> primitives) {
     int niters = params.findOneInt('niters', 100000);
     return new AggregateTestRenderer(niters, primitives);
   }

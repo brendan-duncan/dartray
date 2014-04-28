@@ -22,8 +22,8 @@ part of shapes;
 
 class Sphere extends Shape {
   Sphere(Transform o2w, Transform w2o, bool ro, this.radius,
-         double z0, double z1, double pm) :
-    super(o2w, w2o, ro) {
+         double z0, double z1, double pm)
+      : super(o2w, w2o, ro) {
     zmin = Math.min(z0, z1).clamp(-radius, radius);
     zmax = Math.max(z0, z1).clamp(-radius, radius);
     thetaMin = Math.acos((zmin / radius).clamp(-1.0, 1.0));
@@ -174,7 +174,8 @@ class Sphere extends Shape {
     worldToObject.transformRay(r, ray);
 
     // Compute quadratic sphere coefficients
-    double A = ray.direction.x * ray.direction.x + ray.direction.y * ray.direction.y +
+    double A = ray.direction.x * ray.direction.x +
+               ray.direction.y * ray.direction.y +
                ray.direction.z * ray.direction.z;
     double B = 2 * (ray.direction.x * ray.origin.x +
                     ray.direction.y * ray.origin.y +
@@ -245,7 +246,10 @@ class Sphere extends Shape {
 
   Point sample(double u1, double u2, Normal ns) {
     Point p = new Point() + UniformSampleSphere(u1, u2) * radius;
-    ns.copy(Vector.Normalize(objectToWorld.transformNormal(new Normal(p.x, p.y, p.z))));
+
+    ns.copy(objectToWorld.transformNormal(new Normal(p.x, p.y, p.z)));
+    ns.normalize();
+
     if (reverseOrientation) {
       ns.x = -ns.x;
       ns.y = -ns.y;
@@ -306,11 +310,6 @@ class Sphere extends Shape {
     return UniformConePdf(cosThetaMax);
   }
 
-  double radius;
-  double phiMax;
-  double zmin, zmax;
-  double thetaMin, thetaMax;
-
   static Sphere Create(Transform o2w, Transform w2o,
                        bool reverseOrientation, ParamSet params) {
     double radius = params.findOneFloat('radius', 1.0);
@@ -320,4 +319,11 @@ class Sphere extends Shape {
     return new Sphere(o2w, w2o, reverseOrientation, radius,
                       zmin, zmax, phimax);
   }
+
+  double radius;
+  double phiMax;
+  double zmin;
+  double zmax;
+  double thetaMin;
+  double thetaMax;
 }

@@ -23,18 +23,8 @@ part of materials;
 class ShinyMetalMaterial extends Material {
   ShinyMetalMaterial(this.Ks, this.roughness, this.Kr, this.bumpMap);
 
-  static ShinyMetalMaterial Create(Transform xform, TextureParams mp) {
-    Texture Kr = mp.getSpectrumTexture('Kr', new Spectrum(1.0));
-    Texture Ks = mp.getSpectrumTexture('Ks', new Spectrum(1.0));
-    Texture roughness = mp.getFloatTexture('roughness', 0.1);
-    Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
-
-    return new ShinyMetalMaterial(Ks, roughness, Kr, bumpMap);
-  }
-
-  BSDF getBSDF(DifferentialGeometry dgGeom,
-               DifferentialGeometry dgShading) {
-    // Allocate _BSDF_, possibly doing bump-mapping with _bumpMap_
+  BSDF getBSDF(DifferentialGeometry dgGeom, DifferentialGeometry dgShading) {
+    // Allocate BSDF, possibly doing bump-mapping with bumpMap
     DifferentialGeometry dgs;
     if (bumpMap != null) {
       dgs = new DifferentialGeometry();
@@ -67,14 +57,22 @@ class ShinyMetalMaterial extends Material {
   static Spectrum FresnelApproxEta(Spectrum Fr) {
     Spectrum reflectance = Fr.clamp(0.0, 0.999);
     Spectrum sqrtRefl = reflectance.sqrt();
-    Spectrum one = new Spectrum(1.0);
-    return (one + sqrtRefl) / (one - sqrtRefl);
+    return (Spectrum.ONE + sqrtRefl) / (Spectrum.ONE - sqrtRefl);
   }
 
   static Spectrum FresnelApproxK(Spectrum Fr) {
     Spectrum reflectance = Fr.clamp(0.0, 0.999);
-    Spectrum r = reflectance / (new Spectrum(1.0) - reflectance);
+    Spectrum r = reflectance / (Spectrum.ONE - reflectance);
     return r.sqrt() * 2.0;
+  }
+
+  static ShinyMetalMaterial Create(Transform xform, TextureParams mp) {
+    Texture Kr = mp.getSpectrumTexture('Kr', new Spectrum(1.0));
+    Texture Ks = mp.getSpectrumTexture('Ks', new Spectrum(1.0));
+    Texture roughness = mp.getFloatTexture('roughness', 0.1);
+    Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
+
+    return new ShinyMetalMaterial(Ks, roughness, Kr, bumpMap);
   }
 
   Texture Ks;

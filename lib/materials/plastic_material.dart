@@ -23,19 +23,11 @@ part of materials;
 class PlasticMaterial extends Material {
   PlasticMaterial(this.Kd, this.Ks, this.roughness, this.bumpMap);
 
-  static PlasticMaterial Create(Transform xform, TextureParams mp) {
-    Texture Kd = mp.getSpectrumTexture("Kd", new Spectrum(0.25));
-    Texture Ks = mp.getSpectrumTexture("Ks", new Spectrum(0.25));
-    Texture roughness = mp.getFloatTexture("roughness", 0.1);
-    Texture bumpMap = mp.getFloatTextureOrNull("bumpmap");
-    return new PlasticMaterial(Kd, Ks, roughness, bumpMap);
-  }
-
-  BSDF getBSDF(DifferentialGeometry dgGeom,
-               DifferentialGeometry dgShading) {
-    // Allocate _BSDF_, possibly doing bump mapping with _bumpMap_
-    DifferentialGeometry dgs = new DifferentialGeometry();
+  BSDF getBSDF(DifferentialGeometry dgGeom, DifferentialGeometry dgShading) {
+    // Allocate BSDF, possibly doing bump mapping with bumpMap
+    DifferentialGeometry dgs;
     if (bumpMap != null) {
+      dgs = new DifferentialGeometry();
       Material.Bump(bumpMap, dgGeom, dgShading, dgs);
     } else {
       dgs = dgShading;
@@ -57,6 +49,14 @@ class PlasticMaterial extends Material {
     }
 
     return bsdf;
+  }
+
+  static PlasticMaterial Create(Transform xform, TextureParams mp) {
+    Texture Kd = mp.getSpectrumTexture('Kd', new Spectrum(0.25));
+    Texture Ks = mp.getSpectrumTexture('Ks', new Spectrum(0.25));
+    Texture roughness = mp.getFloatTexture('roughness', 0.1);
+    Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
+    return new PlasticMaterial(Kd, Ks, roughness, bumpMap);
   }
 
   Texture Kd;

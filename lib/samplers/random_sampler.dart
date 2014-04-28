@@ -22,8 +22,8 @@ part of samplers;
 
 class RandomSampler extends Sampler {
   RandomSampler(int x, int y, int width, int height, double sopen,
-                double sclose, this.pixels, int ns) :
-    super(x, y, width, height, sopen, sclose, ns) {
+                double sclose, this.pixels, int ns)
+      : super(x, y, width, height, sopen, sclose, ns) {
     if (pixels == null) {
       LogSevere('A PixelSampler is required by RandomSampler');
     }

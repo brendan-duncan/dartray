@@ -23,18 +23,6 @@ part of textures;
 class WindyTexture extends Texture {
   WindyTexture(this.mapping, this.spectrum);
 
-  static WindyTexture CreateFloat(Transform tex2world, TextureParams tp) {
-    // Initialize 3D texture mapping _map_ from _tp_
-    TextureMapping3D map = new IdentityMapping3D(tex2world);
-    return new WindyTexture(map, false);
-  }
-
-  static WindyTexture CreateSpectrum(Transform tex2world, TextureParams tp) {
-    // Initialize 3D texture mapping _map_ from _tp_
-    TextureMapping3D map = new IdentityMapping3D(tex2world);
-    return new WindyTexture(map, true);
-  }
-
   evaluate(DifferentialGeometry dg) {
     Vector dpdx = new Vector();
     Vector dpdy = new Vector();
@@ -46,6 +34,18 @@ class WindyTexture extends Texture {
       return new Spectrum(w);
     }
     return w;
+  }
+
+  static WindyTexture CreateFloat(Transform tex2world, TextureParams tp) {
+    // Initialize 3D texture mapping _map_ from _tp_
+    TextureMapping3D map = new IdentityMapping3D(tex2world);
+    return new WindyTexture(map, false);
+  }
+
+  static WindyTexture CreateSpectrum(Transform tex2world, TextureParams tp) {
+    // Initialize 3D texture mapping _map_ from _tp_
+    TextureMapping3D map = new IdentityMapping3D(tex2world);
+    return new WindyTexture(map, true);
   }
 
   TextureMapping3D mapping;

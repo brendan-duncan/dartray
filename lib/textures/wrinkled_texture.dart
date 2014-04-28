@@ -23,6 +23,14 @@ part of textures;
 class WrinkledTexture extends Texture {
   WrinkledTexture(this.octaves, this.omega, this.mapping, this.spectrum);
 
+  evaluate(DifferentialGeometry dg) {
+    Vector dpdx = new Vector();
+    Vector dpdy = new Vector();
+    Point P = mapping.map(dg, dpdx, dpdy);
+    double n = Turbulence(P, dpdx, dpdy, omega, octaves);
+    return spectrum ? new Spectrum(n) : n;
+  }
+
   static WrinkledTexture CreateFloat(Transform tex2world, TextureParams tp) {
     // Initialize 3D texture mapping _map_ from _tp_
     TextureMapping3D map = new IdentityMapping3D(tex2world);
@@ -37,14 +45,6 @@ class WrinkledTexture extends Texture {
     return new WrinkledTexture(tp.findInt('octaves', 8),
                           tp.findFloat('roughness', 0.5),
                           map, true);
-  }
-
-  evaluate(DifferentialGeometry dg) {
-    Vector dpdx = new Vector();
-    Vector dpdy = new Vector();
-    Point P = mapping.map(dg, dpdx, dpdy);
-    double n = Turbulence(P, dpdx, dpdy, omega, octaves);
-    return spectrum ? new Spectrum(n) : n;
   }
 
   double omega;

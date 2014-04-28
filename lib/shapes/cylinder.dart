@@ -51,8 +51,8 @@ class Cylinder extends Shape {
                radius * radius;
 
     // Solve quadratic equation for _t_ values
-    List<double> _t0 = [0.0],
-                 _t1 = [0.0];
+    List<double> _t0 = [0.0];
+    List<double> _t1 = [0.0];
     if (!Quadratic(A, B, C, _t0, _t1)) {
       return false;
     }
@@ -130,10 +130,10 @@ class Cylinder extends Shape {
     double invEGF2 = 1.0 / (E * G - F * F);
 
     Normal dndu = new Normal.from(dpdu * ((f * F - e * G) * invEGF2) +
-                             dpdv * ((e * F - f * E) * invEGF2));
+                                  dpdv * ((e * F - f * E) * invEGF2));
 
     Normal dndv = new Normal.from(dpdu * ((g * F - f * G) * invEGF2) +
-                             dpdv * ((f * F - g * E) * invEGF2));
+                                  dpdv * ((f * F - g * E) * invEGF2));
 
     // Initialize _DifferentialGeometry_ from parametric information
     Transform o2w = objectToWorld;
@@ -144,10 +144,10 @@ class Cylinder extends Shape {
            o2w.transformNormal(dndv),
            u, v, this);
 
-    // Update _tHit_ for quadric intersection
+    // Update tHit for quadric intersection
     tHit[0] = thit;
 
-    // Compute _rayEpsilon_ for quadric intersection
+    // Compute rayEpsilon for quadric intersection
     rayEpsilon[0] = 5.0e-4 * thit;
 
     return true;
@@ -167,7 +167,7 @@ class Cylinder extends Shape {
                ray.origin.y * ray.origin.y -
                radius * radius;
 
-    // Solve quadratic equation for _t_ values
+    // Solve quadratic equation for t values
     List<double> _t0 = [0.0],
                  _t1 = [0.0];
     if (!Quadratic(A, B, C, _t0, _t1)) {
@@ -232,25 +232,26 @@ class Cylinder extends Shape {
     double z = Lerp(u1, zmin, zmax);
     double t = u2 * phiMax;
     Point p = new Point(radius * Math.cos(t), radius * Math.sin(t), z);
-    Ns.copy(Vector.Normalize(objectToWorld.transformNormal(new Normal(p.x, p.y, 0.0))));
+    Normal n = objectToWorld.transformNormal(new Normal(p.x, p.y, 0.0));
+    Ns.copy(Vector.Normalize(n));
     if (reverseOrientation) {
       Ns.scale(-1.0);
     }
     return objectToWorld.transformPoint(p);
   }
 
-  double radius;
-  double zmin;
-  double zmax;
-  double phiMax;
-
-  static Cylinder Create(Transform o2w, Transform w2o,
-                         bool reverseOrientation, ParamSet params) {
+  static Cylinder Create(Transform o2w, Transform w2o, bool reverseOrientation,
+                         ParamSet params) {
     double radius = params.findOneFloat('radius', 1.0);
     double zmin = params.findOneFloat('zmin', -1.0);
     double zmax = params.findOneFloat('zmax', 1.0);
     double phimax = params.findOneFloat('phimax', 360.0);
-    return new Cylinder(o2w, w2o, reverseOrientation,
-                             radius, zmin, zmax, phimax);
+    return new Cylinder(o2w, w2o, reverseOrientation, radius, zmin, zmax,
+                        phimax);
   }
+
+  double radius;
+  double zmin;
+  double zmax;
+  double phiMax;
 }

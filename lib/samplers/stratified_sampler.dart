@@ -23,8 +23,8 @@ part of samplers;
 class StratifiedSampler extends Sampler {
   StratifiedSampler(int x, int y, int width, int height,
                     this.jitterSamples, double sopen, double sclose,
-                    this.pixels, int xs, int ys) :
-    super(x, y, width, height, sopen, sclose, xs * ys) {
+                    this.pixels, int xs, int ys)
+      : super(x, y, width, height, sopen, sclose, xs * ys) {
     if (pixels == null) {
       LogSevere('A PixelSampler is required by StratifiedSampler');
     }

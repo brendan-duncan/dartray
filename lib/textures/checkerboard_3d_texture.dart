@@ -35,5 +35,6 @@ class Checkerboard3DTexture extends Texture {
   }
 
   TextureMapping3D mapping;
-  Texture tex1, tex2;
+  Texture tex1;
+  Texture tex2;
 }

@@ -3,14 +3,14 @@
  *                                                                          *
  * This file is part of DartRay.                                            *
  *                                                                          *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * Licensed under the Apache License, Version 2.0 (the 'License');          *
  * you may not use this file except in compliance with the License.         *
  * You may obtain a copy of the License at                                  *
  *                                                                          *
  * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
  * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * distributed under the License is distributed on an 'AS IS' BASIS,        *
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
  * See the License for the specific language governing permissions and      *
  * limitations under the License.                                           *
@@ -35,9 +35,8 @@ class IGIIntegrator extends SurfaceIntegrator {
     }
   }
 
-  Spectrum Li(Scene scene, Renderer renderer,
-      RayDifferential ray, Intersection isect,
-      Sample sample, RNG rng) {
+  Spectrum Li(Scene scene, Renderer renderer, RayDifferential ray,
+              Intersection isect, Sample sample, RNG rng) {
     Spectrum L = new Spectrum(0.0);
     Vector wo = -ray.direction;
     // Compute emitted light if ray hit an area light source
@@ -48,9 +47,11 @@ class IGIIntegrator extends SurfaceIntegrator {
     Point p = bsdf.dgShading.p;
     Normal n = bsdf.dgShading.nn;
 
-    L += Integrator.UniformSampleAllLights(scene, renderer, p, n,
-                                wo, isect.rayEpsilon, ray.time, bsdf, sample,
-                                rng, lightSampleOffsets, bsdfSampleOffsets);
+    L += Integrator.UniformSampleAllLights(scene, renderer, p, n, wo,
+                                           isect.rayEpsilon, ray.time,
+                                           bsdf, sample, rng,
+                                           lightSampleOffsets,
+                                           bsdfSampleOffsets);
 
     // Compute indirect illumination with virtual lights
     int lSet = Math.min((sample.oneD[vlSetOffset][0] * nLightSets).toInt(),
@@ -125,6 +126,7 @@ class IGIIntegrator extends SurfaceIntegrator {
           double Ggather = Vector.AbsDot(wi, n) *
                            Vector.AbsDot(-wi, gatherIsect.dg.nn) /
                            Vector.DistanceSquared(p, gatherIsect.dg.p);
+
           if (Ggather - gLimit > 0.0 && Ggather.isFinite) {
             double gs = (Ggather - gLimit) / Ggather;
             L += f * Li * (Vector.AbsDot(wi, n) * gs / (nSamples * pdf[0]));
@@ -138,6 +140,7 @@ class IGIIntegrator extends SurfaceIntegrator {
       // Trace rays for specular reflection and refraction
       L += Integrator.SpecularReflect(ray, bsdf, rng, isect, renderer, scene,
                                       sample);
+
       L += Integrator.SpecularTransmit(ray, bsdf, rng, isect, renderer, scene,
                                        sample);
     }
@@ -150,6 +153,7 @@ class IGIIntegrator extends SurfaceIntegrator {
     int nLights = scene.lights.length;
     lightSampleOffsets = new List<LightSampleOffsets>(nLights);
     bsdfSampleOffsets = new List<BSDFSampleOffsets>(nLights);
+
     for (int i = 0; i < nLights; ++i) {
       Light light = scene.lights[i];
       int nSamples = light.nSamples;
@@ -266,12 +270,12 @@ class IGIIntegrator extends SurfaceIntegrator {
   }
 
   static IGIIntegrator Create(ParamSet params) {
-    int nLightPaths = params.findOneInt("nlights", 64);
-    int nLightSets = params.findOneInt("nsets", 4);
-    double rrThresh = params.findOneFloat("rrthreshold", 0.0001);
-    int maxDepth = params.findOneInt("maxdepth", 5);
-    double glimit = params.findOneFloat("glimit", 10.0);
-    int gatherSamples = params.findOneInt("gathersamples", 16);
+    int nLightPaths = params.findOneInt('nlights', 64);
+    int nLightSets = params.findOneInt('nsets', 4);
+    double rrThresh = params.findOneFloat('rrthreshold', 0.0001);
+    int maxDepth = params.findOneInt('maxdepth', 5);
+    double glimit = params.findOneFloat('glimit', 10.0);
+    int gatherSamples = params.findOneInt('gathersamples', 16);
 
     return new IGIIntegrator(nLightPaths, nLightSets, rrThresh,
                              maxDepth, glimit, gatherSamples);

@@ -3,14 +3,14 @@
  *                                                                          *
  * This file is part of DartRay.                                            *
  *                                                                          *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * Licensed under the Apache License, Version 2.0 (the 'License');          *
  * you may not use this file except in compliance with the License.         *
  * You may obtain a copy of the License at                                  *
  *                                                                          *
  * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
  * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * distributed under the License is distributed on an 'AS IS' BASIS,        *
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
  * See the License for the specific language governing permissions and      *
  * limitations under the License.                                           *
@@ -22,8 +22,8 @@ part of shapes;
 
 class Paraboloid extends Shape {
   Paraboloid(Transform o2w, Transform w2o, bool ro, this.radius,
-             double z0, double z1, double tm) :
-    super(o2w, w2o, ro) {
+             double z0, double z1, double tm)
+      : super(o2w, w2o, ro) {
     zmin = Math.min(z0, z1);
     zmax = Math.max(z0, z1);
     phiMax = Radians(tm.clamp(0.0, 360.0));
@@ -51,8 +51,8 @@ class Paraboloid extends Shape {
                     ray.origin.y * ray.origin.y) - ray.origin.z;
 
     // Solve quadratic equation for _t_ values
-    List<double> t0 = [0.0],
-                 t1 = [0.0];
+    List<double> t0 = [0.0];
+    List<double> t1 = [0.0];
     if (!Quadratic(A, B, C, t0, t1)) {
       return false;
     }
@@ -167,8 +167,8 @@ class Paraboloid extends Shape {
                     ray.origin.y * ray.origin.y) - ray.origin.z;
 
     // Solve quadratic equation for _t_ values
-    List<double> t0 = [0.0],
-                 t1 = [0.0];
+    List<double> t0 = [0.0];
+    List<double> t1 = [0.0];
     if (!Quadratic(A, B, C, t0, t1)) {
       return false;
     }
@@ -224,18 +224,18 @@ class Paraboloid extends Shape {
            Math.pow(1 + 4 * zmax, 1.5));
   }
 
+  static Paraboloid Create(Transform o2w, Transform w2o,
+                                bool reverseOrientation, ParamSet params) {
+      double radius = params.findOneFloat('radius', 1.0);
+      double zmin = params.findOneFloat('zmin', 0.0);
+      double zmax = params.findOneFloat('zmax', 1.0);
+      double phimax = params.findOneFloat('phimax', 360.0);
+      return new Paraboloid(o2w, w2o, reverseOrientation, radius, zmin, zmax,
+                            phimax);
+  }
+
   double radius;
   double zmin;
   double zmax;
   double phiMax;
-
-  static Paraboloid Create(Transform o2w, Transform w2o,
-                                bool reverseOrientation, ParamSet params) {
-      double radius = params.findOneFloat("radius", 1.0);
-      double zmin = params.findOneFloat("zmin", 0.0);
-      double zmax = params.findOneFloat("zmax", 1.0);
-      double phimax = params.findOneFloat("phimax", 360.0);
-      return new Paraboloid(o2w, w2o, reverseOrientation,
-                                 radius, zmin, zmax, phimax);
-  }
 }

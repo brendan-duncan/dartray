@@ -24,6 +24,33 @@ class SubsurfaceMaterial extends Material {
   SubsurfaceMaterial(this.scale, this.Kr, this.sigma_a, this.sigma_prime_s,
                      this.eta, this.bumpMap);
 
+  BSDF getBSDF(DifferentialGeometry dgGeom, DifferentialGeometry dgShading) {
+    // Allocate BSDF, possibly doing bump mapping with bumpMap
+    DifferentialGeometry dgs;
+    if (bumpMap != null) {
+      dgs = new DifferentialGeometry();
+      Material.Bump(bumpMap, dgGeom, dgShading, dgs);
+    } else {
+      dgs = dgShading;
+    }
+
+    BSDF bsdf = new BSDF(dgs, dgGeom.nn);
+    Spectrum R = Kr.evaluate(dgs).clamp();
+    double e = eta.evaluate(dgs);
+    if (!R.isBlack()) {
+      bsdf.add(new SpecularReflection(R, new FresnelDielectric(1.0, e)));
+    }
+
+    return bsdf;
+  }
+
+  BSSRDF getBSSRDF(DifferentialGeometry dgGeom,
+                   DifferentialGeometry dgShading) {
+    double e = eta.evaluate(dgShading);
+    return new BSSRDF(sigma_a.evaluate(dgShading) * scale,
+                      sigma_prime_s.evaluate(dgShading) * scale, e);
+  }
+
   static SubsurfaceMaterial Create(Transform xform, TextureParams mp) {
     List<double> sa_rgb = [0.0011, 0.0024, 0.014];
     List<double> sps_rgb = [2.55, 3.21, 3.77];
@@ -31,7 +58,7 @@ class SubsurfaceMaterial extends Material {
     Spectrum sps = new Spectrum.rgb(sps_rgb[0], sps_rgb[1], sps_rgb[2]);
     String name = mp.findString('name');
     bool found = GetVolumeScatteringProperties(name, sa, sps);
-    if (name != '' && !found) {
+    if (name.isNotEmpty && !found) {
       LogWarning('Named material \'$name\' not found.  Using defaults.');
     }
 
@@ -43,30 +70,6 @@ class SubsurfaceMaterial extends Material {
     Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
     return new SubsurfaceMaterial(scale, Kr, sigma_a, sigma_prime_s, ior,
         bumpMap);
-  }
-
-  BSDF getBSDF(DifferentialGeometry dgGeom, DifferentialGeometry dgShading) {
-    // Allocate _BSDF_, possibly doing bump mapping with _bumpMap_
-    DifferentialGeometry dgs = new DifferentialGeometry();
-    if (bumpMap != null) {
-      Material.Bump(bumpMap, dgGeom, dgShading, dgs);
-    } else {
-      dgs = dgShading;
-    }
-    BSDF bsdf = new BSDF(dgs, dgGeom.nn);
-    Spectrum R = Kr.evaluate(dgs).clamp();
-    double e = eta.evaluate(dgs);
-    if (!R.isBlack()) {
-      bsdf.add(new SpecularReflection(R, new FresnelDielectric(1.0, e)));
-    }
-    return bsdf;
-  }
-
-  BSSRDF getBSSRDF(DifferentialGeometry dgGeom,
-                   DifferentialGeometry dgShading) {
-    double e = eta.evaluate(dgShading);
-    return new BSSRDF(sigma_a.evaluate(dgShading) * scale,
-        sigma_prime_s.evaluate(dgShading) * scale, e);
   }
 
   double scale;

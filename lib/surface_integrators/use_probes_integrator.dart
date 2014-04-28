@@ -3,14 +3,14 @@
  *                                                                          *
  * This file is part of DartRay.                                            *
  *                                                                          *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * Licensed under the Apache License, Version 2.0 (the 'License');          *
  * you may not use this file except in compliance with the License.         *
  * You may obtain a copy of the License at                                  *
  *                                                                          *
  * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
  * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * distributed under the License is distributed on an 'AS IS' BASIS,        *
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
  * See the License for the specific language governing permissions and      *
  * limitations under the License.                                           *
@@ -86,9 +86,8 @@ class UseProbesIntegrator extends SurfaceIntegrator {
     }
   }
 
-  Spectrum Li(Scene scene, Renderer renderer,
-              RayDifferential ray, Intersection isect,
-              Sample sample, RNG rng) {
+  Spectrum Li(Scene scene, Renderer renderer, RayDifferential ray, Intersection
+      isect, Sample sample, RNG rng) {
     Spectrum L = new Spectrum(0.0);
     Vector wo = -ray.direction;
     // Compute emitted light if ray hit an area light source
@@ -101,11 +100,9 @@ class UseProbesIntegrator extends SurfaceIntegrator {
 
     // Compute reflection for radiance probes integrator
     if (includeDirectInProbes == 0) {
-      L += Integrator.UniformSampleAllLights(scene, renderer, p, n,
-                                             wo, isect.rayEpsilon, ray.time,
-                                             bsdf, sample, rng,
-                                             lightSampleOffsets,
-                                             bsdfSampleOffsets);
+      L += Integrator.UniformSampleAllLights(scene, renderer, p, n, wo,
+          isect.rayEpsilon, ray.time, bsdf, sample, rng, lightSampleOffsets,
+          bsdfSampleOffsets);
     }
 
     // Compute reflected lighting using radiance probes
@@ -123,14 +120,14 @@ class UseProbesIntegrator extends SurfaceIntegrator {
     double dz = voxz - vz;
 
     // Get radiance probe coefficients around lookup point
-    int b000 = c_inXYZ(lmax, vx,   vy,   vz);
-    int b100 = c_inXYZ(lmax, vx+1, vy,   vz);
-    int b010 = c_inXYZ(lmax, vx,   vy+1, vz);
-    int b110 = c_inXYZ(lmax, vx+1, vy+1, vz);
-    int b001 = c_inXYZ(lmax, vx,   vy,   vz+1);
-    int b101 = c_inXYZ(lmax, vx+1, vy,   vz+1);
-    int b011 = c_inXYZ(lmax, vx,   vy+1, vz+1);
-    int b111 = c_inXYZ(lmax, vx+1, vy+1, vz+1);
+    int b000 = c_inXYZ(lmax, vx, vy, vz);
+    int b100 = c_inXYZ(lmax, vx + 1, vy, vz);
+    int b010 = c_inXYZ(lmax, vx, vy + 1, vz);
+    int b110 = c_inXYZ(lmax, vx + 1, vy + 1, vz);
+    int b001 = c_inXYZ(lmax, vx, vy, vz + 1);
+    int b101 = c_inXYZ(lmax, vx + 1, vy, vz + 1);
+    int b011 = c_inXYZ(lmax, vx, vy + 1, vz + 1);
+    int b111 = c_inXYZ(lmax, vx + 1, vy + 1, vz + 1);
 
     // Compute incident radiance from radiance probe coefficients
     int lmax_terms = SphericalHarmonics.Terms(lmax);
@@ -172,7 +169,7 @@ class UseProbesIntegrator extends SurfaceIntegrator {
   }
 
   static UseProbesIntegrator Create(ParamSet paramSet) {
-    String filename = paramSet.findOneFilename("filename", "probes.out");
+    String filename = paramSet.findOneFilename('filename', 'probes.out');
     return new UseProbesIntegrator(filename);
   }
 

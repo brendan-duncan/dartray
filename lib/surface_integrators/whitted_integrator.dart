@@ -3,14 +3,14 @@
  *                                                                          *
  * This file is part of DartRay.                                            *
  *                                                                          *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * Licensed under the Apache License, Version 2.0 (the 'License');          *
  * you may not use this file except in compliance with the License.         *
  * You may obtain a copy of the License at                                  *
  *                                                                          *
  * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
  * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * distributed under the License is distributed on an 'AS IS' BASIS,        *
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
  * See the License for the specific language governing permissions and      *
  * limitations under the License.                                           *
@@ -23,9 +23,8 @@ part of surface_integrators;
 class WhittedIntegrator extends SurfaceIntegrator {
   WhittedIntegrator(this.maxDepth);
 
-  Spectrum Li(Scene scene, Renderer renderer,
-                 RayDifferential ray, Intersection isect, Sample sample,
-                 RNG rng) {
+  Spectrum Li(Scene scene, Renderer renderer, RayDifferential ray,
+              Intersection isect, Sample sample, RNG rng) {
     Spectrum L = new Spectrum(0.0);
     // Compute emitted and reflected light at ray intersection point
 
@@ -64,6 +63,7 @@ class WhittedIntegrator extends SurfaceIntegrator {
       // Trace rays for specular reflection and refraction
       L += Integrator.SpecularReflect(ray, bsdf, rng, isect, renderer, scene,
                                       sample);
+
       L += Integrator.SpecularTransmit(ray, bsdf, rng, isect, renderer, scene,
                                        sample);
     }
@@ -72,7 +72,7 @@ class WhittedIntegrator extends SurfaceIntegrator {
   }
 
   static WhittedIntegrator Create(ParamSet params) {
-    int maxDepth = params.findOneInt("maxdepth", 5);
+    int maxDepth = params.findOneInt('maxdepth', 5);
     return new WhittedIntegrator(maxDepth);
   }
 

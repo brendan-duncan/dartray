@@ -24,8 +24,8 @@ class Nurbs extends Shape {
   Nurbs(Transform o2w, Transform w2o, bool reverseOrientation,
              this.nu, this.uorder, this.uknot, this.umin, this.umax,
              this.nv, this.vorder, this.vknot, this.vmin, this.vmax,
-             this.P, this.isHomogeneous) :
-    super(o2w, w2o, reverseOrientation);
+             this.P, this.isHomogeneous)
+      : super(o2w, w2o, reverseOrientation);
 
   BBox objectBound() {
     if (!isHomogeneous) {
@@ -40,8 +40,8 @@ class Nurbs extends Shape {
       BBox bound = new BBox();
       for (int i = 0, pi = 0; i < nu * nv; ++i, pi += 4) {
         bound = BBox.UnionPoint(bound, new Point(P[pi] / P[pi + 3],
-                                            P[pi + 1] / P[pi + 3],
-                                            P[pi + 2] / P[pi + 3]));
+                                                 P[pi + 1] / P[pi + 3],
+                                                 P[pi + 2] / P[pi + 3]));
       }
       return bound;
     }
@@ -150,7 +150,7 @@ class Nurbs extends Shape {
     paramSet.addNormal('N', evalNs);
 
     refined.add(TriangleMesh.Create(objectToWorld, worldToObject,
-                                         reverseOrientation, paramSet));
+                                    reverseOrientation, paramSet));
   }
 
   static Point NurbsEvaluateSurface(int uOrder, List<double> uKnot, int ucp,
@@ -262,21 +262,8 @@ class Nurbs extends Shape {
     return knotOffset;
   }
 
-  int nu;
-  int uorder;
-  int nv;
-  int vorder;
-  double umin;
-  double umax;
-  double vmin;
-  double vmax;
-  List<double> uknot;
-  List<double> vknot;
-  bool isHomogeneous;
-  List<double> P;
-
-  static Nurbs Create(Transform o2w, Transform w2o,
-                      bool ReverseOrientation, ParamSet params) {
+  static Nurbs Create(Transform o2w, Transform w2o, bool ReverseOrientation,
+                      ParamSet params) {
     int nu = params.findOneInt('nu', -1);
     int uorder = params.findOneInt('uorder', -1);
     List<double> uknots = params.findFloat('uknots');
@@ -325,12 +312,25 @@ class Nurbs extends Shape {
     if (npt != nu * nv) {
       LogError('NURBS shape was expecting $nu*$nv=${nu*nv} control points, '
                'was given ${P.length}');
-        return null;
-      }
-
-      return new Nurbs(o2w, w2o, ReverseOrientation, nu, uorder, uknots,
-                            u0, u1, nv, vorder, vknots, v0, v1, P,
-                            isHomogeneous);
+      return null;
     }
+
+    return new Nurbs(o2w, w2o, ReverseOrientation, nu, uorder, uknots,
+                     u0, u1, nv, vorder, vknots, v0, v1, P,
+                     isHomogeneous);
+  }
+
+  int nu;
+  int uorder;
+  int nv;
+  int vorder;
+  double umin;
+  double umax;
+  double vmin;
+  double vmax;
+  List<double> uknot;
+  List<double> vknot;
+  bool isHomogeneous;
+  List<double> P;
 }
 

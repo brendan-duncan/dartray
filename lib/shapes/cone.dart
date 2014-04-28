@@ -22,8 +22,8 @@ part of shapes;
 
 class Cone extends Shape {
   Cone(Transform o2w, Transform w2o, bool ro,
-       this.height, this.radius, double tm) :
-    super(o2w, w2o, ro) {
+       this.height, this.radius, double tm)
+      : super(o2w, w2o, ro) {
     phiMax = Radians(tm.clamp(0.0, 360.0));
   }
 
@@ -52,8 +52,8 @@ class Cone extends Shape {
                k * (ray.origin.z - height) * (ray.origin.z - height);
 
     // Solve quadratic equation for _t_ values
-    List<double> t0 = [0.0],
-                 t1 = [0.0];
+    List<double> t0 = [0.0];
+    List<double> t1 = [0.0];
     if (!Quadratic(A, B, C, t0, t1)) {
       return false;
     }
@@ -126,10 +126,10 @@ class Cone extends Shape {
     double invEGF2 = 1.0 / (E * G - F * F);
 
     Normal dndu = new Normal.from(dpdu * ((f * F - e * G) * invEGF2) +
-                             dpdv * ((e * F - f * E) * invEGF2));
+                                  dpdv * ((e * F - f * E) * invEGF2));
 
     Normal dndv = new Normal.from(dpdu * ((g * F - f * G) * invEGF2) +
-                             dpdv * ((f * F - g * E) * invEGF2));
+                                  dpdv * ((f * F - g * E) * invEGF2));
 
     // Initialize _DifferentialGeometry_ from parametric information
     Transform o2w = objectToWorld;
@@ -167,8 +167,8 @@ class Cone extends Shape {
                k * (ray.origin.z - height) * (ray.origin.z - height);
 
     // Solve quadratic equation for _t_ values
-    List<double> t0 = [0.0],
-                 t1 = [0.0];
+    List<double> t0 = [0.0];
+    List<double> t1 = [0.0];
     if (!Quadratic(A, B, C, t0, t1)) {
       return false;
     }
@@ -222,10 +222,6 @@ class Cone extends Shape {
            phiMax / 2.0;
   }
 
-  double radius;
-  double height;
-  double phiMax;
-
   static Cone Create(Transform o2w, Transform w2o,
                      bool reverseOrientation, ParamSet params) {
     double radius = params.findOneFloat('radius', 1.0);
@@ -233,4 +229,8 @@ class Cone extends Shape {
     double phimax = params.findOneFloat('phimax', 360.0);
     return new Cone(o2w, w2o, reverseOrientation, height, radius, phimax);
   }
+
+  double radius;
+  double height;
+  double phiMax;
 }

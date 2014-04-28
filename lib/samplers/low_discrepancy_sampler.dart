@@ -23,8 +23,8 @@ part of samplers;
 class LowDiscrepancySampler extends Sampler {
   LowDiscrepancySampler(int x, int y, int width, int height,
                         double sopen, double sclose, this.pixels,
-                        int nsamp) :
-    super(x, y, width, height, sopen, sclose, RoundUpPow2(nsamp)) {
+                        int nsamp)
+      : super(x, y, width, height, sopen, sclose, RoundUpPow2(nsamp)) {
     if (pixels == null) {
       LogSevere('A PixelSampler is required by LowDiscrepencySampler');
     }
@@ -44,8 +44,8 @@ class LowDiscrepancySampler extends Sampler {
     pass = 0;
     if (RenderOverrides.SamplingMode() == Sampler.TWO_PASS_SAMPLING ||
         RenderOverrides.SamplingMode() == Sampler.ITERATIVE_SAMPLING) {
-      randomSampler = new RandomSampler(x, y, width, height,
-                                        sopen, sclose, pixels, 1);
+      randomSampler = new RandomSampler(x, y, width, height, sopen, sclose,
+                                        pixels, 1);
     }
   }
 

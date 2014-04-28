@@ -24,13 +24,10 @@ part of surface_integrators;
  * Path tracing surface integrator.
  */
 class PathIntegrator extends SurfaceIntegrator {
-  PathIntegrator(int md) {
-    maxDepth = md;
-  }
+  PathIntegrator(this.maxDepth);
 
-  Spectrum Li(Scene scene, Renderer renderer,
-              RayDifferential r, Intersection isect, Sample sample,
-              RNG rng) {
+  Spectrum Li(Scene scene, Renderer renderer, RayDifferential r,
+              Intersection isect, Sample sample, RNG rng) {
     // Declare common path integration variables
     Spectrum pathThroughput = new Spectrum(1.0);
     Spectrum L = new Spectrum(0.0);

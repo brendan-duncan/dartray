@@ -111,8 +111,8 @@ class SurfacePointsRenderer extends Renderer {
   List<SurfacePoint> points = [];
 
   static void FindPoissonPointDistribution(Point pCamera, double time,
-                                             double minDist, Scene scene,
-                                             List<SurfacePoint> points) {
+                                           double minDist, Scene scene,
+                                           List<SurfacePoint> points) {
     SurfacePointsRenderer sp = new SurfacePointsRenderer(minDist, pCamera,
                                                          time, '');
     sp.render(scene);

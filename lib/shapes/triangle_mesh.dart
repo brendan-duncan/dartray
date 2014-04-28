@@ -24,8 +24,8 @@ class TriangleMesh extends Shape {
   TriangleMesh(Transform o2w, Transform w2o, bool ro,
                this.ntris, this.nverts, this.vertexIndex,
                List<Point> P, this.n, this.s,
-               this.uvs, this.alphaTexture) :
-    super(o2w, w2o, ro) {
+               this.uvs, this.alphaTexture)
+      : super(o2w, w2o, ro) {
     _p = new Float32List(nverts * 3);
     // Transform mesh vertices to world space
     for (int i = 0, j = 0; i < nverts; ++i) {
@@ -42,6 +42,7 @@ class TriangleMesh extends Shape {
   }
 
   List<Point> _triangle = [new Point(), new Point(), new Point()];
+
   List<Point> triangle(int v1, int v2, int v3) {
     int i3 = v1 * 3;
     _triangle[0].data[0] = _p[i3];
@@ -86,16 +87,6 @@ class TriangleMesh extends Shape {
                                this, i));
     }
   }
-
-  int ntris;
-  int nverts;
-  List<int> vertexIndex;
-  Float32List _p;
-  List<Normal> n;
-  List<Vector> s;
-  List<double> uvs;
-  Texture alphaTexture;
-
 
   static TriangleMesh Create(Transform o2w, Transform w2o,
                              bool reverseOrientation, ParamSet params,
@@ -200,4 +191,13 @@ class TriangleMesh extends Shape {
                             vi.length ~/ 3, P.length, vi, P, N, S, uvs,
                             alphaTex);
   }
+
+  int ntris;
+  int nverts;
+  List<int> vertexIndex;
+  Float32List _p;
+  List<Normal> n;
+  List<Vector> s;
+  List<double> uvs;
+  Texture alphaTexture;
 }

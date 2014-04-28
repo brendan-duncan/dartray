@@ -22,12 +22,11 @@ part of shapes;
 
 class LoopSubdivision extends Shape {
   LoopSubdivision(Transform o2w, Transform w2o, bool ro,
-             int nfaces, int nvertices, List<int> vertexIndices,
-             List<Point> P, this.nLevels) :
-    super(o2w, w2o, ro),
-    vertices = new List<_SDVertex>(nvertices),
-    faces = new List<_SDFace>(nfaces) {
-
+                  int nfaces, int nvertices, List<int> vertexIndices,
+                  List<Point> P, this.nLevels)
+      : vertices = new List<_SDVertex>(nvertices),
+        faces = new List<_SDFace>(nfaces),
+        super(o2w, w2o, ro) {
     for (int i = 0; i < nvertices; ++i) {
       vertices[i] = new _SDVertex(P[i]);
     }
@@ -128,13 +127,13 @@ class LoopSubdivision extends Shape {
         if (!v[j].boundary) {
           // Apply one-ring rule for even vertex
           if (v[j].regular) {
-            v[j].child.P = weightOneRing(v[j], 1.0 / 16.0);
+            v[j].child.P = WeightOneRing(v[j], 1.0 / 16.0);
           } else {
-            v[j].child.P = weightOneRing(v[j], beta(v[j].valence()));
+            v[j].child.P = WeightOneRing(v[j], Beta(v[j].valence()));
           }
         } else {
           // Apply boundary rule for even vertex
-          v[j].child.P = weightBoundary(v[j], 1.0 / 8.0);
+          v[j].child.P = WeightBoundary(v[j], 1.0 / 8.0);
         }
       }
 
@@ -229,9 +228,9 @@ class LoopSubdivision extends Shape {
     List<Point> Plimit = new List<Point>(v.length);
     for (int i = 0; i < v.length; ++i) {
       if (v[i].boundary) {
-        Plimit[i] = weightBoundary(v[i], 1.0 / 5.0);
+        Plimit[i] = WeightBoundary(v[i], 1.0 / 5.0);
       } else {
-        Plimit[i] = weightOneRing(v[i], gamma(v[i].valence()));
+        Plimit[i] = WeightOneRing(v[i], Gamma(v[i].valence()));
       }
     }
 
@@ -324,14 +323,14 @@ class LoopSubdivision extends Shape {
     return b;
   }
 
-  static double beta(int valence) {
+  static double Beta(int valence) {
     if (valence == 3) {
       return 3.0 / 16.0;
     }
     return 3.0 / (8.0 * valence);
   }
 
-  static Point weightOneRing(_SDVertex vert, double beta) {
+  static Point WeightOneRing(_SDVertex vert, double beta) {
     // Put _vert_ one-ring in _Pring_
     int valence = vert.valence();
     List<Point> Pring = new List<Point>(valence);
@@ -343,7 +342,7 @@ class LoopSubdivision extends Shape {
     return P;
   }
 
-  static Point weightBoundary(_SDVertex vert, double beta) {
+  static Point WeightBoundary(_SDVertex vert, double beta) {
     // Put _vert_ one-ring in _Pring_
     int valence = vert.valence();
     List<Point> Pring = new List<Point>(valence);
@@ -354,13 +353,9 @@ class LoopSubdivision extends Shape {
     return P;
   }
 
-  static double gamma(int valence) {
-    return 1.0 / (valence + 3.0 / (8.0 * beta(valence)));
+  static double Gamma(int valence) {
+    return 1.0 / (valence + 3.0 / (8.0 * Beta(valence)));
   }
-
-  int nLevels;
-  final List<_SDVertex> vertices;
-  final List<_SDFace> faces;
 
   static LoopSubdivision Create(Transform o2w, Transform w2o,
                                 bool reverseOrientation, ParamSet params) {
@@ -375,6 +370,10 @@ class LoopSubdivision extends Shape {
                                  vi.length ~/ 3, P.length, vi,
                                  P, nlevels);
   }
+
+  int nLevels;
+  final List<_SDVertex> vertices;
+  final List<_SDFace> faces;
 }
 
 class _SDEdgeMap {

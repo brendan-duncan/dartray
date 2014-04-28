@@ -27,7 +27,7 @@ class BestCandidateSampler extends Sampler {
 
   BestCandidateSampler(int x, int y, int width, int height,
                        double sopen, double sclose, int nPixelSamples)
-    : super(x, y, width, height, sopen, sclose, nPixelSamples) {
+      : super(x, y, width, height, sopen, sclose, nPixelSamples) {
     tableWidth = SQRT_SAMPLE_TABLE_SIZE / Math.sqrt(nPixelSamples);
     xTileStart = (left / tableWidth).floor();
     xTileEnd = (right / tableWidth).floor();

@@ -96,7 +96,7 @@ class SamplerRenderer extends Renderer {
   }
 
   Spectrum transmittance(Scene scene, RayDifferential ray,
-                            Sample sample, RNG rng) {
+                         Sample sample, RNG rng) {
     return volumeIntegrator.transmittance(scene, this, ray, sample, rng);
   }
 

@@ -24,10 +24,6 @@ part of pixel_samplers;
  * Sample the image pixels in a linear order.
  */
 class LinearPixelSampler extends PixelSampler {
-  static LinearPixelSampler Create(ParamSet params) {
-    return new LinearPixelSampler();
-  }
-
   void setup(int x, int y, int width, int height) {
     super.setup(x, y, width, height);
     _samples = new Int32List(width * height * 2);
@@ -50,6 +46,10 @@ class LinearPixelSampler extends PixelSampler {
     }
     pixel[0] = _samples[index];
     pixel[1] = _samples[index + 1];
+  }
+
+  static LinearPixelSampler Create(ParamSet params) {
+    return new LinearPixelSampler();
   }
 
   int _numSamples;

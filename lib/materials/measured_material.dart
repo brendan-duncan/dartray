@@ -21,52 +21,48 @@
 part of materials;
 
 /**
-  File format descriptions:
-
-  -- Irregularly Sampled Isotropic BRDF --
-
-  This is the format of the BRDFs in the scenes/brdfs/ folder of the pbrt
-  distribution.  This is a simple text format of numbers in a particular
-  format; the hash character # is used to denote a comment that continues
-  to the end of the current line.
-
-  The first number in the file gives the number of wavelengths at which the
-  reflection data was measured, numWls.  This is followed by numWls values
-  that give the frequency in nm of these wavelengths.  Each BRDF
-  measurement is represented by 4+numWls values.  The first two give the
-  (theta,phi) angles of the incident illumination direction, the next two
-  give (theta,phi) for the measured reflection direction, and the following
-  numWls give the spectral coefficients for the measurement at the
-  wavelength specified at the start of the file.
-
-
-  -- Regular Half-Angle BRDF --
-  This is the file format used in the MERL BRDF database; see http://merl.com/brdf.
-
-  This file format is a binary format, with numbers encoded in low-endian
-  form.  It represents a regular 3D tabularization of BRDF samples in RGB
-  color where the dimensions indexed over are (delta phi, delta theta,
-  sqrt(theta_h)).  Here, theta_h is the angle between the halfangle vector
-  and the normal, and delta theta and delta phi are the offset in theta and
-  phi of one of the two directions.  (Note that the offset would be the
-  same for the other direction, since it's from the half-angle vector.)
-
-  The starts with three 32-bit integers, giving the resolution of the
-  overall table.  It then containes a number of samples equal to the
-  product of those three integers, times 3 (for RGB).  Samples are laid out
-  with delta phi the minor index, then delta theta, then sqrt(theta_h) as
-  the major index.
-
-  In the file each sample should be scaled by RGB(1500,1500,1500/1.6) of
-  the original measurement.  (In order words, the sample values are scaled
-  by the inverse of that as they are read in.
-*/
+ * File format descriptions:
+ *
+ * -- Irregularly Sampled Isotropic BRDF --
+ *
+ * This is the format of the BRDFs in the scenes/brdfs/ folder of the pbrt
+ * distribution.  This is a simple text format of numbers in a particular
+ * format; the hash character # is used to denote a comment that continues
+ * to the end of the current line.
+ *
+ * The first number in the file gives the number of wavelengths at which the
+ * reflection data was measured, numWls.  This is followed by numWls values
+ * that give the frequency in nm of these wavelengths.  Each BRDF
+ * measurement is represented by 4+numWls values.  The first two give the
+ * (theta,phi) angles of the incident illumination direction, the next two
+ * give (theta,phi) for the measured reflection direction, and the following
+ * numWls give the spectral coefficients for the measurement at the
+ * wavelength specified at the start of the file.
+ *
+ *
+ * -- Regular Half-Angle BRDF --
+ * This is the file format used in the MERL BRDF database;
+ * see http://merl.com/brdf.
+ *
+ * This file format is a binary format, with numbers encoded in low-endian
+ * form.  It represents a regular 3D tabularization of BRDF samples in RGB
+ * color where the dimensions indexed over are (delta phi, delta theta,
+ * sqrt(theta_h)).  Here, theta_h is the angle between the halfangle vector
+ * and the normal, and delta theta and delta phi are the offset in theta and
+ * phi of one of the two directions.  (Note that the offset would be the
+ * same for the other direction, since it's from the half-angle vector.)
+ *
+ * The starts with three 32-bit integers, giving the resolution of the
+ * overall table.  It then containes a number of samples equal to the
+ * product of those three integers, times 3 (for RGB).  Samples are laid out
+ * with delta phi the minor index, then delta theta, then sqrt(theta_h) as
+ * the major index.
+ *
+ * In the file each sample should be scaled by RGB(1500,1500,1500/1.6) of
+ * the original measurement.  (In order words, the sample values are scaled
+ * by the inverse of that as they are read in.
+ */
 class MeasuredMaterial extends Material {
-  static MeasuredMaterial Create(Transform xform, TextureParams mp) {
-    Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
-    return new MeasuredMaterial(mp.findFilename('filename'), bumpMap);
-  }
-
   MeasuredMaterial(String filename, this.bumpMap) {
     String suffix = filename.substring(filename.lastIndexOf('.')).toLowerCase();
 
@@ -77,7 +73,7 @@ class MeasuredMaterial extends Material {
     }
 
     if (suffix == '.brdf') {
-      // Load $(\theta, \phi)$ measured BRDF data
+      // Load (theta, phi) measured BRDF data
       if (loadedThetaPhi.containsKey(filename)) {
         thetaPhiData = loadedThetaPhi[filename];
         return;
@@ -91,7 +87,7 @@ class MeasuredMaterial extends Material {
         int numWls = values[pos++].toInt();
         if ((values.length - 1 - numWls) % (4 + numWls) != 0) {
           LogError('Excess or insufficient data in theta, phi '
-                   'BRDF file \"$filename\"');
+                   'BRDF file "$filename"');
           c.complete();
           return;
         }
@@ -185,8 +181,9 @@ class MeasuredMaterial extends Material {
   }
 
   BSDF getBSDF(DifferentialGeometry dgGeom, DifferentialGeometry dgShading) {
-    DifferentialGeometry dgs = new DifferentialGeometry();
+    DifferentialGeometry dgs;
     if (bumpMap != null) {
+      dgs = new DifferentialGeometry();
       Material.Bump(bumpMap, dgGeom, dgShading, dgs);
     } else {
       dgs = dgShading;
@@ -204,9 +201,16 @@ class MeasuredMaterial extends Material {
     return bsdf;
   }
 
+  static MeasuredMaterial Create(Transform xform, TextureParams mp) {
+    Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
+    return new MeasuredMaterial(mp.findFilename('filename'), bumpMap);
+  }
+
   KdTree thetaPhiData;
   List<double> regularHalfangleData;
-  int nThetaH, nThetaD, nPhiD;
+  int nThetaH;
+  int nThetaD;
+  int nPhiD;
   Texture bumpMap;
 
   static Map<String, Float32List> loadedRegularHalfangle = {};

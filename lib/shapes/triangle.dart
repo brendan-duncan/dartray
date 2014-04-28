@@ -24,8 +24,8 @@ part of shapes;
  * An individual triangle in a [TriangleMesh].
  */
 class Triangle extends Shape {
-  Triangle(Transform o2w, Transform w2o, bool ro, this.mesh, this.index) :
-    super(o2w, w2o, ro) {
+  Triangle(Transform o2w, Transform w2o, bool ro, this.mesh, this.index)
+      : super(o2w, w2o, ro) {
     index *= 3;
   }
 

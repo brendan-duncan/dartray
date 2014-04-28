@@ -900,10 +900,15 @@ class _MLTTask {
   }
 
   int taskNum;
-  double dx, dy;
+  double dx;
+  double dy;
   int currentPixelSample;
-  int x0, x1, y0, y1;
-  double t0, t1;
+  int x0;
+  int x1;
+  int y0;
+  int y1;
+  double t0;
+  double t1;
   double b;
   _MLTSample initialSample;
   Scene scene;

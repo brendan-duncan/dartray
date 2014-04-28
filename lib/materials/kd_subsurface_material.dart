@@ -3,14 +3,14 @@
  *                                                                          *
  * This file is part of DartRay.                                            *
  *                                                                          *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * Licensed under the Apache License, Version 2.0 (the 'License');          *
  * you may not use this file except in compliance with the License.         *
  * You may obtain a copy of the License at                                  *
  *                                                                          *
  * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
  * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * distributed under the License is distributed on an 'AS IS' BASIS,        *
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
  * See the License for the specific language governing permissions and      *
  * limitations under the License.                                           *
@@ -24,20 +24,11 @@ class KdSubsurfaceMaterial extends Material {
   KdSubsurfaceMaterial(this.Kd, this.Kr, this.meanfreepath, this.eta,
                        this.bumpMap);
 
-  static KdSubsurfaceMaterial Create(Transform xform, TextureParams mp) {
-    Texture kd = mp.getSpectrumTexture("Kd", new Spectrum(0.5));
-    Texture mfp = mp.getFloatTexture("meanfreepath", 1.0);
-    Texture ior = mp.getFloatTexture("index", 1.3);
-    Texture kr = mp.getSpectrumTexture("Kr", new Spectrum(1.0));
-    Texture bumpMap = mp.getFloatTextureOrNull("bumpmap");
-    return new KdSubsurfaceMaterial(kd, kr, mfp, ior, bumpMap);
-  }
-
-  BSDF getBSDF(DifferentialGeometry dgGeom,
-               DifferentialGeometry dgShading) {
-    // Allocate _BSDF_, possibly doing bump mapping with _bumpMap_
-    DifferentialGeometry dgs = new DifferentialGeometry();
+  BSDF getBSDF(DifferentialGeometry dgGeom, DifferentialGeometry dgShading) {
+    // Allocate BSDF, possibly doing bump mapping with _bumpMap_
+    DifferentialGeometry dgs;
     if (bumpMap != null) {
+      dgs = new DifferentialGeometry();
       Material.Bump(bumpMap, dgGeom, dgShading, dgs);
     } else {
       dgs = dgShading;
@@ -66,6 +57,18 @@ class KdSubsurfaceMaterial extends Material {
     return new BSSRDF(sigma_a, sigma_prime_s, e);
   }
 
-  Texture Kd, Kr;
-  Texture meanfreepath, eta, bumpMap;
+  static KdSubsurfaceMaterial Create(Transform xform, TextureParams mp) {
+    Texture kd = mp.getSpectrumTexture('Kd', new Spectrum(0.5));
+    Texture mfp = mp.getFloatTexture('meanfreepath', 1.0);
+    Texture ior = mp.getFloatTexture('index', 1.3);
+    Texture kr = mp.getSpectrumTexture('Kr', new Spectrum(1.0));
+    Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
+    return new KdSubsurfaceMaterial(kd, kr, mfp, ior, bumpMap);
+  }
+
+  Texture Kd;
+  Texture Kr;
+  Texture meanfreepath;
+  Texture eta;
+  Texture bumpMap;
 }

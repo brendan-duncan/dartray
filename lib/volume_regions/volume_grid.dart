@@ -21,40 +21,11 @@
 part of volume_regions;
 
 class VolumeGridDensity extends DensityRegion {
-  VolumeGridDensity(Spectrum sa, Spectrum ss, double gg,
-                    Spectrum emit, this.extent, Transform v2w,
-                    this.nx, this.ny, this.nz, List<double> d) :
-    super(sa, ss, gg, emit, v2w) {
-    _density = new Float64List.fromList(d);
-  }
-
-  static VolumeGridDensity Create(Transform volume2world, ParamSet params) {
-    // Initialize common volume region parameters
-    Spectrum sigma_a = params.findOneSpectrum('sigma_a', new Spectrum(0.0));
-    Spectrum sigma_s = params.findOneSpectrum('sigma_s', new Spectrum(0.0));
-    double g = params.findOneFloat('g', 0.0);
-    Spectrum Le = params.findOneSpectrum('Le', new Spectrum(0.0));
-    Point p0 = params.findOnePoint('p0', new Point(0.0, 0.0, 0.0));
-    Point p1 = params.findOnePoint('p1', new Point(1.0, 1.0, 1.0));
-    List<double> data = params.findFloat('density');
-    if (data == null) {
-      LogError('No \'density\' values provided for volume grid?');
-      return null;
-    }
-
-    int nx = params.findOneInt('nx', 1);
-    int ny = params.findOneInt('ny', 1);
-    int nz = params.findOneInt('nz', 1);
-
-    if (data.length != nx * ny * nz) {
-      LogError('VolumeGridDensity has ${data.length} density values but '
-               'nx*ny*nz = ${nx * ny * nz}');
-      return null;
-    }
-
-    return new VolumeGridDensity(sigma_a, sigma_s, g, Le, new BBox(p0, p1),
-                                 volume2world, nx, ny, nz, data);
-  }
+  VolumeGridDensity(Spectrum sa, Spectrum ss, double gg, Spectrum emit,
+                    this.extent, Transform v2w, this.nx, this.ny, this.nz,
+                    List<double> d)
+      : _density = new Float64List.fromList(d),
+        super(sa, ss, gg, emit, v2w);
 
   BBox worldBound() {
     return Transform.Inverse(worldToVolume).transformBBox(extent);
@@ -85,10 +56,10 @@ class VolumeGridDensity extends DensityRegion {
     double dz = vox.z - vz;
 
     // Trilinearly interpolate density values to compute local density
-    double d00 = Lerp(dx, d(vx, vy, vz),     d(vx+1, vy, vz));
-    double d10 = Lerp(dx, d(vx, vy+1, vz),   d(vx+1, vy+1, vz));
-    double d01 = Lerp(dx, d(vx, vy, vz+1),   d(vx+1, vy, vz+1));
-    double d11 = Lerp(dx, d(vx, vy+1, vz+1), d(vx+1, vy+1, vz+1));
+    double d00 = Lerp(dx, d(vx, vy, vz), d(vx + 1, vy, vz));
+    double d10 = Lerp(dx, d(vx, vy + 1, vz), d(vx + 1, vy + 1, vz));
+    double d01 = Lerp(dx, d(vx, vy, vz + 1), d(vx + 1, vy, vz + 1));
+    double d11 = Lerp(dx, d(vx, vy + 1, vz + 1), d(vx + 1, vy + 1, vz + 1));
     double d0 = Lerp(dy, d00, d10);
     double d1 = Lerp(dy, d01, d11);
 
@@ -102,7 +73,37 @@ class VolumeGridDensity extends DensityRegion {
     return _density[z * nx * ny + y * nx + x];
   }
 
+  static VolumeGridDensity Create(Transform volume2world, ParamSet params) {
+    // Initialize common volume region parameters
+    Spectrum sigma_a = params.findOneSpectrum('sigma_a', new Spectrum(0.0));
+    Spectrum sigma_s = params.findOneSpectrum('sigma_s', new Spectrum(0.0));
+    double g = params.findOneFloat('g', 0.0);
+    Spectrum Le = params.findOneSpectrum('Le', new Spectrum(0.0));
+    Point p0 = params.findOnePoint('p0', new Point(0.0, 0.0, 0.0));
+    Point p1 = params.findOnePoint('p1', new Point(1.0, 1.0, 1.0));
+    List<double> data = params.findFloat('density');
+    if (data == null) {
+      LogError('No \'density\' values provided for volume grid?');
+      return null;
+    }
+
+    int nx = params.findOneInt('nx', 1);
+    int ny = params.findOneInt('ny', 1);
+    int nz = params.findOneInt('nz', 1);
+
+    if (data.length != nx * ny * nz) {
+      LogError('VolumeGridDensity has ${data.length} density values but '
+          'nx*ny*nz = ${nx * ny * nz}');
+      return null;
+    }
+
+    return new VolumeGridDensity(sigma_a, sigma_s, g, Le, new BBox(p0, p1),
+        volume2world, nx, ny, nz, data);
+  }
+
   List<double> _density;
-  int nx, ny, nz;
+  int nx;
+  int ny;
+  int nz;
   BBox extent;
 }

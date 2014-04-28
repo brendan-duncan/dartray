@@ -3,14 +3,14 @@
  *                                                                          *
  * This file is part of DartRay.                                            *
  *                                                                          *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * Licensed under the Apache License, Version 2.0 (the 'License');          *
  * you may not use this file except in compliance with the License.         *
  * You may obtain a copy of the License at                                  *
  *                                                                          *
  * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
  * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * distributed under the License is distributed on an 'AS IS' BASIS,        *
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
  * See the License for the specific language governing permissions and      *
  * limitations under the License.                                           *
@@ -21,10 +21,10 @@
 part of surface_integrators;
 
 class DiffusePRTIntegrator extends SurfaceIntegrator {
-  DiffusePRTIntegrator(int lm, int ns) :
-    lmax = lm,
-    nSamples = RoundUpPow2(ns),
-    c_in = new List<Spectrum>(SphericalHarmonics.Terms(lm)) {
+  DiffusePRTIntegrator(int lm, int ns)
+      : lmax = lm,
+        nSamples = RoundUpPow2(ns),
+        c_in = new List<Spectrum>(SphericalHarmonics.Terms(lm)) {
     for (int i = 0, len = c_in.length; i < len; ++i) {
       c_in[i] = new Spectrum(0.0);
     }
@@ -57,7 +57,9 @@ class DiffusePRTIntegrator extends SurfaceIntegrator {
     // Compute reflected radiance using diffuse PRT
 
     // Project diffuse transfer function at point to SH
-    List<Spectrum> c_transfer = new List<Spectrum>(SphericalHarmonics.Terms(lmax));
+    List<Spectrum> c_transfer =
+        new List<Spectrum>(SphericalHarmonics.Terms(lmax));
+
     for (int i = 0, len = c_transfer.length; i < len; ++i) {
       c_transfer[i] = new Spectrum(0.0);
     }
@@ -70,6 +72,7 @@ class DiffusePRTIntegrator extends SurfaceIntegrator {
     // Compute integral of product of incident radiance and transfer function
     Spectrum Kd = bsdf.rho2(wo, rng, BSDF_ALL_REFLECTION) * INV_PI;
     Spectrum Lo = new Spectrum(0.0);
+
     for (int i = 0, len = SphericalHarmonics.Terms(lmax); i < len; ++i) {
       Lo += c_in[i] * c_transfer[i];
     }
@@ -78,8 +81,8 @@ class DiffusePRTIntegrator extends SurfaceIntegrator {
   }
 
   static DiffusePRTIntegrator Create(ParamSet params) {
-    int lmax = params.findOneInt("lmax", 4);
-    int ns = params.findOneInt("nsamples", 4096);
+    int lmax = params.findOneInt('lmax', 4);
+    int ns = params.findOneInt('nsamples', 4096);
     return new DiffusePRTIntegrator(lmax, ns);
   }
 

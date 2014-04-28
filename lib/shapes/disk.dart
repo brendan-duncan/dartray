@@ -21,9 +21,9 @@
 part of shapes;
 
 class Disk extends Shape {
-  Disk(Transform o2w, Transform w2o, bool ro, this.height,
-            this.radius, this.innerRadius, this.phiMax) :
-    super(o2w, w2o, ro) {
+  Disk(Transform o2w, Transform w2o, bool ro, this.height, this.radius,
+       this.innerRadius, this.phiMax)
+      : super(o2w, w2o, ro) {
     phiMax = Radians(phiMax.clamp(0.0, 360.0));
   }
 
@@ -154,18 +154,18 @@ class Disk extends Shape {
     return objectToWorld.transformPoint(p);
   }
 
-  double height;
-  double radius;
-  double innerRadius;
-  double phiMax;
-
-  static Disk Create(Transform o2w, Transform w2o,
-                     bool reverseOrientation, ParamSet params) {
+  static Disk Create(Transform o2w, Transform w2o, bool reverseOrientation,
+                     ParamSet params) {
     double height = params.findOneFloat('height', 0.0);
     double radius = params.findOneFloat('radius', 1.0);
     double inner_radius = params.findOneFloat('innerradius', 0.0);
     double phimax = params.findOneFloat('phimax', 360.0);
     return new Disk(o2w, w2o, reverseOrientation, height, radius,
-                         inner_radius, phimax);
+                    inner_radius, phimax);
   }
+
+  double height;
+  double radius;
+  double innerRadius;
+  double phiMax;
 }

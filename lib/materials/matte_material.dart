@@ -23,16 +23,8 @@ part of materials;
 class MatteMaterial extends Material {
   MatteMaterial(this.Kd, this.sigma, this.bumpMap);
 
-  static MatteMaterial Create(Transform xform, TextureParams mp) {
-    Texture Kd = mp.getSpectrumTexture('Kd', new Spectrum(0.5));
-    Texture sigma = mp.getFloatTexture('sigma', 0.0);
-    Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
-    return new MatteMaterial(Kd, sigma, bumpMap);
-  }
-
-  BSDF getBSDF(DifferentialGeometry dgGeom,
-               DifferentialGeometry dgShading) {
-    // Allocate _BSDF_, possibly doing bump mapping with _bumpMap_
+  BSDF getBSDF(DifferentialGeometry dgGeom, DifferentialGeometry dgShading) {
+    // Allocate BSDF, possibly doing bump mapping with bumpMap
     DifferentialGeometry dgs;
     if (bumpMap != null) {
       dgs = new DifferentialGeometry();
@@ -43,7 +35,7 @@ class MatteMaterial extends Material {
 
     BSDF bsdf = new BSDF(dgs, dgGeom.nn);
 
-    // Evaluate textures for _MatteMaterial_ material and allocate BRDF
+    // Evaluate textures for MatteMaterial material and allocate BRDF
     Spectrum r = Kd.evaluate(dgs).clamp();
     double sig = sigma.evaluate(dgs).clamp(0.0, 90.0);
     if (!r.isBlack()) {
@@ -57,7 +49,14 @@ class MatteMaterial extends Material {
     return bsdf;
   }
 
-  Texture Kd; // Texture<RGBSpectrum>
-  Texture sigma; // Texture<double>
-  Texture bumpMap; // Texture<double>
+  static MatteMaterial Create(Transform xform, TextureParams mp) {
+    Texture Kd = mp.getSpectrumTexture('Kd', new Spectrum(0.5));
+    Texture sigma = mp.getFloatTexture('sigma', 0.0);
+    Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
+    return new MatteMaterial(Kd, sigma, bumpMap);
+  }
+
+  Texture Kd;
+  Texture sigma;
+  Texture bumpMap;
 }

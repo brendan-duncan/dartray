@@ -24,20 +24,6 @@ class MarbleTexture extends Texture {
   MarbleTexture(this.octaves, this.omega, this.scale, this.variation,
                 this.mapping);
 
-  static MarbleTexture CreateFloat(Transform tex2world, TextureParams tp) {
-    return null;
-  }
-
-  static MarbleTexture CreateSpectrum(Transform tex2world, TextureParams tp) {
-    // Initialize 3D texture mapping _map_ from _tp_
-    TextureMapping3D map = new IdentityMapping3D(tex2world);
-    return new MarbleTexture(tp.findInt('octaves', 8),
-                          tp.findFloat('roughness', 0.5),
-                          tp.findFloat('scale', 1.0),
-                          tp.findFloat('variation', 0.2),
-                          map);
-  }
-
   evaluate(DifferentialGeometry dg) {
     Vector dpdx = new Vector();
     Vector dpdy = new Vector();
@@ -48,15 +34,15 @@ class MarbleTexture extends Texture {
     double t = 0.5 + 0.5 * sin(marble);
 
     // Evaluate marble spline at _t_
-    const List<double> c = const [ 0.58, 0.58, 0.6,
-                                   0.58, 0.58, 0.6,
-                                   0.58, 0.58, 0.6,
-                                   0.5, 0.5, 0.5,
-                                   0.6, 0.59, 0.58,
-                                   0.58, 0.58, 0.6,
-                                   0.58, 0.58, 0.6,
-                                   0.2, 0.2, 0.33,
-                                   0.58, 0.58, 0.6];
+    const List<double> c = const [0.58, 0.58, 0.6,
+                                  0.58, 0.58, 0.6,
+                                  0.58, 0.58, 0.6,
+                                  0.5, 0.5, 0.5,
+                                  0.6, 0.59, 0.58,
+                                  0.58, 0.58, 0.6,
+                                  0.58, 0.58, 0.6,
+                                  0.2, 0.2, 0.33,
+                                  0.58, 0.58, 0.6];
     const int NC = 9;
     const int NSEG = NC - 3;
     int first = (t * NSEG).floor();
@@ -77,7 +63,23 @@ class MarbleTexture extends Texture {
     return (s0 * (1.0 - t) + s1 * t) * 1.5;
   }
 
+  static MarbleTexture CreateFloat(Transform tex2world, TextureParams tp) {
+    return null;
+  }
+
+  static MarbleTexture CreateSpectrum(Transform tex2world, TextureParams tp) {
+    // Initialize 3D texture mapping _map_ from _tp_
+    TextureMapping3D map = new IdentityMapping3D(tex2world);
+    return new MarbleTexture(tp.findInt('octaves', 8),
+                             tp.findFloat('roughness', 0.5),
+                             tp.findFloat('scale', 1.0),
+                             tp.findFloat('variation', 0.2),
+                             map);
+  }
+
   int octaves;
-  double omega, scale, variation;
+  double omega;
+  double scale;
+  double variation;
   TextureMapping3D mapping;
 }

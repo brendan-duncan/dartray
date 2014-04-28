@@ -3,14 +3,14 @@
  *                                                                          *
  * This file is part of DartRay.                                            *
  *                                                                          *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * Licensed under the Apache License, Version 2.0 (the 'License');          *
  * you may not use this file except in compliance with the License.         *
  * You may obtain a copy of the License at                                  *
  *                                                                          *
  * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
  * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * distributed under the License is distributed on an 'AS IS' BASIS,        *
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
  * See the License for the specific language governing permissions and      *
  * limitations under the License.                                           *
@@ -24,20 +24,8 @@ class UberMaterial extends Material {
   UberMaterial(this.Kd, this.Ks, this.Kr, this.Kt, this.roughness,
                this.opacity, this.eta, this.bumpMap);
 
-  static UberMaterial Create(Transform xform, TextureParams mp) {
-    Texture Kd = mp.getSpectrumTexture("Kd", new Spectrum(0.25));
-    Texture Ks = mp.getSpectrumTexture("Ks", new Spectrum(0.25));
-    Texture Kr = mp.getSpectrumTexture("Kr", new Spectrum(0.0));
-    Texture Kt = mp.getSpectrumTexture("Kt", new Spectrum(0.0));
-    Texture roughness = mp.getFloatTexture("roughness", 0.1);
-    Texture eta = mp.getFloatTexture("index", 1.5);
-    Texture opacity = mp.getSpectrumTexture("opacity", new Spectrum(1.0));
-    Texture bumpMap = mp.getFloatTextureOrNull("bumpmap");
-    return new UberMaterial(Kd, Ks, Kr, Kt, roughness, opacity, eta, bumpMap);
-  }
-
   BSDF getBSDF(DifferentialGeometry dgGeom, DifferentialGeometry dgShading) {
-    // Allocate _BSDF_, possibly doing bump mapping with _bumpMap_
+    // Allocate BSDF, possibly doing bump mapping with bumpMap
     DifferentialGeometry dgs;
     if (bumpMap != null) {
       dgs = new DifferentialGeometry();
@@ -50,7 +38,7 @@ class UberMaterial extends Material {
 
     Spectrum op = opacity.evaluate(dgs).clamp();
     if (!op.isValue(1.0)) {
-      BxDF tr = new SpecularTransmission(-op + new Spectrum(1.0), 1.0, 1.0);
+      BxDF tr = new SpecularTransmission(-op + Spectrum.ONE, 1.0, 1.0);
       bsdf.add(tr);
     }
 
@@ -83,6 +71,24 @@ class UberMaterial extends Material {
     return bsdf;
   }
 
-  Texture Kd, Ks, Kr, Kt, opacity;
-  Texture roughness, eta, bumpMap;
+  static UberMaterial Create(Transform xform, TextureParams mp) {
+    Texture Kd = mp.getSpectrumTexture('Kd', new Spectrum(0.25));
+    Texture Ks = mp.getSpectrumTexture('Ks', new Spectrum(0.25));
+    Texture Kr = mp.getSpectrumTexture('Kr', new Spectrum(0.0));
+    Texture Kt = mp.getSpectrumTexture('Kt', new Spectrum(0.0));
+    Texture roughness = mp.getFloatTexture('roughness', 0.1);
+    Texture eta = mp.getFloatTexture('index', 1.5);
+    Texture opacity = mp.getSpectrumTexture('opacity', new Spectrum(1.0));
+    Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
+    return new UberMaterial(Kd, Ks, Kr, Kt, roughness, opacity, eta, bumpMap);
+  }
+
+  Texture Kd;
+  Texture Ks;
+  Texture Kr;
+  Texture Kt;
+  Texture opacity;
+  Texture roughness;
+  Texture eta;
+  Texture bumpMap;
 }

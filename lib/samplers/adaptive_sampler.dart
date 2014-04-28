@@ -25,9 +25,9 @@ class AdaptiveSampler extends Sampler {
   static const int ADAPTIVE_CONTRAST_THRESHOLD = 1;
 
   AdaptiveSampler(int x, int y, int width, int height, int mins, int maxs,
-                  int method, double sopen, double sclose, this.pixels) :
-    super(x, y, width, height, sopen, sclose,
-          RoundUpPow2(Math.max(mins, maxs))) {
+                  int method, double sopen, double sclose, this.pixels)
+      : super(x, y, width, height, sopen, sclose,
+              RoundUpPow2(Math.max(mins, maxs))) {
     if (pixels == null) {
       LogSevere('A PixelSampler is required by AdaptiveSampler');
     }

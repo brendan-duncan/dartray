@@ -25,13 +25,12 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
                       this.nLookup, this.maxSpecularDepth,
                       this.maxPhotonDepth, double maxdist,
                       this.finalGather, this.gatherSamples,
-                      double ga) :
-    maxDistSquared = [maxdist * maxdist],
-    cosGatherAngle = Math.cos(Radians(ga));
+                      double ga)
+      : maxDistSquared = [maxdist * maxdist],
+        cosGatherAngle = Math.cos(Radians(ga));
 
-  Spectrum Li(Scene scene, Renderer renderer,
-      RayDifferential ray, Intersection isect, Sample sample,
-      RNG rng) {
+  Spectrum Li(Scene scene, Renderer renderer, RayDifferential ray,
+              Intersection isect, Sample sample, RNG rng) {
     Spectrum L = new Spectrum(0.0);
     Vector wo = -ray.direction;
 
@@ -718,8 +717,8 @@ double _kernel(Photon photon, Point p, double maxDist2) {
 }
 
 Spectrum _LPhoton(KdTree map, int nPaths, int nLookup,
-      List<ClosePhoton> lookupBuf, BSDF bsdf, RNG rng,
-      Intersection isect, Vector wo, List<double> maxDist2) {
+                  List<ClosePhoton> lookupBuf, BSDF bsdf, RNG rng,
+                  Intersection isect, Vector wo, List<double> maxDist2) {
   Spectrum L = new Spectrum(0.0);
   int nonSpecular = BSDF_REFLECTION | BSDF_TRANSMISSION | BSDF_DIFFUSE |
                     BSDF_GLOSSY;

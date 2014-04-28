@@ -23,11 +23,6 @@ part of volume_integrators;
 class SingleScatteringIntegrator extends VolumeIntegrator {
   SingleScatteringIntegrator(this.stepSize);
 
-  static SingleScatteringIntegrator Create(ParamSet params) {
-    double stepSize = params.findOneFloat('stepsize', 1.0);
-    return new SingleScatteringIntegrator(stepSize);
-  }
-
   Spectrum transmittance(Scene scene, Renderer renderer, RayDifferential ray,
                          Sample sample, RNG rng) {
     if (scene.volumeRegion == null) {
@@ -132,6 +127,11 @@ class SingleScatteringIntegrator extends VolumeIntegrator {
     T.copy(Tr);
 
     return Lv * step;
+  }
+
+  static SingleScatteringIntegrator Create(ParamSet params) {
+    double stepSize = params.findOneFloat('stepsize', 1.0);
+    return new SingleScatteringIntegrator(stepSize);
   }
 
   double stepSize;

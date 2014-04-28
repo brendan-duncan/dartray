@@ -21,9 +21,9 @@
 part of shapes;
 
 class Hyperboloid extends Shape {
-  Hyperboloid(Transform o2w, Transform w2o, bool ro,
-                   this.p1, this.p2, double tm) :
-    super(o2w, w2o, ro) {
+  Hyperboloid(Transform o2w, Transform w2o, bool ro, this.p1, this.p2,
+              double tm)
+      : super(o2w, w2o, ro) {
     double radius1 = Math.sqrt(p1.x * p1.x + p1.y * p1.y);
     double radius2 = Math.sqrt(p2.x * p2.x + p2.y * p2.y);
     rmax = Math.max(radius1, radius2);
@@ -38,16 +38,14 @@ class Hyperboloid extends Shape {
       p2 = t;
     }
 
-     Point pp = p1;
-     double xy1;
-     double xy2;
+     Point pp = new Point.from(p1);
      do {
          pp += (p2 - p1) * 2.0;
-         xy1 = pp.x * pp.x + pp.y * pp.y;
-         xy2 = p2.x * p2.x + p2.y * p2.y;
+         double xy1 = pp.x * pp.x + pp.y * pp.y;
+         double xy2 = p2.x * p2.x + p2.y * p2.y;
          a = (1.0 / xy1 - (pp.z * pp.z) / (xy1 * p2.z * p2.z)) /
-             (1 - (xy2 * pp.z * pp.z) / (xy1 * p2.z * p2.z));
-         c = (a * xy2 - 1) / (p2.z * p2.z);
+             (1.0 - (xy2 * pp.z * pp.z) / (xy1 * p2.z * p2.z));
+         c = (a * xy2 - 1.0) / (p2.z * p2.z);
      } while (a.isInfinite || a.isNaN);
   }
 
@@ -267,6 +265,14 @@ class Hyperboloid extends Shape {
           2.0 * p1.z * p2.z - p2.z * p2.z));
   }
 
+  static Hyperboloid Create(Transform o2w, Transform w2o,
+                            bool reverseOrientation, ParamSet params) {
+    Point p1 = params.findOnePoint('p1', new Point(0.0, 0.0, 0.0));
+    Point p2 = params.findOnePoint('p2', new Point(1.0, 1.0, 1.0));
+    double phimax = params.findOneFloat('phimax', 360.0);
+    return new Hyperboloid(o2w, w2o, reverseOrientation, p1, p2, phimax);
+  }
+
   Point p1;
   Point p2;
   double zmin;
@@ -275,12 +281,4 @@ class Hyperboloid extends Shape {
   double rmax;
   double a;
   double c;
-
-  static Hyperboloid Create(Transform o2w, Transform w2o,
-                            bool reverseOrientation, ParamSet params) {
-    Point p1 = params.findOnePoint('p1', new Point(0.0, 0.0, 0.0));
-    Point p2 = params.findOnePoint('p2', new Point(1.0, 1.0, 1.0));
-    double phimax = params.findOneFloat('phimax', 360.0);
-    return new Hyperboloid(o2w, w2o, reverseOrientation, p1, p2, phimax);
-  }
 }
