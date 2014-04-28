@@ -22,6 +22,16 @@ part of accelerators;
 
 /**
  * Bounding volume hierarchy ray accelerator.
+ *
+ * Accelerator "bvh" <Parameters>
+ * ----------------------------------------------------------------------------
+ * |   **Type**   |   **Name**    |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * |     string   |  splitmethod  |   "sah"         | Can be "sah", "middle",
+ * |              |               |                 | or "equal".
+ * ----------------------------------------------------------------------------
+ * |     integer  | maxnodeprims  |   4             |
+ * ----------------------------------------------------------------------------
  */
 class BVHAccel extends Aggregate {
   static const int SPLIT_MIDDLE = 0;

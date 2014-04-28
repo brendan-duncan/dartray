@@ -20,6 +20,20 @@
  ****************************************************************************/
 part of film;
 
+/**
+ * Film "image" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**       |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | integer    |  xresolution    |   640           |
+ * ----------------------------------------------------------------------------
+ * | integer    |  yresolution    |   480           |
+ * ----------------------------------------------------------------------------
+ * | string     |  filename       |   ''            |
+ * ----------------------------------------------------------------------------
+ * | float[4]   |  cropwindow     |   null          |
+ * ----------------------------------------------------------------------------
+ */
 class ImageFilm extends Film {
   List<double> cropWindow;
   String filename;
@@ -298,7 +312,7 @@ class ImageFilm extends Film {
     int yres = params.findOneInt('yresolution', 480);
     String filename = params.findOneString('filename', '');
 
-    List<double> crop = params.findFloat('cropWindow');
+    List<double> crop = params.findFloat('cropwindow');
     if (crop == null) {
       crop = [0.0, 1.0, 0.0, 1.0];
     }

@@ -3,14 +3,14 @@
  *                                                                          *
  * This file is part of DartRay.                                            *
  *                                                                          *
- * Licensed under the Apache License, Version 2.0 (the "License");          *
+ * Licensed under the Apache License, Version 2.0 (the 'License');          *
  * you may not use this file except in compliance with the License.         *
  * You may obtain a copy of the License at                                  *
  *                                                                          *
  * http://www.apache.org/licenses/LICENSE-2.0                               *
  *                                                                          *
  * Unless required by applicable law or agreed to in writing, software      *
- * distributed under the License is distributed on an "AS IS" BASIS,        *
+ * distributed under the License is distributed on an 'AS IS' BASIS,        *
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. *
  * See the License for the specific language governing permissions and      *
  * limitations under the License.                                           *
@@ -20,6 +20,25 @@
  ****************************************************************************/
 part of cameras;
 
+
+/**
+ * Camera "orthographic" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**         |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | float      |  shutteropen      |  0              |
+ * ----------------------------------------------------------------------------
+ * | float      |  shutterclose     |  1              |
+ * ----------------------------------------------------------------------------
+ * | float      |  lensradius       |  0.0            |
+ * ----------------------------------------------------------------------------
+ * | float      |  focaldistance    |  1.0e30         |
+ * ----------------------------------------------------------------------------
+ * | float      |  frameaspectraio  |  null           |
+ * ----------------------------------------------------------------------------
+ * | float[4]   |  screenwidnow     |  null           |
+ * ----------------------------------------------------------------------------
+ */
 class OrthographicCamera extends ProjectiveCamera {
   OrthographicCamera(AnimatedTransform cam2world, List<double> screenWindow,
                      double sopen, double sclose, double lensr, double focald,
@@ -101,8 +120,8 @@ class OrthographicCamera extends ProjectiveCamera {
   static OrthographicCamera Create(ParamSet params, AnimatedTransform cam2world,
                                    Film film) {
     // Extract common camera parameters from _ParamSet_
-    double shutteropen = params.findOneFloat("shutteropen", 0.0);
-    double shutterclose = params.findOneFloat("shutterclose", 1.0);
+    double shutteropen = params.findOneFloat('shutteropen', 0.0);
+    double shutterclose = params.findOneFloat('shutterclose', 1.0);
     if (shutterclose < shutteropen) {
       LogWarning('Shutter close time [$shutterclose] < '
                  'shutter open [$shutteropen].  Swapping them.');
@@ -111,9 +130,9 @@ class OrthographicCamera extends ProjectiveCamera {
       shutteropen = t;
     }
 
-    double lensradius = params.findOneFloat("lensradius", 0.0);
-    double focaldistance = params.findOneFloat("focaldistance", 1.0e30);
-    double frame = params.findOneFloat("frameaspectratio",
+    double lensradius = params.findOneFloat('lensradius', 0.0);
+    double focaldistance = params.findOneFloat('focaldistance', 1.0e30);
+    double frame = params.findOneFloat('frameaspectratio',
                                        film.xResolution / film.yResolution);
 
     List<double> screen;

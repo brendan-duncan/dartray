@@ -22,6 +22,13 @@ part of accelerators;
 
 /**
  * Hierarchical uniform grid ray accelerator.
+ *
+ * Accelerator "grid" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**           |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | bool       |  refineimmediately  |   true          |
+ * ----------------------------------------------------------------------------
  */
 class GridAccel extends Aggregate {
   GridAccel(List<Primitive> p, bool refineImmediately) {

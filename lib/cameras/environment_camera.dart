@@ -20,6 +20,20 @@
  ****************************************************************************/
 part of cameras;
 
+/**
+ * Camera "environment" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**         |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | float      |  shutteropen      |  0              |
+ * ----------------------------------------------------------------------------
+ * | float      |  shutterclose     |  1              |
+ * ----------------------------------------------------------------------------
+ * | float      |  frameaspectraio  |  null           |
+ * ----------------------------------------------------------------------------
+ * | float[4]   |  screenwidnow     |  null           |
+ * ----------------------------------------------------------------------------
+ */
 class EnvironmentCamera extends Camera {
   EnvironmentCamera(AnimatedTransform cam2world, double sopen,
                     double sclose, Film film)
@@ -39,7 +53,7 @@ class EnvironmentCamera extends Camera {
 
   static EnvironmentCamera Create(ParamSet params, AnimatedTransform cam2world,
                                   Film film) {
-    // Extract common camera parameters from _ParamSet_
+    // Extract common camera parameters from ParamSet
     double shutteropen = params.findOneFloat('shutteropen', 0.0);
     double shutterclose = params.findOneFloat('shutterclose', 1.0);
 

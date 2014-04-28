@@ -20,6 +20,12 @@
  ****************************************************************************/
 part of accelerators;
 
+/**
+ * Tests a ray against the bounding-box of the scene, but no other
+ * optimizations. All shapes in the scene are tested for every ray.
+ *
+ * Accelerator "bruteforce"
+ */
 class BruteForceAccel extends Aggregate {
   BruteForceAccel(List<Primitive> p) {
     LogInfo('Building Brute Force Acceleration Structures.');

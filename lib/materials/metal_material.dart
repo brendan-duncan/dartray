@@ -20,6 +20,24 @@
  ****************************************************************************/
 part of materials;
 
+/**
+ * Material "metal" <Parameters>
+ * ----------------------------------------------------------------------------
+ * | **Type**   |  **Name**       |   **Default**   |   **Description**
+ * ----------------------------------------------------------------------------
+ * | spectrum   |  eta            |   (copper)      |
+ * | teture     |                 |                 |
+ * ----------------------------------------------------------------------------
+ * | spectrum   |  k              |   (copper)      |
+ * | teture     |                 |                 |
+ * ----------------------------------------------------------------------------
+ * | float      |  roughness      |   0.01          |
+ * | teture     |                 |                 |
+ * ----------------------------------------------------------------------------
+ * | float      |  bumpmap        |   null          |
+ * | teture     |                 |                 |
+ * ----------------------------------------------------------------------------
+ */
 class MetalMaterial extends Material {
   MetalMaterial(this.eta, this.k, this.roughness, this.bumpMap);
 
@@ -47,7 +65,6 @@ class MetalMaterial extends Material {
   static MetalMaterial Create(Transform xform, TextureParams mp) {
     Texture eta = mp.getSpectrumTexture('eta', _copperN);
     Texture k = mp.getSpectrumTexture('k', _copperK);
-
     Texture roughness = mp.getFloatTexture('roughness', 0.01);
     Texture bumpMap = mp.getFloatTextureOrNull('bumpmap');
 
