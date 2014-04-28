@@ -32,17 +32,17 @@ class CameraSample {
   double lensV;
   double time;
 
-  CameraSample() :
-    imageX = 0.0,
-    imageY = 0.0,
-    lensU = 0.0,
-    lensV = 0.0,
-    time = 0.0;
+  CameraSample()
+      : imageX = 0.0,
+        imageY = 0.0,
+        lensU = 0.0,
+        lensV = 0.0,
+        time = 0.0;
 
-  CameraSample.from(CameraSample s) :
-    imageX = s.imageX,
-    imageY = s.imageY,
-    lensU = s.lensU,
-    lensV = s.lensV,
-    time = s.time;
+  CameraSample.from(CameraSample s)
+      : imageX = s.imageX,
+        imageY = s.imageY,
+        lensU = s.lensU,
+        lensV = s.lensV,
+        time = s.time;
 }

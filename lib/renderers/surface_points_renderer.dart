@@ -146,7 +146,8 @@ class _PoissonCheck {
 
   bool call(SurfacePoint sp) {
     if (Vector.DistanceSquared(sp.p, p) < maxDist2) {
-      failed = true; return false;
+      failed = true;
+      return false;
     }
     return true;
   }
@@ -218,7 +219,7 @@ class _SurfacePointTask {
 
       // Make second pass through points with writer lock and update octree
       if (stats.repeatedFails >= maxFails) {
-         return;
+        return;
       }
 
       stats.totalPathsTraced += pathsTraced;

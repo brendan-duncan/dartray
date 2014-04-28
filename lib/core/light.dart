@@ -104,7 +104,7 @@ abstract class Light {
 
     int ns = RoundUpPow2(nSamples);
     int scramble1D = rng.randomUint();
-    List<int> scramble2D = [ rng.randomUint(), rng.randomUint() ];
+    List<int> scramble2D = [rng.randomUint(), rng.randomUint()];
     Float32List Ylm = new Float32List(SphericalHarmonics.Terms(lmax));
 
     List<double> u = [0.0, 0.0];

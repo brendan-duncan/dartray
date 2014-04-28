@@ -88,7 +88,7 @@ class Quaternion {
     return this;
   }
 
-  Quaternion operator+(Quaternion q) {
+  Quaternion operator +(Quaternion q) {
     return new Quaternion.from(this).add(q);
   }
 
@@ -98,7 +98,7 @@ class Quaternion {
     return this;
   }
 
-  Quaternion operator-(Quaternion q) {
+  Quaternion operator -(Quaternion q) {
     return new Quaternion.from(this).sub(q);
   }
 
@@ -108,7 +108,7 @@ class Quaternion {
     return this;
   }
 
-  Quaternion operator*(double f) {
+  Quaternion operator *(double f) {
     return new Quaternion.from(this).scale(f);
   }
 
@@ -118,7 +118,7 @@ class Quaternion {
     return this;
   }
 
-  Quaternion operator/(double f) {
+  Quaternion operator /(double f) {
     return new Quaternion.from(this).invScale(f);
   }
 

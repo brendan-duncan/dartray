@@ -90,7 +90,7 @@ abstract class Shape {
   }
 
   double pdf(Point Pshape) {
-      return 1.0 / area();
+    return 1.0 / area();
   }
 
   Point sample2(Point P, double u1, double u2, Normal Ns) {

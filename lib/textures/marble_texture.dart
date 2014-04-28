@@ -58,7 +58,7 @@ class MarbleTexture extends Texture {
                                    0.2, 0.2, 0.33,
                                    0.58, 0.58, 0.6];
     const int NC = 9;
-    const int NSEG =  NC - 3;
+    const int NSEG = NC - 3;
     int first = (t * NSEG).floor();
     t = (t * NSEG - first);
     int ci = first * 3;

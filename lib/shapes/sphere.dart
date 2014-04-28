@@ -120,7 +120,7 @@ class Sphere extends Shape {
     double v = (theta - thetaMin) / (thetaMax - thetaMin);
 
     // Compute sphere $\dpdu$ and $\dpdv$
-    double zradius = Math.sqrt(phit.x*phit.x + phit.y*phit.y);
+    double zradius = Math.sqrt(phit.x * phit.x + phit.y * phit.y);
     double invzradius = 1.0 / zradius;
     double cosphi = phit.x * invzradius;
     double sinphi = phit.y * invzradius;

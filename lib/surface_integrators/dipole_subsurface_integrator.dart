@@ -108,7 +108,7 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
       Light light = scene.lights[i];
       int nSamples = light.nSamples;
       if (sampler != null) {
-         nSamples = sampler.roundSize(nSamples);
+        nSamples = sampler.roundSize(nSamples);
       }
       lightSampleOffsets[i] = new LightSampleOffsets(nSamples, sample);
       bsdfSampleOffsets[i] = new BSDFSampleOffsets(nSamples, sample);
@@ -167,7 +167,7 @@ class DipoleSubsurfaceIntegrator extends SurfaceIntegrator {
         Light light = scene.lights[j];
         Spectrum Elight = new Spectrum(0.0);
         int nSamples = RoundUpPow2(light.nSamples);
-        List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
+        List<int> scramble = [rng.randomUint(), rng.randomUint()];
         int compScramble = rng.randomUint();
         for (int s = 0; s < nSamples; ++s) {
           Sample02(s, scramble, lpos);
@@ -274,7 +274,7 @@ class _SubsurfaceOctreeNode {
         children[i] = null;
       }
 
-      for (int i = 0; i < 8; ++i)  {
+      for (int i = 0; i < 8; ++i) {
         _IrradiancePoint ip = localIps[i];
         // Add _IrradiancePoint_ _ip_ to interior octree node
         int child = (ip.p.x > pMid.x ? 4 : 0) +

@@ -300,7 +300,7 @@ class ImageFilm extends Film {
 
     List<double> crop = params.findFloat('cropWindow');
     if (crop == null) {
-      crop = [ 0.0, 1.0, 0.0, 1.0 ];
+      crop = [0.0, 1.0, 0.0, 1.0];
     }
 
     xres = (xres * RenderOverrides.ResolutionScale()).toInt();

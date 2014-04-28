@@ -78,8 +78,8 @@ class SphericalHarmonics {
       out[Index(l, 0)] *= Klm[Index(l, 0)];
       for (int m = 1; m <= l; ++m) {
         out[Index(l, m)] *= sqrt2 * Klm[Index(l, m)] * coss[m];
-        assert(!out[Index(l,m)].isNaN);
-        assert(!out[Index(l,m)].isFinite);
+        assert(!out[Index(l, m)].isNaN);
+        assert(!out[Index(l, m)].isFinite);
       }
     }
   }
@@ -171,7 +171,7 @@ class SphericalHarmonics {
                                               List<Spectrum> c_i) {
 
     Sample sample = new Sample.from(origSample);
-    List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
+    List<int> scramble = [rng.randomUint(), rng.randomUint()];
     nSamples = RoundUpPow2(nSamples);
     List<double> Ylm = new List<double>(Terms(lmax));
     for (int i = 0; i < nSamples; ++i) {
@@ -281,8 +281,7 @@ class SphericalHarmonics {
     }
   }
 
-  static void RotateXPlus(List<Spectrum> c_in, List<Spectrum> c_out,
-                          int lmax) {
+  static void RotateXPlus(List<Spectrum> c_in, List<Spectrum> c_out, int lmax) {
     O(l, m) => c_in[Index(l, m)];
     int oi = 0;
 
@@ -299,11 +298,11 @@ class SphericalHarmonics {
     if (lmax < 2) {
       return;
     }
-    c_out[oi++] = O(2,1);
+    c_out[oi++] = O(2, 1);
     c_out[oi++] = -O(2, -1);
-    c_out[oi++] = O(2, 0) * -0.5 + O(2,2) * -0.8660254037844386;
+    c_out[oi++] = O(2, 0) * -0.5 + O(2, 2) * -0.8660254037844386;
     c_out[oi++] = (-O(2, -2));
-    c_out[oi++] = (O(2, 0) * -0.8660254037844386 + O(2,2) * 0.5);
+    c_out[oi++] = (O(2, 0) * -0.8660254037844386 + O(2, 2) * 0.5);
 
     // Remainder of SH x+ rotation definition
     if (lmax < 3) {
@@ -725,7 +724,7 @@ class SphericalHarmonics {
     double fa = a.toDouble();
     double fb = b.toDouble().abs();
     double v = 1.0;
-    for (double x = fa - fb + 1.0; x <= fa+fb; x += 1.0) {
+    for (double x = fa - fb + 1.0; x <= fa + fb; x += 1.0) {
       v *= x;
     }
     return 1.0 / v;

@@ -364,7 +364,7 @@ class MetropolisRenderer extends Renderer {
     for (int i = 0; i < cameraPathLength; ++i) {
       for (int j = 0; j < lightPathLength; ++j) {
         if (cameraPath[i].specularBounce || lightPath[j].specularBounce) {
-          ++nSpecularVertices[i+j+2];
+          ++nSpecularVertices[i + j + 2];
         }
       }
     }
@@ -404,7 +404,7 @@ class MetropolisRenderer extends Renderer {
 
       previousSpecular = vc.specularBounce;
       allSpecular = allSpecular && previousSpecular;
-      L += Ld / (i + 1 - nSpecularVertices[i+1]);
+      L += Ld / (i + 1 - nSpecularVertices[i + 1]);
 
       if (!vc.specularBounce) {
         // Loop over light path vertices and connect to camera vertex
@@ -625,7 +625,7 @@ class MetropolisRenderer extends Renderer {
       double rrSurviveProb = Math.min(1.0, pathScale.luminance());
       if (samples[length].rrSample > rrSurviveProb) {
         Stats.MLT_FINISHED_GENERATE_PATH();
-        return length+1;
+        return length + 1;
       }
 
       alpha *= pathScale / rrSurviveProb;
@@ -867,7 +867,7 @@ class _MLTTask {
 
       if (I[proposed] > 0.0) {
         if ((1.0 / I[proposed]).isFinite) {
-          Spectrum contrib =  L[proposed] * (b / nPixelSamples) / I[proposed];
+          Spectrum contrib = L[proposed] * (b / nPixelSamples) / I[proposed];
           camera.film.splat(samples[proposed].cameraSample, contrib * a);
         }
       }

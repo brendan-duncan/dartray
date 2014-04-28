@@ -50,7 +50,7 @@ class MatteMaterial extends Material {
       if (sig == 0.0) {
         bsdf.add(new Lambertian(r));
       } else {
-         bsdf.add(new OrenNayar(r, sig));
+        bsdf.add(new OrenNayar(r, sig));
       }
     }
 

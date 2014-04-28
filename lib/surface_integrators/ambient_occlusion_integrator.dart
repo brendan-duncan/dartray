@@ -32,7 +32,7 @@ class AmbientOcclusionIntegrator extends SurfaceIntegrator {
     Point p = bsdf.dgShading.p;
     Normal n = Normal.FaceForward(isect.dg.nn, -ray.direction);
 
-    List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
+    List<int> scramble = [rng.randomUint(), rng.randomUint()];
     List<double> u = [0.0, 0.0];
     int nClear = 0;
     for (int i = 0; i < nSamples; ++i) {

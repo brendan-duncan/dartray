@@ -129,7 +129,7 @@ class IrradianceCacheIntegrator extends SurfaceIntegrator {
     if (!interpolateE(scene, p, ng, E, wi)) {
       // Compute irradiance at current point
       Stats.IRRADIANCE_CACHE_STARTED_COMPUTING_IRRADIANCE(p, ng);
-      List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
+      List<int> scramble = [rng.randomUint(), rng.randomUint()];
       double minHitDistance = INFINITY;
       Vector wAvg = new Vector(0.0, 0.0, 0.0);
       Spectrum LiSum = new Spectrum(0.0);

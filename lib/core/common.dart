@@ -130,14 +130,13 @@ int Mod(int a, int b) {
  */
 double SmoothStep(double min, double max, double value) {
   double v = ((value - min) / (max - min)).clamp(0.0, 1.0);
-  return v * v * (-2.0 * v  + 3.0);
+  return v * v * (-2.0 * v + 3.0);
 }
 
 /**
  * Solve the given quadratic equation.
  */
-bool Quadratic(double A, double B, double C, List<double> t0,
-               List<double> t1) {
+bool Quadratic(double A, double B, double C, List<double> t0, List<double> t1) {
   // Find quadratic discriminant
   double discrim = B * B - 4.0 * A * C;
   if (discrim < 0.0) {
@@ -221,7 +220,7 @@ List<double> ReadFloatFile(List<int> bytes, String path) {
         inNumber = true;
         curNumber += c;
       } else if (c == '#') {
-        while ((c = text[ci++]) != '\n' && ci < len) ;
+        while ((c = text[ci++]) != '\n' && ci < len);
         ++lineNumber;
       } else if (!_isspace(c)) {
         LogWarning('Unexpected text found at line $lineNumber of float file '
@@ -303,7 +302,7 @@ int upper_bound(List list, value, {int first: 0, int last,
     return 0;
   }
 
-  if  (last == null) {
+  if (last == null) {
     last = list.length;
   }
 
@@ -341,7 +340,7 @@ int lower_bound(List list, value, {int first: 0, int last,
     return 0;
   }
 
-  if  (last == null) {
+  if (last == null) {
     last = list.length;
   }
 
@@ -409,7 +408,7 @@ void make_heap(List list, int first, int last) {
   while (true) {
     _adjust_heap(list, first, parent, len, list[first + parent]);
     if (parent == 0) {
-        return;
+      return;
     }
     parent--;
   }

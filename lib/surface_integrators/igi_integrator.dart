@@ -159,7 +159,7 @@ class IGIIntegrator extends SurfaceIntegrator {
 
       lightSampleOffsets[i] = new LightSampleOffsets(nSamples, sample);
       bsdfSampleOffsets[i] = new BSDFSampleOffsets(nSamples, sample);
-   }
+    }
 
     vlSetOffset = sample.add1D(1);
 

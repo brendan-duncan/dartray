@@ -165,8 +165,8 @@ class UseProbesIntegrator extends SurfaceIntegrator {
 
   int c_inXYZ(int lmax, int vx, int vy, int vz) {
     vx = vx.clamp(0, nProbes[0] - 1);
-    vy = vy.clamp(0, nProbes[1]-1);
-    vz = vz.clamp(0, nProbes[2]-1);
+    vy = vy.clamp(0, nProbes[1] - 1);
+    vz = vz.clamp(0, nProbes[2] - 1);
     int offset = vx + vy * nProbes[0] + vz * nProbes[0] * nProbes[1];
     return SphericalHarmonics.Terms(lmax) * offset;
   }

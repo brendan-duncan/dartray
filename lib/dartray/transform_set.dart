@@ -32,12 +32,12 @@ class TransformSet {
     t[1] = new Transform.from(other.t[1]);
   }
 
-  Transform operator[](int i) {
+  Transform operator [](int i) {
     assert(i >= 0 && i < DartRay.MAX_TRANSFORMS);
     return t[i];
   }
 
-  operator[]=(int i, Transform transform) {
+  operator []=(int i, Transform transform) {
     assert(i >= 0 && i < DartRay.MAX_TRANSFORMS);
     t[i] = transform;
   }
