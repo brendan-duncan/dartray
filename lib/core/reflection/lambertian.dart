@@ -36,11 +36,11 @@ class Lambertian extends BxDF {
     return R * INV_PI;
   }
 
-  Spectrum rho(Vector, int, List<double> samples) {
+  Spectrum rho(Vector wo, int nSamples, List<double> samples) {
     return R;
   }
 
-  Spectrum rho2(int, List<double> samples1, List<double> samples2) {
+  Spectrum rho2(int nSamples, List<double> samples1, List<double> samples2) {
     return R;
   }
 
