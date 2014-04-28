@@ -21,17 +21,9 @@
 part of lights;
 
 class PointLight extends Light {
-  PointLight(Transform light2world, this.intensity) :
-    super(light2world) {
+  PointLight(Transform light2world, this.intensity)
+      : super(light2world) {
     lightPos = light2world.transformPoint(new Point());
-  }
-
-  static PointLight Create(Transform light2world, ParamSet paramSet) {
-    Spectrum I = paramSet.findOneSpectrum('I', new Spectrum(1.0));
-    Spectrum sc = paramSet.findOneSpectrum('scale', new Spectrum(1.0));
-    Point P = paramSet.findOnePoint('from', new Point());
-    Transform l2w = Transform.Translate(P) * light2world;
-    return new PointLight(l2w, I * sc);
   }
 
   Spectrum sampleLAtPoint(Point p, double pEpsilon, LightSample ls,
@@ -74,6 +66,7 @@ class PointLight extends Light {
     for (int i = 0; i < SphericalHarmonics.Terms(lmax); ++i) {
       coeffs[i] = new Spectrum(0.0);
     }
+
     if (computeLightVisibility &&
         scene.intersectP(new Ray(p, Vector.Normalize(lightPos - p),
                                  pEpsilon, Vector.Distance(lightPos, p),
@@ -89,6 +82,14 @@ class PointLight extends Light {
     for (int i = 0; i < SphericalHarmonics.Terms(lmax); ++i) {
       coeffs[i] = Li * Ylm[i];
     }
+  }
+
+  static PointLight Create(Transform light2world, ParamSet paramSet) {
+    Spectrum I = paramSet.findOneSpectrum('I', new Spectrum(1.0));
+    Spectrum sc = paramSet.findOneSpectrum('scale', new Spectrum(1.0));
+    Point P = paramSet.findOnePoint('from', new Point());
+    Transform l2w = Transform.Translate(P) * light2world;
+    return new PointLight(l2w, I * sc);
   }
 
   Point lightPos;

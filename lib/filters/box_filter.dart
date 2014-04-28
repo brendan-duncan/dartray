@@ -21,8 +21,8 @@
 part of filters;
 
 class BoxFilter extends Filter {
-  BoxFilter(double xw, double yw) :
-    super(xw, yw);
+  BoxFilter(double xw, double yw)
+      : super(xw, yw);
 
   double evaluate(double x, double y) {
     return 1.0;

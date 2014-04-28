@@ -21,17 +21,9 @@
 part of lights;
 
 class ProjectionLight extends Light {
-  static ProjectionLight Create(Transform light2world, ParamSet paramSet) {
-    Spectrum I = paramSet.findOneSpectrum('I', new Spectrum(1.0));
-    Spectrum sc = paramSet.findOneSpectrum('scale', new Spectrum(1.0));
-    double fov = paramSet.findOneFloat('fov', 45.0);
-    String texname = paramSet.findOneFilename('mapname', '');
-    return new ProjectionLight(light2world, I * sc, texname, fov);
-  }
-
   ProjectionLight(Transform light2world, this.intensity, String texname,
-                  double fov) :
-    super(light2world) {
+                  double fov)
+      : super(light2world) {
     lightPos = lightToWorld.transformPoint(new Point(0.0, 0.0, 0.0));
 
     if (texname.isNotEmpty) {
@@ -141,7 +133,7 @@ class ProjectionLight extends Light {
   }
 
   Spectrum sampleL(Scene scene, LightSample ls, double u1, double u2,
-          double time, Ray ray, Normal Ns, List<double> pdf) {
+                   double time, Ray ray, Normal Ns, List<double> pdf) {
     Vector v = UniformSampleCone(ls.uPos[0], ls.uPos[1], cosTotalWidth);
     ray.set(lightPos, lightToWorld.transformVector(v), 0.0, INFINITY, time);
     Ns.copy(ray.direction);
@@ -151,6 +143,14 @@ class ProjectionLight extends Light {
 
   double pdf(Point p, Vector w) {
     return 0.0;
+  }
+
+  static ProjectionLight Create(Transform light2world, ParamSet paramSet) {
+    Spectrum I = paramSet.findOneSpectrum('I', new Spectrum(1.0));
+    Spectrum sc = paramSet.findOneSpectrum('scale', new Spectrum(1.0));
+    double fov = paramSet.findOneFloat('fov', 45.0);
+    String texname = paramSet.findOneFilename('mapname', '');
+    return new ProjectionLight(light2world, I * sc, texname, fov);
   }
 
   MIPMap projectionMap;

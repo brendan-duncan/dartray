@@ -21,39 +21,12 @@
 part of lights;
 
 class SpotLight extends Light {
-  SpotLight(Transform light2world, Spectrum I, double width, double fall) :
-    super(light2world) {
+  SpotLight(Transform light2world, Spectrum I, double width, double fall)
+      : super(light2world) {
     lightPos = lightToWorld.transformPoint(new Point(0.0, 0.0, 0.0));
     intensity = I;
     cosTotalWidth = Math.cos(Radians(width));
     cosFalloffStart = Math.cos(Radians(fall));
-  }
-
-  static SpotLight Create(Transform l2w, ParamSet paramSet) {
-    Spectrum I = paramSet.findOneSpectrum("I", new Spectrum(1.0));
-    Spectrum sc = paramSet.findOneSpectrum("scale", new Spectrum(1.0));
-    double coneangle = paramSet.findOneFloat("coneangle", 30.0);
-    double conedelta = paramSet.findOneFloat("conedeltaangle", 5.0);
-    // Compute spotlight world to light transformation
-    Point from = paramSet.findOnePoint("from", new Point(0.0, 0.0, 0.0));
-    Point to = paramSet.findOnePoint("to", new Point(0.0, 0.0, 1.0));
-    Vector dir = Vector.Normalize(to - from);
-    Vector du = new Vector();
-    Vector dv = new Vector();
-    Vector.CoordinateSystem(dir, du, dv);
-
-    Transform dirToZ =
-        new Transform(new Matrix4x4.values(du.x,  du.y,  du.z,  0.0,
-                                           dv.x,  dv.y,  dv.z,  0.0,
-                                           dir.x, dir.y, dir.z, 0.0,
-                                           0.0,   0.0,   0.0,   1.0));
-
-    Transform light2world = l2w *
-        Transform.Translate(new Vector(from.x, from.y, from.z)) *
-            Transform.Inverse(dirToZ);
-
-    return new SpotLight(light2world, I * sc, coneangle,
-                         coneangle - conedelta);
   }
 
   bool isDeltaLight() {
@@ -104,6 +77,33 @@ class SpotLight extends Light {
 
   double pdf(Point p, Vector w) {
     return 0.0;
+  }
+
+  static SpotLight Create(Transform l2w, ParamSet paramSet) {
+    Spectrum I = paramSet.findOneSpectrum('I', new Spectrum(1.0));
+    Spectrum sc = paramSet.findOneSpectrum('scale', new Spectrum(1.0));
+    double coneangle = paramSet.findOneFloat('coneangle', 30.0);
+    double conedelta = paramSet.findOneFloat('conedeltaangle', 5.0);
+    // Compute spotlight world to light transformation
+    Point from = paramSet.findOnePoint('from', new Point(0.0, 0.0, 0.0));
+    Point to = paramSet.findOnePoint('to', new Point(0.0, 0.0, 1.0));
+    Vector dir = Vector.Normalize(to - from);
+    Vector du = new Vector();
+    Vector dv = new Vector();
+    Vector.CoordinateSystem(dir, du, dv);
+
+    Transform dirToZ =
+        new Transform(new Matrix4x4.values(du.x,  du.y,  du.z,  0.0,
+                                           dv.x,  dv.y,  dv.z,  0.0,
+                                           dir.x, dir.y, dir.z, 0.0,
+                                           0.0,   0.0,   0.0,   1.0));
+
+    Transform light2world = l2w *
+        Transform.Translate(new Vector(from.x, from.y, from.z)) *
+            Transform.Inverse(dirToZ);
+
+    return new SpotLight(light2world, I * sc, coneangle,
+                         coneangle - conedelta);
   }
 
   Point lightPos;

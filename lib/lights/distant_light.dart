@@ -21,19 +21,10 @@
 part of lights;
 
 class DistantLight extends Light {
-  DistantLight(Transform light2world, Spectrum radiance, Vector dir) :
-    super(light2world) {
+  DistantLight(Transform light2world, Spectrum radiance, Vector dir)
+      : super(light2world) {
     lightDir = Vector.Normalize(lightToWorld.transformVector(dir));
     L = radiance;
-  }
-
-  static DistantLight Create(Transform light2world, ParamSet paramSet) {
-    Spectrum L = paramSet.findOneSpectrum('L', new Spectrum(1.0));
-    Spectrum sc = paramSet.findOneSpectrum('scale', new Spectrum(1.0));
-    Point from = paramSet.findOnePoint('from', new Point(0.0, 0.0, 0.0));
-    Point to = paramSet.findOnePoint('to', new Point(0.0, 0.0, 1.0));
-    Vector dir = from - to;
-    return new DistantLight(light2world, L * sc, dir);
   }
 
   bool isDeltaLight() {
@@ -47,7 +38,8 @@ class DistantLight extends Light {
   }
 
   Spectrum sampleLAtPoint(Point p, double pEpsilon, LightSample ls,
-          double time, Vector wi, List<double> pdf, VisibilityTester vis) {
+                          double time, Vector wi, List<double> pdf,
+                          VisibilityTester vis) {
     wi.copy(lightDir);
     pdf[0] = 1.0;
     vis.setRay(p, pEpsilon, wi, time);
@@ -80,6 +72,15 @@ class DistantLight extends Light {
 
   double pdf(Point p, Vector w) {
     return 0.0;
+  }
+
+  static DistantLight Create(Transform light2world, ParamSet paramSet) {
+    Spectrum L = paramSet.findOneSpectrum('L', new Spectrum(1.0));
+    Spectrum sc = paramSet.findOneSpectrum('scale', new Spectrum(1.0));
+    Point from = paramSet.findOnePoint('from', new Point(0.0, 0.0, 0.0));
+    Point to = paramSet.findOnePoint('to', new Point(0.0, 0.0, 1.0));
+    Vector dir = from - to;
+    return new DistantLight(light2world, L * sc, dir);
   }
 
   Vector lightDir;

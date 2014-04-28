@@ -22,19 +22,11 @@ part of lights;
 
 class DiffuseAreaLight extends AreaLight {
   DiffuseAreaLight(Transform light2world,
-                   Spectrum Le, int ns, Shape shape) :
-    super(light2world, ns),
-    Lemit = new Spectrum.from(Le),
-    shapeSet = new ShapeSet(shape) {
+                   Spectrum Le, int ns, Shape shape)
+      : Lemit = new Spectrum.from(Le),
+        shapeSet = new ShapeSet(shape),
+        super(light2world, ns) {
     area = shapeSet.area;
-  }
-
-  static DiffuseAreaLight Create(Transform light2world, ParamSet paramSet,
-                                 Shape shape) {
-    Spectrum L = paramSet.findOneSpectrum("L", new Spectrum(1.0));
-    Spectrum sc = paramSet.findOneSpectrum("scale", new Spectrum(1.0));
-    int nSamples = paramSet.findOneInt("nsamples", 1);
-    return new DiffuseAreaLight(light2world, L * sc, nSamples, shape);
   }
 
   Spectrum L(Point p, Normal n, Vector w) {
@@ -54,7 +46,8 @@ class DiffuseAreaLight extends AreaLight {
   }
 
   Spectrum sampleLAtPoint(Point p, double pEpsilon, LightSample ls, double time,
-      Vector wo, List<double> pdf, VisibilityTester visibility) {
+                          Vector wo, List<double> pdf,
+                          VisibilityTester visibility) {
     Normal ns = new Normal();
     Point ps = shapeSet.sample(ls, ns, p);
     wo.copy(Vector.Normalize(ps - p));
@@ -81,6 +74,14 @@ class DiffuseAreaLight extends AreaLight {
 
     Spectrum Ls = L(org, Ns, dir);
     return Ls;
+  }
+
+  static DiffuseAreaLight Create(Transform light2world, ParamSet paramSet,
+                                 Shape shape) {
+    Spectrum L = paramSet.findOneSpectrum('L', new Spectrum(1.0));
+    Spectrum sc = paramSet.findOneSpectrum('scale', new Spectrum(1.0));
+    int nSamples = paramSet.findOneInt('nsamples', 1);
+    return new DiffuseAreaLight(light2world, L * sc, nSamples, shape);
   }
 
   Spectrum Lemit;

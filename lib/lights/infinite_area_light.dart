@@ -21,12 +21,8 @@
 part of lights;
 
 class InfiniteAreaLight extends Light {
-  Spectrum L;
-  MIPMap radianceMap;
-  Distribution2D distribution;
-
-  InfiniteAreaLight(Transform light2world, this.L, int ns, String texmap) :
-    super(light2world, ns) {
+  InfiniteAreaLight(Transform light2world, this.L, int ns, String texmap)
+      : super(light2world, ns) {
     if (texmap.isNotEmpty) {
       Completer completer = new Completer();
       ResourceManager.RequestImage(texmap, completer.future)
@@ -80,7 +76,8 @@ class InfiniteAreaLight extends Light {
   }
 
   Spectrum sampleLAtPoint(Point p, double pEpsilon, LightSample ls,
-      double time, Vector wi, List<double> pdf, VisibilityTester visibility) {
+                          double time, Vector wi, List<double> pdf,
+                          VisibilityTester visibility) {
     Stats.INFINITE_LIGHT_STARTED_SAMPLE();
     // Find $(u,v)$ sample coordinates in infinite light texture
     List<double> uv = [0.0, 0.0];
@@ -296,6 +293,10 @@ class InfiniteAreaLight extends Light {
     //if (PbrtOptions.quickRender) nSamples = max(1, nSamples / 4);
     return new InfiniteAreaLight(light2world, L * sc, nSamples, texmap);
   }
+
+  Spectrum L;
+  MIPMap radianceMap;
+  Distribution2D distribution;
 }
 
 

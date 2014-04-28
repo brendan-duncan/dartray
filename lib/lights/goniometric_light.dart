@@ -21,15 +21,8 @@
 part of lights;
 
 class GoniometricLight extends Light {
-  static GoniometricLight Create(Transform light2world, ParamSet paramSet) {
-    Spectrum I = paramSet.findOneSpectrum('I', new Spectrum(1.0));
-    Spectrum sc = paramSet.findOneSpectrum('scale', new Spectrum(1.0));
-    String texname = paramSet.findOneFilename('mapname', '');
-    return new GoniometricLight(light2world, I * sc, texname);
-  }
-
-  GoniometricLight(Transform light2world, this.intensity, String texname) :
-    super(light2world) {
+  GoniometricLight(Transform light2world, this.intensity, String texname)
+      : super(light2world) {
     lightPos = lightToWorld.transformPoint(new Point(0.0, 0.0, 0.0));
 
     if (texname.isNotEmpty) {
@@ -97,6 +90,13 @@ class GoniometricLight extends Light {
 
   double pdf(Point p, Vector w) {
     return 0.0;
+  }
+
+  static GoniometricLight Create(Transform light2world, ParamSet paramSet) {
+    Spectrum I = paramSet.findOneSpectrum('I', new Spectrum(1.0));
+    Spectrum sc = paramSet.findOneSpectrum('scale', new Spectrum(1.0));
+    String texname = paramSet.findOneFilename('mapname', '');
+    return new GoniometricLight(light2world, I * sc, texname);
   }
 
   Point lightPos;

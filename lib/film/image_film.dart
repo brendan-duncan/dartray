@@ -35,9 +35,9 @@ class ImageFilm extends Film {
   Image image;
 
   ImageFilm(int xres, int yres, this.filter, this.cropWindow, this.filename,
-            [this.previewCallback]) :
-    super(xres, yres),
-    _gamma = new Uint8List(256) {
+            [this.previewCallback])
+      : _gamma = new Uint8List(256),
+        super(xres, yres) {
     double gamma = 1.0 / 2.2;
     for (int i = 0; i < 256; ++i) {
       _gamma[i] = (pow(i / 255.0, gamma) * 255.0).floor().clamp(0, 255);
