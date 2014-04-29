@@ -25,34 +25,40 @@ class GlossyPRTIntegrator extends SurfaceIntegrator {
       : nSamples = RoundUpPow2(ns);
 
   void preprocess(Scene scene, Camera camera, Renderer renderer) {
-    // Project direct lighting into SH for _GlossyPRTIntegrator_
+    // Project direct lighting into SH for GlossyPRTIntegrator
+    LogDebug('START GlossyPRT Preprocess');
     BBox bbox = scene.worldBound;
-    Point p = bbox.pMin * 0.5 + bbox.pMax * 0.5;
+    Point p = bbox.center;
     RNG rng = new RNG();
 
-    c_in = new List<Spectrum>(SphericalHarmonics.Terms(lmax));
+    int lmax_terms = SphericalHarmonics.Terms(lmax);
+
+    c_in = new List<Spectrum>(lmax_terms);
     for (int i = 0, len = c_in.length; i < len; ++i) {
       c_in[i] = new Spectrum(0.0);
     }
+
     SphericalHarmonics.ProjectIncidentDirectRadiance(p, 0.0, camera.shutterOpen,
                                                      scene, false, lmax, rng,
                                                      c_in);
 
     // Compute glossy BSDF matrix for PRT
-    B = new List<Spectrum>(SphericalHarmonics.Terms(lmax) *
-                           SphericalHarmonics.Terms(lmax));
+    B = new List<Spectrum>(lmax_terms * lmax_terms);
 
     SphericalHarmonics.ComputeBSDFMatrix(Kd, Ks, roughness, rng, 1024, lmax, B);
+    LogDebug('FINISH GlossyPRT Preprocess');
   }
 
   void requestSamples(Sampler sampler, Sample sample, Scene scene) {
   }
 
-  Spectrum Li(Scene scene, Renderer renderer,
-              RayDifferential ray, Intersection isect,
-              Sample sample, RNG rng) {
+  Spectrum Li(Scene scene, Renderer renderer, RayDifferential ray,
+              Intersection isect, Sample sample, RNG rng) {
     Spectrum L = new Spectrum(0.0);
     Vector wo = -ray.direction;
+
+    final int lmax_terms = SphericalHarmonics.Terms(lmax);
+
     // Compute emitted light if ray hit an area light source
     L += isect.Le(wo);
 
@@ -63,12 +69,12 @@ class GlossyPRTIntegrator extends SurfaceIntegrator {
     // Compute reflected radiance with glossy PRT at point
 
     // Compute SH radiance transfer matrix at point and SH coefficients
-    List<Spectrum> c_t = new List<Spectrum>(SphericalHarmonics.Terms(lmax));
-    List<Spectrum> T = new List<Spectrum>(SphericalHarmonics.Terms(lmax) *
-                                          SphericalHarmonics.Terms(lmax));
+    List<Spectrum> c_t = new List<Spectrum>(lmax_terms);
+    List<Spectrum> T = new List<Spectrum>(lmax_terms * lmax_terms);
 
     SphericalHarmonics.ComputeTransferMatrix(p, isect.rayEpsilon, scene, rng,
                                              nSamples, lmax, T);
+
     SphericalHarmonics.MatrixVectorMultiply(T, c_in, c_t, lmax);
 
     // Rotate incident SH lighting to local coordinate frame
@@ -76,27 +82,28 @@ class GlossyPRTIntegrator extends SurfaceIntegrator {
     Vector r2 = bsdf.localToWorld(new Vector(0.0, 1.0, 0.0));
     Normal nl = new Normal.from(bsdf.localToWorld(new Vector(0.0, 0.0, 1.0)));
     Matrix4x4 rot = new Matrix4x4.values(
-                  r1.x, r2.x, nl.x, 0.0,
-                  r1.y, r2.y, nl.y, 0.0,
-                  r1.z, r2.z, nl.z, 0.0,
-                  0.0,  0.0,  0.0,  1.0);
-    List<Spectrum> c_l = new List<Spectrum>(SphericalHarmonics.Terms(lmax));
+                            r1.x, r2.x, nl.x, 0.0,
+                            r1.y, r2.y, nl.y, 0.0,
+                            r1.z, r2.z, nl.z, 0.0,
+                            0.0,  0.0,  0.0,  1.0);
+
+    List<Spectrum> c_l = new List<Spectrum>(lmax_terms);
     for (int i = 0, len = c_l.length; i < len; ++i) {
       c_l[i] = new Spectrum(0.0);
     }
     SphericalHarmonics.Rotate(c_t, c_l, rot, lmax);
 
-    // Compute final coefficients _c\_o_ using BSDF matrix
-    List<Spectrum> c_o = new List<Spectrum>(SphericalHarmonics.Terms(lmax));
+    // Compute final coefficients c_o using BSDF matrix
+    List<Spectrum> c_o = new List<Spectrum>(lmax_terms);
     SphericalHarmonics.MatrixVectorMultiply(B, c_l, c_o, lmax);
 
-    // Evaluate outgoing radiance function for $\wo$ and add to _L_
+    // Evaluate outgoing radiance function for wo and add to L
     Vector woLocal = bsdf.worldToLocal(wo);
-    Float32List Ylm = new Float32List(SphericalHarmonics.Terms(lmax));
+    Float32List Ylm = new Float32List(lmax_terms);
     SphericalHarmonics.Evaluate(woLocal, lmax, Ylm);
     Spectrum Li = new Spectrum(0.0);
 
-    for (int i = 0; i < SphericalHarmonics.Terms(lmax); ++i) {
+    for (int i = 0; i < lmax_terms; ++i) {
       Li += c_o[i] * Ylm[i];
     }
     L += Li.clamp();

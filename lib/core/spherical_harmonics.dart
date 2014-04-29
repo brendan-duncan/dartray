@@ -624,7 +624,7 @@ class SphericalHarmonics {
     Float32List Ylm = new Float32List(Terms(lmax) * nSamples);
     List<Vector> w = new List<Vector>(nSamples);
 
-    List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
+    List<int> scramble = [rng.randomUint(), rng.randomUint()];
     List<double> u = [0.0, 0.0];
     for (int i = 0; i < nSamples; ++i) {
       Sample02(i, scramble, u);
@@ -644,8 +644,8 @@ class SphericalHarmonics {
           f *= (Vector.CosTheta(wi)).abs() / (pdf * nSamples * nSamples);
           for (int i = 0; i < Terms(lmax); ++i) {
             for (int j = 0; j < Terms(lmax); ++j) {
-                B[i * Terms(lmax) + j].add(f * (Ylm[isamp * Terms(lmax) + j] *
-                                             Ylm[osamp * Terms(lmax) + i]));
+              B[i * Terms(lmax) + j].add(f * (Ylm[isamp * Terms(lmax) + j] *
+                                              Ylm[osamp * Terms(lmax) + i]));
             }
           }
         }
