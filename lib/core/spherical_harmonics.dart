@@ -36,11 +36,11 @@ class SphericalHarmonics {
                   'If you need more bands, try recompiling using doubles.');
     }
 
-    // Compute Legendre polynomial values for $\cos\theta$
+    // Compute Legendre polynomial values for cos theta
     assert(w.length() > 0.995 && w.length() < 1.005);
     _legendrep(w.z, lmax, out, outIndex);
 
-    // Compute $K_l^m$ coefficients
+    // Compute K_l^m coefficients
     List<double> Klm = new List<double>(Terms(lmax));
 
     for (int l = 0; l <= lmax; ++l) {
@@ -49,7 +49,7 @@ class SphericalHarmonics {
       }
     }
 
-    // Compute $\sin\phi$ and $\cos\phi$ values
+    // Compute sin phi and cos phi values
     List<double> sins = new List<double>(lmax + 1);
     List<double> coss = new List<double>(lmax + 1);
     double xyLen = Math.sqrt(Math.max(0.0, 1.0 - w.z * w.z));
@@ -64,7 +64,7 @@ class SphericalHarmonics {
       _sinCosIndexed(w.y / xyLen, w.x / xyLen, lmax + 1, sins, coss);
     }
 
-    // Apply SH definitions to compute final $(l,m)$ values
+    // Apply SH definitions to compute final (l,m) values
     final double sqrt2 = Math.sqrt(2.0);
 
     for (int l = 0; l <= lmax; ++l) {
@@ -92,7 +92,7 @@ class SphericalHarmonics {
       double fu = -1.0 + 2.0 * (u + 0.5) / res;
       for (int v = 0; v < res; ++v) {
         double fv = -1.0 + 2.0 * (v + 0.5) / res;
-        // Incorporate results from $+z$ face to coefficients
+        // Incorporate results from +z face to coefficients
         Vector w = new Vector(fu, fv, 1.0);
         Evaluate(Vector.Normalize(w), lmax, Ylm);
         Spectrum f = func(u, v, p, w);
@@ -242,14 +242,14 @@ class SphericalHarmonics {
       return;
     }
 
-    // Precompute sine and cosine terms for $z$-axis SH rotation
+    // Precompute sine and cosine terms for z-axis SH rotation
     List<double> ct = new List<double>(lmax + 1);
     List<double> st = new List<double>(lmax + 1);
 
     _sinCosIndexed(Math.sin(alpha), Math.cos(alpha), lmax + 1, st, ct);
 
     for (int l = 1; l <= lmax; ++l) {
-      // Rotate coefficients for band _l_ about $z$
+      // Rotate coefficients for band _l_ about z
       for (int m = -l; m < 0; ++m) {
         c_out[Index(l, m)] = c_in[Index(l,  m)] * ct[-m] +
                                c_in[Index(l, -m)] * -st[-m];
@@ -559,7 +559,7 @@ class SphericalHarmonics {
       Vector w = UniformSampleSphere(u[0], u[1]);
       double pdf = UniformSpherePdf();
       if (Vector.Dot(w, n) > 0.0 && !scene.intersectP(new Ray(p, w, rayEpsilon))) {
-        // Accumulate contribution of direction $\w{}$ to transfer coefficients
+        // Accumulate contribution of direction w to transfer coefficients
         Evaluate(w, lmax, Ylm);
         for (int j = 0, len = Terms(lmax); j < len; ++j) {
           c_transfer[j] += new Spectrum(Ylm[j] * Vector.AbsDot(w, n)) /
@@ -579,7 +579,7 @@ class SphericalHarmonics {
     List<double> Ylm = new List<double>(Terms(lmax));
     List<double> u = [0.0, 0.0];
     for (int i = 0; i < nSamples; ++i) {
-      // Compute Monte Carlo estimate of $i$th sample for transfer matrix
+      // Compute Monte Carlo estimate of ith sample for transfer matrix
       Sample02(i, scramble, u);
       Vector w = UniformSampleSphere(u[0], u[1]);
       double pdf = UniformSpherePdf();
@@ -680,7 +680,7 @@ class SphericalHarmonics {
       assert(P(l, 0).isFinite);
     }
 
-    // Compute $m=l$ edge using Legendre recurrence
+    // Compute m=l edge using Legendre recurrence
     double neg = -1.0;
     double dfact = 1.0;
     double xroot = Math.sqrt(Math.max(0.0, 1.0 - x * x));
@@ -694,14 +694,14 @@ class SphericalHarmonics {
       xpow *= xroot;    // xpow = powf(1.f - x*x, double(l) * 0.5f);
     }
 
-    // Compute $m=l-1$ edge using Legendre recurrence
+    // Compute m=l-1 edge using Legendre recurrence
     for (int l = 2; l <= lmax; ++l) {
       out[outIndex + Index(l, l - 1)] = x * (2.0 * l - 1.0) * P(l - 1, l - 1);
       assert(!P(l, l - 1).isNaN);
       assert(P(l, l - 1).isFinite);
     }
 
-    // Compute $m=1, \ldots, l-2$ values using Legendre recurrence
+    // Compute m=1, \ldots, l-2 values using Legendre recurrence
     for (int l = 3; l <= lmax; ++l) {
       for (int m = 1; m <= l - 2; ++m) {
         out[outIndex + Index(l, m)] =
@@ -752,7 +752,7 @@ class SphericalHarmonics {
     double si = 0.0;
     double ci = 1.0;
     for (int i = 0; i < n; ++i) {
-      // Compute $\sin{}i\phi$ and $\cos{}i\phi$ using recurrence
+      // Compute sin phi and cos phi using recurrence
       sout[i] = si;
       cout[i] = ci;
       double oldsi = si;
