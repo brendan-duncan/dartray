@@ -29,9 +29,9 @@ part of lights;
  * ----------------------------------------------------------------------------
  * | spectrum   |  scale          |   1.0           |
  * ----------------------------------------------------------------------------
- * | string     |  mapname        |  ""             |
+ * | string     |  mapname        |   ""            |
  * ----------------------------------------------------------------------------
- * | integer    |  nsamples       |  1              |
+ * | integer    |  nsamples       |   1             |
  * ----------------------------------------------------------------------------
  */
 class InfiniteAreaLight extends Light {
@@ -41,7 +41,7 @@ class InfiniteAreaLight extends Light {
       Completer completer = new Completer();
       ResourceManager.RequestImage(texmap, future: completer.future)
         .then((SpectrumImage img) {
-          String name = MIPMap.GetTextureName(texmap);
+          String name = MIPMap.GetTextureName(texmap, scale: L);
 
           if (ResourceManager.HasTexture(name)) {
             MIPMap mipmap = ResourceManager.GetTexture(name);

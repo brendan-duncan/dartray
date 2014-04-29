@@ -29,23 +29,23 @@ class RenderOverrides {
   double resolutionScale = 1.0;
   int samplingMode = Sampler.FULL_SAMPLING;
   String filterName;
-  ParamSet filterParams;
+  ParamSet filterParams = new ParamSet();
   String filmName;
-  ParamSet filmParams;
+  ParamSet filmParams = new ParamSet();
   String pixelSamplerName;
-  ParamSet pixelSamplerParams;
+  ParamSet pixelSamplerParams = new ParamSet();
   String samplerName;
-  ParamSet samplerParams;
+  ParamSet samplerParams = new ParamSet();
   String acceleratorName;
-  ParamSet acceleratorParams;
+  ParamSet acceleratorParams = new ParamSet();
   String rendererName;
-  ParamSet rendererParams;
+  ParamSet rendererParams = new ParamSet();
   String surfaceIntegratorName;
-  ParamSet surfaceIntegratorParams;
+  ParamSet surfaceIntegratorParams = new ParamSet();
   String volumeIntegratorName;
-  ParamSet volumeIntegratorParams;
+  ParamSet volumeIntegratorParams = new ParamSet();
   String cameraName;
-  ParamSet cameraParams;
+  ParamSet cameraParams = new ParamSet();
 
   static RenderOverrides global;
 

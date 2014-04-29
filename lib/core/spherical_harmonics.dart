@@ -689,8 +689,8 @@ class SphericalHarmonics {
     }
 
     // Compute m=0 Legendre values using recurrence
-    out[Index(0, 0)] = 1.0;
-    out[Index(1, 0)] = x;
+    out[offset + Index(0, 0)] = 1.0;
+    out[offset + Index(1, 0)] = x;
     for (int l = 2; l <= lmax; ++l) {
       out[offset + Index(l, 0)] = ((2.0 * l - 1.0) * x * P(l - 1, 0) -
                                    (l - 1) * P(l - 2, 0)) / l;

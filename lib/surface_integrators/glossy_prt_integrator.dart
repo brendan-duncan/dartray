@@ -26,6 +26,7 @@ class GlossyPRTIntegrator extends SurfaceIntegrator {
 
   void preprocess(Scene scene, Camera camera, Renderer renderer) {
     // Project direct lighting into SH for GlossyPRTIntegrator
+    Stopwatch timer = new Stopwatch()..start();
     LogDebug('STARTING GlossyPRT Preprocess');
     BBox bbox = scene.worldBound;
     Point p = bbox.center;
@@ -44,9 +45,9 @@ class GlossyPRTIntegrator extends SurfaceIntegrator {
 
     // Compute glossy BSDF matrix for PRT
     B = new List<Spectrum>(lmax_terms * lmax_terms);
-
     SphericalHarmonics.ComputeBSDFMatrix(Kd, Ks, roughness, rng, 1024, lmax, B);
-    LogDebug('FINISH GlossyPRT Preprocess');
+
+    LogDebug('FINISH GlossyPRT Preprocess: ${timer.elapsed}');
   }
 
   void requestSamples(Sampler sampler, Sample sample, Scene scene) {
@@ -99,13 +100,16 @@ class GlossyPRTIntegrator extends SurfaceIntegrator {
 
     // Evaluate outgoing radiance function for wo and add to L
     Vector woLocal = bsdf.worldToLocal(wo);
+
     Float32List Ylm = new Float32List(lmax_terms);
     SphericalHarmonics.Evaluate(woLocal, lmax, Ylm);
+
     Spectrum Li = new Spectrum(0.0);
 
     for (int i = 0; i < lmax_terms; ++i) {
       Li += c_o[i] * Ylm[i];
     }
+
     L += Li.clamp();
 
     return L;
