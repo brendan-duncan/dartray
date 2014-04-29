@@ -26,7 +26,7 @@ class GlossyPRTIntegrator extends SurfaceIntegrator {
 
   void preprocess(Scene scene, Camera camera, Renderer renderer) {
     // Project direct lighting into SH for GlossyPRTIntegrator
-    LogDebug('START GlossyPRT Preprocess');
+    LogDebug('STARTING GlossyPRT Preprocess');
     BBox bbox = scene.worldBound;
     Point p = bbox.center;
     RNG rng = new RNG();

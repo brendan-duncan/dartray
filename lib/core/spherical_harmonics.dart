@@ -30,20 +30,21 @@ class SphericalHarmonics {
     l * l + l + m;
 
   static void Evaluate(Vector w, int lmax, List<double> out,
-                       [int outIndex = 0]) {
+                       [int offset = 0]) {
     if (lmax > 28) {
-        LogSevere('SHEvaluate() runs out of numerical precision for lmax > 28.'
-                  'If you need more bands, try recompiling using doubles.');
+      LogSevere('SHEvaluate() runs out of numerical precision for lmax > 28.'
+                'If you need more bands, try recompiling using doubles.');
     }
 
     // Compute Legendre polynomial values for cos theta
     assert(w.length() > 0.995 && w.length() < 1.005);
-    _legendrep(w.z, lmax, out, outIndex);
+    _legendrep(w.z, lmax, out, offset);
 
     // Compute K_l^m coefficients
     List<double> Klm = new List<double>(Terms(lmax));
 
     for (int l = 0; l <= lmax; ++l) {
+      int l2 = l * l;
       for (int m = -l; m <= l; ++m) {
         Klm[Index(l, m)] = _K(l, m);
       }
@@ -69,24 +70,25 @@ class SphericalHarmonics {
 
     for (int l = 0; l <= lmax; ++l) {
       for (int m = -l; m < 0; ++m) {
-        out[Index(l, m)] = sqrt2 * Klm[Index(l, m)] *
-            out[Index(l, -m)] * sins[-m];
-        assert(out[Index(l,m)].isNaN);
-        assert(out[Index(l,m)].isFinite);
+        out[offset + Index(l, m)] = sqrt2 * Klm[Index(l, m)] *
+                                    out[offset + Index(l, -m)] * sins[-m];
+        assert(out[offset + Index(l, m)].isNaN);
+        assert(out[offset + Index(l, m)].isFinite);
       }
 
-      out[Index(l, 0)] *= Klm[Index(l, 0)];
+      out[offset + Index(l, 0)] *= Klm[Index(l, 0)];
       for (int m = 1; m <= l; ++m) {
-        out[Index(l, m)] *= sqrt2 * Klm[Index(l, m)] * coss[m];
-        assert(!out[Index(l, m)].isNaN);
-        assert(!out[Index(l, m)].isFinite);
+        out[offset + Index(l, m)] *= sqrt2 * Klm[Index(l, m)] * coss[m];
+        assert(!out[offset + Index(l, m)].isNaN);
+        assert(!out[offset + Index(l, m)].isFinite);
       }
     }
   }
 
   static void ProjectCube(func, Point p, int res, int lmax,
                           List<Spectrum> coeffs) {
-    List<double> Ylm = new List<double>(Terms(lmax));
+    final int lmax_terms = Terms(lmax);
+    List<double> Ylm = new List<double>(lmax_terms);
 
     for (int u = 0; u < res; ++u) {
       double fu = -1.0 + 2.0 * (u + 0.5) / res;
@@ -97,7 +99,7 @@ class SphericalHarmonics {
         Evaluate(Vector.Normalize(w), lmax, Ylm);
         Spectrum f = func(u, v, p, w);
         double dA = 1.0 / Math.pow(Vector.Dot(w, w), 3.0 / 2.0);
-        for (int k = 0; k < Terms(lmax); ++k) {
+        for (int k = 0; k < lmax_terms; ++k) {
           coeffs[k] += f * dA * Ylm[k] * (4.0 / (res * res));
         }
 
@@ -105,35 +107,35 @@ class SphericalHarmonics {
         w = new Vector(fu, fv, -1.0);
         Evaluate(Vector.Normalize(w), lmax, Ylm);
         f = func(u, v, p, w);
-        for (int k = 0; k < Terms(lmax); ++k) {
+        for (int k = 0; k < lmax_terms; ++k) {
           coeffs[k] += f * Ylm[k] * dA * (4.0 / (res * res));
         }
 
         w = new Vector(fu, 1.0, fv);
         Evaluate(Vector.Normalize(w), lmax, Ylm);
         f = func(u, v, p, w);
-        for (int k = 0; k < Terms(lmax); ++k) {
+        for (int k = 0; k < lmax_terms; ++k) {
           coeffs[k] += f * Ylm[k] * dA * (4.0 / (res * res));
         }
 
         w = new Vector(fu, -1.0, fv);
         Evaluate(Vector.Normalize(w), lmax, Ylm);
         f = func(u, v, p, w);
-        for (int k = 0; k < Terms(lmax); ++k) {
+        for (int k = 0; k < lmax_terms; ++k) {
           coeffs[k] += f * Ylm[k] * dA * (4.0 / (res * res));
         }
 
         w = new Vector(1.0, fu, fv);
         Evaluate(Vector.Normalize(w), lmax, Ylm);
         f = func(u, v, p, w);
-        for (int k = 0; k < Terms(lmax); ++k) {
+        for (int k = 0; k < lmax_terms; ++k) {
           coeffs[k] += f * Ylm[k] * dA * (4.0 / (res * res));
         }
 
         w = new Vector(-1.0, fu, fv);
         Evaluate(Vector.Normalize(w), lmax, Ylm);
         f = func(u, v, p, w);
-        for (int k = 0; k < Terms(lmax); ++k) {
+        for (int k = 0; k < lmax_terms; ++k) {
           coeffs[k] += f * Ylm[k] * dA * (4.0 / (res * res));
         }
       }
@@ -146,16 +148,20 @@ class SphericalHarmonics {
                                              int lmax, RNG rng,
                                              List<Spectrum> c_d) {
     // Loop over light sources and sum their SH coefficients
-    List<Spectrum> c = new List<Spectrum>(Terms(lmax));
+    final int lmax_terms = Terms(lmax);
+
+    List<Spectrum> c = new List<Spectrum>(lmax_terms);
     for (int i = 0, len = c.length; i < len; ++i) {
       c[i] = new Spectrum(0.0);
     }
 
     for (int i = 0; i < scene.lights.length; ++i) {
       Light light = scene.lights[i];
+
       light.shProject(p, pEpsilon, lmax, scene, computeLightVisibility, time,
                       rng, c);
-       for (int j = 0; j < Terms(lmax); ++j) {
+
+       for (int j = 0; j < lmax_terms; ++j) {
          c_d[j] += c[j];
        }
     }
@@ -173,7 +179,8 @@ class SphericalHarmonics {
     Sample sample = new Sample.from(origSample);
     List<int> scramble = [rng.randomUint(), rng.randomUint()];
     nSamples = RoundUpPow2(nSamples);
-    List<double> Ylm = new List<double>(Terms(lmax));
+    int lmax_terms = Terms(lmax);
+    List<double> Ylm = new List<double>(lmax_terms);
     for (int i = 0; i < nSamples; ++i) {
       // Sample incident direction for radiance probe
       List<double> u = [0.0, 0.0];
@@ -203,7 +210,7 @@ class SphericalHarmonics {
 
       // Update SH coefficients for probe sample point
       Evaluate(wi, lmax, Ylm);
-      for (int j = 0; j < Terms(lmax); ++j) {
+      for (int j = 0; j < lmax_terms; ++j) {
         c_i[j] += Li * Ylm[j] / (pdf * nSamples);
       }
     }
@@ -550,8 +557,9 @@ class SphericalHarmonics {
   static void ComputeDiffuseTransfer(Point p, Normal n, double rayEpsilon,
                                      Scene scene, RNG rng, int nSamples,
                                      int lmax, List<Spectrum> c_transfer) {
+    final int lmax_terms = Terms(lmax);
     List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
-    List<double> Ylm = new List<double>(Terms(lmax));
+    List<double> Ylm = new List<double>(lmax_terms);
     List<double> u = [0.0, 0.0];
     for (int i = 0; i < nSamples; ++i) {
       // Sample _i_th direction and compute estimate for transfer coefficients
@@ -561,7 +569,7 @@ class SphericalHarmonics {
       if (Vector.Dot(w, n) > 0.0 && !scene.intersectP(new Ray(p, w, rayEpsilon))) {
         // Accumulate contribution of direction w to transfer coefficients
         Evaluate(w, lmax, Ylm);
-        for (int j = 0, len = Terms(lmax); j < len; ++j) {
+        for (int j = 0, len = lmax_terms; j < len; ++j) {
           c_transfer[j] += new Spectrum(Ylm[j] * Vector.AbsDot(w, n)) /
                           (pdf * nSamples);
         }
@@ -572,11 +580,13 @@ class SphericalHarmonics {
   static void ComputeTransferMatrix(Point p, double rayEpsilon, Scene scene,
                                     RNG rng, int nSamples, int lmax,
                                     List<Spectrum> T) {
-    for (int i = 0, len = Terms(lmax) * Terms(lmax); i < len; ++i) {
+    final int lmax_terms = Terms(lmax);
+    final int lmax_terms2 = lmax_terms * lmax_terms;
+    for (int i = 0, len = lmax_terms2; i < len; ++i) {
       T[i] = new Spectrum(0.0);
     }
     List<int> scramble = [ rng.randomUint(), rng.randomUint() ];
-    List<double> Ylm = new List<double>(Terms(lmax));
+    List<double> Ylm = new List<double>(lmax_terms);
     List<double> u = [0.0, 0.0];
     for (int i = 0; i < nSamples; ++i) {
       // Compute Monte Carlo estimate of ith sample for transfer matrix
@@ -586,10 +596,10 @@ class SphericalHarmonics {
       if (!scene.intersectP(new Ray(p, w, rayEpsilon))) {
         // Update transfer matrix for unoccluded direction
         Evaluate(w, lmax, Ylm);
-        for (int j = 0, nj = Terms(lmax); j < nj; ++j) {
-          for (int k = 0, nk = Terms(lmax); k < nk; ++k) {
-            T[j * Terms(lmax) + k] += new Spectrum((Ylm[j] * Ylm[k]) /
-                                                     (pdf * nSamples));
+        for (int j = 0, nj = lmax_terms; j < nj; ++j) {
+          for (int k = 0, nk = lmax_terms; k < nk; ++k) {
+            T[j * lmax_terms + k] += new Spectrum((Ylm[j] * Ylm[k]) /
+                                                  (pdf * nSamples));
           }
         }
       }
@@ -599,11 +609,13 @@ class SphericalHarmonics {
   static void ComputeBSDFMatrix(Spectrum Kd, Spectrum Ks, double roughness,
                                 RNG rng, int nSamples, int lmax,
                                 List<Spectrum> B) {
-    for (int i = 0; i < Terms(lmax) * Terms(lmax); ++i) {
+    final int lmax_terms = Terms(lmax);
+    final int lmax_terms2 = lmax_terms * lmax_terms;
+    for (int i = 0; i < lmax_terms2; ++i) {
       B[i] = new Spectrum(0.0);
     }
 
-    // Create _BSDF_ for computing BSDF transfer matrix
+    // Create BSDF for computing BSDF transfer matrix
     DifferentialGeometry dg = new DifferentialGeometry().set(
                                                      new Point(0.0, 0.0, 0.0),
                                                      new Vector(1.0, 0.0, 0.0),
@@ -620,32 +632,38 @@ class SphericalHarmonics {
 
     bsdf.add(new Microfacet(Ks, fresnel, new Blinn(1.0 / roughness)));
 
-    // Precompute directions w{} and SH values for directions
-    Float32List Ylm = new Float32List(Terms(lmax) * nSamples);
+    // Precompute directions w and SH values for directions
+    Float32List Ylm = new Float32List(lmax_terms * nSamples);
     List<Vector> w = new List<Vector>(nSamples);
 
     List<int> scramble = [rng.randomUint(), rng.randomUint()];
     List<double> u = [0.0, 0.0];
+
     for (int i = 0; i < nSamples; ++i) {
       Sample02(i, scramble, u);
       w[i] = UniformSampleSphere(u[0], u[1]);
-      Evaluate(w[i], lmax, Ylm, Terms(lmax) * i);
+      Evaluate(w[i], lmax, Ylm, lmax_terms * i);
     }
+
+    double pdf = UniformSpherePdf() * UniformSpherePdf();
+    double pdf_nSamples = pdf * nSamples * nSamples;
 
     // Compute double spherical integral for BSDF matrix
     for (int osamp = 0; osamp < nSamples; ++osamp) {
       Vector wo = w[osamp];
+
       for (int isamp = 0; isamp < nSamples; ++isamp) {
         Vector wi = w[isamp];
         // Update BSDF matrix elements for sampled directions
         Spectrum f = bsdf.f(wo, wi);
+
         if (!f.isBlack()) {
-          double pdf = UniformSpherePdf() * UniformSpherePdf();
-          f *= (Vector.CosTheta(wi)).abs() / (pdf * nSamples * nSamples);
-          for (int i = 0; i < Terms(lmax); ++i) {
-            for (int j = 0; j < Terms(lmax); ++j) {
-              B[i * Terms(lmax) + j].add(f * (Ylm[isamp * Terms(lmax) + j] *
-                                              Ylm[osamp * Terms(lmax) + i]));
+          f *= Vector.CosTheta(wi).abs() / pdf_nSamples;
+
+          for (int i = 0; i < lmax_terms; ++i) {
+            for (int j = 0; j < lmax_terms; ++j) {
+              B[i * lmax_terms + j].add(f * (Ylm[isamp * lmax_terms + j] *
+                                             Ylm[osamp * lmax_terms + i]));
             }
           }
         }
@@ -655,27 +673,27 @@ class SphericalHarmonics {
 
   static void MatrixVectorMultiply(List<Spectrum> M, List<Spectrum> v,
                                    List<Spectrum> vout, int lmax) {
-    for (int i = 0, len = Terms(lmax); i < len; ++i) {
+    final int lmax_terms = Terms(lmax);
+    for (int i = 0, len = lmax_terms; i < len; ++i) {
       vout[i] = new Spectrum(0.0);
-      for (int j = 0; j < Terms(lmax); ++j) {
-        vout[i] += v[j] * M[Terms(lmax) * i + j];
+      for (int j = 0; j < lmax_terms; ++j) {
+        vout[i] += v[j] * M[lmax_terms * i + j];
       }
     }
   }
 
   static void _legendrep(double x, int lmax, List<double> out,
-                         [int outIndex = 0]) {
+                         [int offset = 0]) {
     P(int l, int m) {
-      int index = (outIndex + Index(l, m)).toInt();
-      return out[index];
+      return out[offset + Index(l, m)];
     }
 
     // Compute m=0 Legendre values using recurrence
     out[Index(0, 0)] = 1.0;
     out[Index(1, 0)] = x;
     for (int l = 2; l <= lmax; ++l) {
-      out[outIndex + Index(l, 0)] = ((2.0 * l - 1.0) * x * P(l - 1, 0) -
-                            (l - 1) * P(l - 2, 0)) / l;
+      out[offset + Index(l, 0)] = ((2.0 * l - 1.0) * x * P(l - 1, 0) -
+                                   (l - 1) * P(l - 2, 0)) / l;
       assert(!P(l, 0).isNaN);
       assert(P(l, 0).isFinite);
     }
@@ -686,17 +704,17 @@ class SphericalHarmonics {
     double xroot = Math.sqrt(Math.max(0.0, 1.0 - x * x));
     double xpow = xroot;
     for (int l = 1; l <= lmax; ++l) {
-      out[outIndex + Index(l, l)] = neg * dfact * xpow;
+      out[offset + Index(l, l)] = neg * dfact * xpow;
       assert(!P(l, l).isNaN);
       assert(P(l, l).isFinite);
-      neg *= -1.0;      // neg = (-1)^l
+      neg *= -1.0; // neg = (-1)^l
       dfact *= 2 * l + 1; // dfact = (2*l-1)!!
-      xpow *= xroot;    // xpow = powf(1.f - x*x, double(l) * 0.5f);
+      xpow *= xroot; // xpow = powf(1.f - x*x, double(l) * 0.5f);
     }
 
     // Compute m=l-1 edge using Legendre recurrence
     for (int l = 2; l <= lmax; ++l) {
-      out[outIndex + Index(l, l - 1)] = x * (2.0 * l - 1.0) * P(l - 1, l - 1);
+      out[offset + Index(l, l - 1)] = x * (2.0 * l - 1.0) * P(l - 1, l - 1);
       assert(!P(l, l - 1).isNaN);
       assert(P(l, l - 1).isFinite);
     }
@@ -704,7 +722,7 @@ class SphericalHarmonics {
     // Compute m=1, \ldots, l-2 values using Legendre recurrence
     for (int l = 3; l <= lmax; ++l) {
       for (int m = 1; m <= l - 2; ++m) {
-        out[outIndex + Index(l, m)] =
+        out[offset + Index(l, m)] =
             ((2.0 * (l - 1.0) + 1.0) * x * P(l - 1, m) -
              (l - 1.0 + m) * P(l - 2, m)) / (l - m);
         assert(!P(l, m).isNaN);
