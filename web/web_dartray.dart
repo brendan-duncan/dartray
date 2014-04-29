@@ -70,11 +70,9 @@ void main() {
   RenderManager renderManager = new RenderManager();
 
   var log = querySelector('#log');
-
   var canvas = querySelector('#renderCanvas');
   var context = canvas.context2D;
   var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-
   var canvasContainer = querySelector('#canvasContainer');
 
   RenderOverrides overrides = new RenderOverrides();
@@ -114,7 +112,6 @@ void main() {
         if (output != null) {
           // When the render has finished, replace the canvas with an IMG
           // element so it can be saved from the browser.
-
           var img = output.toImage(gamma: 2.2);
           var png = encodePng(img);
 
