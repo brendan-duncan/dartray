@@ -546,7 +546,7 @@ class Stats {
   static StatsCounter shadowRays = new StatsCounter('Rays', 'Shadow Rays Traced');
   static StatsCounter nonShadowRays = new StatsCounter('Rays', 'Total Non-Shadow Rays Traced');
   static StatsCounter kdTreeInteriorNodes = new StatsCounter('Kd-Tree', 'Interior Nodes Created');
-  static StatsCounter kdTreeLeafNodes = new StatsCounter('Kd-Tree', 'Interior Nodes Created');
+  static StatsCounter kdTreeLeafNodes = new StatsCounter('Kd-Tree', 'Leaf Nodes Created');
   static StatsCounter kdTreeMaxPrims = new StatsCounter('Kd-Tree', 'Maximum Primitives in Leaf');
   static StatsCounter kdTreeMaxDepth = new StatsCounter('Kd-Tree', 'Maximum Depth of Leaf Nodes');
   static StatsPercentage rayTriIntersections = new StatsPercentage('Intersections', 'Ray/Triangle Intersection Hits');
