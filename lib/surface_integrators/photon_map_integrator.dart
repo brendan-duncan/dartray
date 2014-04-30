@@ -241,6 +241,9 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
       return;
     }
 
+    Stopwatch timer = new Stopwatch()..start();
+    LogInfo('COMPUTING Photon Map');
+
     // Declare shared variables for photon shooting
     List<int> nDirectPaths = [0];
     List<Photon> causticPhotons = [];
@@ -264,6 +267,9 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
                 nshot, lightDistribution, scene, renderer);
     task.run();
 
+    Stopwatch taskTimer = new Stopwatch()..start();
+    LogInfo('BUILDING Photon Map KdTree');
+
     // Build kd-trees for indirect and caustic photons
     KdTree directMap;
     if (directPhotons.isNotEmpty) {
@@ -275,9 +281,12 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
     if (indirectPhotons.isNotEmpty) {
       indirectMap = new KdTree(indirectPhotons);
     }
+    LogInfo('FINISHED Photon Map KdTree: ${taskTimer.elapsed}');
 
     // Precompute radiance at a subset of the photons
     if (finalGather && radiancePhotons.isNotEmpty) {
+      taskTimer.reset();
+      LogInfo('COMPUTING PhotonMap FinalGather');
       // Launch tasks to compute photon radiances
       ComputeRadianceTask task = new ComputeRadianceTask(0, 1, radiancePhotons,
               rpReflectances, rpTransmittances,
@@ -285,9 +294,15 @@ class PhotonMapIntegrator extends SurfaceIntegrator {
               nIndirectPaths, indirectMap,
               nCausticPaths, causticMap);
       task.run();
+      LogInfo('FINISHED PhotonMap FinalGather: ${taskTimer.elapsed}');
 
+      taskTimer.reset();
+      LogInfo('BUILDING PhotonMap FinalGather KdTree');
       radianceMap = new KdTree(radiancePhotons);
+      LogInfo('FINISHED PhotonMap FinalGather KdTree: ${taskTimer.elapsed}');
     }
+
+    LogInfo('FINISHED Photon Map: ${timer.elapsed}');
   }
 
   static PhotonMapIntegrator Create(ParamSet params) {
@@ -370,6 +385,8 @@ class PhotonShootingTask {
     List<Spectrum> localRpTransmittances = [];
     List<double> u = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
     List<double> lightPdf = [0.0];
+
+    int __count = 0;
 
     while (true) {
       // Follow photon paths for a block of samples
@@ -490,11 +507,12 @@ class PhotonShootingTask {
                                                        photonRay,
                                                        photonIsect.rayEpsilon);
           }
+
           Stats.PHOTON_MAP_FINISHED_RAY_PATH(photonRay, alpha);
         }
       }
 
-      // Merge local photon data with data in _PhotonIntegrator_
+      // Merge local photon data with data in PhotonIntegrator
       {
         // Give up if we're not storing enough photons
         if (abortTasks[0]) {
@@ -528,6 +546,12 @@ class PhotonShootingTask {
             indirectDone = true;
           }
 
+          if (__count++ > 1000) {
+            LogDebug('Indirect Photons: ${indirectPhotons.length} / '
+                     '${integrator.nIndirectPhotonsWanted}');
+            __count = 0;
+          }
+
           nDirectPaths[0] += blockSize;
           for (int i = 0; i < localDirectPhotons.length; ++i) {
             directPhotons.add(localDirectPhotons[i]);
@@ -556,6 +580,7 @@ class PhotonShootingTask {
           rpReflectances.add(localRpReflectances[i]);
         }
         localRpReflectances.clear();
+
         for (int i = 0; i < localRpTransmittances.length; ++i) {
           rpTransmittances.add(localRpTransmittances[i]);
         }
