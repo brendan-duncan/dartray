@@ -81,7 +81,7 @@ class DifferentialGeometry {
     this.dpdv = dpdv;
     this.dndu = dndu;
     this.dndv = dndv;
-    this.nn = Vector.Normalize(Vector.Cross(dpdu, dpdv));
+    this.nn = Normal.Normalize(Vector.Cross(dpdu, dpdv));
     this.u = u;
     this.v = v;
     this.shape = shape;

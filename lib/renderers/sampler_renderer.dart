@@ -79,11 +79,12 @@ class SamplerRenderer extends Renderer {
       isect = new Intersection();
     }
 
-    Spectrum Li = new Spectrum(0.0);
+    Spectrum Li;
 
     if (scene.intersect(ray, isect)) {
       Li = surfaceIntegrator.Li(scene, this, ray, isect, sample, rng);
     } else {
+      Li = new Spectrum(0.0);
       // Handle ray that doesn't intersect any geometry
       for (int i = 0; i < scene.lights.length; ++i) {
         Li += scene.lights[i].Le(ray);
