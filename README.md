@@ -4,7 +4,7 @@
 
 DartRay is an extendable physically based ray tracer providing a number of 
 state-of-the-art algorithms for rendering, lighting and shading. It is written 
-in the [Dart](www.dartlang.org) programming language, with an emphasis on experimentation
+in the [Dart](http://www.dartlang.org) programming language, with an emphasis on experimentation
 and learning.
 
 DartRay is a port of the [PBRT](http://www.pbrt.org) renderer by Matt Pharr and 
