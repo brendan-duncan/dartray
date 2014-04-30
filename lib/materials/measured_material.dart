@@ -86,11 +86,22 @@ class MeasuredMaterial extends Material {
     if (suffix == '.brdf') {
       // Load (theta, phi) measured BRDF data
       if (loadedThetaPhi.containsKey(filename)) {
+        // There's a brdf file being loaded by someone else, wait until it's
+        // done and use that.
+        if (loadedThetaPhi[filename] is Future) {
+          loadedThetaPhi[filename].then((_) {
+            thetaPhiData = loadedThetaPhi[filename];
+          });
+          return;
+        }
+
         thetaPhiData = loadedThetaPhi[filename];
         return;
       }
 
       Completer c = new Completer();
+      loadedThetaPhi[filename] = c.future;
+
       ResourceManager.RequestFile(filename, future: c.future).then((bytes) {
         List<double> values = ReadFloatFile(bytes, filename);
 
@@ -127,6 +138,7 @@ class MeasuredMaterial extends Material {
         }
 
         loadedThetaPhi[filename] = thetaPhiData = new KdTree(samples);
+
         c.complete();
       });
     } else {
@@ -136,11 +148,22 @@ class MeasuredMaterial extends Material {
       nPhiD = 180;
 
       if (loadedRegularHalfangle.containsKey(filename)) {
+        // There's a merl file being loaded by someone else, wait until it's
+        // done and use that.
+        if (loadedRegularHalfangle[filename] is Future) {
+          loadedRegularHalfangle[filename].then((_) {
+            regularHalfangleData = loadedRegularHalfangle[filename];
+          });
+          return;
+        }
+
         regularHalfangleData = loadedRegularHalfangle[filename];
         return;
       }
 
       Completer c = new Completer();
+      loadedRegularHalfangle[filename] = c.future;
+
       ResourceManager.RequestFile(filename, future: c.future).then((bytes) {
         InputBuffer fp = new InputBuffer(bytes, bigEndian: false);
         int dims0 = fp.readInt32();
@@ -187,6 +210,8 @@ class MeasuredMaterial extends Material {
         }
 
         loadedRegularHalfangle[filename] = regularHalfangleData;
+
+        c.complete();
       });
     }
   }
@@ -224,6 +249,6 @@ class MeasuredMaterial extends Material {
   int nPhiD;
   Texture bumpMap;
 
-  static Map<String, Float32List> loadedRegularHalfangle = {};
-  static Map<String, KdTree> loadedThetaPhi = {};
+  static Map loadedRegularHalfangle = {};
+  static Map loadedThetaPhi = {};
 }

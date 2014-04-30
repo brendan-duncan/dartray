@@ -29,14 +29,13 @@ class RenderManager extends RenderManagerInterface {
   RenderManager([String scenePath = '']) :
     super(scenePath);
 
-  Future<List<int>> loadFile(String path, [Future future]) {
-    if (future != null) {
-      futures.add(future);
-    }
+  Future<List<int>> loadFile(String path) {
+    LogDebug('REQUEST FILE $path');
 
     Completer<List<int>> c = new Completer<List<int>>();
 
     _loadFile(path).then((bytes) {
+      LogDebug('LOADED FILE $path');
       c.complete(bytes);
     }).catchError((e) {
       LogError(e.toString());

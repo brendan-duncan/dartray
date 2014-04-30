@@ -255,9 +255,9 @@ abstract class RenderManagerInterface extends ResourceManager {
       }, onError: (msg) {
         LogError('ERROR Thread $i: $msg');
         tasksRemaining--;
-        /*if (!completer.isCompleted) {
-          completer.complete(output);
-        }*/
+        if (!completer.isCompleted) {
+          completer.complete(null);
+        }
       });
     }
 
