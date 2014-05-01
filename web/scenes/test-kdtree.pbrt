@@ -1,0 +1,24 @@
+Accelerator "kdtree"
+Film "image" "integer xresolution" [320] "integer yresolution" [240]
+SurfaceIntegrator "path"
+Sampler "random" "integer pixelsamples" [1]
+
+LookAt 0 0 -35 0 0 0 0 1 0 
+Camera "perspective" "float fov" [35]
+
+WorldBegin
+AttributeBegin
+  AreaLightSource "area" "color L" [36 36 36 ] "integer nsamples" [1]
+  Translate 0 9.9 0
+  Rotate 90 1 0 0
+  Shape "disk" "float radius" [3]
+AttributeEnd
+
+AttributeBegin
+  Material "matte" "color Kd" [0.75 0.75 0.75 ] 
+    Shape "trianglemesh"  "integer indices" [0 1 2 ] "point P" [ 10 -10 -10 -10 -10 -10 -10 -10  10  10 -10  10 ] 
+    Shape "trianglemesh"  "integer indices" [0 1 2 ] "point P" [ 10  10 -10  10  10  10 -10  10  10 -10  10 -10 ] 
+    Shape "trianglemesh"  "integer indices" [0 1 2 ] "point P" [ 10 -10  10 -10 -10  10 -10  10  10  10  10  10 ] 
+AttributeEnd
+
+WorldEnd
