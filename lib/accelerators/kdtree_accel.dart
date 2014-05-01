@@ -394,7 +394,7 @@ class KdTreeAccel extends Aggregate {
     double bestCost = INFINITY;
     double oldCost = isectCost * nPrimitives.toDouble();
     Vector d = nodeBounds.pMax - nodeBounds.pMin;
-    double totalSA = (2.0 * (d.x * d.y + d.x * d.z + d.y * d.z));
+    double totalSA = 2.0 * (d.x * d.y + d.x * d.z + d.y * d.z);
     double invTotalSA = 1.0 / totalSA;
 
     // Choose which axis to split along
@@ -604,7 +604,7 @@ class _BoundEdge {
 
   bool operator <(_BoundEdge e) {
     if (t == e.t) {
-      return type < e.type;
+      return type > e.type;
     } else {
       return t < e.t;
     }
