@@ -25,22 +25,22 @@ part of accelerators;
  *
  * Accelerator "kdtree" <Parameters>
  * ----------------------------------------------------------------------------
- * | **Type**   |  **Name**       |   **Default**   |   **Description**
+ *  **Type** | **Name**      | **Default** | **Description**
  * ----------------------------------------------------------------------------
- * | integer    |  intersectcost  |   80            |
+ *  integer  | intersectcost | 80          |
  * ----------------------------------------------------------------------------
- * | integer    |  traversalcost  |   1             |
+ *  integer  | traversalcost | 1           |
  * ----------------------------------------------------------------------------
- * | float      |  emptybonus     |   0.5           |
+ *  float    | emptybonus    | 0.5         |
  * ----------------------------------------------------------------------------
- * | integer    |  maxprims       |   1             |
+ *  integer  | maxprims      | 1           |
  * ----------------------------------------------------------------------------
- * | integer    |  maxdepth       |   -1            |
+ *  integer  | maxdepth      | -1          |
  * ----------------------------------------------------------------------------
  */
 class KdTreeAccel extends Aggregate {
-  KdTreeAccel(List<Primitive> p, [this.isectCost = 80, this.traversalCost =
-      1, this.emptyBonus = 0.5, this.maxPrims = 1, this.maxDepth = -1]) {
+  KdTreeAccel(List<Primitive> p, [this.isectCost = 80, this.traversalCost = 1,
+              this.emptyBonus = 0.5, this.maxPrims = 1, this.maxDepth = -1]) {
     Stats.KDTREE_STARTED_CONSTRUCTION(this, p.length);
     LogInfo('Building Kd-Tree Acceleration Structures.');
     for (int i = 0; i < p.length; ++i) {
@@ -67,8 +67,7 @@ class KdTreeAccel extends Aggregate {
     List<List<_BoundEdge>> edges = new List(3);
     for (int i = 0; i < 3; ++i) {
       edges[i] = new List<_BoundEdge>(2 * primitives.length);
-      for (int j = 0,
-          len = edges[i].length; j < len; ++j) {
+      for (int j = 0, len = edges[i].length; j < len; ++j) {
         edges[i][j] = new _BoundEdge();
       }
     }
@@ -83,8 +82,8 @@ class KdTreeAccel extends Aggregate {
     }
 
     // Start recursive construction of kd-tree
-    _buildTree(0, bounds, primBounds, primNums, maxDepth, edges, prims0, prims1
-        );
+    _buildTree(0, bounds, primBounds, primNums, maxDepth, edges, prims0,
+               prims1);
 
     Stats.KDTREE_FINISHED_CONSTRUCTION(this);
   }
@@ -108,8 +107,9 @@ class KdTreeAccel extends Aggregate {
     }
 
     // Prepare to traverse kd-tree for ray
-    Vector invDir = new Vector(1.0 / ray.direction.x, 1.0 / ray.direction.y, 1.0
-        / ray.direction.z);
+    Vector invDir = new Vector(1.0 / ray.direction.x,
+                               1.0 / ray.direction.y,
+                               1.0 / ray.direction.z);
 
     const int MAX_TODO = 64;
     List<_KdToDo> todo = new List<_KdToDo>(MAX_TODO);
@@ -128,8 +128,8 @@ class KdTreeAccel extends Aggregate {
       }
 
       if (!node.isLeaf) {
-        Stats.KDTREE_INTERSECTION_TRAVERSED_INTERIOR_NODE(node);
         // Process kd-tree interior node
+        Stats.KDTREE_INTERSECTION_TRAVERSED_INTERIOR_NODE(node);
 
         // Compute parametric distance along ray to split plane
         int axis = node.splitAxis;
@@ -142,7 +142,8 @@ class KdTreeAccel extends Aggregate {
         _KdAccelNode secondChild;
 
         bool belowFirst = (ray.origin[axis] < node.splitPos) ||
-            (ray.origin[axis] == node.splitPos && ray.direction[axis] <= 0);
+                          (ray.origin[axis] == node.splitPos &&
+                           ray.direction[axis] <= 0);
 
         if (belowFirst) {
           firstChildIndex = nodeIndex + 1;
@@ -226,8 +227,9 @@ class KdTreeAccel extends Aggregate {
   }
 
   bool intersectP(Ray ray) {
-    Stats.KDTREE_INTERSECTIONP_TEST(this, ray);
     // Compute initial parametric range of ray inside kd-tree extent
+    Stats.KDTREE_INTERSECTIONP_TEST(this, ray);
+
     List<double> tmin = [0.0];
     List<double> tmax = [0.0];
     if (!bounds.intersectP(ray, tmin, tmax)) {
@@ -236,8 +238,9 @@ class KdTreeAccel extends Aggregate {
     }
 
     // Prepare to traverse kd-tree for ray
-    Vector invDir = new Vector(1.0 / ray.direction.x, 1.0 / ray.direction.y, 1.0
-        / ray.direction.z);
+    Vector invDir = new Vector(1.0 / ray.direction.x,
+                               1.0 / ray.direction.y,
+                               1.0 / ray.direction.z);
 
     const int MAX_TODO = 64;
     List<_KdToDo> todo = new List<_KdToDo>(MAX_TODO);
@@ -246,8 +249,6 @@ class KdTreeAccel extends Aggregate {
     // Traverse kd-tree nodes in order for ray
     bool hit = false;
     int nodeIndex = 0;
-    int firstChildIndex = 0;
-    int secondChildIndex = 0;
     _KdAccelNode node = nodes[nodeIndex];
 
     while (node != null) {
@@ -257,18 +258,22 @@ class KdTreeAccel extends Aggregate {
       }
 
       if (!node.isLeaf) {
-        Stats.KDTREE_INTERSECTIONP_TRAVERSED_INTERIOR_NODE(node);
         // Process kd-tree interior node
+        Stats.KDTREE_INTERSECTIONP_TRAVERSED_INTERIOR_NODE(node);
 
         // Compute parametric distance along ray to split plane
         int axis = node.splitAxis;
         double tplane = (node.splitPos - ray.origin[axis]) * invDir[axis];
 
         // Get node children pointers for ray
+        int firstChildIndex = 0;
         _KdAccelNode firstChild;
+        int secondChildIndex = 0;
         _KdAccelNode secondChild;
+
         bool belowFirst = (ray.origin[axis] < node.splitPos) ||
-            (ray.origin[axis] == node.splitPos && ray.direction[axis] <= 0);
+                          (ray.origin[axis] == node.splitPos &&
+                           ray.direction[axis] <= 0);
 
         if (belowFirst) {
           firstChildIndex = nodeIndex + 1;
@@ -304,8 +309,9 @@ class KdTreeAccel extends Aggregate {
           tmax[0] = tplane;
         }
       } else {
-        Stats.KDTREE_INTERSECTIONP_TRAVERSED_LEAF_NODE(node, node.nPrimitives);
         // Check for intersections inside leaf node
+        Stats.KDTREE_INTERSECTIONP_TRAVERSED_LEAF_NODE(node, node.nPrimitives);
+
         int nPrimitives = node.nPrimitives;
         if (nPrimitives == 1) {
           Primitive prim = primitives[node.primitives];
@@ -345,9 +351,10 @@ class KdTreeAccel extends Aggregate {
     return false;
   }
 
-  void _buildTree(int nodeNum, BBox nodeBounds, List<BBox>
-      allPrimBounds, Uint32List primNums, int depth, List<List<_BoundEdge>>
-      edges, Uint32List prims0, Uint32List prims1, [int badRefines = 0]) {
+  void _buildTree(int nodeNum, BBox nodeBounds, List<BBox> allPrimBounds,
+                  Uint32List primNums, int depth,
+                  List<List<_BoundEdge>> edges, Uint32List prims0,
+                  Uint32List prims1, [int badRefines = 0]) {
     assert(nodeNum == nextFreeNode);
 
     final int nPrimitives = primNums.length;
@@ -402,8 +409,7 @@ class KdTreeAccel extends Aggregate {
     while (true) {
       // Initialize edges for axis
       edges[axis] = new List<_BoundEdge>(nPrimitives * 2);
-      for (int i = 0,
-          j = 0; i < nPrimitives; ++i) {
+      for (int i = 0, j = 0; i < nPrimitives; ++i) {
         int pn = primNums[i];
         BBox bbox = allPrimBounds[pn];
         edges[axis][j++] = new _BoundEdge(bbox.pMin[axis], pn, true);
@@ -415,8 +421,7 @@ class KdTreeAccel extends Aggregate {
       // Compute cost of all splits for axis to find best
       int nBelow = 0;
       int nAbove = nPrimitives;
-      for (int i = 0,
-          len = 2 * nPrimitives; i < len; ++i) {
+      for (int i = 0, len = 2 * nPrimitives; i < len; ++i) {
         if (edges[axis][i].type == _BoundEdge.END) {
           --nAbove;
         }
@@ -427,18 +432,20 @@ class KdTreeAccel extends Aggregate {
           int otherAxis0 = other_axis1[axis];
           int otherAxis1 = other_axis2[axis];
 
-          double belowSA = 2 * (d[otherAxis0] * d[otherAxis1] + (edget -
-              nodeBounds.pMin[axis]) * (d[otherAxis0] + d[otherAxis1]));
+          double belowSA = 2 * (d[otherAxis0] * d[otherAxis1] +
+                                (edget - nodeBounds.pMin[axis]) *
+                                (d[otherAxis0] + d[otherAxis1]));
 
           double aboveSA = 2 * (d[otherAxis0] * d[otherAxis1] +
-              (nodeBounds.pMax[axis] - edget) * (d[otherAxis0] + d[otherAxis1]));
+                                (nodeBounds.pMax[axis] - edget) *
+                                (d[otherAxis0] + d[otherAxis1]));
 
           double pBelow = belowSA * invTotalSA;
           double pAbove = aboveSA * invTotalSA;
           double eb = (nAbove == 0 || nBelow == 0) ? emptyBonus : 0.0;
 
-          double cost = traversalCost + isectCost * (1.0 - eb) * (pBelow *
-              nBelow + pAbove * nAbove);
+          double cost = traversalCost + isectCost * (1.0 - eb) *
+                        (pBelow * nBelow + pAbove * nAbove);
 
           // Update best split if this is lowest cost so far
           if (cost < bestCost) {
@@ -502,15 +509,15 @@ class KdTreeAccel extends Aggregate {
     bounds1.pMin[bestAxis] = tsplit;
 
     // primNums = prims0, numPrimitives = n0
-    Uint32List pn = new Uint32List.view(prims0.buffer, prims0.offsetInBytes, n0
-        );
+    Uint32List pn = new Uint32List.view(prims0.buffer, prims0.offsetInBytes,
+                                        n0);
 
     // prims1 + nPrimitives
     Uint32List p1 = new Uint32List.view(prims1.buffer, prims1.offsetInBytes +
-        (nPrimitives * 4));
+                                        (nPrimitives * 4));
 
     _buildTree(nodeNum + 1, bounds0, allPrimBounds, pn, depth - 1, edges,
-        prims0, p1, badRefines);
+               prims0, p1, badRefines);
 
     int aboveChild = nextFreeNode;
     nodes[nodeNum].initInterior(bestAxis, aboveChild, tsplit);
@@ -518,7 +525,7 @@ class KdTreeAccel extends Aggregate {
     pn = new Uint32List.view(prims1.buffer, prims1.offsetInBytes, n1);
 
     _buildTree(aboveChild, bounds1, allPrimBounds, pn, depth - 1, edges, prims0,
-        p1, badRefines);
+               p1, badRefines);
   }
 
   static KdTreeAccel Create(List<Primitive> prims, ParamSet ps) {
@@ -528,7 +535,7 @@ class KdTreeAccel extends Aggregate {
     int maxPrims = ps.findOneInt('maxprims', 1);
     int maxDepth = ps.findOneInt('maxdepth', -1);
     return new KdTreeAccel(prims, isectCost, travCost, emptyBonus, maxPrims,
-        maxDepth);
+                           maxDepth);
   }
 
   int isectCost;
@@ -611,5 +618,6 @@ class _BoundEdge {
   static const int END = 0;
 
   double t;
+  // type and primNum merged
   int type_primNum;
 }
