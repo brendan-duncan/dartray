@@ -12,7 +12,7 @@ Greg Humphreys. I highly recommend the book on PBRT, [Physically Based Rendering
 
 ##[Documentation](https://github.com/brendan-duncan/dartray/wiki)
 
-##[Test DartRay](http://brendan-duncan.github.io/dartray/web_dartray/web_dartray.html)<br>
+##[Test DartRay](http://brendan-duncan.github.io/dartray/web_dartray/web_dartray.html)
 *_Note that DartRay was written for the Dart VM and Javascript will be significantly slower._*
 
 
