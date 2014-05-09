@@ -604,7 +604,7 @@ class _BoundEdge {
 
   bool operator <(_BoundEdge e) {
     if (t == e.t) {
-      return type > e.type;
+      return type < e.type;
     } else {
       return t < e.t;
     }
@@ -614,8 +614,8 @@ class _BoundEdge {
 
   int get primNum => type_primNum >> 1;
 
-  static const int START = 1;
-  static const int END = 0;
+  static const int START = 0;
+  static const int END = 1;
 
   double t;
   // type and primNum merged
