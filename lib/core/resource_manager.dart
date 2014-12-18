@@ -141,7 +141,7 @@ abstract class ResourceManager {
    * came from. When all requesters of data have completed, the render will
    * continue.
    */
-  Future<SpectrumImage> requestImage(String path, {Future future}) {
+  Future requestImage(String path, {Future future}) {
     if (future != null) {
       futures.add(future);
     }

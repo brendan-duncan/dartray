@@ -88,7 +88,8 @@ void main() {
         print('$msg');
         if (type != LOG_DEBUG) {
           log.text += '$msg\n';
-          log.scrollByLines(1);
+          // TODO this seems to be missing from preElement now...
+          //log.scrollByLines(1);
         }
       },
       preview: (Image img) {
