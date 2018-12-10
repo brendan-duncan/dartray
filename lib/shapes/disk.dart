@@ -59,7 +59,7 @@ class Disk extends Shape {
     // Test disk $\phi$ value against $\phimax$
     double phi = Math.atan2(phit.y, phit.x);
     if (phi < 0) {
-      phi += 2.0 * Math.PI;
+      phi += 2.0 * Math.pi;
     }
 
     if (phi > phiMax) {
@@ -126,7 +126,7 @@ class Disk extends Shape {
     double phi = Math.atan2(phit.y, phit.x);
 
     if (phi < 0.0) {
-      phi += 2.0 * Math.PI;
+      phi += 2.0 * Math.pi;
     }
 
     if (phi > phiMax) {

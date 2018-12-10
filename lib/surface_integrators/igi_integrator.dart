@@ -238,7 +238,7 @@ class IGIIntegrator extends SurfaceIntegrator {
           BSDF bsdf = isect.getBSDF(ray);
 
           // Create virtual light at ray intersection point
-          Spectrum contrib = alpha * bsdf.rho2(wo, rng) / Math.PI;
+          Spectrum contrib = alpha * bsdf.rho2(wo, rng) / Math.pi;
 
           virtualLights[s].add(new _VirtualLight(isect.dg.p, isect.dg.nn,
                                                  contrib, isect.rayEpsilon));

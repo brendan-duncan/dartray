@@ -408,7 +408,7 @@ class _DiffusionReflectance {
   Spectrum call(double d2) {
     Spectrum dpos = (new Spectrum(d2) + zpos * zpos).sqrt();
     Spectrum dneg = (new Spectrum(d2) + zneg * zneg).sqrt();
-    Spectrum Rd = (alphap / (4.0 * Math.PI)) *
+    Spectrum Rd = (alphap / (4.0 * Math.pi)) *
                   ((zpos * (dpos * sigma_tr + Spectrum.ONE) *
                    (-sigma_tr * dpos).exp()) / (dpos * dpos * dpos) -
                    (zneg * (dneg * sigma_tr + Spectrum.ONE) *

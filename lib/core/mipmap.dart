@@ -318,13 +318,25 @@ class MIPMap {
         if (r2 < 1.0) {
           double weight = weightLut[Math.min((r2 * WEIGHT_LUT_SIZE),
                                              WEIGHT_LUT_SIZE - 1).toInt()];
-          sum += texel(level, si, it) * weight;
+          var t = texel(level, si, it);
+          if (sum is Spectrum) {
+            Spectrum s = sum as Spectrum;
+            s += t * weight;
+            sum = s;
+          } else {
+            double s = sum as double;
+            s += t * weight;
+            sum = s;
+          }
           sumWts += weight;
         }
       }
     }
 
-    return sum / sumWts;
+    if (sum is Spectrum) {
+      return (sum as Spectrum) / sumWts;
+    }
+    return (sum as double) / sumWts;
   }
 
   triangle(int level, double s, double t) {

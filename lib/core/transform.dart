@@ -64,7 +64,7 @@ class Transform {
                          Matrix4x4.Transpose(t.mInv));
   }
 
-  bool operator ==(Transform t) {
+  bool operator==(t) {
     return t.m == m && t.mInv == mInv;
   }
 

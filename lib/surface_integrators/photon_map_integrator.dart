@@ -814,5 +814,5 @@ Spectrum _EPhoton(KdTree map, int count, int nLookup,
     }
   }
 
-  return E / (count * md2[0] * Math.PI);
+  return E / (count * md2[0] * Math.pi);
 }

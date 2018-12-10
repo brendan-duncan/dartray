@@ -273,7 +273,7 @@ class BVHAccel extends Aggregate {
         return node;
       }
 
-      bool ComparePoints(_BVHPrimitiveInfo a, _BVHPrimitiveInfo b) {
+      bool ComparePoints(a, b) {
         return a.centroid[dim] < b.centroid[dim];
       }
 
@@ -284,7 +284,7 @@ class BVHAccel extends Aggregate {
           double pmid = 0.5 * (centroidBounds.pMin[dim] +
                                centroidBounds.pMax[dim]);
 
-          bool CompareToMid(_BVHPrimitiveInfo a) {
+          bool CompareToMid(a) {
             return a.centroid[dim] < pmid;
           }
 
@@ -375,7 +375,7 @@ class BVHAccel extends Aggregate {
 
             // Either create leaf or split primitives at selected SAH bucket
             if (nPrimitives > maxPrimsInNode || minCost < nPrimitives) {
-              bool CompareToBucket(_BVHPrimitiveInfo p) {
+              bool CompareToBucket(p) {
                 int b = (nBuckets *
                     ((p.centroid[dim] - centroidBounds.pMin[dim]) /
                      (centroidBounds.pMax[dim] -

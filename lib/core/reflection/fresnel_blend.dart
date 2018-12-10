@@ -27,7 +27,7 @@ class FresnelBlend extends BxDF {
         super(BSDF_REFLECTION | BSDF_GLOSSY);
 
   Spectrum f(Vector wo, Vector wi) {
-    Spectrum diffuse = Rd * ((28.0 / (23.0 * Math.PI))) *
+    Spectrum diffuse = Rd * ((28.0 / (23.0 * Math.pi))) *
                       (Spectrum.ONE - Rs) *
                       ((1.0 - Math.pow(1.0 - 0.5 * Vector.AbsCosTheta(wi), 5)) *
                       (1.0 - Math.pow(1.0 - 0.5 * Vector.AbsCosTheta(wo), 5)));

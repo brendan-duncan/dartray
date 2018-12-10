@@ -29,8 +29,8 @@ class RenderTask {
   static const int STOPPED = 3;
 
   int status = CONNECTING;
-  ReceivePort receivePort = new ReceivePort();
-  SendPort sendPort;
+  //ReceivePort receivePort = new ReceivePort();
+  //SendPort sendPort;
   PreviewCallback previewCallback;
   RenderOverrides overrides;
   int taskNum;
@@ -40,15 +40,15 @@ class RenderTask {
   RenderTask(this.previewCallback, this.taskNum, this.taskCount);
 
   void pause() {
-    sendPort.send('pause');
+    //sendPort.send('pause');
   }
 
   void resume() {
-    sendPort.send('resume');
+    //sendPort.send('resume');
   }
 
   void stop() {
-    sendPort.send('stop');
+    //sendPort.send('stop');
   }
 
   Future<OutputImage> render(String scene, String isolateUri,
@@ -57,7 +57,7 @@ class RenderTask {
 
     this.overrides = overrides;
 
-    Isolate.spawnUri(Uri.parse(isolateUri), ['_'],
+    /*Isolate.spawnUri(Uri.parse(isolateUri), ['_'],
                      receivePort.sendPort).then((isolate) {
     });
 
@@ -129,7 +129,7 @@ class RenderTask {
 
         LogInfo(msg.toString());
       }
-    });
+    });*/
 
     return completer.future;
   }
@@ -162,6 +162,6 @@ class RenderTask {
     if (overrides != null) {
       cmd['overrides'] = overrides.toJson();
     }
-    sendPort.send(cmd);
+    //sendPort.send(cmd);
   }
 }

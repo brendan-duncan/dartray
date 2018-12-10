@@ -188,7 +188,7 @@ class Vector {
 
   static double SphericalPhi(Vector v) {
     double p = Math.atan2(v.y, v.x);
-    return (p < 0.0) ? p + 2.0 * Math.PI : p;
+    return (p < 0.0) ? p + 2.0 * Math.pi : p;
   }
 
   static bool SameHemisphere(Vector w, Vector wp) {

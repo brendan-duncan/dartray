@@ -36,7 +36,7 @@ class Blinn extends MicrofacetDistribution {
     // Compute sampled half-angle vector [wh] for Blinn distribution
     double costheta = Math.pow(u1, 1.0 / (exponent + 1.0));
     double sintheta = Math.sqrt(Math.max(0.0, 1.0 - costheta * costheta));
-    double phi = u2 * 2.0 * Math.PI;
+    double phi = u2 * 2.0 * Math.pi;
     Vector wh = Vector.SphericalDirection(sintheta, costheta, phi);
     if (!Vector.SameHemisphere(wo, wh)) {
       wh = -wh;
@@ -47,7 +47,7 @@ class Blinn extends MicrofacetDistribution {
 
     // Compute PDF for [wi] from Blinn distribution
     double blinn_pdf = ((exponent + 1.0) * Math.pow(costheta, exponent)) /
-                       (2.0 * Math.PI * 4.0 * Vector.Dot(wo, wh));
+                       (2.0 * Math.pi * 4.0 * Vector.Dot(wo, wh));
 
     if (Vector.Dot(wo, wh) <= 0.0) {
       blinn_pdf = 0.0;
@@ -61,7 +61,7 @@ class Blinn extends MicrofacetDistribution {
     double costheta = Vector.AbsCosTheta(wh);
     // Compute PDF for [wi] from Blinn distribution
     double blinn_pdf = ((exponent + 1.0) * Math.pow(costheta, exponent)) /
-                      (2.0 * Math.PI * 4.0 * Vector.Dot(wo, wh));
+                      (2.0 * Math.pi * 4.0 * Vector.Dot(wo, wh));
     if (Vector.Dot(wo, wh) <= 0.0) {
       blinn_pdf = 0.0;
     }

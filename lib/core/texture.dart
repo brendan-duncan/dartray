@@ -32,7 +32,7 @@ double Lanczos(double x, [double tau = 2.0]) {
   if (x > 1.0) {
     return 0.0;
   }
-  x *= Math.PI;
+  x *= Math.pi;
   double s = Math.sin(x * tau) / (x * tau);
   double lanczos = Math.sin(x) / x;
   return s * lanczos;

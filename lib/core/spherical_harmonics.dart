@@ -795,5 +795,5 @@ class SphericalHarmonics {
 
 
   static double _lambda(num l) =>
-      Math.sqrt((4.0 * Math.PI) / (2.0 * l + 1.0));
+      Math.sqrt((4.0 * Math.pi) / (2.0 * l + 1.0));
 }

@@ -46,7 +46,7 @@ class DiffuseAreaLight extends AreaLight {
   }
 
   Spectrum power(Scene scene) {
-    return Lemit * area * Math.PI;
+    return Lemit * area * Math.pi;
   }
 
   bool isDeltaLight() {

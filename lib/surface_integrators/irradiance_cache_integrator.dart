@@ -154,7 +154,7 @@ class IrradianceCacheIntegrator extends SurfaceIntegrator {
         Stats.IRRADIANCE_CACHE_FINISHED_RAY(r, r.maxDistance, L);
       }
 
-      E = LiSum * (Math.PI / nSamples);
+      E = LiSum * (Math.pi / nSamples);
       Stats.IRRADIANCE_CACHE_FINISHED_COMPUTING_IRRADIANCE(p, ng);
 
       // Add computed irradiance value to cache

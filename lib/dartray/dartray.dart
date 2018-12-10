@@ -21,7 +21,7 @@
 library dartray;
 
 import 'dart:async';
-import 'dart:isolate';
+//import 'dart:isolate';
 import 'dart:math' as Math;
 import 'dart:typed_data';
 
@@ -578,7 +578,7 @@ class DartRay {
       resourceManager.waitUntilReady().then((_) {
         try {
           future = renderer.render(scene);
-          future.then((OutputImage output) {
+          future.then((output) {
             outputImage = output;
             c.complete();
           }).catchError((e) {

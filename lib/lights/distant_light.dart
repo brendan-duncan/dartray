@@ -48,7 +48,7 @@ class DistantLight extends Light {
   Spectrum power(Scene scene) {
     Point worldCenter = new Point();
     double worldRadius = scene.worldBound.boundingSphere(worldCenter);
-    return L * Math.PI * worldRadius * worldRadius;
+    return L * Math.pi * worldRadius * worldRadius;
   }
 
   Spectrum sampleLAtPoint(Point p, double pEpsilon, LightSample ls,
@@ -79,7 +79,7 @@ class DistantLight extends Light {
     ray.set(Pdisk + lightDir * worldRadius, -lightDir, 0.0, INFINITY, time);
     Ns.copy(ray.direction);
 
-    pdf[0] = 1.0 / (Math.PI * worldRadius * worldRadius);
+    pdf[0] = 1.0 / (Math.pi * worldRadius * worldRadius);
 
     return L;
   }

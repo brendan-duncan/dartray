@@ -41,8 +41,8 @@ class EnvironmentCamera extends Camera {
 
   double generateRay(CameraSample sample, Ray ray) {
     // Compute environment camera ray direction
-    double theta = Math.PI * sample.imageY / film.yResolution;
-    double phi = 2 * Math.PI * sample.imageX / film.xResolution;
+    double theta = Math.pi * sample.imageY / film.yResolution;
+    double phi = 2 * Math.pi * sample.imageX / film.xResolution;
     Vector dir = new Vector(Math.sin(theta) * Math.cos(phi),
                             Math.cos(theta),
                             Math.sin(theta) * Math.sin(phi));

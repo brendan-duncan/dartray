@@ -31,7 +31,7 @@ const double FLT_EPSILON = 1.19209290e-07;
  * equivalent. This function will continue calling f while f returns a future,
  * and breaks when f returns null.
  * It waits for the future returned by f to complete before calling f again.
- * The returned future will complete when the loop has beeb broken.
+ * The returned future will complete when the loop has been broken.
  */
 Future FutureWhileLoop(Function f) {
   Completer doneSignal = new Completer();
@@ -47,6 +47,7 @@ Future FutureWhileLoop(Function f) {
   nextElement(null);
   return doneSignal.future;
 }
+
 
 void GetSubWindow(int w, int h, int num, int count, List<int> extents) {
   // Determine how many tiles to use in each dimension, nx and ny
@@ -71,6 +72,7 @@ void GetSubWindow(int w, int h, int num, int count, List<int> extents) {
   extents[3] = Math.min(Lerp(ty1, 0, h).floor(), h);
 }
 
+
 /**
  * Linear interpolation between two values [v1] and [v2], at [t] which should
  * be between 0 and 1.
@@ -78,23 +80,28 @@ void GetSubWindow(int w, int h, int num, int count, List<int> extents) {
 Lerp(num t, v1, v2) =>
     v1 * (1.0 - t) + v2 * t;
 
+
 /**
  * Convert degrees to radians.
  */
 double Radians(num deg) =>
-  (Math.PI / 180.0) * deg;
+  (Math.pi / 180.0) * deg;
+
 
 /**
  * Convert radians to degrees.
  */
 double Degrees(num rad) =>
-  (180.0 / Math.PI) * rad;
+  (180.0 / Math.pi) * rad;
+
 
 final double _invLog2 = 1.0 / Math.log(2.0);
+
 
 double Log2(num x) {
   return Math.log(x) * _invLog2;
 }
+
 
 /**
  * Is the value [v] a power of 2?
@@ -102,6 +109,7 @@ double Log2(num x) {
 bool IsPowerOf2(int v) {
   return (v & (v - 1)) == 0;
 }
+
 
 /**
  * Round a value [v] to the next power of 2.
@@ -116,6 +124,7 @@ int RoundUpPow2(int v) {
   return v + 1;
 }
 
+
 /**
  * Smooth interpolation of [value] between [min] and [max].
  */
@@ -123,6 +132,7 @@ double SmoothStep(double min, double max, double value) {
   double v = ((value - min) / (max - min)).clamp(0.0, 1.0);
   return v * v * (-2.0 * v + 3.0);
 }
+
 
 /**
  * Solve the given quadratic equation.
@@ -156,6 +166,7 @@ bool Quadratic(double A, double B, double C, List<double> t0, List<double> t1) {
   return true;
 }
 
+
 bool SolveLinearSystem2x2(List<double> A, List<double> B,
                           List<double> x0, List<double> x1) {
   double det = A[0] * A[3] - A[1] * A[2];
@@ -172,6 +183,7 @@ bool SolveLinearSystem2x2(List<double> A, List<double> B,
 
   return true;
 }
+
 
 List<double> ReadFloatFile(List<int> bytes, String path) {
   String text = new String.fromCharCodes(bytes);
@@ -223,14 +235,18 @@ List<double> ReadFloatFile(List<int> bytes, String path) {
   return values;
 }
 
+
 /**
  * Standard compare function used for searches.
  */
 bool less_than(a, b) => a.compareTo(b) < 0;
 
+
 typedef bool BinaryPredicate(a, b);
 
+
 typedef bool UnaryPredicate(a);
+
 
 /**
  * Rearranges list such that all the elements which compare returns true
@@ -269,6 +285,7 @@ int partition(List list, UnaryPredicate pred, [int first, int last]) {
   return first;
 }
 
+
 void nth_element(List list, int first, int nth, int last,
                  BinaryPredicate pred) {
   // TODO implement nth_element properly for better performance.
@@ -278,6 +295,7 @@ void nth_element(List list, int first, int nth, int last,
     list[i] = l[j];
   }
 }
+
 
 /**
  * Returns an index of the first element in the sorted list which compares
@@ -313,6 +331,7 @@ int upper_bound(List list, value, {int first: 0, int last,
 
   return first;
 }
+
 
 /**
  * Returns an index of the first element in the sorted list which does not
@@ -355,6 +374,7 @@ int lower_bound(List list, value, {int first: 0, int last,
   return first;
 }
 
+
 /**
  * Returns the index of the value in a sorted list, or -1 if the value is not
  * in the list. Derived from c++ std::binary_search.
@@ -386,6 +406,7 @@ int find_element(List list, value, {int first: 0, int last,
   return -1;
 }
 
+
 /**
  * This operation makes the elements in [first,last) into a heap.
  */
@@ -405,13 +426,16 @@ void make_heap(List list, int first, int last) {
   }
 }
 
+
 void push_heap(List list, int first, int last) {
   _push_heap(list, first, (last - first) - 1, 0, list[last - 1]);
 }
 
+
 void pop_heap(List list, int first, int last) {
   _pop_heap(list, first, last - 1, last - 1, list[last - 1]);
 }
+
 
 void _adjust_heap(List list, int first, int holeIndex, int len, value) {
   final int topIndex = holeIndex;
@@ -432,6 +456,7 @@ void _adjust_heap(List list, int first, int holeIndex, int len, value) {
   _push_heap(list, first, holeIndex, topIndex, value);
 }
 
+
 void _push_heap(List list, int first, int holeIndex, int topIndex, value) {
   int parent = (holeIndex - 1) ~/ 2;
   while (holeIndex > topIndex && list[first + parent] < value) {
@@ -441,6 +466,7 @@ void _push_heap(List list, int first, int holeIndex, int topIndex, value) {
   }
   list[first + holeIndex] = value;
 }
+
 
 void _pop_heap(List list, int first, int last, int result, value) {
   list[result] = list[first];

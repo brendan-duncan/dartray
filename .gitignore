@@ -4,3 +4,6 @@ build
 packages
 output.png
 web/pbrt/
+.idea/
+.dart_tool/
+.packages

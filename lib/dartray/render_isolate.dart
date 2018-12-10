@@ -48,15 +48,15 @@ class RenderIsolate {
   int status;
   int taskNum = 0;
   int taskCount = 1;
-  ReceivePort receivePort;
-  SendPort sendPort;
+  //ReceivePort receivePort;
+  //SendPort sendPort;
   RenderManagerInterface manager;
   Math.Random rng = new Math.Random();
 
   RenderIsolate(this.manager);
 
-  void start(SendPort port) {
-    Log = _log;
+  void start(port) {
+    /*Log = _log;
     status = CONNECTING;
     receivePort = new ReceivePort();
     sendPort = port;
@@ -66,7 +66,7 @@ class RenderIsolate {
 
     receivePort.listen((msg) {
       _message(msg);
-    });
+    });*/
   }
 
   /**
@@ -78,7 +78,7 @@ class RenderIsolate {
     int id = rng.nextInt(0xffffffff);
     Completer c = new Completer();
     Map cmd = {'cmd': 'request', 'id': id, 'msg': msg};
-    sendPort.send(cmd);
+    //sendPort.send(cmd);
     requests[id] = c;
     return c.future;
   }
@@ -122,14 +122,14 @@ class RenderIsolate {
     } else if (msg == 'stop') {
       LogInfo('Isolate $taskNum/$taskCount STOP');
       status = STOPPED;
-      receivePort.close();
+      //receivePort.close();
     }
   }
 
   void _log(int type, String msg) {
     String timestamp = new DateTime.now().toString().substring(11);
-    sendPort.send('${LOG_TYPES[type]} [THREAD ${taskNum + 1}/$taskCount]: '
-                  '$timestamp : $msg');
+    //sendPort.send('${LOG_TYPES[type]} [THREAD ${taskNum + 1}/$taskCount]: '
+    //              '$timestamp : $msg');
   }
 
   void _render(String scene, int taskNum, int taskCount,
@@ -146,10 +146,10 @@ class RenderIsolate {
       dartray.setPreviewCallback((Image img) {
         GetSubWindow(img.width, img.height, taskNum, taskCount, extents);
 
-        sendPort.send({'cmd': 'preview',
+        /*sendPort.send({'cmd': 'preview',
                        'res': [img.width, img.height],
                        'extents': extents,
-                       'image': img.getBytes()});
+                       'image': img.getBytes()});*/
       });
     }
 
@@ -162,14 +162,14 @@ class RenderIsolate {
 
         GetSubWindow(output.width, output.height, taskNum, taskCount, extents);
 
-        sendPort.send({'cmd': 'final',
+        /*sendPort.send({'cmd': 'final',
                        'output': output.rgb,
                        'res': [output.width, output.height],
-                       'extents': extents});
+                       'extents': extents});*/
       });
     } catch (e) {
       LogError('ERROR: ${e}');
-      sendPort.send({'cmd': 'error', 'msg': e.toString()});
+      //sendPort.send({'cmd': 'error', 'msg': e.toString()});
     }
   }
 

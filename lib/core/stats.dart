@@ -561,9 +561,9 @@ class StatTracker {
 }
 
 class StatsCounter extends StatTracker {
-  StatsCounter(String category, String name) :
-    super(category, name),
-    count = 0 {
+  StatsCounter(String category, String name)
+    : count = 0,
+      super(category, name) {
     Stats.trackers.add(this);
   }
 
@@ -587,9 +587,9 @@ class StatsCounter extends StatTracker {
 
 class StatsPercentage extends StatTracker {
   StatsPercentage(String category, String name) :
-    super(category, name),
-    na = 0,
-    nb = 0 {
+      na = 0,
+      nb = 0,
+      super(category, name) {
     Stats.trackers.add(this);
   }
 

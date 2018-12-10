@@ -57,17 +57,17 @@ class RegularHalfangleBRDF extends BxDF {
     // Compute _index_ into measured BRDF tables
     double wdTheta = Vector.SphericalTheta(wd);
     double wdPhi = Vector.SphericalPhi(wd);
-    if (wdPhi > Math.PI) {
-      wdPhi -= Math.PI;
+    if (wdPhi > Math.pi) {
+      wdPhi -= Math.pi;
     }
 
     // Compute indices _whThetaIndex_, _wdThetaIndex_, _wdPhiIndex_
     int REMAP(V, MAX, COUNT) => ((V / MAX).toInt() * COUNT).clamp(0, COUNT - 1);
 
-    int whThetaIndex = REMAP(Math.sqrt(Math.max(0.0, whTheta / (Math.PI / 2.0))),
+    int whThetaIndex = REMAP(Math.sqrt(Math.max(0.0, whTheta / (Math.pi / 2.0))),
                              1.0, nThetaH);
-    int wdThetaIndex = REMAP(wdTheta, Math.PI / 2.0, nThetaD);
-    int wdPhiIndex = REMAP(wdPhi, Math.PI, nPhiD);
+    int wdThetaIndex = REMAP(wdTheta, Math.pi / 2.0, nThetaD);
+    int wdPhiIndex = REMAP(wdPhi, Math.pi, nPhiD);
 
     int index = wdPhiIndex + nPhiD * (wdThetaIndex + whThetaIndex * nThetaD);
 

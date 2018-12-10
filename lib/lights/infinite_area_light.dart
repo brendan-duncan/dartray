@@ -74,7 +74,7 @@ class InfiniteAreaLight extends Light {
     double worldRadius = scene.worldBound.boundingSphere(worldCenter);
     return new Spectrum.from(_radiance(0.5, 0.5, 0.5),
                              Spectrum.SPECTRUM_ILLUMINANT) *
-           (Math.PI * worldRadius * worldRadius);
+           (Math.pi * worldRadius * worldRadius);
   }
 
   bool isDeltaLight() {
@@ -103,8 +103,8 @@ class InfiniteAreaLight extends Light {
     }
 
     // Convert infinite light sample point to direction
-    double theta = uv[1] * Math.PI;
-    double phi = uv[0] * 2.0 * Math.PI;
+    double theta = uv[1] * Math.pi;
+    double phi = uv[0] * 2.0 * Math.pi;
     double costheta = Math.cos(theta);
     double sintheta = Math.sin(theta);
     double sinphi = Math.sin(phi);
@@ -117,7 +117,7 @@ class InfiniteAreaLight extends Light {
     if (sintheta == 0.0) {
       pdf[0] = 0.0;
     } else {
-      pdf[0] = mapPdf[0] / (2.0 * Math.PI * Math.PI * sintheta);
+      pdf[0] = mapPdf[0] / (2.0 * Math.pi * Math.pi * sintheta);
     }
 
     // Return radiance value for infinite light direction
@@ -144,8 +144,8 @@ class InfiniteAreaLight extends Light {
       return new Spectrum(0.0);
     }
 
-    double theta = uv[1] * Math.PI;
-    double phi = uv[0] * 2.0 * Math.PI;
+    double theta = uv[1] * Math.pi;
+    double phi = uv[0] * 2.0 * Math.pi;
     double costheta = Math.cos(theta);
     double sintheta = Math.sin(theta);
     double sinphi = Math.sin(phi);
@@ -171,8 +171,8 @@ class InfiniteAreaLight extends Light {
     if (sintheta == 0.0) {
       pdf[0] = 0.0;
     } else {
-      double directionPdf = mapPdf[0] / (2.0 * Math.PI * Math.PI * sintheta);
-      double areaPdf = 1.0 / (Math.PI * worldRadius * worldRadius);
+      double directionPdf = mapPdf[0] / (2.0 * Math.pi * Math.pi * sintheta);
+      double areaPdf = 1.0 / (Math.pi * worldRadius * worldRadius);
       pdf[0] = directionPdf * areaPdf;
     }
 
@@ -198,7 +198,7 @@ class InfiniteAreaLight extends Light {
     }
 
     double p = distribution.pdf(phi * INV_TWOPI, theta * INV_PI) /
-           (2.0 * Math.PI * Math.PI * sintheta);
+           (2.0 * Math.pi * Math.pi * sintheta);
 
     Stats.INFINITE_LIGHT_FINISHED_PDF();
     return p;
@@ -238,19 +238,19 @@ class InfiniteAreaLight extends Light {
       int cosphi = bufp;
 
       for (int theta = 0; theta < ntheta; ++theta) {
-        buf[sintheta + theta] = Math.sin((theta + 0.5) / ntheta * Math.PI);
-        buf[costheta + theta] = Math.cos((theta + 0.5) / ntheta * Math.PI);
+        buf[sintheta + theta] = Math.sin((theta + 0.5) / ntheta * Math.pi);
+        buf[costheta + theta] = Math.cos((theta + 0.5) / ntheta * Math.pi);
       }
 
       for (int phi = 0; phi < nphi; ++phi) {
-        buf[sinphi + phi] = Math.sin((phi + 0.5) / nphi * 2.0 * Math.PI);
-        buf[cosphi + phi] = Math.cos((phi + 0.5) / nphi * 2.0 * Math.PI);
+        buf[sinphi + phi] = Math.sin((phi + 0.5) / nphi * 2.0 * Math.pi);
+        buf[cosphi + phi] = Math.cos((phi + 0.5) / nphi * 2.0 * Math.pi);
       }
 
       Float32List Ylm = new Float32List(lmax_terms);
 
-      final double theta_phi_pi = (Math.PI / ntheta) *
-                                   ((2.0 * Math.PI) / nphi);
+      final double theta_phi_pi = (Math.pi / ntheta) *
+                                   ((2.0 * Math.pi) / nphi);
 
       for (int theta = 0; theta < ntheta; ++theta) {
         for (int phi = 0; phi < nphi; ++phi) {
@@ -294,7 +294,7 @@ class InfiniteAreaLight extends Light {
     for (int v = 0; v < height; ++v) {
       int vw = v * width;
       double vp = v / height;
-      double sinTheta = Math.sin(Math.PI * (v + 0.5) / height);
+      double sinTheta = Math.sin(Math.pi * (v + 0.5) / height);
       for (int u = 0; u < width; ++u) {
         double up = u / width;
         img[u + vw] = _radiance(up, vp, filter).luminance();

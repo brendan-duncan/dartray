@@ -78,7 +78,7 @@ class SampledSpectrum extends Spectrum {
     return this;
   }
 
-  SampledSpectrum operator +(SampledSpectrum s) {
+  SampledSpectrum operator+(s) {
     SampledSpectrum r = new SampledSpectrum();
     for (int i = 0; i < NUM_SAMPLES; ++i) {
       r.c[i] = c[i] + s.c[i];
@@ -86,7 +86,7 @@ class SampledSpectrum extends Spectrum {
     return r;
   }
 
-  SampledSpectrum operator -(SampledSpectrum s) {
+  SampledSpectrum operator-(s) {
     SampledSpectrum r = new SampledSpectrum();
     for (int i = 0; i < NUM_SAMPLES; ++i) {
       r.c[i] = c[i] - s.c[i];

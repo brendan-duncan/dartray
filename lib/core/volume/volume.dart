@@ -58,32 +58,32 @@ double _RdToAlphap(double reflectance, double A) {
 
 
 double PhaseIsotropic(Vector a, Vector b) {
-  return 1.0 / (4.0 * Math.PI);
+  return 1.0 / (4.0 * Math.pi);
 }
 
 
 double PhaseRayleigh(Vector w, Vector wp) {
   double costheta = Vector.Dot(w, wp);
-  return 3.0 / (16.0 * Math.PI) * (1 + costheta * costheta);
+  return 3.0 / (16.0 * Math.pi) * (1 + costheta * costheta);
 }
 
 
 double PhaseMieHazy(Vector w, Vector wp) {
   double costheta = Vector.Dot(w, wp);
-  return (0.5 + 4.5 * Math.pow(0.5 * (1.0 + costheta), 8.0)) / (4.0 * Math.PI);
+  return (0.5 + 4.5 * Math.pow(0.5 * (1.0 + costheta), 8.0)) / (4.0 * Math.pi);
 }
 
 
 double PhaseMieMurky(Vector w, Vector wp) {
   double costheta = Vector.Dot(w, wp);
   return (0.5 + 16.5 * Math.pow(0.5 * (1.0 + costheta), 32.0)) / (4.0 *
-      Math.PI);
+      Math.pi);
 }
 
 
 double PhaseHG(Vector w, Vector wp, double g) {
   double costheta = Vector.Dot(w, wp);
-  return 1.0 / (4.0 * Math.PI) * (1.0 - g * g) / Math.pow(1.0 + g * g - 2.0 * g
+  return 1.0 / (4.0 * Math.pi) * (1.0 - g * g) / Math.pow(1.0 + g * g - 2.0 * g
       * costheta, 1.5);
 }
 
@@ -94,7 +94,7 @@ double PhaseSchlick(Vector w, Vector wp, double g) {
   double alpha = 1.5;
   double k = alpha * g + (1.0 - alpha) * g * g * g;
   double kcostheta = k * Vector.Dot(w, wp);
-  return 1.0 / (4.0 * Math.PI) * (1.0 - k * k) / ((1.0 - kcostheta) * (1.0 -
+  return 1.0 / (4.0 * Math.pi) * (1.0 - k * k) / ((1.0 - kcostheta) * (1.0 -
       kcostheta));
 }
 

@@ -206,7 +206,7 @@ class _SurfacePointTask {
           // Store candidate sample point at ray intersection if appropriate
           if (!hitOnSphere && ray.depth >= 3 &&
               isect.getBSSRDF(new RayDifferential.fromRay(ray)) != null) {
-            double area = Math.PI * (minSampleDist / 2.0) *
+            double area = Math.pi * (minSampleDist / 2.0) *
                           (minSampleDist / 2.0);
             candidates.add(new SurfacePoint(hitGeometry.p, hitGeometry.nn,
                                             area, isect.rayEpsilon));

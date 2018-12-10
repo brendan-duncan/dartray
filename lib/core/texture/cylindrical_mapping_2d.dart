@@ -55,7 +55,7 @@ class CylindricalMapping2D extends TextureMapping2D {
 
   void _cylinder(Point p, List<double> s, List<double> t) {
     Vector vec = Vector.Normalize(worldToTexture.transformPoint(p));
-    s[0] = (Math.PI + Math.atan2(vec.y, vec.x)) / (2.0 * Math.PI);
+    s[0] = (Math.pi + Math.atan2(vec.y, vec.x)) / (2.0 * Math.pi);
     t[0] = vec.z;
   }
 

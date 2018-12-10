@@ -74,7 +74,7 @@ class Paraboloid extends Shape {
     Point phit = ray.pointAt(thit);
     double phi = Math.atan2(phit.y, phit.x);
     if (phi < 0.0) {
-      phi += 2.0 * Math.PI;
+      phi += 2.0 * Math.pi;
     }
 
     // Test paraboloid intersection against clipping parameters
@@ -92,7 +92,7 @@ class Paraboloid extends Shape {
       phit = ray.pointAt(thit);
       phi = Math.atan2(phit.y, phit.x);
       if (phi < 0.0) {
-        phi += 2.0 * Math.PI;
+        phi += 2.0 * Math.pi;
       }
 
       if (phit.z < zmin || phit.z > zmax || phi > phiMax) {
@@ -190,7 +190,7 @@ class Paraboloid extends Shape {
     Point phit = ray.pointAt(thit);
     double phi = Math.atan2(phit.y, phit.x);
     if (phi < 0.0) {
-      phi += 2.0 * Math.PI;
+      phi += 2.0 * Math.pi;
     }
 
     // Test paraboloid intersection against clipping parameters
@@ -208,7 +208,7 @@ class Paraboloid extends Shape {
       phit = ray.pointAt(thit);
       phi = Math.atan2(phit.y, phit.x);
       if (phi < 0.0) {
-        phi += 2.0 * Math.PI;
+        phi += 2.0 * Math.pi;
       }
 
       if (phit.z < zmin || phit.z > zmax || phi > phiMax) {

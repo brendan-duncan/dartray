@@ -30,16 +30,16 @@ Point BRDFRemap(Vector wo, Vector wi) {
   double dphi = phii - phio;
 
   if (dphi < 0.0) {
-    dphi += 2.0 * Math.PI;
+    dphi += 2.0 * Math.pi;
   }
 
-  if (dphi > 2.0 * Math.PI) {
-    dphi -= 2.0 * Math.PI;
+  if (dphi > 2.0 * Math.pi) {
+    dphi -= 2.0 * Math.pi;
   }
 
-  if (dphi > Math.PI) {
-    dphi = 2.0 * Math.PI - dphi;
+  if (dphi > Math.pi) {
+    dphi = 2.0 * Math.pi - dphi;
   }
 
-  return new Point(sini * sino, dphi / Math.PI, cosi * coso);
+  return new Point(sini * sino, dphi / Math.pi, cosi * coso);
 }

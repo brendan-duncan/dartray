@@ -161,7 +161,7 @@ abstract class RenderManagerInterface extends ResourceManager {
    * This is called from an Isolate to initialize the RenderManager for the
    * Isolate.
    */
-  void startIsolate([SendPort port]) {
+  void startIsolate([port]) {
     if (port != null) {
       isolate = new RenderIsolate(this);
       isolate.start(port);

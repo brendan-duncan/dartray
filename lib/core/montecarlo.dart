@@ -100,7 +100,7 @@ class Distribution1D {
 Vector UniformSampleHemisphere(double u1, double u2) {
   double z = u1;
   double r = Math.sqrt(Math.max(0.0, 1.0 - z * z));
-  double phi = 2 * Math.PI * u2;
+  double phi = 2 * Math.pi * u2;
   double x = r * Math.cos(phi);
   double y = r * Math.sin(phi);
   return new Vector(x, y, z);
@@ -113,20 +113,20 @@ double UniformHemispherePdf() {
 Vector UniformSampleSphere(double u1, double u2) {
   double z = 1.0 - 2.0 * u1;
   double r = Math.sqrt(Math.max(0.0, 1.0 - z * z));
-  double phi = 2.0 * Math.PI * u2;
+  double phi = 2.0 * Math.pi * u2;
   double x = r * Math.cos(phi);
   double y = r * Math.sin(phi);
   return new Vector(x, y, z);
 }
 
 double UniformSpherePdf() {
-  return 1.0 / (4.0 * Math.PI);
+  return 1.0 / (4.0 * Math.pi);
 }
 
 Vector UniformSampleCone(double u1, double u2, double costhetamax) {
   double costheta = (1.0 - u1) + u1 * costhetamax;
   double sintheta = Math.sqrt(1.0 - costheta * costheta);
-  double phi = u2 * 2.0 * Math.PI;
+  double phi = u2 * 2.0 * Math.pi;
   return new Vector(Math.cos(phi) * sintheta,
                     Math.sin(phi) * sintheta,
                     costheta);
@@ -136,18 +136,18 @@ Vector UniformSampleCone2(double u1, double u2, double costhetamax,
     Vector x, Vector y, Vector z) {
   double costheta = Lerp(u1, costhetamax, 1.0);
   double sintheta = Math.sqrt(1.0 - costheta * costheta);
-  double phi = u2 * 2.0 * Math.PI;
+  double phi = u2 * 2.0 * Math.pi;
   return x * (Math.cos(phi) * sintheta) + y * (Math.sin(phi) * sintheta) +
          z * costheta;
 }
 
 double UniformConePdf(double cosThetaMax) {
-  return 1.0 / (2.0 * Math.PI * (1.0 - cosThetaMax));
+  return 1.0 / (2.0 * Math.pi * (1.0 - cosThetaMax));
 }
 
 void UniformSampleDisk(double u1, double u2, List<double> x, List<double> y) {
   double r = Math.sqrt(u1);
-  double theta = 2.0 * Math.PI * u2;
+  double theta = 2.0 * Math.pi * u2;
   x[0] = r * Math.cos(theta);
   y[0] = r * Math.sin(theta);
 }
@@ -194,7 +194,7 @@ void ConcentricSampleDisk(double u1, double u2, List<double> dx,
     }
   }
 
-  theta *= Math.PI / 4.0;
+  theta *= Math.pi / 4.0;
 
   dx[0] = r * Math.cos(theta);
   dy[0] = r * Math.sin(theta);

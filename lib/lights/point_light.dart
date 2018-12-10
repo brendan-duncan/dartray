@@ -47,7 +47,7 @@ class PointLight extends Light {
   }
 
   Spectrum power(Scene scene) {
-    return intensity * (4.0 * Math.PI);
+    return intensity * (4.0 * Math.pi);
   }
 
   bool isDeltaLight() {

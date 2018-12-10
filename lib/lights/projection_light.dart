@@ -143,7 +143,7 @@ class ProjectionLight extends Light {
             new Spectrum.from(projectionMap.lookup(0.5, 0.5, 0.5),
                               Spectrum.SPECTRUM_ILLUMINANT) :
             new Spectrum(1.0)) *
-            intensity * (2.0 * Math.PI * (1.0 - cosTotalWidth));
+            intensity * (2.0 * Math.pi * (1.0 - cosTotalWidth));
   }
 
   Spectrum sampleL(Scene scene, LightSample ls, double u1, double u2,

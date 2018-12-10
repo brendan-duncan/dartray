@@ -84,7 +84,7 @@ class Sphere extends Shape {
 
     phi = Math.atan2(phit.y, phit.x);
     if (phi < 0.0) {
-      phi += 2.0 * Math.PI;
+      phi += 2.0 * Math.pi;
     }
 
     // Test sphere intersection against clipping parameters
@@ -106,7 +106,7 @@ class Sphere extends Shape {
 
       phi = Math.atan2(phit.y, phit.x);
       if (phi < 0.0) {
-        phi += 2.0 * Math.PI;
+        phi += 2.0 * Math.pi;
       }
       if ((zmin > -radius && phit.z < zmin) ||
           (zmax <  radius && phit.z > zmax) || phi > phiMax) {
@@ -209,7 +209,7 @@ class Sphere extends Shape {
     }
     phi = Math.atan2(phit.y, phit.x);
     if (phi < 0.0) {
-      phi += 2.0 * Math.PI;
+      phi += 2.0 * Math.pi;
     }
 
     // Test sphere intersection against clipping parameters
@@ -229,7 +229,7 @@ class Sphere extends Shape {
       }
       phi = Math.atan2(phit.y, phit.x);
       if (phi < 0.0) {
-        phi += 2.0 * Math.PI;
+        phi += 2.0 * Math.pi;
       }
       if ((zmin > -radius && phit.z < zmin) ||
           (zmax <  radius && phit.z > zmax) || phi > phiMax) {

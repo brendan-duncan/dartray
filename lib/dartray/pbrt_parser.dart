@@ -34,7 +34,7 @@ class PbrtParser {
     LogInfo('LOADING Scene $file');
     Completer c = new Completer();
 
-    resourceManager.requestFile(file).then((List<int> input) {
+    resourceManager.requestFile(file).then((input) {
       input = _decodeFile(file, input);
       LogDebug('FINISHED Loading $file. Scanning for includes.');
       _loadIncludes(input, file).then((_) {
@@ -94,7 +94,7 @@ class PbrtParser {
           Future f = dartray.resourceManager.requestFile(file);
           futures.add(f);
           paths.add(cmd['value']);
-          f.then((List<int> input) {
+          f.then((input) {
             _decodeFile(file, input);
             LogDebug('FINISHED LOADING INCLUDE ${cmd['value']}');
           });
@@ -494,46 +494,52 @@ class PbrtParser {
       switch (p['type']) {
         case 'float':
           var v = p['value'];
+          List<double> v2 = new List<double>(v.length);
           for (int i = 0, l = v.length; i < l; ++i) {
-            v[i] = double.parse(v[i]);
+            v2[i] = double.parse(v[i]);
           }
-          ps.addFloat(p['name'], v);
+          ps.addFloat(p['name'], v2);
           break;
         case 'integer':
           var v = p['value'];
+          List<int> v2 = new List<int>(v.length);
           for (int i = 0, l = v.length; i < l; ++i) {
-            v[i] = int.parse(v[i]);
+            v2[i] = int.parse(v[i]);
           }
-          ps.addInt(p['name'], v);
+          ps.addInt(p['name'], v2);
           break;
         case 'rgb':
         case 'color':
           var v = p['value'];
+          List<double> v2 = new List<double>(v.length);
           for (int i = 0, l = v.length; i < l; ++i) {
-            v[i] = double.parse(v[i]);
+            v2[i] = double.parse(v[i]);
           }
-          ps.addRGBSpectrum(p['name'], v);
+          ps.addRGBSpectrum(p['name'], v2);
           break;
         case 'point':
           var v = p['value'];
+          List<double> v2 = new List<double>(v.length);
           for (int i = 0, l = v.length; i < l; ++i) {
-            v[i] = double.parse(v[i]);
+            v2[i] = double.parse(v[i]);
           }
-          ps.addPoint(p['name'], v);
+          ps.addPoint(p['name'], v2);
           break;
         case 'normal':
           var v = p['value'];
+          List<double> v2 = new List<double>(v.length);
           for (int i = 0, l = v.length; i < l; ++i) {
-            v[i] = double.parse(v[i]);
+            v2[i] = double.parse(v[i]);
           }
-          ps.addNormal(p['name'], v);
+          ps.addNormal(p['name'], v2);
           break;
         case 'vector':
           var v = p['value'];
+          List<double> v2 = new List<double>(v.length);
           for (int i = 0, l = v.length; i < l; ++i) {
-            v[i] = double.parse(v[i]);
+            v2[i] = double.parse(v[i]);
           }
-          ps.addVector(p['name'], v);
+          ps.addVector(p['name'], v2);
           break;
         case 'string':
           ps.addString(p['name'], p['value']);
@@ -561,10 +567,11 @@ class PbrtParser {
           break;
         case 'xyz':
           var v = p['value'];
+          List<double> v2 = new List<double>(v.length);
           for (int i = 0, l = v.length; i < l; ++i) {
-            v[i] = double.parse(v[i]);
+            v2[i] = double.parse(v[i]);
           }
-          ps.addXYZSpectrum(p['name'], v);
+          ps.addXYZSpectrum(p['name'], v2);
           break;
         case 'blackbody':
           var v = p['value'];

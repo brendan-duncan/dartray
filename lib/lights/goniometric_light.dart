@@ -83,7 +83,7 @@ class GoniometricLight extends Light {
   }
 
   Spectrum power(Scene scene) {
-    return intensity * (4.0 * Math.PI) *
+    return intensity * (4.0 * Math.pi) *
             new Spectrum.from(mipmap != null ?
                               mipmap.lookup(0.5, 0.5, 0.5) :
                               new Spectrum(1.0), Spectrum.SPECTRUM_ILLUMINANT);

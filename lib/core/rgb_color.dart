@@ -133,10 +133,10 @@ class RGBColor extends Spectrum {
     return this;
   }
 
-  RGBColor operator+(RGBColor s) =>
+  RGBColor operator+(s) =>
     new RGBColor.rgb(c[0] + s.c[0], c[1] + s.c[1], c[2] + s.c[2]);
 
-  RGBColor operator-(RGBColor s) =>
+  RGBColor operator-(s) =>
       new RGBColor.rgb(c[0] - s.c[0], c[1] - s.c[1], c[2] - s.c[2]);
 
   RGBColor operator*(s) {

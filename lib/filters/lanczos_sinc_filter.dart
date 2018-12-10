@@ -48,7 +48,7 @@ class LanczosSincFilter extends Filter {
     if (x > 1.0) {
       return 0.0;
     }
-    x *= PI;
+    x *= pi;
     double sinc = sin(x) / x;
     double lanczos = sin(x * tau) / (x * tau);
     return sinc * lanczos;

@@ -54,15 +54,15 @@ class Anisotropic extends MicrofacetDistribution {
     } else if (u1 < 0.5) {
       u1 = 4.0 * (0.5 - u1);
       sampleFirstQuadrant(u1, u2, phi_cosTheta);
-      phi_cosTheta[0] = Math.PI - phi_cosTheta[0];
+      phi_cosTheta[0] = Math.pi - phi_cosTheta[0];
     } else if (u1 < 0.75) {
       u1 = 4.0 * (u1 - 0.5);
       sampleFirstQuadrant(u1, u2, phi_cosTheta);
-      phi_cosTheta[0] += Math.PI;
+      phi_cosTheta[0] += Math.pi;
     } else {
       u1 = 4.0 * (1.0 - u1);
       sampleFirstQuadrant(u1, u2, phi_cosTheta);
-      phi_cosTheta[0] = 2.0 * Math.PI - phi_cosTheta[0];
+      phi_cosTheta[0] = 2.0 * Math.pi - phi_cosTheta[0];
     }
 
     double phi = phi_cosTheta[0];
@@ -108,10 +108,10 @@ class Anisotropic extends MicrofacetDistribution {
 
   void sampleFirstQuadrant(double u1, double u2, List<double> phi_costheta) {
     if (ex == ey) {
-      phi_costheta[0] = Math.PI * u1 * 0.5;
+      phi_costheta[0] = Math.pi * u1 * 0.5;
     } else {
       phi_costheta[0] = Math.atan(Math.sqrt((ex + 1.0) / (ey + 1.0)) *
-                        Math.tan(Math.PI * u1 * 0.5));
+                        Math.tan(Math.pi * u1 * 0.5));
     }
 
     double cosphi = Math.cos(phi_costheta[0]);

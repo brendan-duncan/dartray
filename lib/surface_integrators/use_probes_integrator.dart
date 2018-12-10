@@ -33,7 +33,7 @@ class UseProbesIntegrator extends SurfaceIntegrator {
           fp = ReadFloatFile(bytes, filename);
           ResourceManager.WriteFile(filename, fp);
         } else if (bytes is List<double>) {
-          fp = bytes;
+          fp = bytes as List<double>;
         }
 
         int fi = 0;

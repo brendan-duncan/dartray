@@ -1,7 +1,7 @@
 part of dartray_test;
 
 void spectrum_test() {
-  group('RGBColor', () {
+  /*group('RGBColor', () {
     test('constructor', () {
       RGBColor c1 = new RGBColor();
       expect(c1.c[0], equals(0.0));
@@ -26,5 +26,5 @@ void spectrum_test() {
       expect(c4.c[1], equals(1.0));
       expect(c4.c[2], equals(2.0));
     });
-  });
+  });*/
 }

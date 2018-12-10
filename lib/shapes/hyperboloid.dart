@@ -99,7 +99,7 @@ class Hyperboloid extends Shape {
     double phi = Math.atan2(pr.x * phit.y - phit.x * pr.y,
                             phit.x * pr.x + phit.y * pr.y);
     if (phi < 0) {
-      phi += 2.0 * Math.PI;
+      phi += 2.0 * Math.pi;
     }
 
     // Test hyperboloid intersection against clipping parameters
@@ -118,7 +118,7 @@ class Hyperboloid extends Shape {
       phi = Math.atan2(pr.x * phit.y - phit.x * pr.y,
                        phit.x * pr.x + phit.y * pr.y);
       if (phi < 0.0) {
-        phi += 2.0 * Math.PI;
+        phi += 2.0 * Math.pi;
       }
 
       if (phit.z < zmin || phit.z > zmax || phi > phiMax) {
@@ -219,7 +219,7 @@ class Hyperboloid extends Shape {
     double phi = Math.atan2(pr.x * phit.y - phit.x * pr.y,
                             phit.x * pr.x + phit.y * pr.y);
     if (phi < 0) {
-      phi += 2.0 * Math.PI;
+      phi += 2.0 * Math.pi;
     }
 
     // Test hyperboloid intersection against clipping parameters
@@ -238,7 +238,7 @@ class Hyperboloid extends Shape {
       phi = Math.atan2(pr.x * phit.y - phit.x * pr.y,
                        phit.x * pr.x + phit.y * pr.y);
       if (phi < 0.0) {
-        phi += 2.0 * Math.PI;
+        phi += 2.0 * Math.pi;
       }
 
       if (phit.z < zmin || phit.z > zmax || phi > phiMax) {

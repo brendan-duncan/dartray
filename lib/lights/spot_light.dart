@@ -70,7 +70,7 @@ class SpotLight extends Light {
   }
 
   Spectrum power(Scene s) {
-    return intensity * 2.0 * Math.PI *
+    return intensity * 2.0 * Math.pi *
                (1.0 - 0.5 * (cosFalloffStart + cosTotalWidth));
   }
 

@@ -82,10 +82,10 @@ class XYZColor extends Spectrum {
     return this;
   }
 
-  XYZColor operator +(XYZColor s) =>
+  XYZColor operator+(s) =>
     new XYZColor.xyz(c[0] + s.c[0], c[1] + s.c[1], c[2] + s.c[2]);
 
-  XYZColor operator -(XYZColor s) =>
+  XYZColor operator-(s) =>
       new XYZColor.xyz(c[0] - s.c[0], c[1] - s.c[1], c[2] - s.c[2]);
 
   XYZColor operator *(s) {

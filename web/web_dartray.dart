@@ -18,8 +18,8 @@
  * This project is based on PBRT v2 ; see http://www.pbrt.org               *
  * pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.  *
  ****************************************************************************/
+import 'dart:convert';
 import 'dart:html';
-import 'package:crypto/crypto.dart';
 import 'package:dartray/dartray_web.dart';
 import 'package:image/image.dart';
 
@@ -49,7 +49,7 @@ void main() {
     return;
   }
 
-  var sceneMenu = querySelector('#sceneMenu');
+  var sceneMenu = querySelector('#sceneMenu') as SelectElement;
   for (var s in SCENES) {
     var item = new OptionElement();
     item.value = s;
@@ -70,7 +70,7 @@ void main() {
   RenderManager renderManager = new RenderManager();
 
   var log = querySelector('#log');
-  var canvas = querySelector('#renderCanvas');
+  var canvas = querySelector('#renderCanvas') as CanvasElement;
   var context = canvas.context2D;
   var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
   var canvasContainer = querySelector('#canvasContainer');
@@ -81,7 +81,7 @@ void main() {
   Stopwatch timer = new Stopwatch();
   timer.start();
   renderManager.render(scene,
-      isolate: 'dartray_isolate.dart',
+      //isolate: 'dartray_isolate.dart',
       //numThreads: 2,
       overrides: overrides,
       log: (int type, String msg) {
@@ -122,7 +122,7 @@ void main() {
 
           canvas.hidden = true;
 
-          var base64 = CryptoUtils.bytesToBase64(png);
+          var base64 = Base64Encoder().convert(png);
           imgEl.src = 'data:image/png;base64,${base64}';
         }
       });

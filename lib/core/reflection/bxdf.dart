@@ -78,7 +78,7 @@ abstract class BxDF {
       }
     }
 
-    return r / (Math.PI * nSamples);
+    return r / (Math.pi * nSamples);
   }
 
   double pdf(Vector wo, Vector wi) {

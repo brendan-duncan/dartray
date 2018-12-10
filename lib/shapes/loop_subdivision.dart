@@ -255,8 +255,8 @@ class LoopSubdivision extends Shape {
       if (!vert.boundary) {
         // Compute tangents of interior face
         for (int k = 0; k < valence; ++k) {
-          S += Pring[k] * (Math.cos(2.0 * Math.PI * k / valence));
-          T += Pring[k] * (Math.sin(2.0 * Math.PI * k / valence));
+          S += Pring[k] * (Math.cos(2.0 * Math.pi * k / valence));
+          T += Pring[k] * (Math.sin(2.0 * Math.pi * k / valence));
         }
       } else {
         // Compute tangents of boundary face
@@ -269,7 +269,7 @@ class LoopSubdivision extends Shape {
           T = Pring[0] * -1.0 + Pring[1] * 2.0 + Pring[2] * 2.0 +
               Pring[3] * -1.0 + vert.P * -2.0;
         } else {
-          double theta = Math.PI / (valence - 1);
+          double theta = Math.pi / (valence - 1);
           T = (Pring[0] + Pring[valence - 1]) * Math.sin(theta);
           for (int k = 1; k < valence - 1; ++k) {
             double wt = (2 * Math.cos(theta) - 2) * Math.sin((k) * theta);
