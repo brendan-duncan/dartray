@@ -1,6 +1,6 @@
 # DartRay
 
-##Overview
+## Overview
 
 DartRay is an extendable physically based ray tracer providing a number of 
 state-of-the-art algorithms for rendering, lighting and shading. It is written 
@@ -10,13 +10,13 @@ and learning.
 DartRay is a port of the [PBRT](http://www.pbrt.org) renderer by Matt Pharr and 
 Greg Humphreys. I highly recommend the book on PBRT, [Physically Based Rendering: From Theory To Implementation](http://www.amazon.com/gp/product/0123750792?ie=UTF8&tag=pharr-20&linkCode=as2&camp=1789&creative=390957&creativeASIN=0123750792).
 
-##[Documentation](https://github.com/brendan-duncan/dartray/wiki)
+## [Documentation](https://github.com/brendan-duncan/dartray/wiki)
 
-##[Test DartRay](http://brendan-duncan.github.io/dartray/web_dartray/web_dartray.html)
+## [Test DartRay](http://brendan-duncan.github.io/dartray/web_dartray/web_dartray.html)
 *_Note that DartRay was written for the Dart VM and Javascript will be significantly slower._*
 
 
-##Test Renders
+## Test Renders
 ![Dipole Subsurface Scattering](https://cloud.githubusercontent.com/assets/3642099/2797718/917d9174-cc39-11e3-881d-3b8f16d10be1.png)
 ![Path Tracing surface integrator](https://cloud.githubusercontent.com/assets/3642099/2703164/cf037684-c447-11e3-81d7-e2f2c6520fa1.jpg)
 ![IGI (Instant Global Illumination) surface integrator, environment camera](https://cloud.githubusercontent.com/assets/3642099/2714447/0e5122c8-c4f7-11e3-8436-a7c5b9011ab7.jpg)
@@ -24,7 +24,7 @@ Greg Humphreys. I highly recommend the book on PBRT, [Physically Based Rendering
 ![smoke](https://cloud.githubusercontent.com/assets/3642099/2797791/db44e606-cc3c-11e3-8617-beb25d29dfbc.png)
 ![yeahright](https://cloud.githubusercontent.com/assets/3642099/2804809/abddafde-ccae-11e3-8a83-6089a06e5e1b.png)
 
-##License
+## License
 Copyright (C) 2014 Brendan Duncan
 
 Licensed under the Apache License, Version 2.0 (the "License");
