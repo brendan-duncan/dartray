@@ -18,13 +18,15 @@
  * This project is based on PBRT v2 ; see http://www.pbrt.org               *
  * pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.  *
  ****************************************************************************/
-import 'dart:isolate';
 import 'package:dartray/dartray_web.dart';
+import 'dart:html';
 
-void main(List<String> args, SendPort port) {
+void main() {
+  DedicatedWorkerGlobalScope dws = DedicatedWorkerGlobalScope.instance;
+
   try {
-    new RenderManager().startIsolate(port);
+    new RenderManager().startIsolate();
   } catch (e) {
-    port.send('ERROR: $e');
+    //port.send('ERROR: $e');
   }
 }

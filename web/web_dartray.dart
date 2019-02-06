@@ -81,8 +81,8 @@ void main() {
   Stopwatch timer = new Stopwatch();
   timer.start();
   renderManager.render(scene,
-      //isolate: 'dartray_isolate.dart',
-      //numThreads: 2,
+      isolate: 'dartray_isolate.dart.js',
+      numThreads: 2,
       overrides: overrides,
       log: (int type, String msg) {
         print('$msg');

@@ -18,7 +18,7 @@
  * This project is based on PBRT v2 ; see http://www.pbrt.org               *
  * pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.  *
  ****************************************************************************/
-part of dartray;
+part of dartray_web;
 
 /**
  * Starts an Isolate service to connect to the primary [RenderManager] from
@@ -45,28 +45,24 @@ class RenderIsolate {
   final CONNECTED = 2;
   final STOPPED = 3;
 
+  MessagePort sendPort;
   int status;
   int taskNum = 0;
   int taskCount = 1;
-  //ReceivePort receivePort;
-  //SendPort sendPort;
   RenderManagerInterface manager;
   Math.Random rng = new Math.Random();
 
   RenderIsolate(this.manager);
 
-  void start(port) {
-    /*Log = _log;
+  void start() {
+    DedicatedWorkerGlobalScope dws = DedicatedWorkerGlobalScope.instance;
+
+    Log = _log;
     status = CONNECTING;
-    receivePort = new ReceivePort();
-    sendPort = port;
 
-    sendPort.send(receivePort.sendPort);
-    status = CONNECTED;
-
-    receivePort.listen((msg) {
-      _message(msg);
-    });*/
+    dws.onMessage.listen((evt) {
+      _message(evt.data);
+    });
   }
 
   /**
@@ -78,17 +74,20 @@ class RenderIsolate {
     int id = rng.nextInt(0xffffffff);
     Completer c = new Completer();
     Map cmd = {'cmd': 'request', 'id': id, 'msg': msg};
-    //sendPort.send(cmd);
+    sendPort.postMessage(cmd);
     requests[id] = c;
     return c.future;
   }
 
   /**
-   * Handle a message recieved from the parent isolate.
+   * Handle a message received from the parent isolate.
    */
   void _message([msg = null]) {
     if (msg is Map) {
-      if (msg.containsKey('cmd')) {
+      if (msg.containsKey('port')) {
+        sendPort = msg['port'];
+        status = CONNECTED;
+      } else if (msg.containsKey('cmd')) {
         var cmd = msg['cmd'];
         if (cmd == 'request') {
           int id = msg['id'];
@@ -122,14 +121,13 @@ class RenderIsolate {
     } else if (msg == 'stop') {
       LogInfo('Isolate $taskNum/$taskCount STOP');
       status = STOPPED;
-      //receivePort.close();
     }
   }
 
   void _log(int type, String msg) {
     String timestamp = new DateTime.now().toString().substring(11);
-    //sendPort.send('${LOG_TYPES[type]} [THREAD ${taskNum + 1}/$taskCount]: '
-    //              '$timestamp : $msg');
+    sendPort.postMessage('${LOG_TYPES[type]} [THREAD ${taskNum + 1}/$taskCount]: '
+                  '$timestamp : $msg');
   }
 
   void _render(String scene, int taskNum, int taskCount,
@@ -146,10 +144,10 @@ class RenderIsolate {
       dartray.setPreviewCallback((Image img) {
         GetSubWindow(img.width, img.height, taskNum, taskCount, extents);
 
-        /*sendPort.send({'cmd': 'preview',
+        sendPort.postMessage({'cmd': 'preview',
                        'res': [img.width, img.height],
                        'extents': extents,
-                       'image': img.getBytes()});*/
+                       'image': img.getBytes()});
       });
     }
 
@@ -162,14 +160,14 @@ class RenderIsolate {
 
         GetSubWindow(output.width, output.height, taskNum, taskCount, extents);
 
-        /*sendPort.send({'cmd': 'final',
+        sendPort.postMessage({'cmd': 'final',
                        'output': output.rgb,
                        'res': [output.width, output.height],
-                       'extents': extents});*/
+                       'extents': extents});
       });
     } catch (e) {
       LogError('ERROR: ${e}');
-      //sendPort.send({'cmd': 'error', 'msg': e.toString()});
+      sendPort.postMessage({'cmd': 'error', 'msg': e.toString()});
     }
   }
 

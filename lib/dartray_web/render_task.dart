@@ -18,7 +18,7 @@
  * This project is based on PBRT v2 ; see http://www.pbrt.org               *
  * pbrt2 source code Copyright(c) 1998-2010 Matt Pharr and Greg Humphreys.  *
  ****************************************************************************/
-part of dartray;
+part of dartray_web;
 
 /**
  * Manages a [RenderIsolate], which is controlled by the [RenderManager].
@@ -28,9 +28,8 @@ class RenderTask {
   static const int CONNECTED = 2;
   static const int STOPPED = 3;
 
+  MessagePort sendPort;
   int status = CONNECTING;
-  //ReceivePort receivePort = new ReceivePort();
-  //SendPort sendPort;
   PreviewCallback previewCallback;
   RenderOverrides overrides;
   int taskNum;
@@ -40,15 +39,15 @@ class RenderTask {
   RenderTask(this.previewCallback, this.taskNum, this.taskCount);
 
   void pause() {
-    //sendPort.send('pause');
+    sendPort.postMessage('pause');
   }
 
   void resume() {
-    //sendPort.send('resume');
+    sendPort.postMessage('resume');
   }
 
   void stop() {
-    //sendPort.send('stop');
+    sendPort.postMessage('stop');
   }
 
   Future<OutputImage> render(String scene, String isolateUri,
@@ -57,18 +56,18 @@ class RenderTask {
 
     this.overrides = overrides;
 
-    /*Isolate.spawnUri(Uri.parse(isolateUri), ['_'],
-                     receivePort.sendPort).then((isolate) {
-    });
+    Worker worker = Worker(isolateUri);
+    MessageChannel messageChannel = MessageChannel();
 
-    receivePort.listen((msg) {
-      if (status == CONNECTING) {
-        if (msg is SendPort) {
-          sendPort = msg;
-          status = CONNECTED;
-          _startIsolateRender(scene);
-        }
-      } else if (status == CONNECTED) {
+    worker.postMessage({'port': messageChannel.port1}, [messageChannel.port1]);
+    _startIsolateRender(scene);
+
+    status = CONNECTED;
+    sendPort = messageChannel.port1;
+
+    messageChannel.port2.onMessage.listen((m) {
+      final msg = m.data;
+      if (status == CONNECTED) {
         if (msg is Map && msg.containsKey('cmd')) {
           var cmd = msg['cmd'];
 
@@ -81,10 +80,11 @@ class RenderTask {
                 String path = subMsg['path'];
                 ResourceManager.RequestFile(path, decompress: false)
                 .then((bytes) {
-                  Map data = {'cmd': 'request',
-                              'id': id,
-                              'data': bytes};
-                  sendPort.send(data);
+                  final data = {'cmd': 'request',
+                                'id': id,
+                                'data': bytes};
+
+                  sendPort.postMessage(data);
                 });
               }
             }
@@ -129,7 +129,7 @@ class RenderTask {
 
         LogInfo(msg.toString());
       }
-    });*/
+    });
 
     return completer.future;
   }
@@ -162,6 +162,6 @@ class RenderTask {
     if (overrides != null) {
       cmd['overrides'] = overrides.toJson();
     }
-    //sendPort.send(cmd);
+    sendPort.postMessage(cmd);
   }
 }

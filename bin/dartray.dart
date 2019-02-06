@@ -22,6 +22,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:dartray/dartray_io.dart';
 import 'package:image/image.dart';
+import 'dart:isolate';
 
 void main(List<String> argv) {
   var parser = new ArgParser();
@@ -39,7 +40,7 @@ void main(List<String> argv) {
 
   Stopwatch timer = new Stopwatch();
   timer.start();
-  new RenderManager().render(args.rest[0]).then((output) {
+  /*new RenderManager().render(args.rest[0]).then((output) {
     timer.stop();
     LogInfo('RENDER FINISHED: ${timer.elapsed}');
     if (output != null) {
@@ -47,5 +48,5 @@ void main(List<String> argv) {
       List<int> png = encodeNamedImage(image, out);
       new File(out).writeAsBytesSync(png);
     }
-  });
+  });*/
 }

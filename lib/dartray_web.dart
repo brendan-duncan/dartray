@@ -21,12 +21,17 @@
 library dartray_web;
 
 import 'dart:async';
-import 'dart:html' as Html;
+import 'dart:html';
+import 'dart:math' as Math;
 import 'dart:typed_data';
 
 import 'core/core.dart';
 import 'dartray/dartray.dart';
 
+import 'package:image/image.dart';
+
 export 'dartray_core.dart';
 
+part 'dartray_web/render_isolate.dart';
 part 'dartray_web/render_manager.dart';
+part 'dartray_web/render_task.dart';
