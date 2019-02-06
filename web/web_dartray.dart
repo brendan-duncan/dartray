@@ -51,7 +51,7 @@ void main() {
 
   var sceneMenu = querySelector('#sceneMenu') as SelectElement;
   for (var s in SCENES) {
-    var item = new OptionElement();
+    var item = OptionElement();
     item.value = s;
     item.text = s;
     if (s == scene) {
@@ -67,7 +67,7 @@ void main() {
 
   scene = 'scenes/$scene.pbrt';
 
-  RenderManager renderManager = new RenderManager();
+  RenderManager renderManager = RenderManager();
 
   var log = querySelector('#log');
   var canvas = querySelector('#renderCanvas') as CanvasElement;
@@ -75,14 +75,14 @@ void main() {
   var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
   var canvasContainer = querySelector('#canvasContainer');
 
-  RenderOverrides overrides = new RenderOverrides();
+  RenderOverrides overrides = RenderOverrides();
   overrides.samplingMode = Sampler.TWO_PASS_SAMPLING;
 
-  Stopwatch timer = new Stopwatch();
+  Stopwatch timer = Stopwatch();
   timer.start();
   renderManager.render(scene,
       isolate: 'dartray_isolate.dart.js',
-      numThreads: 2,
+      numThreads: 1,
       overrides: overrides,
       log: (int type, String msg) {
         print('$msg');
@@ -116,7 +116,7 @@ void main() {
           var img = output.toImage(gamma: 2.2);
           var png = encodePng(img);
 
-          var imgEl = new ImageElement();
+          var imgEl = ImageElement();
           imgEl.id = 'renderImage';
           canvasContainer.append(imgEl);
 

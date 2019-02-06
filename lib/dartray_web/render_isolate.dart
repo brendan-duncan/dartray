@@ -50,7 +50,7 @@ class RenderIsolate {
   int taskNum = 0;
   int taskCount = 1;
   RenderManagerInterface manager;
-  Math.Random rng = new Math.Random();
+  Math.Random rng = Math.Random();
 
   RenderIsolate(this.manager);
 
@@ -63,6 +63,7 @@ class RenderIsolate {
     dws.onMessage.listen((evt) {
       _message(evt.data);
     });
+    print("~~~~~~~~~~~~~~~~~~~~~~~~");
   }
 
   /**
@@ -72,7 +73,7 @@ class RenderIsolate {
    */
   Future requestResponse(msg) {
     int id = rng.nextInt(0xffffffff);
-    Completer c = new Completer();
+    Completer c = Completer();
     Map cmd = {'cmd': 'request', 'id': id, 'msg': msg};
     sendPort.postMessage(cmd);
     requests[id] = c;
@@ -105,7 +106,7 @@ class RenderIsolate {
           RenderOverrides overrides;
           try {
             overrides = msg.containsKey('overrides') ?
-                        new RenderOverrides.fromJson(msg['overrides']) :
+                        RenderOverrides.fromJson(msg['overrides']) :
                         null;
           } catch (e) {
             overrides = null;
@@ -125,7 +126,7 @@ class RenderIsolate {
   }
 
   void _log(int type, String msg) {
-    String timestamp = new DateTime.now().toString().substring(11);
+    String timestamp = DateTime.now().toString().substring(11);
     sendPort.postMessage('${LOG_TYPES[type]} [THREAD ${taskNum + 1}/$taskCount]: '
                   '$timestamp : $msg');
   }
@@ -134,9 +135,9 @@ class RenderIsolate {
                bool doPreview, RenderOverrides overrides) {
     LogInfo('RENDER THREAD STARTED ${taskNum + 1} / $taskCount');
 
-    Stopwatch timer = new Stopwatch()..start();
+    Stopwatch timer = Stopwatch()..start();
 
-    DartRay dartray = new DartRay(manager);
+    DartRay dartray = DartRay(manager);
 
     List<int> extents = [0, 0, 0, 0];
 

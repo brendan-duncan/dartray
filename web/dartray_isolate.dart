@@ -22,6 +22,7 @@ import 'package:dartray/dartray_web.dart';
 import 'dart:html';
 
 void main() {
+  print("@@@@ dartray_isolate.dart");
   DedicatedWorkerGlobalScope dws = DedicatedWorkerGlobalScope.instance;
 
   try {

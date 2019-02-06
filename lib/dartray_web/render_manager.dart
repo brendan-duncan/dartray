@@ -37,7 +37,7 @@ class RenderManager extends RenderManagerInterface {
    * Isolate.
    */
   void startIsolate() {
-    isolate = new RenderIsolate(this);
+    isolate = RenderIsolate(this);
     isolate.start();
   }
 
@@ -67,7 +67,7 @@ class RenderManager extends RenderManagerInterface {
    * import 'dart:isolate';
    * import 'package:dartray/dartray.dart';
    * void main(List<String> args, SendPort port) {
-   *   new RenderIsolate().start(port);
+   *   RenderIsolate().start(port);
    * }
    */
   Future<OutputImage> render(String path, {String isolate,
@@ -83,7 +83,10 @@ class RenderManager extends RenderManagerInterface {
       path = path.substring(i + 1);
     }
 
-    Completer<OutputImage> completer = new Completer<OutputImage>();
+    LogInfo("---------DartRay---------");
+    LogInfo(path);
+
+    Completer<OutputImage> completer = Completer<OutputImage>();
 
     if (isolate == null) {
       LogInfo('STARTING DartRay Render');
@@ -95,16 +98,19 @@ class RenderManager extends RenderManagerInterface {
     }
 
     int tasksRemaining = numThreads;
-    isolates = new List<RenderTask>(numThreads);
+    isolates = List<RenderTask>(numThreads);
+
+    LogInfo("NUMBER OF THREADS: ${numThreads}");
 
     for (int i = 0; i < numThreads; ++i) {
-      isolates[i] = new RenderTask(preview, i, numThreads);
+      isolates[i] = RenderTask(preview, i, numThreads);
+
       isolates[i].render(path, isolate, overrides: overrides).then((output) {
         if (numThreads > 1) {
           if (renderOutput == null ||
               renderOutput.imageWidth != output.imageWidth ||
               renderOutput.imageHeight != output.imageHeight) {
-            renderOutput = new OutputImage(0, 0, output.imageWidth,
+            renderOutput = OutputImage(0, 0, output.imageWidth,
                 output.imageHeight);
           }
 
@@ -140,7 +146,7 @@ class RenderManager extends RenderManagerInterface {
   Future<List<int>> loadFile(String path) {
     LogDebug('REQUEST FILE $path');
 
-    Completer<List<int>> c = new Completer<List<int>>();
+    Completer<List<int>> c = Completer<List<int>>();
 
     _loadFile(path).then((bytes) {
       LogDebug('LOADED FILE $path');
@@ -154,7 +160,7 @@ class RenderManager extends RenderManagerInterface {
   }
 
   Future<List<int>> _loadFile(String path) {
-    Completer<List<int>> c = new Completer<List<int>>();
+    Completer<List<int>> c = Completer<List<int>>();
 
     // As of dart 1.3.0, we can't call HttpRequest from an isolate. To work
     // around this, we send a request message back to the main isolate asking
@@ -162,10 +168,10 @@ class RenderManager extends RenderManagerInterface {
     if (isolate != null) {
       isolate.requestResponse({'cmd': 'file', 'path': path}).then((bytes) {
         if (bytes is String) {
-          c.complete(new Uint8List.fromList(bytes.codeUnits));
+          c.complete(Uint8List.fromList(bytes.codeUnits));
           return;
         } else if (bytes is ByteBuffer) {
-          c.complete(new Uint8List.view(bytes));
+          c.complete(Uint8List.view(bytes));
           return;
         } else if (bytes is List<int>) {
           c.complete(bytes);
@@ -182,11 +188,11 @@ class RenderManager extends RenderManagerInterface {
       .then((resp) {
         if (resp.response is String) {
           String s = resp.response;
-          Uint8List bytes = new Uint8List.fromList(s.codeUnits);
+          Uint8List bytes = Uint8List.fromList(s.codeUnits);
           c.complete(bytes);
           return;
         } else if (resp.response is ByteBuffer) {
-          c.complete(new Uint8List.view(resp.response));
+          c.complete(Uint8List.view(resp.response));
           return;
         } else if (resp.response is List<int>) {
           c.complete(resp.response);

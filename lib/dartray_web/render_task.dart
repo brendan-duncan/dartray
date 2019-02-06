@@ -54,16 +54,20 @@ class RenderTask {
                              {RenderOverrides overrides}) {
     Completer<OutputImage> completer = new Completer<OutputImage>();
 
+
+    LogInfo("RenderTask ${taskNum}/${taskCount} : ${isolateUri}");
+
     this.overrides = overrides;
 
     Worker worker = Worker(isolateUri);
     MessageChannel messageChannel = MessageChannel();
 
+    sendPort = messageChannel.port1;
     worker.postMessage({'port': messageChannel.port1}, [messageChannel.port1]);
-    _startIsolateRender(scene);
 
     status = CONNECTED;
-    sendPort = messageChannel.port1;
+    
+    _startIsolateRender(scene);
 
     messageChannel.port2.onMessage.listen((m) {
       final msg = m.data;
